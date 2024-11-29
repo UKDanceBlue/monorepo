@@ -15,8 +15,8 @@ import { useState } from "react";
 import { useMutation } from "urql";
 
 import { PersonSearch } from "#elements/components/person/PersonSearch.js";
-import type { FragmentType } from "#graphql/index.js";
-import { getFragmentData, graphql } from "#graphql/index.js";
+import type { FragmentOf } from "#graphql/index.js";
+import { graphql,readFragment } from "#graphql/index.js";
 import { useAuthorizationRequirement } from "#hooks/useLoginState.js";
 import { useQueryStatusWatcher } from "#hooks/useQueryStatusWatcher.js";
 
@@ -52,10 +52,9 @@ export const TeamViewerFragment = graphql(/* GraphQL */ `
 export function TeamViewer({
   teamFragment,
 }: {
-  teamFragment: FragmentType<typeof TeamViewerFragment> | undefined;
+  teamFragment: FragmentOf<typeof TeamViewerFragment> | undefined;
 }) {
-  const teamData =
-    getFragmentData(TeamViewerFragment, teamFragment) ?? undefined;
+  const teamData = readFragment(TeamViewerFragment, teamFragment) ?? undefined;
 
   const canEditTeams = useAuthorizationRequirement(
     {

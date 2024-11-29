@@ -1,8 +1,8 @@
 import { useForm } from "@tanstack/react-form";
 import { useMutation } from "urql";
 
-import { type CreatePersonInput } from "#graphql/graphql.js";
-import type { DocumentType } from "#graphql/index.js";
+import type { InputOf } from "#graphql/index.js";
+import { type ResultOf } from "#graphql/index.js";
 import { useQueryStatusWatcher } from "#hooks/useQueryStatusWatcher.js";
 
 import { personCreatorDocument } from "../../../../documents/person.js";
@@ -10,9 +10,7 @@ import { personCreatorDocument } from "../../../../documents/person.js";
 export function usePersonCreatorForm(
   afterSubmit:
     | ((
-        ret:
-          | DocumentType<typeof personCreatorDocument>["createPerson"]
-          | undefined
+        ret: ResultOf<typeof personCreatorDocument>["createPerson"] | undefined
       ) => void | Promise<void>)
     | undefined
 ) {
@@ -26,7 +24,7 @@ export function usePersonCreatorForm(
     loadingMessage: "Saving person...",
   });
 
-  const Form = useForm<CreatePersonInput>({
+  const Form = useForm<InputOf<typeof personCreatorDocument>>({
     defaultValues: {
       name: "",
       linkblue: "",

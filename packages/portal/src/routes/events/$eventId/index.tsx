@@ -2,18 +2,24 @@ import { createFileRoute } from "@tanstack/react-router";
 import { AccessLevel } from "@ukdanceblue/common";
 import { useQuery } from "urql";
 
-import { EventViewer } from "#elements/viewers/event/EventViewer.js";
+import {
+  EventViewer,
+  EventViewerFragment,
+} from "#elements/viewers/event/EventViewer.js";
 import { graphql } from "#graphql/index.js";
 import { useQueryStatusWatcher } from "#hooks/useQueryStatusWatcher.js";
 import { routerAuthCheck } from "#tools/routerAuthCheck.js";
 
-const viewEventPageDocument = graphql(/* GraphQL */ `
-  query ViewEventPage($uuid: GlobalId!) {
-    event(uuid: $uuid) {
-      ...EventViewerFragment
+const viewEventPageDocument = graphql(
+  /* GraphQL */ `
+    query ViewEventPage($uuid: GlobalId!) {
+      event(uuid: $uuid) {
+        ...EventViewerFragment
+      }
     }
-  }
-`);
+  `,
+  [EventViewerFragment]
+);
 
 export function ViewEvent() {
   const { eventId } = Route.useParams();

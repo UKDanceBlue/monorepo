@@ -3,7 +3,7 @@ import { useMutation } from "urql";
 
 import { useMarathon } from "#config/marathonContext.js";
 import { SpreadsheetUploader } from "#elements/components/SpreadsheetUploader.js";
-import type { BulkPersonInput } from "#graphql/graphql.js";
+import type { InputOf } from "#graphql/index.js";
 import { graphql } from "#graphql/index.js";
 import { useAntFeedback } from "#hooks/useAntFeedback.js";
 import { useQueryStatusWatcher } from "#hooks/useQueryStatusWatcher.js";
@@ -151,7 +151,9 @@ export function BulkPersonCreator() {
 
         return true;
       }}
-      rowMapper={(row: CsvRow): BulkPersonInput => {
+      rowMapper={(
+        row: CsvRow
+      ): InputOf<typeof personBulkCreatorDocument>[number] => {
         return {
           name: row.name,
           email: row.email,

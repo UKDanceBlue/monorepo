@@ -10,39 +10,43 @@ import { Button, Flex } from "antd";
 import { useQuery } from "urql";
 
 import { useMarathon } from "#config/marathonContext.js";
-import { TeamsTable } from "#elements/tables/TeamsTable.js";
-import { graphql } from "#graphql/gql";
+import { PaginationFragment } from "#documents/team.ts";
+import { TeamsTable, TeamsTableFragment } from "#elements/tables/TeamsTable.js";
+import { graphql } from "#graphql/index";
 import { useListQuery } from "#hooks/useListQuery";
 import { useAuthorizationRequirement } from "#hooks/useLoginState.js";
 import { useQueryStatusWatcher } from "#hooks/useQueryStatusWatcher";
 import { routerAuthCheck } from "#tools/routerAuthCheck.js";
 
-const teamsTableQueryDocument = graphql(/* GraphQL */ `
-  query TeamsTable(
-    $page: Int
-    $pageSize: Int
-    $sortBy: [String!]
-    $sortDirection: [SortDirection!]
-    $isNullFilters: [TeamResolverKeyedIsNullFilterItem!]
-    $oneOfFilters: [TeamResolverKeyedOneOfFilterItem!]
-    $stringFilters: [TeamResolverKeyedStringFilterItem!]
-  ) {
-    teams(
-      page: $page
-      pageSize: $pageSize
-      sortBy: $sortBy
-      sortDirection: $sortDirection
-      isNullFilters: $isNullFilters
-      oneOfFilters: $oneOfFilters
-      stringFilters: $stringFilters
+const teamsTableQueryDocument = graphql(
+  /* GraphQL */ `
+    query TeamsTable(
+      $page: Int
+      $pageSize: Int
+      $sortBy: [String!]
+      $sortDirection: [SortDirection!]
+      $isNullFilters: [TeamResolverKeyedIsNullFilterItem!]
+      $oneOfFilters: [TeamResolverKeyedOneOfFilterItem!]
+      $stringFilters: [TeamResolverKeyedStringFilterItem!]
     ) {
-      ...PaginationFragment
-      data {
-        ...TeamsTableFragment
+      teams(
+        page: $page
+        pageSize: $pageSize
+        sortBy: $sortBy
+        sortDirection: $sortDirection
+        isNullFilters: $isNullFilters
+        oneOfFilters: $oneOfFilters
+        stringFilters: $stringFilters
+      ) {
+        ...PaginationFragment
+        data {
+          ...TeamsTableFragment
+        }
       }
     }
-  }
-`);
+  `,
+  [TeamsTableFragment, PaginationFragment]
+);
 
 export function ListTeamsPage() {
   const selectedMarathon = useMarathon();

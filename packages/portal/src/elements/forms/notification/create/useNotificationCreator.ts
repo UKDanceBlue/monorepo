@@ -2,7 +2,7 @@ import { useForm } from "@tanstack/react-form";
 import type { TeamType } from "@ukdanceblue/common";
 import { useMutation } from "urql";
 
-import type { DocumentType } from "#graphql/index.js";
+import type { ResultOf } from "#graphql/index.js";
 import { useQueryStatusWatcher } from "#hooks/useQueryStatusWatcher.js";
 
 import { createNotificationDocument } from "../../../../documents/notification.js";
@@ -11,7 +11,7 @@ export function useNotificationCreator(
   afterSubmit:
     | ((
         ret:
-          | DocumentType<typeof createNotificationDocument>["stageNotification"]
+          | ResultOf<typeof createNotificationDocument>["stageNotification"]
           | undefined
       ) => void | Promise<void>)
     | undefined

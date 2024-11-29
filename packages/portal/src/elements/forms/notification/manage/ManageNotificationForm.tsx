@@ -7,8 +7,8 @@ import type { UseQueryExecute } from "urql";
 import { SingleNotificationFragment } from "#documents/notification.js";
 import { LuxonDatePicker } from "#elements/components/antLuxonComponents.js";
 import { NotificationViewer } from "#elements/viewers/notification/NotificationViewer.js";
-import type { FragmentType } from "#graphql/index.js";
-import { getFragmentData } from "#graphql/index.js";
+import type { FragmentOf } from "#graphql/index.js";
+import { readFragment } from "#graphql/index.js";
 import { useAntFeedback } from "#hooks/useAntFeedback.js";
 
 import { useNotificationManagerForm } from "./useNotificationManager.js";
@@ -29,12 +29,12 @@ export const ManageNotificationForm = ({
   refetchNotification,
 }: {
   notificationFragment?:
-    | FragmentType<typeof SingleNotificationFragment>
+    | FragmentOf<typeof SingleNotificationFragment>
     | undefined
     | null;
   refetchNotification: UseQueryExecute;
 }) => {
-  const notification = getFragmentData(
+  const notification = readFragment(
     SingleNotificationFragment,
     notificationFragment
   );

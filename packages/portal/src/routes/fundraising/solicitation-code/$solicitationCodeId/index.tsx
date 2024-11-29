@@ -5,9 +5,12 @@ import { Flex } from "antd";
 import { useMutation, useQuery } from "urql";
 
 import { TeamSelect } from "#elements/components/team/TeamSelect";
-import { FundraisingEntriesTable } from "#elements/tables/fundraising/FundraisingEntriesTable";
-import { TeamsTable } from "#elements/tables/TeamsTable";
-import { graphql } from "#graphql/gql";
+import {
+  FundraisingEntriesTable,
+  FundraisingEntryTableFragment,
+} from "#elements/tables/fundraising/FundraisingEntriesTable";
+import { TeamsTable, TeamsTableFragment } from "#elements/tables/TeamsTable";
+import { graphql } from "#graphql/index";
 import { useAntFeedback, useAskConfirm } from "#hooks/useAntFeedback";
 import { useListQuery } from "#hooks/useListQuery";
 import { useQueryStatusWatcher } from "#hooks/useQueryStatusWatcher";
@@ -33,41 +36,44 @@ export const Route = createFileRoute(
   },
 });
 
-const SolicitationCodeDocument = graphql(/* GraphQL */ `
-  query SolicitationCodeDocument(
-    $solicitationCodeId: GlobalId!
-    $page: Int
-    $pageSize: Int
-    $sortBy: [String!]
-    $sortDirection: [SortDirection!]
-    $dateFilters: [FundraisingEntryResolverKeyedDateFilterItem!]
-    $oneOfFilters: [FundraisingEntryResolverKeyedOneOfFilterItem!]
-    $stringFilters: [FundraisingEntryResolverKeyedStringFilterItem!]
-    $numericFilters: [FundraisingEntryResolverKeyedNumericFilterItem!]
-  ) {
-    solicitationCode(id: $solicitationCodeId) {
-      prefix
-      code
-      name
-      text
-      teams {
-        ...TeamsTableFragment
-      }
-      entries(
-        page: $page
-        pageSize: $pageSize
-        sortBy: $sortBy
-        sortDirection: $sortDirection
-        dateFilters: $dateFilters
-        oneOfFilters: $oneOfFilters
-        stringFilters: $stringFilters
-        numericFilters: $numericFilters
-      ) {
-        ...FundraisingEntryTableFragment
+const SolicitationCodeDocument = graphql(
+  /* GraphQL */ `
+    query SolicitationCodeDocument(
+      $solicitationCodeId: GlobalId!
+      $page: Int
+      $pageSize: Int
+      $sortBy: [String!]
+      $sortDirection: [SortDirection!]
+      $dateFilters: [FundraisingEntryResolverKeyedDateFilterItem!]
+      $oneOfFilters: [FundraisingEntryResolverKeyedOneOfFilterItem!]
+      $stringFilters: [FundraisingEntryResolverKeyedStringFilterItem!]
+      $numericFilters: [FundraisingEntryResolverKeyedNumericFilterItem!]
+    ) {
+      solicitationCode(id: $solicitationCodeId) {
+        prefix
+        code
+        name
+        text
+        teams {
+          ...TeamsTableFragment
+        }
+        entries(
+          page: $page
+          pageSize: $pageSize
+          sortBy: $sortBy
+          sortDirection: $sortDirection
+          dateFilters: $dateFilters
+          oneOfFilters: $oneOfFilters
+          stringFilters: $stringFilters
+          numericFilters: $numericFilters
+        ) {
+          ...FundraisingEntryTableFragment
+        }
       }
     }
-  }
-`);
+  `,
+  [TeamsTableFragment, FundraisingEntryTableFragment]
+);
 
 const AssignTeamToSolicitationCodeDocument = graphql(/* GraphQL */ `
   mutation AssignTeamToSolicitationCodeDocument(

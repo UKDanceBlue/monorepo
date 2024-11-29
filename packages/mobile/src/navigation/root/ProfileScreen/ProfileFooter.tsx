@@ -18,7 +18,7 @@ import { useLogin, useLogOut } from "@/common/auth";
 import { useColorModeValue } from "@/common/customHooks";
 import { universalCatch } from "@/common/logging";
 import type { FragmentType } from "@/graphql/index";
-import { getFragmentData } from "@/graphql/index";
+import { readFragment } from "@/graphql/index";
 
 import { ProfileScreenAuthFragment } from "./ProfileScreen";
 
@@ -29,7 +29,7 @@ export const ProfileFooter = ({
     typeof ProfileScreenAuthFragment
   > | null;
 }) => {
-  const authData = getFragmentData(
+  const authData = readFragment(
     ProfileScreenAuthFragment,
     profileScreenAuthFragment
   );

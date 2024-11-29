@@ -30,8 +30,8 @@ export interface StringFilterItemInterface<Field extends string>
 }
 
 export interface OneOfFilterItemInterface<Field extends string>
-  extends FilterItem<Field, readonly string[]> {
-  value: readonly string[];
+  extends FilterItem<Field, string[]> {
+  value: string[];
   comparison?: never;
 }
 

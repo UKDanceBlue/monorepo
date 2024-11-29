@@ -5,8 +5,8 @@ import { DateTime, Interval } from "luxon";
 import { thumbHashToDataURL } from "thumbhash";
 import type { UseQueryExecute } from "urql";
 
-import type { FragmentType } from "#graphql/index.js";
-import { getFragmentData } from "#graphql/index.js";
+import type { FragmentOf } from "#graphql/index.js";
+import { readFragment } from "#graphql/index.js";
 
 import { EventOccurrencePicker } from "../../../components/event/EventOccurrencePicker";
 import { EventEditorFragment } from "./EventEditorGQL.js";
@@ -16,14 +16,14 @@ export function EventEditor({
   eventFragment,
   refetchEvent,
 }: {
-  eventFragment?: FragmentType<typeof EventEditorFragment> | undefined;
+  eventFragment?: FragmentOf<typeof EventEditorFragment> | undefined;
   refetchEvent?: UseQueryExecute | undefined;
 }) {
   const { message } = App.useApp();
 
   const { formApi } = useEventEditorForm(eventFragment, refetchEvent);
 
-  const eventData = getFragmentData(EventEditorFragment, eventFragment);
+  const eventData = readFragment(EventEditorFragment, eventFragment);
 
   if (!eventData) {
     return <Empty description="Event not found" style={{ marginTop: "1em" }} />;

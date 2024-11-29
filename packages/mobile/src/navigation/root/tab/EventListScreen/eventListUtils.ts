@@ -9,7 +9,7 @@ import { useQuery } from "urql";
 import { Logger } from "@/common/logger/Logger";
 import { showMessage } from "@/common/util/alertUtils";
 import type { FragmentType } from "@/graphql/index";
-import { getFragmentData, graphql } from "@/graphql/index";
+import { graphql,readFragment } from "@/graphql/index";
 import { EventScreenFragment } from "@/navigation/root/EventScreen/EventScreenFragment";
 
 import { RNCAL_DATE_FORMAT, RNCAL_DATE_FORMAT_NO_DAY } from "./constants";
@@ -107,7 +107,7 @@ export const splitEvents = (
 
   const calendarEvents = events
     .flatMap((event) => {
-      const eventData = getFragmentData(EventScreenFragment, event);
+      const eventData = readFragment(EventScreenFragment, event);
       return eventData.occurrences.map(
         (occurrence) =>
           [
@@ -125,7 +125,7 @@ export const splitEvents = (
 
   for (const [event, occurrence] of calendarEvents) {
     console.log(
-      getFragmentData(EventScreenFragment, event).title,
+      readFragment(EventScreenFragment, event).title,
 
       occurrence.interval.start?.toISO()
     );
@@ -169,7 +169,7 @@ export const markEvents = (
   const marked: MarkedDates = {};
 
   for (const event of events) {
-    const eventData = getFragmentData(EventScreenFragment, event);
+    const eventData = readFragment(EventScreenFragment, event);
 
     for (const occurrence of eventData.occurrences) {
       const interval = intervalFromSomething(occurrence.interval);

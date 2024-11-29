@@ -5,17 +5,9 @@ import { useMemo, useState } from "react";
 import { useQuery } from "urql";
 
 import { useMarathon } from "#config/marathonContext";
-import { getFragmentData } from "#graphql/fragment-masking";
-import { graphql } from "#graphql/gql";
+import { readFragment } from "#graphql/index";
+import { graphql } from "#graphql/index";
 import { useQueryStatusWatcher } from "#hooks/useQueryStatusWatcher";
-
-const SolicitationCodeTableDocument = graphql(/* GraphQL */ `
-  query SolicitationCodeTable($marathonId: GlobalId!) {
-    solicitationCodes {
-      ...SolicitationCodeTableFragment
-    }
-  }
-`);
 
 const SolicitationCodeTableFragment = graphql(/* GraphQL */ `
   fragment SolicitationCodeTableFragment on SolicitationCodeNode {
@@ -26,6 +18,17 @@ const SolicitationCodeTableFragment = graphql(/* GraphQL */ `
     }
   }
 `);
+
+const SolicitationCodeTableDocument = graphql(
+  /* GraphQL */ `
+    query SolicitationCodeTable($marathonId: GlobalId!) {
+      solicitationCodes {
+        ...SolicitationCodeTableFragment
+      }
+    }
+  `,
+  [SolicitationCodeTableFragment]
+);
 
 export function SolicitationCodeTable() {
   const { id: marathonId } = useMarathon() ?? {};
@@ -42,13 +45,13 @@ export function SolicitationCodeTable() {
   >();
   const [teamSearch, setTeamSearch] = useState<string | undefined>();
 
-  const data = getFragmentData(
+  const data = readFragment(
     SolicitationCodeTableFragment,
-    result.data?.solicitationCodes
+    result.data?.solicitationCodes ?? []
   );
 
   const mappedData = useMemo(() => {
-    return data?.map((solicitationCode) => ({
+    return data.map((solicitationCode) => ({
       text: solicitationCode.text,
       key: solicitationCode.id,
       teams: solicitationCode.teams.map((team) => team.name).join(", "),
@@ -56,7 +59,7 @@ export function SolicitationCodeTable() {
   }, [data]);
 
   const filteredData = useMemo(() => {
-    return mappedData?.filter((solicitationCode) => {
+    return mappedData.filter((solicitationCode) => {
       if (
         solicitationCodeSearch &&
         !solicitationCode.text
@@ -78,6 +81,7 @@ export function SolicitationCodeTable() {
   return (
     <Table
       dataSource={filteredData}
+      loading={result.fetching}
       rowKey={(record) => record.key}
       pagination={false}
       columns={[

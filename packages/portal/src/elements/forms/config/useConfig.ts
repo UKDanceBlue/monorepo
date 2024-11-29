@@ -3,7 +3,7 @@ import { DateTime, Interval } from "luxon";
 import { useMemo } from "react";
 import { useQuery } from "urql";
 
-import { getFragmentData, graphql } from "#graphql/index.js";
+import { graphql, readFragment } from "#graphql/index.js";
 import { useQueryStatusWatcher } from "#hooks/useQueryStatusWatcher.js";
 
 export const ConfigFragment = graphql(/* GraphQL */ `
@@ -36,13 +36,16 @@ export function useConfig(): {
   refetch: () => void;
 } {
   const [{ data: response, fetching, error }, refetch] = useQuery({
-    query: graphql(/* GraphQL */ `
-      query ConfigQuery {
-        allConfigurations {
-          ...ConfigFragment
+    query: graphql(
+      /* GraphQL */ `
+        query ConfigQuery {
+          allConfigurations {
+            ...ConfigFragment
+          }
         }
-      }
-    `),
+      `,
+      [ConfigFragment]
+    ),
   });
 
   useQueryStatusWatcher({
@@ -56,7 +59,7 @@ export function useConfig(): {
     const configs: ConfigValueCollection[] = [];
     const activeValues: Record<string, ConfigValue> = {};
 
-    const data = getFragmentData(ConfigFragment, response.allConfigurations);
+    const data = readFragment(ConfigFragment, response.allConfigurations);
 
     for (const config of data) {
       // Add the config key if it doesn't exist

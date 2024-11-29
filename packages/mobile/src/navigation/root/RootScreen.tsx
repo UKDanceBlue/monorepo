@@ -9,7 +9,7 @@ import ErrorBoundary, {
   withErrorBoundary,
 } from "@/common/components/ErrorBoundary";
 import { Logger } from "@/common/logger/Logger";
-import { getFragmentData, graphql } from "@/graphql/index";
+import { graphql,readFragment } from "@/graphql/index";
 
 import { useColorModeValue } from "../../common/customHooks";
 import { useLoading } from "../../context";
@@ -73,7 +73,7 @@ const RootScreen = () => {
     }
   }, [fetching, setRootScreenLoading]);
 
-  const authData = getFragmentData(
+  const authData = readFragment(
     RootScreenAuthFragment,
     rootScreenData?.loginState ?? null
   );
@@ -129,7 +129,7 @@ const RootScreen = () => {
                 options={({ route }) => {
                   let eventTitle = "Event";
                   let spacesInTitle = 0;
-                  const eventData = getFragmentData(
+                  const eventData = readFragment(
                     EventScreenFragment,
                     route.params.event
                   );

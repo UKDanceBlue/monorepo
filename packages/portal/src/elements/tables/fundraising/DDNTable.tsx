@@ -6,7 +6,7 @@ import { SortDirection, stringifyDDNBatchType } from "@ukdanceblue/common";
 import { Button, Flex, Table } from "antd";
 import { useQuery } from "urql";
 
-import { getFragmentData, graphql } from "#graphql/index.js";
+import { graphql, readFragment } from "#graphql/index.js";
 import { useListQuery } from "#hooks/useListQuery.js";
 import {
   useMakeNumberSearchFilterProps,
@@ -33,36 +33,39 @@ const DDNsTableFragment = graphql(/* GraphQL */ `
   }
 `);
 
-const ddnsTableQueryDocument = graphql(/* GraphQL */ `
-  query DdnsTable(
-    $page: Int
-    $pageSize: Int
-    $sortBy: [String!]
-    $sortDirection: [SortDirection!]
-    $isNullFilters: [DailyDepartmentNotificationResolverKeyedIsNullFilterItem!]
-    $oneOfFilters: [DailyDepartmentNotificationResolverKeyedOneOfFilterItem!]
-    $stringFilters: [DailyDepartmentNotificationResolverKeyedStringFilterItem!]
-    $numericFilters: [DailyDepartmentNotificationResolverKeyedNumericFilterItem!]
-  ) {
-    dailyDepartmentNotifications(
-      page: $page
-      pageSize: $pageSize
-      sortBy: $sortBy
-      sortDirection: $sortDirection
-      isNullFilters: $isNullFilters
-      oneOfFilters: $oneOfFilters
-      stringFilters: $stringFilters
-      numericFilters: $numericFilters
+const ddnsTableQueryDocument = graphql(
+  /* GraphQL */ `
+    query DdnsTable(
+      $page: Int
+      $pageSize: Int
+      $sortBy: [String!]
+      $sortDirection: [SortDirection!]
+      $isNullFilters: [DailyDepartmentNotificationResolverKeyedIsNullFilterItem!]
+      $oneOfFilters: [DailyDepartmentNotificationResolverKeyedOneOfFilterItem!]
+      $stringFilters: [DailyDepartmentNotificationResolverKeyedStringFilterItem!]
+      $numericFilters: [DailyDepartmentNotificationResolverKeyedNumericFilterItem!]
     ) {
-      page
-      pageSize
-      total
-      data {
-        ...DDNsTableFragment
+      dailyDepartmentNotifications(
+        page: $page
+        pageSize: $pageSize
+        sortBy: $sortBy
+        sortDirection: $sortDirection
+        isNullFilters: $isNullFilters
+        oneOfFilters: $oneOfFilters
+        stringFilters: $stringFilters
+        numericFilters: $numericFilters
+      ) {
+        page
+        pageSize
+        total
+        data {
+          ...DDNsTableFragment
+        }
       }
     }
-  }
-`);
+  `,
+  [DDNsTableFragment]
+);
 
 export const DDNTable = () => {
   const {
@@ -113,14 +116,14 @@ export const DDNTable = () => {
     loadingMessage: "Loading ddns...",
   });
 
-  const listDDNsData = getFragmentData(
+  const listDDNsData = readFragment(
     DDNsTableFragment,
-    ddnsDocument?.dailyDepartmentNotifications.data
+    ddnsDocument?.dailyDepartmentNotifications.data ?? []
   );
 
   return (
     <Table
-      dataSource={listDDNsData ?? undefined}
+      dataSource={listDDNsData}
       rowKey={({ id }) => id}
       loading={fetching}
       pagination={

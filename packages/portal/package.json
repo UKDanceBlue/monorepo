@@ -51,6 +51,7 @@
     "antd": "^5.22.1",
     "camelcase": "^8.0.0",
     "class-validator": "^0.14.1",
+    "gql.tada": "^1.8.10",
     "graphql": "^16.9.0",
     "graphql-scalars": "^1.23.0",
     "lodash.isequal": "^4.5.0",

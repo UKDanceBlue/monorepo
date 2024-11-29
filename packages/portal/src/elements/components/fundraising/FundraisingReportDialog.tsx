@@ -4,7 +4,7 @@ import { type Client, useClient } from "urql";
 import type { CellObject, ColInfo, WorkSheet } from "xlsx";
 import { utils, writeFile } from "xlsx";
 
-import { graphql } from "#graphql/gql.ts";
+import { graphql } from "#graphql/index.ts";
 import { useLoginState } from "#hooks/useLoginState.ts";
 
 import { LuxonDatePicker } from "../antLuxonComponents";

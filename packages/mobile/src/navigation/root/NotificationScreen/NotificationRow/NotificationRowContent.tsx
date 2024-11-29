@@ -21,7 +21,7 @@ import {
 } from "@/common/fragments/NotificationScreenGQL";
 import { Logger } from "@/common/logger/Logger";
 import type { FragmentType } from "@/graphql/index";
-import { getFragmentData } from "@/graphql/index";
+import { readFragment } from "@/graphql/index";
 
 import DanceBlueRibbon from "../../../../../assets/svgs/DBRibbon";
 
@@ -42,11 +42,11 @@ const NonMemoizedNotificationRowContent = ({
 
   const { mono } = useThemeFonts();
 
-  const deliveryFragmentData = getFragmentData(
+  const deliveryFragmentData = readFragment(
     NotificationDeliveryFragment,
     notification
   );
-  const notificationFragmentData = getFragmentData(
+  const notificationFragmentData = readFragment(
     NotificationFragment,
     deliveryFragmentData?.notification
   );

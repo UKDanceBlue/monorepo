@@ -18,13 +18,13 @@ import { useState } from "react";
 import type { UseQueryExecute } from "urql";
 
 import { useMarathon } from "#config/marathonContext.js";
-import { TanAntFormItem } from "#elements/components/form/TanAntFormItem.js";
-import type { FragmentType } from "#graphql/index.js";
-import { getFragmentData } from "#graphql/index.js";
-import { useAuthorizationRequirement } from "#hooks/useLoginState.js";
-
 import { TeamNameFragment } from "#documents/person.js";
 import { PersonEditorFragment } from "#documents/person.js";
+import { TanAntFormItem } from "#elements/components/form/TanAntFormItem.js";
+import type { FragmentOf } from "#graphql/index.js";
+import { readFragment } from "#graphql/index.js";
+import { useAuthorizationRequirement } from "#hooks/useLoginState.js";
+
 import { usePersonEditorForm } from "./usePersonEditorForm.js";
 
 export function PersonEditor({
@@ -32,9 +32,9 @@ export function PersonEditor({
   teamNamesFragment,
   refetchPerson,
 }: {
-  personFragment?: FragmentType<typeof PersonEditorFragment> | undefined | null;
+  personFragment?: FragmentOf<typeof PersonEditorFragment> | undefined | null;
   teamNamesFragment?:
-    | readonly FragmentType<typeof TeamNameFragment>[]
+    | readonly FragmentOf<typeof TeamNameFragment>[]
     | undefined;
   refetchPerson?: UseQueryExecute | undefined;
   authorization?: Authorization | undefined;
@@ -52,12 +52,12 @@ export function PersonEditor({
   });
 
   const teamNamesData = (
-    getFragmentData(TeamNameFragment, teamNamesFragment) ?? []
+    teamNamesFragment ? readFragment(TeamNameFragment, teamNamesFragment) : []
   ).toSorted(({ marathon: { year } }) =>
     year === selectedMarathon?.year ? 0 : 1
   );
 
-  const personData = getFragmentData(PersonEditorFragment, personFragment);
+  const personData = readFragment(PersonEditorFragment, personFragment);
 
   const [captainSearch, setCaptainSearch] = useState("");
   const lowerCaptainSearch = captainSearch.toLowerCase();

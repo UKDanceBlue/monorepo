@@ -1,26 +1,25 @@
 import { useForm } from "@tanstack/react-form";
+import type { CommitteeRole } from "@ukdanceblue/common";
 import { MembershipPositionType } from "@ukdanceblue/common";
 import { useMutation } from "urql";
-
-import { type MemberOf } from "#graphql/graphql.js";
-import type { DocumentType, FragmentType } from "#graphql/index.js";
-import { getFragmentData } from "#graphql/index.js";
-import { useQueryStatusWatcher } from "#hooks/useQueryStatusWatcher.js";
 
 import {
   personEditorDocument,
   PersonEditorFragment,
 } from "#documents/person.js";
+import type { FragmentOf, ResultOf } from "#graphql/index.js";
+import { readFragment } from "#graphql/index.js";
+import { useQueryStatusWatcher } from "#hooks/useQueryStatusWatcher.js";
 
 export function usePersonEditorForm(
-  personFragment: FragmentType<typeof PersonEditorFragment> | undefined | null,
+  personFragment: FragmentOf<typeof PersonEditorFragment> | undefined | null,
   afterSubmit:
     | ((
-        ret: DocumentType<typeof personEditorDocument>["setPerson"] | undefined
+        ret: ResultOf<typeof personEditorDocument>["setPerson"] | undefined
       ) => void | Promise<void>)
     | undefined
 ) {
-  const personData = getFragmentData(PersonEditorFragment, personFragment);
+  const personData = readFragment(PersonEditorFragment, personFragment);
 
   // Form
   const [{ fetching, error }, setPerson] = useMutation(personEditorDocument);
@@ -36,8 +35,8 @@ export function usePersonEditorForm(
     readonly name?: string;
     readonly linkblue?: string;
     readonly email?: string;
-    readonly captainOf?: MemberOf[];
-    readonly memberOf?: MemberOf[];
+    readonly captainOf?: { id: string; committeeRole: CommitteeRole | null }[];
+    readonly memberOf?: { id: string; committeeRole: CommitteeRole | null }[];
   }>({
     defaultValues: {
       name: personData?.name ?? "",

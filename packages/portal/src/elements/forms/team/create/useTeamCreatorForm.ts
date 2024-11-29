@@ -2,17 +2,15 @@ import { useForm } from "@tanstack/react-form";
 import { TeamLegacyStatus, TeamType } from "@ukdanceblue/common";
 import { useMutation } from "urql";
 
-import { type CreateTeamInput } from "#graphql/graphql.js";
-import type { DocumentType } from "#graphql/index.js";
+import { teamCreatorDocument } from "#documents/team.js";
+import type { InputOf, ResultOf } from "#graphql/index.js";
 import { useAntFeedback } from "#hooks/useAntFeedback.js";
 import { useQueryStatusWatcher } from "#hooks/useQueryStatusWatcher.js";
-
-import { teamCreatorDocument } from "#documents/team.js";
 
 export function useTeamCreatorForm(
   afterSubmit:
     | ((
-        ret: DocumentType<typeof teamCreatorDocument>["createTeam"] | undefined
+        ret: ResultOf<typeof teamCreatorDocument>["createTeam"] | undefined
       ) => void | Promise<void>)
     | undefined,
   selectedMarathonId: string | undefined
@@ -27,7 +25,7 @@ export function useTeamCreatorForm(
 
   const { showErrorMessage } = useAntFeedback();
 
-  const Form = useForm<CreateTeamInput>({
+  const Form = useForm<InputOf<typeof teamCreatorDocument>>({
     defaultValues: {
       name: "",
       legacyStatus: TeamLegacyStatus.NewTeam,

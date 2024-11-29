@@ -14,7 +14,7 @@ import { useState } from "react";
 import { useMutation, useQuery } from "urql";
 
 import { useMarathon } from "#config/marathonContext.js";
-import type { CreatePointOpportunityInput } from "#graphql/graphql.js";
+import type { VariablesOf } from "#graphql/index.js";
 import { graphql } from "#graphql/index.js";
 import { useQueryStatusWatcher } from "#hooks/useQueryStatusWatcher.js";
 
@@ -104,7 +104,11 @@ export function PointEntryOpportunityLookup({
           >
             <Form
               layout="vertical"
-              onFinish={(values: CreatePointOpportunityInput) => {
+              onFinish={(
+                values: VariablesOf<
+                  typeof createPointOpportunityDocument
+                >["input"]
+              ) => {
                 if (!marathon) {
                   message.error("Marathon must be selected before creating");
                   return;
@@ -112,7 +116,9 @@ export function PointEntryOpportunityLookup({
                 createPointOpportunity({
                   input: {
                     name: values.name,
-                    opportunityDate: values.opportunityDate ?? null,
+                    opportunityDate: values.opportunityDate
+                      ? String(values.opportunityDate)
+                      : null,
                     type: TeamType.Spirit,
                     marathonUuid: marathon.id,
                   },

@@ -3,7 +3,7 @@ import { Table } from "antd";
 import { DateTime } from "luxon";
 import { useQuery } from "urql";
 
-import { getFragmentData, graphql } from "#graphql/index.js";
+import { graphql, readFragment } from "#graphql/index.js";
 import { useListQuery } from "#hooks/useListQuery.js";
 import { useQueryStatusWatcher } from "#hooks/useQueryStatusWatcher.js";
 import { renderDateTime } from "#tools/luxonTools.js";
@@ -17,34 +17,37 @@ const NotificationDeliveriesTableFragment = graphql(/* GraphQL */ `
   }
 `);
 
-const notificationDeliveriesTableQueryDocument = graphql(/* GraphQL */ `
-  query NotificationDeliveriesTableQuery(
-    $notificationId: GlobalId!
-    $page: Int
-    $pageSize: Int
-    $sortBy: [String!]
-    $sortDirection: [SortDirection!]
-    $dateFilters: [NotificationDeliveryResolverKeyedDateFilterItem!]
-    $isNullFilters: [NotificationDeliveryResolverKeyedIsNullFilterItem!]
-  ) {
-    notificationDeliveries(
-      notificationUuid: $notificationId
-      page: $page
-      pageSize: $pageSize
-      sortBy: $sortBy
-      sortDirection: $sortDirection
-      dateFilters: $dateFilters
-      isNullFilters: $isNullFilters
+const notificationDeliveriesTableQueryDocument = graphql(
+  /* GraphQL */ `
+    query NotificationDeliveriesTableQuery(
+      $notificationId: GlobalId!
+      $page: Int
+      $pageSize: Int
+      $sortBy: [String!]
+      $sortDirection: [SortDirection!]
+      $dateFilters: [NotificationDeliveryResolverKeyedDateFilterItem!]
+      $isNullFilters: [NotificationDeliveryResolverKeyedIsNullFilterItem!]
     ) {
-      page
-      pageSize
-      total
-      data {
-        ...NotificationDeliveriesTableFragment
+      notificationDeliveries(
+        notificationUuid: $notificationId
+        page: $page
+        pageSize: $pageSize
+        sortBy: $sortBy
+        sortDirection: $sortDirection
+        dateFilters: $dateFilters
+        isNullFilters: $isNullFilters
+      ) {
+        page
+        pageSize
+        total
+        data {
+          ...NotificationDeliveriesTableFragment
+        }
       }
     }
-  }
-`);
+  `,
+  [NotificationDeliveriesTableFragment]
+);
 
 export const NotificationDeliveriesTable = ({
   notificationUuid,
@@ -95,10 +98,12 @@ export const NotificationDeliveriesTable = ({
     loadingMessage: "Loading deliveries...",
   });
 
-  const listEventsData = getFragmentData(
-    NotificationDeliveriesTableFragment,
-    notificationDeliveriesDocument?.notificationDeliveries.data
-  );
+  const listEventsData =
+    notificationDeliveriesDocument?.notificationDeliveries.data &&
+    readFragment(
+      NotificationDeliveriesTableFragment,
+      notificationDeliveriesDocument.notificationDeliveries.data
+    );
 
   return (
     <>

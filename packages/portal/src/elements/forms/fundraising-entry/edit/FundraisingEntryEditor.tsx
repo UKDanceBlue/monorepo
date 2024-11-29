@@ -1,3 +1,4 @@
+import { useOne } from "@refinedev/core";
 import type { Authorization } from "@ukdanceblue/common";
 import { AccessLevel, CommitteeRole } from "@ukdanceblue/common";
 import {
@@ -18,14 +19,21 @@ import { useState } from "react";
 import type { UseQueryExecute } from "urql";
 
 import { useMarathon } from "#config/marathonContext.js";
+import { FundraisingEntryEditorFragment } from "#documents/fundriaisngEntry.js";
 import { SolicitationCodeTextFragment } from "#documents/solicitationCode.js";
 import { TanAntFormItem } from "#elements/components/form/TanAntFormItem.js";
-import type { FragmentType } from "#graphql/index.js";
-import { getFragmentData } from "#graphql/index.js";
+import type { FragmentOf } from "#graphql/index.js";
+import { graphql, readFragment } from "#graphql/index.js";
 import { useAuthorizationRequirement } from "#hooks/useLoginState.js";
 
-import { FundraisingEntryEditorFragment } from "../../../../documents/fundriaisngEntry.js";
 import { useFundraisingEntryEditorForm } from "./useFundraisingEntryEditor.js";
+
+const SolicitationCodeTextFragment = graphql(/* GraphQL */ `
+  fragment SolicitationCodeText on SolicitationCodeNode {
+    id
+    text
+  }
+`);
 
 export function FundraisingEntryEditor({
   fundraisingEntryFragment,
@@ -33,11 +41,11 @@ export function FundraisingEntryEditor({
   refetchFundraisingEntry,
 }: {
   fundraisingEntryFragment?:
-    | FragmentType<typeof FundraisingEntryEditorFragment>
+    | FragmentOf<typeof FundraisingEntryEditorFragment>
     | undefined
     | null;
   solicitationCodesFragment?:
-    | readonly FragmentType<typeof SolicitationCodeTextFragment>[]
+    | readonly FragmentOf<typeof SolicitationCodeTextFragment>[]
     | undefined;
   refetchFundraisingEntry?: UseQueryExecute | undefined;
   authorization?: Authorization | undefined;
@@ -58,10 +66,9 @@ export function FundraisingEntryEditor({
   );
 
   const solicitationCodesData =
-    getFragmentData(SolicitationCodeTextFragment, solicitationCodesFragment) ??
-    [];
+    readFragment(SolicitationCodeTextFragment, solicitationCodesFragment) ?? [];
 
-  const fundraisingEntryData = getFragmentData(
+  const fundraisingEntryData = readFragment(
     FundraisingEntryEditorFragment,
     fundraisingEntryFragment
   );
