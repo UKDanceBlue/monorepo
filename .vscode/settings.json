@@ -45,5 +45,7 @@
     "editor.defaultFormatter": "mtxr.sqltools"
   },
   "react-native-tools.projectRoot": "./packages/mobile",
-  "dependi.npm.lockFileEnabled": true
+  "cSpell.workspaceRootPath": "${workspaceFolder}",
+  "dependi.npm.lockFileEnabled": true,
+  "workbench.editor.alwaysShowEditorActions": true
 }

@@ -2,7 +2,7 @@
 
 /** @type {import('@yarnpkg/types')} */
 // @ts-expect-error - Weird issue with cjs
-const { defineConfig, Yarn } = require(`@yarnpkg/types`);
+const { defineConfig } = require(`@yarnpkg/types`);
 
 /**
  * This rule will enforce that a workspace MUST depend on the same version of

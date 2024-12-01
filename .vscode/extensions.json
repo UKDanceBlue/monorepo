@@ -9,7 +9,6 @@
     "VisualStudioExptTeam.intellicode-api-usage-examples",
     "ecmel.vscode-html-css",
     "GraphQL.vscode-graphql-syntax",
-    "GraphQL.vscode-graphql",
     "eamodio.gitlens",
     "github.vscode-github-actions",
     "expo.vscode-expo-tools",
@@ -18,6 +17,7 @@
     "streetsidesoftware.code-spell-checker",
     "vitest.explorer",
     "GitHub.copilot",
-    "GitHub.vscode-pull-request-github"
+    "GitHub.vscode-pull-request-github",
+    "fill-labs.dependi"
   ]
 }

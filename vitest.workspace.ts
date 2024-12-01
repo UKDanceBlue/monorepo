@@ -1,5 +1,6 @@
 import { defineWorkspace } from "vitest/config";
-// @ts-ignore
+
+// @ts-expect-error - Crossing project boundaries
 import { literalConfig as portalConfig } from "./packages/portal/vite.config.ts";
 
 export default defineWorkspace([

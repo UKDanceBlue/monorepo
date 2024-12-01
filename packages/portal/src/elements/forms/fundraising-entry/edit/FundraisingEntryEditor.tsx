@@ -8,7 +8,7 @@ import {
   FundraisingEntryEditorFragment,
   getFundraisingEntryDocument,
   setFundraisingEntryDocument,
-} from "#documents/fundriaisngEntry.ts";
+} from "#documents/fundraisingEntry.ts";
 import {
   solicitationCodesDocument,
   SolicitationCodeTextFragment,
