@@ -31,15 +31,17 @@
     "#mocks/*": "./mocks/*"
   },
   "scripts": {
-    "dev": "vite --host",
-    "build": "vite build",
+    "refine": "refine",
+    "dev": "refine dev --devtools true --platform vite --host",
+    "build": "refine build",
     "check": "tsc --noEmit",
-    "preview": "vite preview"
+    "preview": "refine preview"
   },
   "dependencies": {
     "@ant-design/icons": "^5.5.1",
     "@refinedev/antd": "^5.44.0",
     "@refinedev/core": "^4.56.0",
+    "@refinedev/devtools": "^1.2.10",
     "@sentry/react": "^8.38.0",
     "@sentry/vite-plugin": "^2.22.6",
     "@tanstack/react-form": "^0.36.0",
@@ -75,6 +77,7 @@
     "zod": "^3.23.8"
   },
   "devDependencies": {
+    "@refinedev/cli": "^2.16.40",
     "@tanstack/router-devtools": "^1.81.14",
     "@tanstack/router-plugin": "^1.81.9",
     "@types/lodash.isequal": "^4.5.8",
@@ -88,5 +91,8 @@
     "typescript": "^5.6.3",
     "vite": "^5.4.11"
   },
-  "packageManager": "yarn@4.5.3+sha512.3003a14012e2987072d244c720506549c1aab73ee728208f1b2580a9fd67b92d61ba6b08fe93f6dce68fd771e3af1e59a0afa28dd242dd0940d73b95fedd4e90"
+  "packageManager": "yarn@4.5.3+sha512.3003a14012e2987072d244c720506549c1aab73ee728208f1b2580a9fd67b92d61ba6b08fe93f6dce68fd771e3af1e59a0afa28dd242dd0940d73b95fedd4e90",
+  "refine": {
+    "projectId": "DqkUbD-wpgLRK-UO3SFV"
+  }
 }

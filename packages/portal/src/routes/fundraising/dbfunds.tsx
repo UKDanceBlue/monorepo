@@ -78,7 +78,7 @@ function DbFundsViewer() {
   }, [marathonYear, selectedId, teamData.data]);
 
   return (
-    <Flex vertical>
+    (<Flex vertical>
       <Flex vertical gap="small">
         <Typography.Title level={2}>Fundraising Teams</Typography.Title>
         <Flex gap="small">
@@ -221,7 +221,7 @@ function DbFundsViewer() {
           }}
         />
       </Flex>
-    </Flex>
+    </Flex>)
   );
 }
 
