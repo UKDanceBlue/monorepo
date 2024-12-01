@@ -39,6 +39,7 @@ const ViewTeamFundraisingDocument = graphql(
           code
         }
         members {
+          id
           person {
             id
             name

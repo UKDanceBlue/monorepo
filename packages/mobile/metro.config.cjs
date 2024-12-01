@@ -3,10 +3,9 @@
 const { withSentryConfig } = require("@sentry/react-native/metro");
 // @ts-expect-error - CommonJS
 const { getDefaultConfig } = require("expo/metro-config");
-// @ts-expect-error - CommonJS
-const { mergeConfig } = require("metro-config");
 
 // Find the project and workspace directories
+// eslint-disable-next-line no-undef
 const projectRoot = __dirname;
 
 const config = withSentryConfig(getDefaultConfig(projectRoot));

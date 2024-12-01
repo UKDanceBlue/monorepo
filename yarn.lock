@@ -3567,6 +3567,29 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@graphql-eslint/eslint-plugin@npm:^4.2.0":
+  version: 4.2.0
+  resolution: "@graphql-eslint/eslint-plugin@npm:4.2.0"
+  dependencies:
+    "@graphql-tools/code-file-loader": "npm:^8.0.0"
+    "@graphql-tools/graphql-tag-pluck": "npm:8.3.4"
+    "@graphql-tools/utils": "npm:^10.0.0"
+    debug: "npm:^4.3.4"
+    fast-glob: "npm:^3.2.12"
+    graphql-config: "npm:^5.1.0"
+    graphql-depth-limit: "npm:^1.1.0"
+    lodash.lowercase: "npm:^4.3.0"
+  peerDependencies:
+    eslint: ">=8.44.0"
+    graphql: ^16
+    json-schema-to-ts: ^3
+  peerDependenciesMeta:
+    json-schema-to-ts:
+      optional: true
+  checksum: 10/3ca76b98d3f9f5498a46cd2599b9eaaa8fb488ce5bd14ef65fe9e4dfbef5080ec8c3e2e91281eeeb7b7b1417184c2a23ac72e2c517ea2a7acf91bd4305ba6a61
+  languageName: node
+  linkType: hard
+
 "@graphql-tools/apollo-engine-loader@npm:^8.0.0":
   version: 8.0.4
   resolution: "@graphql-tools/apollo-engine-loader@npm:8.0.4"
@@ -9296,6 +9319,7 @@ __metadata:
     "@expo/ngrok": "npm:^4.1.3"
     "@graphql-codegen/cli": "npm:^5.0.3"
     "@graphql-codegen/client-preset": "patch:@graphql-codegen/client-preset@npm%3A4.4.0#~/.yarn/patches/@graphql-codegen-client-preset-npm-4.4.0-d441b92060.patch"
+    "@graphql-eslint/eslint-plugin": "npm:^4.2.0"
     "@parcel/watcher": "npm:^2.5.0"
     "@types/eslint-config-prettier": "npm:^6.11.3"
     "@types/eslint__eslintrc": "npm:^2.1.2"
@@ -10493,6 +10517,13 @@ __metadata:
     is-array-buffer: "npm:^3.0.4"
     is-shared-array-buffer: "npm:^1.0.2"
   checksum: 10/0221f16c1e3ec7b67da870ee0e1f12b825b5f9189835392b59a22990f715827561a4f4cd5330dc7507de272d8df821be6cd4b0cb569babf5ea4be70e365a2f3d
+  languageName: node
+  linkType: hard
+
+"arrify@npm:^1.0.1":
+  version: 1.0.1
+  resolution: "arrify@npm:1.0.1"
+  checksum: 10/745075dd4a4624ff0225c331dacb99be501a515d39bcb7c84d24660314a6ec28e68131b137e6f7e16318170842ce97538cd298fc4cd6b2cc798e0b957f2747e7
   languageName: node
   linkType: hard
 
@@ -15260,7 +15291,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"fast-glob@npm:^3.2.5, fast-glob@npm:^3.2.9, fast-glob@npm:^3.3.0, fast-glob@npm:^3.3.2":
+"fast-glob@npm:^3.2.12, fast-glob@npm:^3.2.5, fast-glob@npm:^3.2.9, fast-glob@npm:^3.3.0, fast-glob@npm:^3.3.2":
   version: 3.3.2
   resolution: "fast-glob@npm:3.3.2"
   dependencies:
@@ -16271,7 +16302,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"graphql-config@npm:^5.1.1":
+"graphql-config@npm:^5.1.0, graphql-config@npm:^5.1.1":
   version: 5.1.3
   resolution: "graphql-config@npm:5.1.3"
   dependencies:
@@ -16293,6 +16324,17 @@ __metadata:
     cosmiconfig-toml-loader:
       optional: true
   checksum: 10/9d37f5d424f302808102d118988878be5e4841ba1a06a865cdb9052b24e26eaa9923fb18163bf4f32102d87b3895c53e2ffcdebc1d651f04b56f93f5c38b83c3
+  languageName: node
+  linkType: hard
+
+"graphql-depth-limit@npm:^1.1.0":
+  version: 1.1.0
+  resolution: "graphql-depth-limit@npm:1.1.0"
+  dependencies:
+    arrify: "npm:^1.0.1"
+  peerDependencies:
+    graphql: "*"
+  checksum: 10/fc45ac82f002d8130f9997cbe3d650409fbb5c33f4f9a057218f5847a2cb1cfceb89d6b4271f22693370a1f1c82e3697a9da7667e1d8f55672700f97c4b973b0
   languageName: node
   linkType: hard
 
@@ -18900,6 +18942,13 @@ __metadata:
   version: 4.0.1
   resolution: "lodash.isstring@npm:4.0.1"
   checksum: 10/eaac87ae9636848af08021083d796e2eea3d02e80082ab8a9955309569cb3a463ce97fd281d7dc119e402b2e7d8c54a23914b15d2fc7fff56461511dc8937ba0
+  languageName: node
+  linkType: hard
+
+"lodash.lowercase@npm:^4.3.0":
+  version: 4.3.0
+  resolution: "lodash.lowercase@npm:4.3.0"
+  checksum: 10/9c809375a3e6f5a49e9a4c639d20763cab40ecdf33256627a3607b5e0fb13a065113a9f093ab256b6495f857c2d29e8f1a2416da56f000bab192a7ced51ceb7e
   languageName: node
   linkType: hard
 

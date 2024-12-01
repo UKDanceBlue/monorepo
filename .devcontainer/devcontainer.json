@@ -65,18 +65,17 @@
         "VisualStudioExptTeam.intellicode-api-usage-examples",
         "ecmel.vscode-html-css",
         "GraphQL.vscode-graphql-syntax",
-        "GraphQL.vscode-graphql@0.9.3",
         "eamodio.gitlens",
         "github.vscode-github-actions",
         "expo.vscode-expo-tools",
-        "ms-azuretools.vscode-docker",
         "naumovs.color-highlight",
         "streetsidesoftware.code-spell-checker",
         "vitest.explorer",
         "GitHub.copilot",
         "GitHub.vscode-pull-request-github",
         "mtxr.sqltools",
-        "mtxr.sqltools-driver-pg"
+        "mtxr.sqltools-driver-pg",
+        "fill-labs.dependi"
       ]
     }
   },
