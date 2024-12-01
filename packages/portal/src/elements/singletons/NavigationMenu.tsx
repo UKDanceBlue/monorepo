@@ -1,6 +1,7 @@
 import "./NavigationMenu.css";
 
 import { MoonOutlined, SunOutlined } from "@ant-design/icons";
+import { useLogin, useLogout } from "@refinedev/core";
 import type { Register } from "@tanstack/react-router";
 import { Link, useLocation, useRouter } from "@tanstack/react-router";
 import type { Authorization, AuthorizationRule } from "@ukdanceblue/common";
@@ -14,7 +15,6 @@ import type { ItemType } from "antd/es/menu/interface.js";
 import { useContext, useEffect, useState } from "react";
 
 import { themeConfigContext } from "#config/antThemeConfig.js";
-import { API_BASE_URL } from "#config/api.js";
 import { marathonContext } from "#config/marathonContext.js";
 import { SessionStorageKeys } from "#config/storage.js";
 import { useAntFeedback } from "#hooks/useAntFeedback.js";
@@ -220,6 +220,9 @@ export const NavigationMenu = () => {
   const { setMarathon, marathon, loading, marathons } =
     useContext(marathonContext);
 
+  const { mutate: login } = useLogin();
+  const { mutate: logout } = useLogout();
+
   return (
     <Menu
       theme="dark"
@@ -235,21 +238,9 @@ export const NavigationMenu = () => {
             marginLeft: "auto",
           },
           label: loggedIn ? (
-            <a
-              href={`${API_BASE_URL}/api/auth/logout?redirectTo=${encodeURI(
-                window.location.href
-              )}`}
-            >
-              Logout
-            </a>
+            <a onClick={() => logout({})}>Logout</a>
           ) : (
-            <a
-              href={`${API_BASE_URL}/api/auth/login?returning=cookie&redirectTo=${encodeURI(
-                window.location.href
-              )}`}
-            >
-              Login
-            </a>
+            <a onClick={() => login({})}>Login</a>
           ),
         },
         {

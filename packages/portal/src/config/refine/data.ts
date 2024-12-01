@@ -3,7 +3,6 @@ import type { DataProvider } from "@refinedev/core";
 import type {
   CrudFilter,
   CrudOperators,
-  CrudSort,
   LogicalFilter,
   Pagination,
 } from "@refinedev/core";
@@ -20,7 +19,7 @@ import {
 import set from "lodash/set";
 import { singular } from "pluralize";
 
-import { API_BASE_URL, urqlClient } from "./api";
+import { API_BASE_URL, urqlClient } from "../api";
 
 // We alias gql to gqlButDifferentName to avoid the GraphQL plugin giving us an error about the invalid syntax
 const gqlButDifferentName = gql;
@@ -34,11 +33,7 @@ export const dataProvider: Required<DataProvider> = {
     }
 
     const response = await urqlClient
-      .mutation(gqlOperation, {
-        input: {
-          [singular(resource)]: variables ?? meta?.gqlVariables,
-        },
-      })
+      .mutation(gqlOperation, variables ?? meta?.gqlVariables)
       .toPromise();
 
     const key = `createOne${camelcase(singular(resource), { pascalCase: true })}`;
@@ -108,6 +103,7 @@ export const dataProvider: Required<DataProvider> = {
       })
       .toPromise();
 
+    console.log(response);
     const data = response.data?.[resource].nodes;
     const total = response.data?.[resource].totalCount;
 

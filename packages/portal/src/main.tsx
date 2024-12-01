@@ -2,10 +2,15 @@ import "normalize.css";
 import "./root.css";
 
 import { WarningOutlined } from "@ant-design/icons";
+import { useNotificationProvider } from "@refinedev/antd";
+import type { GoConfig, ParseFunction } from "@refinedev/core";
+import { Refine } from "@refinedev/core";
+import { DevtoolsPanel, DevtoolsProvider } from "@refinedev/devtools";
 import { browserTracingIntegration, init } from "@sentry/react";
 import {
   createRouter,
   ErrorComponent,
+  Link,
   RouterProvider,
 } from "@tanstack/react-router";
 import type { AuthorizationRule } from "@ukdanceblue/common";
@@ -18,6 +23,8 @@ import { Provider as UrqlProvider } from "urql";
 import { AntConfigProvider, ThemeConfigProvider } from "#config/ant.js";
 import { API_BASE_URL, urqlClient } from "#config/api.js";
 import { MarathonConfigProvider } from "#config/marathon.js";
+import { authProvider } from "#config/refine/authentication.js";
+import { dataProvider } from "#config/refine/data.js";
 import { SpinningRibbon } from "#elements/components/design/RibbonSpinner.js";
 
 import { routeTree } from "./routeTree.gen.js";
@@ -161,13 +168,68 @@ export function Main() {
         <AntConfigProvider>
           <AntApp style={{ height: "100%" }}>
             <UrqlProvider value={urqlClient}>
-              <MarathonConfigProvider>
-                <RouterWrapper />
-              </MarathonConfigProvider>
+              <DevtoolsProvider>
+                <Refine
+                  dataProvider={dataProvider}
+                  notificationProvider={useNotificationProvider}
+                  routerProvider={{
+                    back: () => router.history.back,
+                    Link,
+                    go: () => refineGoFunction,
+                    parse: () => refineParseFunction,
+                  }}
+                  authProvider={authProvider}
+                  options={{
+                    projectId: "DqkUbD-wpgLRK-UO3SFV",
+                  }}
+                >
+                  <MarathonConfigProvider>
+                    <RouterWrapper />
+                  </MarathonConfigProvider>
+                  {import.meta.env.MODE === "development" && <DevtoolsPanel />}
+                </Refine>
+              </DevtoolsProvider>
             </UrqlProvider>
           </AntApp>
         </AntConfigProvider>
       </ThemeConfigProvider>
     </StrictMode>
   );
+}
+
+function refineGoFunction({ hash, options, query, to, type }: GoConfig) {
+  router
+    .navigate({
+      to,
+      search: options?.keepQuery ? router.state.location.search : query,
+      hash: options?.keepHash ? router.state.location.hash : hash,
+      replace: type === "replace",
+    })
+    .catch(console.error);
+}
+
+function refineParseFunction(): ReturnType<ParseFunction> {
+  const matchesByLength = router.state.matches.toSorted(
+    ({ fullPath: fullPathA }, { fullPath: fullPathB }) =>
+      String(fullPathB).length - String(fullPathA).length
+  );
+  const longestMatch = matchesByLength[0];
+
+  let id: string | undefined;
+  if (longestMatch) {
+    const idParams = Object.keys(longestMatch.params as object).filter((key) =>
+      key.toLowerCase().endsWith("id")
+    );
+    if (idParams.length === 1) {
+      id = (longestMatch.params as Record<string, string | undefined>)[
+        idParams[0]!
+      ];
+    }
+  }
+
+  return {
+    pathname: router.state.location.pathname,
+    params: longestMatch?.params,
+    id,
+  };
 }

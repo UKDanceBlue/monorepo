@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="msapplication-TileImage" content="/assets/watermark-512.png" />
+    <link rel="icon" href="/assets/watermark-256.png" sizes="256x256" />
+    <link rel="icon" href="/assets/watermark-512.png" sizes="512x512" />
+    <link rel="icon" type="image/svg+xml" href="/assets/watermark.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>DB Admin Portal Redirect</title>
+  </head>
+
+  <body>
+    <noscript>You need to enable JavaScript to run this app.</noscript>
+    <div>
+      You are being redirected back to the DanceBlue Admin Portal. If you are
+      not redirected immediately, just close this tab and return to the portal.
+    </div>
+    <script>
+      window.opener.postMessage("success", "*");
+    </script>
+  </body>
+</html>

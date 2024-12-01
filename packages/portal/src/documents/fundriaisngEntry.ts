@@ -4,7 +4,9 @@ export const FundraisingEntryEditorFragment = graphql(/* GraphQL */ `
   fragment FundraisingEntryEditorFragment on FundraisingEntryNode {
     id
     donatedOn
+    donatedOnOverride
     amount
+    amountOverride
     notes
     solicitationCode {
       id
@@ -16,21 +18,35 @@ export const FundraisingEntryEditorFragment = graphql(/* GraphQL */ `
     }
     amountUnassigned
     batchType
+    batchTypeOverride
     donatedByText
+    donatedByOverride
     donatedToText
+    donatedToOverride
     dailyDepartmentNotification {
       id
     }
   }
 `);
 
-export const fundraisingEntryEditorDocument = graphql(
+export const setFundraisingEntryDocument = graphql(
   /* GraphQL */ `
-    mutation FundraisingEntryEditor(
-      $uuid: GlobalId!
+    mutation SetFundraisingEntry(
+      $id: GlobalId!
       $input: SetFundraisingEntryInput!
     ) {
-      setFundraisingEntry(id: $uuid, input: $input) {
+      setFundraisingEntry(id: $id, input: $input) {
+        ...FundraisingEntryEditorFragment
+      }
+    }
+  `,
+  [FundraisingEntryEditorFragment]
+);
+
+export const getFundraisingEntryDocument = graphql(
+  /* GraphQL */ `
+    query GetFundraisingEntry($id: GlobalId!) {
+      fundraisingEntry(id: $id) {
         ...FundraisingEntryEditorFragment
       }
     }

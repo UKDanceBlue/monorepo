@@ -12,7 +12,7 @@ import { useEffect } from "react";
 import { useMutation } from "urql";
 
 import type { FragmentOf } from "#graphql/index.js";
-import { graphql,readFragment } from "#graphql/index.js";
+import { graphql, readFragment } from "#graphql/index.js";
 import type { UseListQueryHookReturn } from "#hooks/useListQuery";
 import { useMakeStringSearchFilterProps } from "#hooks/useMakeSearchFilterProps.js";
 import { useQueryStatusWatcher } from "#hooks/useQueryStatusWatcher.js";
@@ -417,6 +417,15 @@ export function FundraisingEntriesTable({
           })),
         },
         Table.EXPAND_COLUMN,
+        {
+          title: "Actions",
+          key: "actions",
+          render: ({ id }: { id: string }) => (
+            <Link to="/fundraising/$entryId" params={{ entryId: id }}>
+              Edit
+            </Link>
+          ),
+        },
       ]}
       expandable={{
         rowExpandable: () => true,

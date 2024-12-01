@@ -1,6 +1,7 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, useParams } from "@tanstack/react-router";
 import { AccessLevel, CommitteeIdentifier } from "@ukdanceblue/common";
 
+import { FundraisingEntryEditor } from "#elements/forms/fundraising-entry/edit/FundraisingEntryEditor.tsx";
 import { routerAuthCheck } from "#tools/routerAuthCheck.tsx";
 
 export const Route = createFileRoute("/fundraising/$entryId/")({
@@ -22,5 +23,9 @@ export const Route = createFileRoute("/fundraising/$entryId/")({
 });
 
 function RouteComponent() {
-  return "Hello /fundraising/$entryId/!";
+  const { entryId } = useParams({
+    from: "/fundraising/$entryId/",
+  });
+
+  return <FundraisingEntryEditor id={entryId} />;
 }
