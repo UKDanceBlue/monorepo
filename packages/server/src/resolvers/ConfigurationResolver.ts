@@ -1,5 +1,5 @@
 import { Service } from "@freshgum/typedi";
-import type { GlobalId } from "@ukdanceblue/common";
+import type { CrudResolver, GlobalId } from "@ukdanceblue/common";
 import {
   AccessControlAuthorized,
   AccessLevel,
@@ -29,7 +29,9 @@ import { ConfigurationRepository } from "#repositories/configuration/Configurati
 
 @Resolver(() => ConfigurationNode)
 @Service([ConfigurationRepository, logDirToken])
-export class ConfigurationResolver {
+export class ConfigurationResolver
+  implements CrudResolver<ConfigurationNode, "configuration">
+{
   constructor(
     private readonly configurationRepository: ConfigurationRepository,
     private readonly logDir: string
@@ -67,7 +69,7 @@ export class ConfigurationResolver {
     name: "configuration",
     description: "Get a particular configuration entry by UUID",
   })
-  async getByUuid(
+  async configuration(
     @Arg("id", () => GlobalIdScalar) { id }: GlobalId
   ): Promise<ConcreteResult<ConfigurationNode>> {
     const row = await this.configurationRepository.findConfigurationByUnique({
@@ -91,7 +93,7 @@ export class ConfigurationResolver {
     name: "allConfigurations",
     description: "Get all configurations, irrespective of time",
   })
-  async getAll(): Promise<ConcreteResult<ConfigurationNode[]>> {
+  async allConfigurations(): Promise<ConcreteResult<ConfigurationNode[]>> {
     const rows = await this.configurationRepository.findConfigurations(null, [
       ["createdAt", SortDirection.desc],
     ]);
@@ -105,7 +107,7 @@ export class ConfigurationResolver {
     description:
       "Create a new configuration, superseding existing configurations with the same key (depending on the validAfter and validUntil fields)",
   })
-  async create(
+  async createConfiguration(
     @Arg("input") input: CreateConfigurationInput
   ): Promise<ConcreteResult<ConfigurationNode>> {
     const row = await this.configurationRepository.createConfiguration({
@@ -151,7 +153,7 @@ export class ConfigurationResolver {
     name: "deleteConfiguration",
     description: "Delete a configuration by UUID",
   })
-  async delete(
+  async deleteConfiguration(
     @Arg("uuid", () => GlobalIdScalar) { id }: GlobalId
   ): Promise<ConcreteResult<ConfigurationNode>> {
     const row = await this.configurationRepository.deleteConfiguration(id);

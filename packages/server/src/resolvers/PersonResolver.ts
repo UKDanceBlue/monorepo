@@ -1,5 +1,5 @@
 import { Container, Service } from "@freshgum/typedi";
-import type { GlobalId } from "@ukdanceblue/common";
+import type { CrudResolver, GlobalId } from "@ukdanceblue/common";
 import {
   AccessControlAuthorized,
   AccessLevel,
@@ -70,7 +70,9 @@ import { globalFundraisingAccessParam } from "./accessParams.js";
 
 @Resolver(() => PersonNode)
 @Service([PersonRepository, MembershipRepository, FundraisingEntryRepository])
-export class PersonResolver {
+export class PersonResolver
+  implements CrudResolver<PersonNode, "person", "people">
+{
   constructor(
     private readonly personRepository: PersonRepository,
     private readonly membershipRepository: MembershipRepository,
@@ -79,7 +81,7 @@ export class PersonResolver {
 
   @AccessControlAuthorized({ accessLevel: AccessLevel.Committee })
   @Query(() => PersonNode, { name: "person" })
-  async getByUuid(
+  async person(
     @Arg("uuid", () => GlobalIdScalar) { id }: GlobalId
   ): Promise<ConcreteResult<PersonNode>> {
     return new AsyncResult(
@@ -111,8 +113,8 @@ export class PersonResolver {
   }
 
   @AccessControlAuthorized({ accessLevel: AccessLevel.Committee })
-  @Query(() => ListPeopleResponse, { name: "listPeople" })
-  async list(
+  @Query(() => ListPeopleResponse, { name: "people" })
+  async people(
     @Args(() => ListPeopleArgs) args: ListPeopleArgs
   ): Promise<ConcreteResult<ListPeopleResponse>> {
     const [rows, total] = await Promise.all([
@@ -184,7 +186,7 @@ export class PersonResolver {
     accessLevel: AccessLevel.CommitteeChairOrCoordinator,
   })
   @Mutation(() => PersonNode, { name: "createPerson" })
-  async create(
+  async createPerson(
     @Arg("input") input: CreatePersonInput,
     @Ctx() { authorization: { accessLevel } }: GraphQLContext
   ): Promise<ConcreteResult<PersonNode>> {
@@ -232,7 +234,7 @@ export class PersonResolver {
     accessLevel: AccessLevel.CommitteeChairOrCoordinator,
   })
   @Mutation(() => PersonNode, { name: "setPerson" })
-  async set(
+  async setPerson(
     @Arg("uuid", () => GlobalIdScalar) { id }: GlobalId,
     @Arg("input") input: SetPersonInput,
     @Ctx() { authorization: { accessLevel } }: GraphQLContext
@@ -350,7 +352,7 @@ export class PersonResolver {
     accessLevel: AccessLevel.CommitteeChairOrCoordinator,
   })
   @Mutation(() => PersonNode, { name: "deletePerson" })
-  async delete(
+  async deletePerson(
     @Arg("uuid", () => GlobalIdScalar) { id }: GlobalId
   ): Promise<ConcreteResult<PersonNode>> {
     return new AsyncResult(this.personRepository.deletePerson({ uuid: id }))

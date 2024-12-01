@@ -1,6 +1,6 @@
 import { Service } from "@freshgum/typedi";
 import type { Prisma } from "@prisma/client";
-import type { GlobalId } from "@ukdanceblue/common";
+import type { CrudResolver, GlobalId } from "@ukdanceblue/common";
 import {
   AccessControlAuthorized,
   AccessLevel,
@@ -44,7 +44,7 @@ import type { GraphQLContext } from "./context.js";
 
 @Service([EventRepository, EventImagesRepository, FileManager])
 @Resolver(() => EventNode)
-export class EventResolver {
+export class EventResolver implements CrudResolver<EventNode, "event"> {
   constructor(
     private readonly eventRepository: EventRepository,
     private readonly eventImageRepository: EventImagesRepository,
@@ -58,7 +58,7 @@ export class EventResolver {
     name: "event",
     description: "Get an event by UUID",
   })
-  async getByUuid(
+  async event(
     @Arg("uuid", () => GlobalIdScalar) { id }: GlobalId
   ): Promise<EventNode> {
     const row = await this.eventRepository.findEventByUnique({ uuid: id });
@@ -80,7 +80,7 @@ export class EventResolver {
     name: "events",
     description: "List events",
   })
-  async list(@Args() query: ListEventsArgs) {
+  async events(@Args() query: ListEventsArgs) {
     const rows = await this.eventRepository.listEvents({
       filters: query.filters,
       order:
@@ -120,7 +120,7 @@ export class EventResolver {
     name: "createEvent",
     description: "Create a new event",
   })
-  async create(@Arg("input") input: CreateEventInput): Promise<EventNode> {
+  async createEvent(@Arg("input") input: CreateEventInput): Promise<EventNode> {
     const row = await this.eventRepository.createEvent({
       title: input.title,
       summary: input.summary,
@@ -159,7 +159,7 @@ export class EventResolver {
     name: "deleteEvent",
     description: "Delete an event by UUID",
   })
-  async delete(
+  async deleteEvent(
     @Arg("uuid", () => GlobalIdScalar) { id }: GlobalId
   ): Promise<EventNode> {
     const row = await this.eventRepository.deleteEvent({ uuid: id });
@@ -188,7 +188,7 @@ export class EventResolver {
     name: "setEvent",
     description: "Update an event by UUID",
   })
-  async set(
+  async setEvent(
     @Arg("uuid", () => GlobalIdScalar) { id }: GlobalId,
     @Arg("input") input: SetEventInput
   ): Promise<EventNode> {

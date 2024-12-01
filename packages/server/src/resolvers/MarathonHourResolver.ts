@@ -1,6 +1,6 @@
 import { Service } from "@freshgum/typedi";
 import { CommitteeRole } from "@prisma/client";
-import type { GlobalId } from "@ukdanceblue/common";
+import type { CrudResolver, GlobalId } from "@ukdanceblue/common";
 import {
   AccessControlAuthorized,
   AccessLevel,
@@ -33,7 +33,9 @@ import { MarathonHourRepository } from "#repositories/marathonHour/MarathonHourR
 
 @Resolver(() => MarathonHourNode)
 @Service([MarathonHourRepository])
-export class MarathonHourResolver {
+export class MarathonHourResolver
+  implements CrudResolver<MarathonHourNode, "marathonHour">
+{
   constructor(
     private readonly marathonHourRepository: MarathonHourRepository
   ) {}
@@ -157,7 +159,7 @@ export class MarathonHourResolver {
       ],
     }
   )
-  @Mutation(() => VoidResolver)
+  @Mutation(() => MarathonHourNode)
   async deleteMarathonHour(
     @Arg("uuid", () => GlobalIdScalar) { id }: GlobalId
   ) {
@@ -167,6 +169,7 @@ export class MarathonHourResolver {
     if (marathonHour == null) {
       throw new LegacyError(LegacyErrorCode.NotFound, "MarathonHour not found");
     }
+    return marathonHourModelToResource(marathonHour);
   }
 
   @AccessControlAuthorized(

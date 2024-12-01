@@ -1279,7 +1279,7 @@ type Mutation {
   deleteFundraisingAssignment(id: GlobalId!): FundraisingAssignmentNode!
   deleteImage(uuid: GlobalId!): ImageNode!
   deleteMarathon(uuid: GlobalId!): MarathonNode!
-  deleteMarathonHour(uuid: GlobalId!): Void!
+  deleteMarathonHour(uuid: GlobalId!): MarathonHourNode!
   deleteNotification(
     """
     If true, the notification will be deleted even if it has already been sent, which will also delete the delivery records.
@@ -2027,49 +2027,6 @@ type Query {
   The most recent marathon, regardless of whether it is currently happening, i.e. the marathon with the latest year.
   """
   latestMarathon: MarathonNode
-  listPeople(
-    """The boolean filters to apply to the query"""
-    booleanFilters: Void
-
-    """The date filters to apply to the query"""
-    dateFilters: Void
-
-    """Whether to include deleted items in the results"""
-    includeDeleted: Boolean @deprecated(reason: "Soft-deletion is no longer used in this project, this parameter is ignored")
-
-    """The is-null filters to apply to the query"""
-    isNullFilters: [PersonResolverKeyedIsNullFilterItem!]
-
-    """The numeric filters to apply to the query"""
-    numericFilters: Void
-
-    """The one-of filters to apply to the query"""
-    oneOfFilters: [PersonResolverKeyedOneOfFilterItem!]
-
-    """The page number to return, defaults to 1"""
-    page: Int
-
-    """The number of items to return per page, defaults to 10"""
-    pageSize: Int
-
-    """
-    Whether to send all results in a single page, defaults to false (should generally be avoided)
-    """
-    sendAll: Boolean = false
-
-    """
-    The fields to sort by, in order of priority. If unspecified, the sort order is undefined
-    """
-    sortBy: [String!]
-
-    """
-    The direction to sort, if not specified will default to ascending, the order of the values in this array should match the order of the values in the sortBy array, if only one value is specified it will be used for all sortBy values, otherwise the lengths must match
-    """
-    sortDirection: [SortDirection!]
-
-    """The string filters to apply to the query"""
-    stringFilters: [PersonResolverKeyedStringFilterItem!]
-  ): ListPeopleResponse!
   loginState: LoginState!
   marathon(uuid: GlobalId!): MarathonNode!
   marathonForYear(year: String!): MarathonNode!
@@ -2250,6 +2207,49 @@ type Query {
     """The string filters to apply to the query"""
     stringFilters: [NotificationResolverKeyedStringFilterItem!]
   ): ListNotificationsResponse!
+  people(
+    """The boolean filters to apply to the query"""
+    booleanFilters: Void
+
+    """The date filters to apply to the query"""
+    dateFilters: Void
+
+    """Whether to include deleted items in the results"""
+    includeDeleted: Boolean @deprecated(reason: "Soft-deletion is no longer used in this project, this parameter is ignored")
+
+    """The is-null filters to apply to the query"""
+    isNullFilters: [PersonResolverKeyedIsNullFilterItem!]
+
+    """The numeric filters to apply to the query"""
+    numericFilters: Void
+
+    """The one-of filters to apply to the query"""
+    oneOfFilters: [PersonResolverKeyedOneOfFilterItem!]
+
+    """The page number to return, defaults to 1"""
+    page: Int
+
+    """The number of items to return per page, defaults to 10"""
+    pageSize: Int
+
+    """
+    Whether to send all results in a single page, defaults to false (should generally be avoided)
+    """
+    sendAll: Boolean = false
+
+    """
+    The fields to sort by, in order of priority. If unspecified, the sort order is undefined
+    """
+    sortBy: [String!]
+
+    """
+    The direction to sort, if not specified will default to ascending, the order of the values in this array should match the order of the values in the sortBy array, if only one value is specified it will be used for all sortBy values, otherwise the lengths must match
+    """
+    sortDirection: [SortDirection!]
+
+    """The string filters to apply to the query"""
+    stringFilters: [PersonResolverKeyedStringFilterItem!]
+  ): ListPeopleResponse!
   person(uuid: GlobalId!): PersonNode!
   personByLinkBlue(linkBlueId: String!): PersonNode
   pointEntries(

@@ -1,5 +1,5 @@
 import { Service } from "@freshgum/typedi";
-import type { GlobalId } from "@ukdanceblue/common";
+import type { CrudResolver, GlobalId } from "@ukdanceblue/common";
 import {
   AccessControlAuthorized,
   AccessLevel,
@@ -39,7 +39,7 @@ import { PersonRepository } from "#repositories/person/PersonRepository.js";
 
 @Resolver(() => DeviceNode)
 @Service([DeviceRepository, PersonRepository])
-export class DeviceResolver {
+export class DeviceResolver implements CrudResolver<DeviceNode, "device"> {
   constructor(
     private readonly deviceRepository: DeviceRepository,
     private readonly personRepository: PersonRepository
@@ -49,7 +49,7 @@ export class DeviceResolver {
     name: "device",
     description: "Get a device by it's UUID",
   })
-  async getByUuid(
+  async deviceLegacy(
     @Arg("uuid", () => String, {
       description: "For legacy reasons, this can be a GlobalId or a raw UUID",
     })
@@ -74,7 +74,7 @@ export class DeviceResolver {
     name: "devices",
     description: "List all devices",
   })
-  async list(
+  async devices(
     @Args(() => ListDevicesArgs) query: ListDevicesArgs
   ): Promise<ListDevicesResponse> {
     const [rows, count] = await Promise.all([
@@ -106,7 +106,7 @@ export class DeviceResolver {
     name: "registerDevice",
     description: "Register a new device, or update an existing one",
   })
-  async register(
+  async registerDevice(
     @Arg("input") input: RegisterDeviceInput
   ): Promise<ConcreteResult<RegisterDeviceResponse>> {
     let deviceId: string;
@@ -141,7 +141,7 @@ export class DeviceResolver {
     name: "deleteDevice",
     description: "Delete a device by it's UUID",
   })
-  async delete(
+  async deleteDevice(
     @Arg("uuid", () => GlobalIdScalar) { id }: GlobalId
   ): Promise<DeviceNode> {
     const row = await this.deviceRepository.deleteDevice({ uuid: id });

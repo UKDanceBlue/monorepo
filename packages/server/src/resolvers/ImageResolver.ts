@@ -1,7 +1,7 @@
 import { MIMEType } from "node:util";
 
 import { Service } from "@freshgum/typedi";
-import type { GlobalId } from "@ukdanceblue/common";
+import type { CrudResolver, GlobalId } from "@ukdanceblue/common";
 import {
   AccessControlAuthorized,
   AccessLevel,
@@ -31,14 +31,14 @@ import type { GraphQLContext } from "./context.js";
 
 @Resolver(() => ImageNode)
 @Service([ImageRepository, FileManager])
-export class ImageResolver {
+export class ImageResolver implements CrudResolver<ImageNode, "image"> {
   constructor(
     private readonly imageRepository: ImageRepository,
     private readonly fileManager: FileManager
   ) {}
 
   @Query(() => ImageNode, { name: "image" })
-  async getByUuid(
+  async image(
     @Arg("uuid", () => GlobalIdScalar) { id }: GlobalId,
     @Ctx() { serverUrl }: GraphQLContext
   ): Promise<ImageNode> {
@@ -60,7 +60,7 @@ export class ImageResolver {
     accessLevel: AccessLevel.Committee,
   })
   @Query(() => ListImagesResponse, { name: "images" })
-  async list(
+  async images(
     @Args(() => ListImagesArgs) args: ListImagesArgs,
     @Ctx() { serverUrl }: GraphQLContext
   ): Promise<ListImagesResponse> {
@@ -97,7 +97,7 @@ export class ImageResolver {
     accessLevel: AccessLevel.CommitteeChairOrCoordinator,
   })
   @Mutation(() => ImageNode, { name: "createImage" })
-  async create(
+  async createImage(
     @Arg("input") input: CreateImageInput,
     @Ctx() { serverUrl }: GraphQLContext
   ): Promise<ImageNode> {
@@ -142,7 +142,7 @@ export class ImageResolver {
     accessLevel: AccessLevel.CommitteeChairOrCoordinator,
   })
   @Mutation(() => ImageNode, { name: "setImageAltText" })
-  async setAltText(
+  async setImageAltText(
     @Arg("uuid", () => GlobalIdScalar) { id }: GlobalId,
     @Arg("alt") alt: string,
     @Ctx() { serverUrl }: GraphQLContext
@@ -225,7 +225,7 @@ export class ImageResolver {
     accessLevel: AccessLevel.CommitteeChairOrCoordinator,
   })
   @Mutation(() => ImageNode, { name: "deleteImage" })
-  async delete(
+  async deleteImage(
     @Arg("uuid", () => GlobalIdScalar) { id }: GlobalId,
     @Ctx() { serverUrl }: GraphQLContext
   ): Promise<ImageNode> {
