@@ -1,5 +1,6 @@
 import { Container, Service } from "@freshgum/typedi";
 import {
+  CrudResolver,
   CustomQueryAccessControl,
   type GlobalId,
   type MarathonYearString,
@@ -46,13 +47,12 @@ import { FundraisingEntryRepository } from "#repositories/fundraising/Fundraisin
 import { teamModelToResource } from "#repositories/team/teamModelToResource.js";
 
 import { globalFundraisingAccessParam } from "./accessParams.js";
-import { StandardResolver } from "./standardResolver.js";
 
 @Resolver(() => FundraisingEntryNode)
 @Service([DBFundsFundraisingProvider, FundraisingEntryRepository])
 export class FundraisingEntryResolver
   implements
-    StandardResolver<
+    CrudResolver<
       FundraisingEntryNode,
       "fundraisingEntry",
       "fundraisingEntries"

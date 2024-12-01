@@ -1,5 +1,5 @@
 import { Service } from "@freshgum/typedi";
-import type { GlobalId } from "@ukdanceblue/common";
+import type { CrudResolver, GlobalId } from "@ukdanceblue/common";
 import {
   AccessControlAuthorized,
   AccessLevel,
@@ -34,13 +34,12 @@ import {
 import { DailyDepartmentNotificationRepository } from "#repositories/dailyDepartmentNotification/DDNRepository.js";
 
 import type { GraphQLContext } from "./context.js";
-import { StandardResolver } from "./standardResolver.js";
 
 @Resolver(() => DailyDepartmentNotificationNode)
 @Service([DailyDepartmentNotificationRepository])
 export class DailyDepartmentNotificationResolver
   implements
-    StandardResolver<
+    CrudResolver<
       DailyDepartmentNotificationNode,
       "dailyDepartmentNotification"
     >

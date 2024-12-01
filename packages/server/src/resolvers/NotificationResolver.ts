@@ -1,5 +1,5 @@
 import { Service } from "@freshgum/typedi";
-import type { GlobalId } from "@ukdanceblue/common";
+import type { CrudResolver, GlobalId } from "@ukdanceblue/common";
 import {
   AccessControlAuthorized,
   AccessLevel,
@@ -52,7 +52,9 @@ import { handleRepositoryError } from "#repositories/shared.js";
   ExpoNotificationProvider,
   NotificationScheduler,
 ])
-export class NotificationResolver {
+export class NotificationResolver
+  implements CrudResolver<NotificationNode, "notification">
+{
   constructor(
     private readonly notificationRepository: NotificationRepository,
     private readonly notificationDeliveryRepository: NotificationDeliveryRepository,
@@ -64,7 +66,7 @@ export class NotificationResolver {
     accessLevel: AccessLevel.CommitteeChairOrCoordinator,
   })
   @Query(() => NotificationNode, { name: "notification" })
-  async getByUuid(
+  async notification(
     @Arg("uuid", () => GlobalIdScalar) { id }: GlobalId
   ): Promise<ConcreteResult<NotificationNode>> {
     return this.notificationRepository
@@ -78,7 +80,7 @@ export class NotificationResolver {
     accessLevel: AccessLevel.CommitteeChairOrCoordinator,
   })
   @Query(() => ListNotificationsResponse, { name: "notifications" })
-  async list(
+  async notifications(
     @Args(() => ListNotificationsArgs) query: ListNotificationsArgs
   ): Promise<ListNotificationsResponse> {
     const rows = await this.notificationRepository.listNotifications({
@@ -308,7 +310,7 @@ export class NotificationResolver {
     accessLevel: AccessLevel.CommitteeChairOrCoordinator,
   })
   @Mutation(() => NotificationNode, { name: "deleteNotification" })
-  async delete(
+  async deleteNotification(
     @Arg("uuid", () => GlobalIdScalar) { id }: GlobalId,
     @Arg("force", {
       nullable: true,

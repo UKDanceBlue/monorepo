@@ -22,6 +22,7 @@ export {
 export * from "./api/jwt.js";
 export * from "./api/params/index.js";
 export * from "./api/resources/index.js";
+export type * from "./api/standardResolver.js";
 export * from "./authorization/accessControl.js";
 export * from "./authorization/customAccessControl.js";
 export * from "./authorization/role.js";

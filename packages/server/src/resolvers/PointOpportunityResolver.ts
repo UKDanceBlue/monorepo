@@ -1,6 +1,6 @@
 import { Service } from "@freshgum/typedi";
 import { CommitteeRole } from "@prisma/client";
-import type { GlobalId } from "@ukdanceblue/common";
+import type { CrudResolver, GlobalId } from "@ukdanceblue/common";
 import {
   AccessControlAuthorized,
   AccessLevel,
@@ -32,13 +32,11 @@ import { eventModelToResource } from "#repositories/event/eventModelToResource.j
 import { pointOpportunityModelToResource } from "#repositories/pointOpportunity/pointOpportunityModelToResource.js";
 import { PointOpportunityRepository } from "#repositories/pointOpportunity/PointOpportunityRepository.js";
 
-import { StandardResolver } from "./standardResolver.js";
-
 @Resolver(() => PointOpportunityNode)
 @Service([PointOpportunityRepository])
 export class PointOpportunityResolver
   implements
-    StandardResolver<
+    CrudResolver<
       PointOpportunityNode,
       "pointOpportunity",
       "pointOpportunities"
@@ -52,7 +50,7 @@ export class PointOpportunityResolver
     accessLevel: AccessLevel.Committee,
   })
   @Query(() => PointOpportunityNode, { name: "pointOpportunity" })
-  async getByUuid(
+  async pointOpportunity(
     @Arg("uuid", () => GlobalIdScalar) { id }: GlobalId
   ): Promise<PointOpportunityNode> {
     const row =
@@ -74,7 +72,7 @@ export class PointOpportunityResolver
     accessLevel: AccessLevel.Committee,
   })
   @Query(() => ListPointOpportunitiesResponse, { name: "pointOpportunities" })
-  async list(
+  async pointOpportunities(
     @Args(() => ListPointOpportunitiesArgs) query: ListPointOpportunitiesArgs
   ): Promise<ListPointOpportunitiesResponse> {
     const [rows, total] = await Promise.all([

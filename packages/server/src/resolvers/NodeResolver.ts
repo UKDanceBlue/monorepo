@@ -120,14 +120,14 @@ export class NodeResolver {
         return this.solicitationCodeResolver.solicitationCode(id);
       }
       case ConfigurationNode.constructor.name: {
-        return this.configurationResolver.getByUuid(id);
+        return this.configurationResolver.configuration(id);
       }
       case DeviceNode.constructor.name: {
-        const data = await this.deviceResolver.getByUuid(id.id);
+        const data = await this.deviceResolver.deviceLegacy(id.id);
         return Ok(data.data);
       }
       case EventNode.constructor.name: {
-        const data = await this.eventResolver.getByUuid(id);
+        const data = await this.eventResolver.event(id);
         return Ok(data);
       }
       case FeedResolver.constructor.name: {
@@ -140,7 +140,7 @@ export class NodeResolver {
         return this.fundraisingEntryResolver.fundraisingEntry(id);
       }
       case ImageNode.constructor.name: {
-        const data = await this.imageResolver.getByUuid(id, ctx);
+        const data = await this.imageResolver.image(id, ctx);
         return Ok(data);
       }
       case MarathonHourNode.constructor.name: {
@@ -151,17 +151,17 @@ export class NodeResolver {
         return this.marathonResolver.marathon(id);
       }
       case NotificationNode.constructor.name: {
-        return this.notificationResolver.getByUuid(id);
+        return this.notificationResolver.notification(id);
       }
       case PersonNode.constructor.name: {
-        return this.personResolver.getByUuid(id);
+        return this.personResolver.person(id);
       }
       case PointOpportunityNode.constructor.name: {
-        const data = await this.pointOpportunityResolver.getByUuid(id);
+        const data = await this.pointOpportunityResolver.pointOpportunity(id);
         return Ok(data);
       }
       case PointEntryNode.constructor.name: {
-        const data = await this.pointEntryResolver.getByUuid(id);
+        const data = await this.pointEntryResolver.pointEntry(id);
         return Ok(data);
       }
       case TeamNode.constructor.name: {

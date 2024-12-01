@@ -1,5 +1,5 @@
 import { Service } from "@freshgum/typedi";
-import type { GlobalId } from "@ukdanceblue/common";
+import type { CrudResolver, GlobalId } from "@ukdanceblue/common";
 import {
   AccessControlAuthorized,
   AccessLevel,
@@ -40,7 +40,9 @@ import { teamModelToResource } from "#repositories/team/teamModelToResource.js";
 
 @Resolver(() => PointEntryNode)
 @Service([PointEntryRepository, PersonRepository])
-export class PointEntryResolver {
+export class PointEntryResolver
+  implements CrudResolver<PointEntryNode, "pointEntry", "pointEntries">
+{
   constructor(
     private readonly pointEntryRepository: PointEntryRepository,
     private readonly personRepository: PersonRepository
@@ -50,7 +52,7 @@ export class PointEntryResolver {
     accessLevel: AccessLevel.Committee,
   })
   @Query(() => PointEntryNode, { name: "pointEntry" })
-  async getByUuid(
+  async pointEntry(
     @Arg("uuid", () => GlobalIdScalar) { id }: GlobalId
   ): Promise<PointEntryNode> {
     const model = await this.pointEntryRepository.findPointEntryByUnique({
@@ -68,7 +70,7 @@ export class PointEntryResolver {
     accessLevel: AccessLevel.Committee,
   })
   @Query(() => ListPointEntriesResponse, { name: "pointEntries" })
-  async list(
+  async pointEntries(
     @Args(() => ListPointEntriesArgs) query: ListPointEntriesArgs
   ): Promise<ListPointEntriesResponse> {
     const [rows, total] = await Promise.all([
@@ -107,7 +109,7 @@ export class PointEntryResolver {
     ],
   })
   @Mutation(() => PointEntryNode, { name: "createPointEntry" })
-  async create(
+  async createPointEntry(
     @Arg("input") input: CreatePointEntryInput
   ): Promise<PointEntryNode> {
     const model = await this.pointEntryRepository.createPointEntry({
@@ -134,7 +136,7 @@ export class PointEntryResolver {
     ],
   })
   @Mutation(() => PointEntryNode, { name: "deletePointEntry" })
-  async delete(
+  async deletePointEntry(
     @Arg("uuid", () => GlobalIdScalar) { id }: GlobalId
   ): Promise<ConcreteResult<PointEntryNode>> {
     const row = await this.pointEntryRepository.deletePointEntry({ uuid: id });

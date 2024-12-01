@@ -1,5 +1,5 @@
 import { Service } from "@freshgum/typedi";
-import type { GlobalId } from "@ukdanceblue/common";
+import type { CrudResolver, GlobalId } from "@ukdanceblue/common";
 import {
   AccessControlAuthorized,
   AccessLevel,
@@ -41,7 +41,8 @@ export class MarathonResolver
     Record<
       `${CommitteeIdentifier}Team`,
       (marathon: MarathonNode) => Promise<ConcreteResult<TeamNode>>
-    >
+    >,
+    CrudResolver<MarathonNode, "marathon">
 {
   constructor(
     private readonly marathonRepository: MarathonRepository,

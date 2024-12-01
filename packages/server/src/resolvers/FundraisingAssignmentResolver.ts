@@ -2,6 +2,7 @@ import { Container, Service } from "@freshgum/typedi";
 import type { AccessControlContext, GlobalId } from "@ukdanceblue/common";
 import {
   checkParam,
+  CrudResolver,
   CustomMutationAccessControl,
   CustomQueryAccessControl,
   FundraisingAssignmentNode,
@@ -17,7 +18,7 @@ import {
   UpdateFundraisingAssignmentInput,
 } from "@ukdanceblue/common";
 import { ConcreteResult } from "@ukdanceblue/common/error";
-import { Option } from "ts-results-es";
+import { AsyncResult, Option } from "ts-results-es";
 import {
   Arg,
   FieldResolver,
@@ -37,7 +38,9 @@ import { globalFundraisingAccessParam } from "./accessParams.js";
 
 @Resolver(() => FundraisingAssignmentNode)
 @Service([FundraisingEntryRepository, PersonRepository])
-export class FundraisingAssignmentResolver {
+export class FundraisingAssignmentResolver
+  implements CrudResolver<FundraisingAssignmentNode, "fundraisingAssignment">
+{
   constructor(
     private readonly fundraisingEntryRepository: FundraisingEntryRepository,
     private readonly personRepository: PersonRepository
@@ -272,12 +275,14 @@ export class FundraisingAssignmentResolver {
   @Mutation(() => FundraisingAssignmentNode)
   async deleteFundraisingAssignment(
     @Arg("id", () => GlobalIdScalar) { id }: GlobalId
-  ): Promise<ConcreteResult<Promise<FundraisingAssignmentNode>>> {
-    const assignment = await this.fundraisingEntryRepository.deleteAssignment({
-      uuid: id,
-    });
+  ): Promise<ConcreteResult<FundraisingAssignmentNode>> {
+    const assignment = new AsyncResult(
+      this.fundraisingEntryRepository.deleteAssignment({
+        uuid: id,
+      })
+    );
 
-    return assignment.map(fundraisingAssignmentModelToNode);
+    return assignment.map(fundraisingAssignmentModelToNode).promise;
   }
 
   @CustomQueryAccessControl<never, PersonNode>(

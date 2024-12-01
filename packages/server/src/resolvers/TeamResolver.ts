@@ -1,5 +1,5 @@
 import { Service } from "@freshgum/typedi";
-import type { GlobalId } from "@ukdanceblue/common";
+import type { CrudResolver, GlobalId } from "@ukdanceblue/common";
 import {
   CommitteeIdentifier,
   ListFundraisingEntriesArgs,
@@ -61,11 +61,10 @@ import { TeamRepository } from "#repositories/team/TeamRepository.js";
 import * as Context from "#resolvers/context.js";
 
 import { globalFundraisingAccessParam } from "./accessParams.js";
-import { StandardResolver } from "./standardResolver.js";
 
 @Resolver(() => TeamNode)
 @Service([TeamRepository, FundraisingEntryRepository, DBFundsRepository])
-export class TeamResolver implements StandardResolver<TeamNode, "team"> {
+export class TeamResolver implements CrudResolver<TeamNode, "team"> {
   constructor(
     private teamRepository: TeamRepository,
     private fundraisingEntryRepository: FundraisingEntryRepository,
