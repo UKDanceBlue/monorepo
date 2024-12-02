@@ -40,7 +40,7 @@ const peopleTableDocument = graphql(
       $oneOfFilters: [PersonResolverKeyedOneOfFilterItem!]
       $stringFilters: [PersonResolverKeyedStringFilterItem!]
     ) {
-      listPeople(
+      people(
         page: $page
         pageSize: $pageSize
         sortBy: $sortBy
@@ -105,8 +105,8 @@ export const PeopleTable = () => {
   });
 
   const listPeopleData =
-    peopleDocument?.listPeople.data &&
-    readFragment(PeopleTableFragment, peopleDocument.listPeople.data);
+    peopleDocument?.people.data &&
+    readFragment(PeopleTableFragment, peopleDocument.people.data);
 
   return (
     <>
@@ -171,9 +171,9 @@ export const PeopleTable = () => {
         pagination={
           peopleDocument
             ? {
-                current: peopleDocument.listPeople.page,
-                pageSize: peopleDocument.listPeople.pageSize,
-                total: peopleDocument.listPeople.total,
+                current: peopleDocument.people.page,
+                pageSize: peopleDocument.people.pageSize,
+                total: peopleDocument.people.total,
                 showSizeChanger: true,
               }
             : false

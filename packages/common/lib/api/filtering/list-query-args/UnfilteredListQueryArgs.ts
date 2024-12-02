@@ -1,7 +1,7 @@
-import type { GlobalId, Node, OptionalToNullable } from "@ukdanceblue/common";
+import type { Node, OptionalToNullable } from "@ukdanceblue/common";
 import { ArgsType, Field, Int } from "type-graphql";
 
-import type { FilterItem, ListQueryType } from "../ListQueryTypes.js";
+import type { ListQueryType } from "../ListQueryTypes.js";
 import { SortDirection } from "../ListQueryTypes.js";
 import { DEFAULT_PAGE_SIZE, FIRST_PAGE } from "./common.js";
 
@@ -9,7 +9,6 @@ import { DEFAULT_PAGE_SIZE, FIRST_PAGE } from "./common.js";
 export class UnfilteredListQueryArgs<SortByKeys extends string = never>
   implements OptionalToNullable<Partial<ListQueryType<Node>>>
 {
-  filter?: Partial<Record<"id", FilterItem<"id", GlobalId>>> | null;
   @Field(() => Boolean, {
     nullable: true,
     description: "Whether to include deleted items in the results",
@@ -50,6 +49,7 @@ export class UnfilteredListQueryArgs<SortByKeys extends string = never>
       "The fields to sort by, in order of priority. If unspecified, the sort order is undefined",
   })
   sortBy!: SortByKeys[] | null;
+
   @Field(() => [SortDirection], {
     nullable: true,
     description:

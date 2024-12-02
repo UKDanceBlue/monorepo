@@ -6,6 +6,11 @@ import type {
   LogicalFilter,
   Pagination,
 } from "@refinedev/core";
+import type {
+  AbstractFilteredListQueryArgs,
+  ListQueryType,
+} from "@ukdanceblue/common";
+import { getCrudOperationNames } from "@ukdanceblue/common";
 import { gql } from "@urql/core";
 import camelcase from "camelcase";
 import {
@@ -17,9 +22,16 @@ import {
   visit,
 } from "graphql";
 import set from "lodash/set";
-import { singular } from "pluralize";
+import pluralize, { singular } from "pluralize";
 
 import { API_BASE_URL, urqlClient } from "../api";
+
+function getOperationName(
+  resource: string,
+  operation: keyof ReturnType<typeof getCrudOperationNames>
+) {
+  return getCrudOperationNames(resource, pluralize(resource))[operation];
+}
 
 // We alias gql to gqlButDifferentName to avoid the GraphQL plugin giving us an error about the invalid syntax
 const gqlButDifferentName = gql;
@@ -36,7 +48,7 @@ export const dataProvider: Required<DataProvider> = {
       .mutation(gqlOperation, variables ?? meta?.gqlVariables)
       .toPromise();
 
-    const key = `createOne${camelcase(singular(resource), { pascalCase: true })}`;
+    const key = getOperationName(resource, "createOne");
     const data = response.data?.[key];
 
     return { data };
@@ -77,7 +89,7 @@ export const dataProvider: Required<DataProvider> = {
       })
       .toPromise();
 
-    const key = camelcase(singular(resource));
+    const key = getOperationName(resource, "getOne");
     const data = response.data?.[key];
 
     return { data };
@@ -92,15 +104,20 @@ export const dataProvider: Required<DataProvider> = {
 
     const response = await urqlClient
       .query(meta.gqlQuery, {
-        sorting: sorters?.map((s) => ({
-          field: s.field,
-          direction: s.order.toUpperCase(),
-        })),
-        filter: buildFilters(filters),
-        paging: buildPagination(pagination),
-        ...meta.variables,
-        ...meta.gqlVariables,
-      })
+        sortBy: sorters?.map((sorter) => sorter.field) ?? null,
+        sortDirection: sorters?.map((sorter) => sorter.order) ?? null,
+        page: pagination?.current ?? null,
+        pageSize: pagination?.pageSize ?? null,
+      } satisfies Partial<
+        AbstractFilteredListQueryArgs<
+          string,
+          string,
+          string,
+          string,
+          string,
+          string
+        >
+      >)
       .toPromise();
 
     console.log(response);
@@ -315,7 +332,9 @@ const operatorMapper = (
   return { [operatorMap[operator]!]: value };
 };
 
-export const buildFilters = (filters: LogicalFilter[] | CrudFilter[] = []) => {
+export const buildFilters = (
+  filters: LogicalFilter[] | CrudFilter[] = []
+): ListQueryType<Record<string, unknown>>["filter"] => {
   const result: Record<string, Record<string, string | number>> = {};
 
   filters
