@@ -123,7 +123,7 @@ export class NodeResolver {
         return this.configurationResolver.configuration(id);
       }
       case DeviceNode.constructor.name: {
-        const data = await this.deviceResolver.deviceLegacy(id.id);
+        const data = await this.deviceResolver.device(id.id);
         return Ok(data.data);
       }
       case EventNode.constructor.name: {

@@ -1,33 +1,38 @@
+import { FundraisingEntryAssignmentTableFragment } from "#elements/tables/fundraising/FundraisingEntryAssignmentsTable.tsx";
 import { graphql } from "#graphql/index.js";
 
-export const FundraisingEntryEditorFragment = graphql(/* GraphQL */ `
-  fragment FundraisingEntryEditorFragment on FundraisingEntryNode {
-    id
-    donatedOn
-    donatedOnOverride
-    amount
-    amountOverride
-    notes
-    solicitationCode {
+export const FundraisingEntryEditorFragment = graphql(
+  /* GraphQL */ `
+    fragment FundraisingEntryEditorFragment on FundraisingEntryNode {
       id
-      text
+      donatedOn
+      donatedOnOverride
+      amount
+      amountOverride
+      notes
+      solicitationCode {
+        id
+        text
+      }
+      solicitationCodeOverride {
+        id
+        text
+      }
+      amountUnassigned
+      batchType
+      batchTypeOverride
+      donatedByText
+      donatedByOverride
+      donatedToText
+      donatedToOverride
+      dailyDepartmentNotification {
+        id
+      }
+      ...FundraisingEntryAssignmentTableFragment
     }
-    solicitationCodeOverride {
-      id
-      text
-    }
-    amountUnassigned
-    batchType
-    batchTypeOverride
-    donatedByText
-    donatedByOverride
-    donatedToText
-    donatedToOverride
-    dailyDepartmentNotification {
-      id
-    }
-  }
-`);
+  `,
+  [FundraisingEntryAssignmentTableFragment]
+);
 
 export const setFundraisingEntryDocument = graphql(
   /* GraphQL */ `

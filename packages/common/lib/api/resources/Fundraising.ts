@@ -29,9 +29,9 @@ export class FundraisingEntryNode extends TimestampedResource implements Node {
   @Field(() => String, { nullable: true, name: "donatedToOverride" })
   donatedToOverride!: string | null | undefined;
 
-  @Field(() => DateTimeISOResolver)
-  donatedOn!: Date;
-  get donatedOnDateTime(): DateTime {
+  @Field(() => DateTimeISOResolver, { nullable: true, name: "donatedOn" })
+  donatedOn!: Date | null | undefined;
+  get donatedOnDateTime(): DateTime | null | undefined {
     return dateTimeFromSomething(this.donatedOn);
   }
 
@@ -72,15 +72,20 @@ export class FundraisingEntryNode extends TimestampedResource implements Node {
   public static init(init: {
     id: string;
     donatedByText: string | null;
+    donatedByOverride: string | null;
     donatedToText: string | null;
-    donatedOn: Date;
+    donatedToOverride: string | null;
+    donatedOn: Date | null;
+    donatedOnOverride: Date | null;
     amount: number;
+    amountOverride: number | null;
     amountUnassigned: number;
     createdAt: Date;
     updatedAt: Date;
     notes?: string | null;
     solicitationCodeOverride?: SolicitationCodeNode | null;
     batchType: BatchType;
+    batchTypeOverride: BatchType | null;
   }) {
     return FundraisingEntryNode.createInstance().withValues(init);
   }

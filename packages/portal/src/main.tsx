@@ -122,7 +122,7 @@ function RouterWrapper() {
           const text = await res.text();
           setIsServerReachable(text === "OK");
         } else {
-          throw new Error("Server is not reachable");
+          setIsServerReachable(false);
         }
       })
       .catch(() => {
