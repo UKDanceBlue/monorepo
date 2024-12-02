@@ -144,7 +144,7 @@ export function FundraisingAssignmentsTable({
                   amount: values.amount,
                 })
                   .then(() => {
-                    refresh();
+                    refresh?.();
                   })
                   .catch(() => {
                     alert("An error occurred while updating the assignment.");
@@ -184,7 +184,7 @@ export function FundraisingAssignmentsTable({
                 ) {
                   deleteFundraisingAssignment({ id })
                     .then(() => {
-                      refresh();
+                      refresh?.();
                     })
                     .catch(() => {
                       alert("An error occurred while deleting the assignment.");
@@ -250,7 +250,7 @@ function FundraisingTableNewAssignment({
           amount: values.amount,
         })
           .then(() => {
-            refresh();
+            refresh?.();
             form.resetFields(["personId"]);
           })
           .catch(() => {

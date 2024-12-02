@@ -284,7 +284,9 @@ async function handleImageUrl(url: URL | null | undefined): Promise<{
             "Could not determine the MIME type of the requested image"
           );
         }
-        const { thumbHash, width, height } = await generateThumbHash(image);
+        const { thumbHash, width, height } = await generateThumbHash({
+          data: image,
+        });
         return { mime, thumbHash, width, height };
       } catch (error) {
         logger.error("Failed to fetch an image from url in createImage", {

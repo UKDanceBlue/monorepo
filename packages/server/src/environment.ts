@@ -30,6 +30,7 @@ const LOGGING_LEVEL = getEnv(
 const APPLICATION_PORT = getEnv("APPLICATION_PORT", "8000");
 const COOKIE_SECRET = getEnv("COOKIE_SECRET", null);
 const JWT_SECRET = getEnv("JWT_SECRET", null);
+const INSTAGRAM_API_KEY = getEnv("INSTAGRAM_API_KEY", null);
 const MS_OIDC_URL = getEnv("MS_OIDC_URL", null);
 const MS_CLIENT_ID = getEnv("MS_CLIENT_ID", null);
 const MS_CLIENT_SECRET = getEnv("MS_CLIENT_SECRET", null);
@@ -93,28 +94,35 @@ const superAdminLinkblues = await SUPER_ADMIN_LINKBLUE.then((value) => {
 
 // Save values to the container
 
-Container.setValue(
-  expoServiceToken,
-  new Expo({ accessToken: await EXPO_ACCESS_TOKEN })
-);
-setEnvironment({
-  loggingLevel: (await LOGGING_LEVEL) as SyslogLevels,
-  applicationPort,
-  cookieSecret: await COOKIE_SECRET,
-  jwtSecret: await JWT_SECRET,
-  msOidcUrl: new URL(await MS_OIDC_URL),
-  msClientId: await MS_CLIENT_ID,
-  msClientSecret: await MS_CLIENT_SECRET,
-  dbFundsApiKey: await DBFUNDS_API_KEY,
-  dbFundsApiOrigin: await DBFUNDS_API_ORIGIN,
-  maxFileSize,
-  servePath,
-  uploadPath,
-  logDir: await LOG_DIR,
-  superAdminLinkblues,
-  isDevelopmentToken: isDevelopment,
-  isRepl: false,
-});
+try {
+  Container.setValue(
+    expoServiceToken,
+    new Expo({ accessToken: await EXPO_ACCESS_TOKEN })
+  );
+  setEnvironment({
+    loggingLevel: (await LOGGING_LEVEL) as SyslogLevels,
+    applicationPort,
+    cookieSecret: await COOKIE_SECRET,
+    jwtSecret: await JWT_SECRET,
+    instagramApiKey: await INSTAGRAM_API_KEY,
+    msOidcUrl: new URL(await MS_OIDC_URL),
+    msClientId: await MS_CLIENT_ID,
+    msClientSecret: await MS_CLIENT_SECRET,
+    dbFundsApiKey: await DBFUNDS_API_KEY,
+    dbFundsApiOrigin: await DBFUNDS_API_ORIGIN,
+    maxFileSize,
+    servePath,
+    uploadPath,
+    logDir: await LOG_DIR,
+    superAdminLinkblues,
+    isDevelopmentToken: isDevelopment,
+    isRepl: false,
+  });
+} catch (error) {
+  throw new Error(`Error setting environment: ${String(error)}`, {
+    cause: error,
+  });
+}
 
 /**
  * Get an environment variable

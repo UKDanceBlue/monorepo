@@ -53,7 +53,7 @@ export default class HealthCheckRouter extends RouterService {
             thumbHash: thumbHashArray,
             height,
             width,
-          } = await generateThumbHash(uploadedFile.path);
+          } = await generateThumbHash({ data: uploadedFile.path });
 
           const thumbHash = Buffer.from(thumbHashArray);
 

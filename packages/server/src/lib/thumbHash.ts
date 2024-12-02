@@ -1,6 +1,6 @@
 import assert from "node:assert";
 
-import type { SharpOptions } from "sharp";
+import type { Metadata, Sharp, SharpOptions } from "sharp";
 import sharp from "sharp";
 import { rgbaToThumbHash } from "thumbhash";
 
@@ -14,25 +14,34 @@ import { rgbaToThumbHash } from "thumbhash";
  */
 export async function generateThumbHash(
   input:
-    | Buffer
-    | ArrayBuffer
-    | Uint8Array
-    | Uint8ClampedArray
-    | Int8Array
-    | Uint16Array
-    | Int16Array
-    | Uint32Array
-    | Int32Array
-    | Float32Array
-    | Float64Array
-    | string,
+    | {
+        data:
+          | Buffer
+          | ArrayBuffer
+          | Uint8Array
+          | Uint8ClampedArray
+          | Int8Array
+          | Uint16Array
+          | Int16Array
+          | Uint32Array
+          | Int32Array
+          | Float32Array
+          | Float64Array
+          | string;
+      }
+    | { image: Sharp },
   options?: SharpOptions
-): Promise<{ thumbHash: Uint8Array; width: number; height: number }> {
+): Promise<{
+  thumbHash: Uint8Array;
+  width: number;
+  height: number;
+  metadata: Omit<Metadata, "width" | "height">;
+}> {
   // Get an RGBA buffer from the image
-  const baseImage = sharp(input, options);
+  const baseImage = "data" in input ? sharp(input.data, options) : input.image;
 
   // Get the width and height of the image
-  const { width, height } = await baseImage.metadata();
+  const { width, height, ...metadata } = await baseImage.metadata();
   if (!width || !height) {
     throw new Error("Could not get image metadata");
   }
@@ -62,5 +71,6 @@ export async function generateThumbHash(
     thumbHash: rgbaToThumbHash(widthToUse, heightToUse, rgbaBuffer),
     width,
     height,
+    metadata,
   };
 }

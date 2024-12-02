@@ -37,6 +37,16 @@ export abstract class ConcreteError {
     return undefined;
   }
   abstract get tag(): ErrorCodeType;
+
+  toString() {
+    return this.message === this.detailedMessage
+      ? this.message
+      : `${this.message} - ${this.detailedMessage}`;
+  }
+
+  [Symbol.toStringTag]() {
+    return this.toString();
+  }
 }
 
 export interface GraphQLFormattedErrorExtensions {
