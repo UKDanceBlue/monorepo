@@ -1,4 +1,4 @@
-import { NonEmptyStringResolver } from "graphql-scalars";
+import { LocalDateResolver, NonEmptyStringResolver } from "graphql-scalars";
 import { ArgsType, Field, Float, InputType, ObjectType } from "type-graphql";
 
 import { FilteredListQueryArgs } from "../filtering/list-query-args/FilteredListQueryArgs.js";
@@ -6,6 +6,7 @@ import { BatchType } from "../resources/DailyDepartmentNotification.js";
 import { FundraisingEntryNode } from "../resources/Fundraising.js";
 import { type GlobalId, GlobalIdScalar } from "../scalars/GlobalId.js";
 import { AbstractGraphQLPaginatedResponse } from "./ApiResponse.js";
+import type { LocalDate } from "../../utility/time/localDate.js";
 
 @ArgsType()
 export class ListFundraisingEntriesArgs extends FilteredListQueryArgs<
@@ -62,8 +63,8 @@ export class SetFundraisingEntryInput {
   @Field(() => Float, { nullable: true })
   amountOverride?: number;
 
-  @Field(() => NonEmptyStringResolver, { nullable: true })
-  donatedOnOverride?: string;
+  @Field(() => LocalDateResolver, { nullable: true })
+  donatedOnOverride?: LocalDate;
 
   @Field(() => NonEmptyStringResolver, { nullable: true })
   donatedToOverride?: string;

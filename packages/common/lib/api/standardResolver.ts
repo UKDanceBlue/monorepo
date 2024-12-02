@@ -90,7 +90,7 @@ export type CrudResolver<
     // Delete Multiple
     [K in `delete${Capitalize<PluralNodeName>}`]?: CrudOperations<NodeType>["deleteMultiple"];
   } & {
-    // Update Multiple
+    // Set Multiple
     [K in `set${Capitalize<PluralNodeName>}`]?: CrudOperations<NodeType>["updateMultiple"];
   } & {
     // Banned operation names
@@ -125,7 +125,7 @@ export function getCrudOperationNames<
   getMultiple: `getMultiple${Capitalize<PluralNodeName>}`;
   createMultiple: `create${Capitalize<PluralNodeName>}`;
   deleteMultiple: `delete${Capitalize<PluralNodeName>}`;
-  updateMultiple: `set${Capitalize<PluralNodeName>}`;
+  setMultiple: `set${Capitalize<PluralNodeName>}`;
 } {
   const capitalizedNodeName = capitalize(nodeName);
   const capitalizedPluralNodeName = capitalize(pluralNodeName);
@@ -140,6 +140,6 @@ export function getCrudOperationNames<
     getMultiple: `getMultiple${capitalizedPluralNodeName}` as const,
     createMultiple: `create${capitalizedPluralNodeName}` as const,
     deleteMultiple: `delete${capitalizedPluralNodeName}` as const,
-    updateMultiple: `set${capitalizedPluralNodeName}` as const,
+    setMultiple: `set${capitalizedPluralNodeName}` as const,
   };
 }

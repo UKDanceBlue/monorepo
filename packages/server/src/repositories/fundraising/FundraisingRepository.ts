@@ -16,11 +16,16 @@ import {
   SolicitationCode,
   Team,
 } from "@prisma/client";
-import type { SortDirection } from "@ukdanceblue/common";
+import {
+  LocalDate,
+  localDateToLuxon,
+  type SortDirection,
+} from "@ukdanceblue/common";
 import {
   ActionDeniedError,
   InvalidArgumentError,
   InvariantError,
+  LuxonError,
   NotFoundError,
 } from "@ukdanceblue/common/error";
 import { Err, None, Ok, Option, Result, Some } from "ts-results-es";
@@ -37,6 +42,11 @@ import {
   buildFundraisingEntryOrder,
   buildFundraisingEntryWhere,
 } from "./fundraisingEntryRepositoryUtils.js";
+
+import { Decimal } from "@prisma/client/runtime/library";
+
+import { prismaToken } from "#lib/typediTokens.js";
+import { UniqueMarathonParam } from "#repositories/marathon/MarathonRepository.js";
 
 const fundraisingEntryBooleanKeys = [] as const;
 type FundraisingEntryBooleanKey = (typeof fundraisingEntryBooleanKeys)[number];
@@ -122,8 +132,7 @@ export type WideFundraisingEntryWithMeta =
       dbFundsEntry: DBFundsFundraisingEntry & {
         dbFundsTeam: { solicitationCode: SolicitationCode };
       };
-    })
-  | null;
+    });
 
 function asWideFundraisingEntryWithMeta(
   entry: FundraisingEntryWithMeta & {
@@ -144,54 +153,39 @@ function asWideFundraisingEntryWithMeta(
   if (entry.ddn && entry.dbFundsEntry) {
     return Err(new InvariantError("Fundraising entry has multiple sources"));
   }
+  const base = {
+    id: entry.id,
+    uuid: entry.uuid,
+    unassigned: entry.unassigned,
+    notes: entry.notes,
+    enteredByPersonId: entry.enteredByPersonId,
+    solicitationCodeOverrideId: entry.solicitationCodeOverrideId,
+    createdAt: entry.createdAt,
+    updatedAt: entry.updatedAt,
+    ddn: entry.ddn,
+    solicitationCodeOverride: entry.solicitationCodeOverride,
+    amountOverride: entry.amountOverride,
+    batchTypeOverride: entry.batchTypeOverride,
+    donatedByOverride: entry.donatedByOverride,
+    donatedOnOverride: entry.donatedOnOverride,
+    donatedToOverride: entry.donatedToOverride,
+    amount: entry.amount,
+    donatedBy: entry.donatedBy,
+    donatedOn: entry.donatedOn,
+    donatedTo: entry.donatedTo,
+    solicitationCodeText: entry.solicitationCodeText,
+    batchType: entry.batchType,
+  };
   if (entry.ddn) {
     return Ok({
-      id: entry.id,
-      uuid: entry.uuid,
-      unassigned: entry.unassigned,
-      notes: entry.notes,
-      enteredByPersonId: entry.enteredByPersonId,
-      solicitationCodeOverrideId: entry.solicitationCodeOverrideId,
-      createdAt: entry.createdAt,
-      updatedAt: entry.updatedAt,
+      ...base,
       ddn: entry.ddn,
-      solicitationCodeOverride: entry.solicitationCodeOverride,
-      amountOverride: entry.amountOverride,
-      batchTypeOverride: entry.batchTypeOverride,
-      donatedByOverride: entry.donatedByOverride,
-      donatedOnOverride: entry.donatedOnOverride,
-      donatedToOverride: entry.donatedToOverride,
-      amount: entry.amount,
-      donatedBy: entry.donatedBy,
-      donatedOn: entry.donatedOn,
-      donatedTo: entry.donatedTo,
-      solicitationCodeText: entry.solicitationCodeText,
-      batchType: entry.batchType,
     });
   }
   if (entry.dbFundsEntry) {
     return Ok({
-      id: entry.id,
-      uuid: entry.uuid,
-      unassigned: entry.unassigned,
-      notes: entry.notes,
-      enteredByPersonId: entry.enteredByPersonId,
-      solicitationCodeOverrideId: entry.solicitationCodeOverrideId,
-      createdAt: entry.createdAt,
-      updatedAt: entry.updatedAt,
+      ...base,
       dbFundsEntry: entry.dbFundsEntry,
-      solicitationCodeOverride: entry.solicitationCodeOverride,
-      amountOverride: entry.amountOverride,
-      batchTypeOverride: entry.batchTypeOverride,
-      donatedByOverride: entry.donatedByOverride,
-      donatedOnOverride: entry.donatedOnOverride,
-      donatedToOverride: entry.donatedToOverride,
-      amount: entry.amount,
-      donatedBy: entry.donatedBy,
-      donatedOn: entry.donatedOn,
-      donatedTo: entry.donatedTo,
-      solicitationCodeText: entry.solicitationCodeText,
-      batchType: entry.batchType,
     });
   }
   return Err(new InvariantError("Fundraising entry has no source"));
@@ -205,11 +199,6 @@ export type SolicitationCodeUniqueParam =
       code: number;
       prefix: string;
     };
-
-import { Decimal } from "@prisma/client/runtime/library";
-
-import { prismaToken } from "#lib/typediTokens.js";
-import { UniqueMarathonParam } from "#repositories/marathon/MarathonRepository.js";
 
 @Service([prismaToken])
 export class FundraisingEntryRepository {
@@ -384,14 +373,18 @@ export class FundraisingEntryRepository {
       amountOverride: number | null;
       batchTypeOverride: BatchType | null;
       donatedByOverride: string | null;
-      donatedOnOverride: Date | string | null;
+      donatedOnOverride: Date | LocalDate | null;
       donatedToOverride: string | null;
       solicitationCodeOverride: SolicitationCodeUniqueParam | null;
     }
   ): Promise<
     Result<
       WideFundraisingEntryWithMeta,
-      RepositoryError | InvariantError | NotFoundError
+      | RepositoryError
+      | InvariantError
+      | NotFoundError
+      | ActionDeniedError
+      | LuxonError
     >
   > {
     try {
@@ -402,14 +395,21 @@ export class FundraisingEntryRepository {
         return Err(new NotFoundError({ what: "FundraisingEntry" }));
       }
 
-      const ret = await this.prisma.fundraisingEntryWithMeta.update({
+      await this.prisma.fundraisingEntry.update({
         where: param,
         data: {
           notes,
           amountOverride,
           batchTypeOverride,
           donatedByOverride,
-          donatedOnOverride,
+          donatedOnOverride:
+            typeof donatedOnOverride === "string"
+              ? // I don't know why we need to add a day here but oh well, something to do with how prisma consumes the zone i think
+                localDateToLuxon(donatedOnOverride)
+                  .unwrap()
+                  .plus({ day: 1 })
+                  .toJSDate()
+              : donatedOnOverride,
           donatedToOverride,
           solicitationCodeOverride: solicitationCodeOverride
             ? {
@@ -420,10 +420,19 @@ export class FundraisingEntryRepository {
               }
             : { disconnect: true },
         },
-        include: defaultInclude,
       });
 
-      return asWideFundraisingEntryWithMeta(ret);
+      const updatedEntry =
+        await this.prisma.fundraisingEntryWithMeta.findUnique({
+          where: param,
+          include: defaultInclude,
+        });
+
+      if (!updatedEntry) {
+        return Err(new NotFoundError({ what: "FundraisingEntry" }));
+      }
+
+      return asWideFundraisingEntryWithMeta(updatedEntry);
     } catch (error: unknown) {
       return handleRepositoryError(error);
     }

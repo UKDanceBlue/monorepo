@@ -39,7 +39,9 @@ import { PersonRepository } from "#repositories/person/PersonRepository.js";
 
 @Resolver(() => DeviceNode)
 @Service([DeviceRepository, PersonRepository])
-export class DeviceResolver implements CrudResolver<DeviceNode, "device"> {
+export class DeviceResolver
+  implements Omit<CrudResolver<DeviceNode, "device">, "device">
+{
   constructor(
     private readonly deviceRepository: DeviceRepository,
     private readonly personRepository: PersonRepository
@@ -49,7 +51,7 @@ export class DeviceResolver implements CrudResolver<DeviceNode, "device"> {
     name: "device",
     description: "Get a device by it's UUID",
   })
-  async deviceLegacy(
+  async device(
     @Arg("uuid", () => String, {
       description: "For legacy reasons, this can be a GlobalId or a raw UUID",
     })

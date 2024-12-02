@@ -1,15 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-member-access */
 import type { DataProvider } from "@refinedev/core";
-import type {
-  CrudFilter,
-  CrudOperators,
-  LogicalFilter,
-  Pagination,
-} from "@refinedev/core";
-import type {
-  AbstractFilteredListQueryArgs,
-  ListQueryType,
-} from "@ukdanceblue/common";
+import type { Pagination } from "@refinedev/core";
+import type { AbstractFilteredListQueryArgs } from "@ukdanceblue/common";
 import { getCrudOperationNames } from "@ukdanceblue/common";
 import { gql } from "@urql/core";
 import camelcase from "camelcase";
@@ -21,7 +13,6 @@ import {
   type SelectionSetNode,
   visit,
 } from "graphql";
-import set from "lodash/set";
 import pluralize, { singular } from "pluralize";
 
 import { API_BASE_URL, urqlClient } from "../api";
@@ -74,8 +65,8 @@ export const dataProvider: Required<DataProvider> = {
 
     const query = isMutation(gqlOperation)
       ? gqlButDifferentName`
-          query Get${camelcase(singular(resource), { pascalCase: true })}($id: ID!) {
-            ${camelcase(singular(resource))}(id: $id) {
+          query Get${camelcase(singular(resource), { pascalCase: true })}($id: GlobalID!) {
+            ${getOperationName(resource, "getOne")}(id: $id) {
               ${getOperationFields(gqlOperation)}
             }
           }
@@ -102,12 +93,18 @@ export const dataProvider: Required<DataProvider> = {
       throw new Error("Operation is required.");
     }
 
+    if (filters && filters.length > 0) {
+      throw new Error("Filters are not supported yet.");
+    }
+
     const response = await urqlClient
       .query(meta.gqlQuery, {
         sortBy: sorters?.map((sorter) => sorter.field) ?? null,
         sortDirection: sorters?.map((sorter) => sorter.order) ?? null,
         page: pagination?.current ?? null,
         pageSize: pagination?.pageSize ?? null,
+        ...meta?.variables,
+        ...meta?.gqlVariables,
       } satisfies Partial<
         AbstractFilteredListQueryArgs<
           string,
@@ -121,10 +118,12 @@ export const dataProvider: Required<DataProvider> = {
       .toPromise();
 
     console.log(response);
-    const data = response.data?.[resource].nodes;
-    const total = response.data?.[resource].totalCount;
-
-    return { data, total };
+    const val = response.data[getOperationName(resource, "getList")];
+    if (Array.isArray(val)) {
+      return { data: val, total: val.length };
+    } else {
+      return { data: val.data, total: val.total };
+    }
   },
 
   getMany: async (params) => {
@@ -145,16 +144,21 @@ export const dataProvider: Required<DataProvider> = {
 
     const response = await urqlClient
       .mutation(gqlOperation, {
+        id,
         input: {
-          id,
-          update: variables,
-          ...meta?.gqlVariables,
+          ...variables,
+          ...meta?.gqlVariables?.input,
         },
+        ...meta?.gqlVariables,
       })
       .toPromise();
 
-    const key = `updateOne${camelcase(singular(resource), { pascalCase: true })}`;
+    const key = getOperationName(resource, "setOne");
     const data = response.data?.[key];
+
+    if (response.error) {
+      throw new Error(response.error.message);
+    }
 
     return { data };
   },
@@ -180,7 +184,7 @@ export const dataProvider: Required<DataProvider> = {
       })
       .toPromise();
 
-    const key = `deleteOne${camelcase(singular(resource), { pascalCase: true })}`;
+    const key = getOperationName(resource, "deleteOne");
     const data = response.data?.[key];
 
     return { data };
@@ -232,141 +236,6 @@ export const buildPagination = (pagination: Pagination = {}) => {
     limit: pageSize,
     offset: (current - 1) * pageSize,
   };
-};
-
-const operatorMap: Record<string, string> = {
-  eq: "eq",
-  ne: "neq",
-  lt: "lt",
-  gt: "gt",
-  lte: "lte",
-  gte: "gte",
-  in: "in",
-  nin: "notIn",
-};
-
-const operatorMapper = (
-  operator: CrudOperators,
-  value: any
-): Record<string, any> => {
-  if (operator === "contains") {
-    return { iLike: `%${value}%` };
-  }
-
-  if (operator === "ncontains") {
-    return { notILike: `%${value}%` };
-  }
-
-  if (operator === "containss") {
-    return { like: `%${value}%` };
-  }
-
-  if (operator === "ncontainss") {
-    return { notLike: `%${value}%` };
-  }
-
-  if (operator === "startswith") {
-    return { iLike: `${value}%` };
-  }
-
-  if (operator === "nstartswith") {
-    return { notILike: `${value}%` };
-  }
-
-  if (operator === "startswiths") {
-    return { like: `${value}%` };
-  }
-
-  if (operator === "nstartswiths") {
-    return { notLike: `${value}%` };
-  }
-
-  if (operator === "endswith") {
-    return { iLike: `%${value}` };
-  }
-
-  if (operator === "nendswith") {
-    return { notILike: `%${value}` };
-  }
-
-  if (operator === "endswiths") {
-    return { like: `%${value}` };
-  }
-
-  if (operator === "nendswiths") {
-    return { notLike: `%${value}` };
-  }
-
-  if (operator === "null") {
-    return { is: null };
-  }
-
-  if (operator === "nnull") {
-    return { isNot: null };
-  }
-
-  if (operator === "between") {
-    if (!Array.isArray(value)) {
-      throw new TypeError("Between operator requires an array");
-    }
-
-    if (value.length !== 2) {
-      return {};
-    }
-
-    return { between: { lower: value[0], upper: value[1] } };
-  }
-
-  if (operator === "nbetween") {
-    if (!Array.isArray(value)) {
-      throw new TypeError("NBetween operator requires an array");
-    }
-
-    if (value.length !== 2) {
-      return {};
-    }
-
-    return { notBetween: { lower: value[0], upper: value[1] } };
-  }
-
-  return { [operatorMap[operator]!]: value };
-};
-
-export const buildFilters = (
-  filters: LogicalFilter[] | CrudFilter[] = []
-): ListQueryType<Record<string, unknown>>["filter"] => {
-  const result: Record<string, Record<string, string | number>> = {};
-
-  filters
-    .filter((f) => {
-      if (Array.isArray(f.value) && f.value.length === 0) {
-        return false;
-      }
-      if (typeof f.value === "number") {
-        return Number.isFinite(f.value);
-      }
-
-      // If the value is null or undefined, it returns false.
-      return !(f.value == null);
-    })
-    .map((filter: LogicalFilter | CrudFilter) => {
-      if (filter.operator === "and" || filter.operator === "or") {
-        return set(result, filter.operator, [
-          buildFilters(filter.value as LogicalFilter[]),
-        ]);
-      }
-      if ("field" in filter) {
-        return set(
-          result,
-          filter.field,
-          operatorMapper(filter.operator, filter.value)
-        );
-      }
-
-      return {};
-    });
-
-  return result;
 };
 
 export const getOperationFields = (documentNode: DocumentNode) => {

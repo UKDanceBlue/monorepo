@@ -5,83 +5,42 @@ import {
   SortDirection,
   stringifyDDNBatchType,
 } from "@ukdanceblue/common";
-import { Button, Empty, Form, InputNumber, Select, Table } from "antd";
-import { useForm } from "antd/es/form/Form.js";
+import { InputNumber, Table } from "antd";
 import { DateTime } from "luxon";
-import { useEffect } from "react";
-import { useMutation } from "urql";
 
 import type { FragmentOf } from "#graphql/index.js";
 import { graphql, readFragment } from "#graphql/index.js";
 import type { UseListQueryHookReturn } from "#hooks/useListQuery";
 import { useMakeStringSearchFilterProps } from "#hooks/useMakeSearchFilterProps.js";
-import { useQueryStatusWatcher } from "#hooks/useQueryStatusWatcher.js";
+import {
+  FundraisingAssignmentsTable,
+  FundraisingEntryAssignmentTableFragment,
+} from "./FundraisingEntryAssignmentsTable";
 
-const AddFundraisingAssignmentDocument = graphql(/* GraphQL */ `
-  mutation AddFundraisingAssignment(
-    $entryId: GlobalId!
-    $personId: GlobalId!
-    $amount: Float!
-  ) {
-    assignEntryToPerson(
-      entryId: $entryId
-      personId: $personId
-      input: { amount: $amount }
-    ) {
-      id
-    }
-  }
-`);
-
-const UpdateFundraisingAssignmentDocument = graphql(/* GraphQL */ `
-  mutation UpdateFundraisingAssignment($id: GlobalId!, $amount: Float!) {
-    updateFundraisingAssignment(id: $id, input: { amount: $amount }) {
-      id
-      amount
-      person {
-        name
-      }
-    }
-  }
-`);
-
-const DeleteFundraisingAssignmentDocument = graphql(/* GraphQL */ `
-  mutation DeleteFundraisingAssignment($id: GlobalId!) {
-    deleteFundraisingAssignment(id: $id) {
-      id
-    }
-  }
-`);
-
-export const FundraisingEntryTableFragment = graphql(/* GraphQL */ `
-  fragment FundraisingEntryTableFragment on ListFundraisingEntriesResponse {
-    data {
-      id
-      amount
-      amountUnassigned
-      donatedByText
-      donatedToText
-      donatedOn
-      batchType
-      solicitationCode {
-        id
-        text
-      }
-      assignments {
+export const FundraisingEntryTableFragment = graphql(
+  /* GraphQL */ `
+    fragment FundraisingEntryTableFragment on ListFundraisingEntriesResponse {
+      data {
         id
         amount
-        person {
+        amountUnassigned
+        donatedByText
+        donatedToText
+        donatedOn
+        batchType
+        solicitationCode {
           id
-          name
-          linkblue
+          text
         }
+        ...FundraisingEntryAssignmentTableFragment
       }
+      page
+      pageSize
+      total
     }
-    page
-    pageSize
-    total
-  }
-`);
+  `,
+  [FundraisingEntryAssignmentTableFragment]
+);
 
 export function FundraisingEntriesTable({
   form: {
@@ -122,17 +81,6 @@ export function FundraisingEntriesTable({
   potentialAssignees?: { value: string; label: string }[];
   showSolicitationCode?: boolean;
 }) {
-  const [addFundraisingAssignmentState, addFundraisingAssignment] = useMutation(
-    AddFundraisingAssignmentDocument
-  );
-  useQueryStatusWatcher(addFundraisingAssignmentState);
-  const [updateFundraisingAssignmentState, updateFundraisingAssignment] =
-    useMutation(UpdateFundraisingAssignmentDocument);
-  useQueryStatusWatcher(updateFundraisingAssignmentState);
-  const [deleteFundraisingAssignmentState, deleteFundraisingAssignment] =
-    useMutation(DeleteFundraisingAssignmentDocument);
-  useQueryStatusWatcher(deleteFundraisingAssignmentState);
-
   const donatedByStringFilterProps = useMakeStringSearchFilterProps(
     "donatedBy",
     updateFilter,
@@ -421,7 +369,7 @@ export function FundraisingEntriesTable({
           title: "Actions",
           key: "actions",
           render: ({ id }: { id: string }) => (
-            <Link to="/fundraising/$entryId" params={{ entryId: id }}>
+            <Link to="/fundraising/$entryId/edit" params={{ entryId: id }}>
               Edit
             </Link>
           ),
@@ -429,204 +377,14 @@ export function FundraisingEntriesTable({
       ]}
       expandable={{
         rowExpandable: () => true,
-        expandedRowRender: ({ assignments, id, amountUnassigned }) => (
-          <Table
-            dataSource={assignments}
-            pagination={false}
-            locale={{
-              emptyText: (
-                <Empty
-                  description="No Assignments"
-                  image={null}
-                  imageStyle={{ height: 0, margin: 0 }}
-                />
-              ),
-            }}
-            footer={() =>
-              potentialAssignees && (
-                <FundraisingTableNewAssignment
-                  addFundraisingAssignment={addFundraisingAssignment}
-                  refresh={refresh}
-                  amountUnassigned={amountUnassigned}
-                  id={id}
-                  members={potentialAssignees}
-                  loading={
-                    addFundraisingAssignmentState.fetching ||
-                    updateFundraisingAssignmentState.fetching
-                  }
-                />
-              )
-            }
-            columns={[
-              {
-                title: "Person",
-                dataIndex: ["person"],
-                render: ({
-                  id,
-                  name,
-                  linkblue,
-                }: {
-                  id: string;
-                  name?: string;
-                  linkblue?: string;
-                }) => name ?? (linkblue ? <i>{linkblue}</i> : <pre>{id}</pre>),
-                key: "person",
-                width: "60%",
-              },
-              {
-                title: "Amount",
-                dataIndex: "amount",
-                key: "amount",
-                width: "40%",
-                render: (amount: number, { id }: { id: string }) => (
-                  <Form
-                    layout="inline"
-                    onFinish={(values: { amount: number }) => {
-                      updateFundraisingAssignment({
-                        id,
-                        amount: values.amount,
-                      })
-                        .then(() => {
-                          refresh();
-                        })
-                        .catch(() => {
-                          alert(
-                            "An error occurred while updating the assignment."
-                          );
-                        });
-                    }}
-                    initialValues={{ amount }}
-                    style={{ display: "flex", gap: 8 }}
-                  >
-                    <Form.Item name="amount">
-                      <InputNumber prefix="$" />
-                    </Form.Item>
-                    <Form.Item>
-                      <Button
-                        type="primary"
-                        htmlType="submit"
-                        loading={
-                          addFundraisingAssignmentState.fetching ||
-                          updateFundraisingAssignmentState.fetching
-                        }
-                      >
-                        Update
-                      </Button>
-                    </Form.Item>
-                  </Form>
-                ),
-              },
-              {
-                title: "Actions",
-                key: "actions",
-                render: (_, { id }: { id: string }) => (
-                  <Button
-                    type="primary"
-                    danger
-                    onClick={() => {
-                      if (
-                        confirm(
-                          "Are you sure you want to delete this assignment?"
-                        )
-                      ) {
-                        deleteFundraisingAssignment({ id })
-                          .then(() => {
-                            refresh();
-                          })
-                          .catch(() => {
-                            alert(
-                              "An error occurred while deleting the assignment."
-                            );
-                          });
-                      }
-                    }}
-                    loading={deleteFundraisingAssignmentState.fetching}
-                  >
-                    Delete
-                  </Button>
-                ),
-              },
-            ]}
+        expandedRowRender: (record) => (
+          <FundraisingAssignmentsTable
+            fragment={record}
+            potentialAssignees={potentialAssignees}
+            refresh={refresh}
           />
         ),
       }}
     />
-  );
-}
-
-function FundraisingTableNewAssignment({
-  addFundraisingAssignment,
-  amountUnassigned,
-  members,
-  id,
-  refresh,
-  loading,
-}: {
-  addFundraisingAssignment: ({
-    entryId,
-    personId,
-    amount,
-  }: {
-    entryId: string;
-    personId: string;
-    amount: number;
-  }) => Promise<unknown>;
-  refresh: () => void;
-  amountUnassigned: number;
-  id: string;
-  members: { label: string; value: string }[];
-  loading: boolean;
-}) {
-  const [form] = useForm<{
-    personId: string;
-    amount: number;
-  }>();
-
-  useEffect(() => {
-    form.setFieldsValue({ amount: amountUnassigned });
-  }, [amountUnassigned, form]);
-
-  return (
-    <Form
-      form={form}
-      layout="inline"
-      onFinish={(values: { personId: string; amount: number }) => {
-        addFundraisingAssignment({
-          entryId: id,
-          personId: values.personId,
-          amount: values.amount,
-        })
-          .then(() => {
-            refresh();
-            form.resetFields(["personId"]);
-          })
-          .catch(() => {
-            alert("An error occurred while adding the assignment.");
-          });
-      }}
-      initialValues={{ amount: amountUnassigned }}
-      style={{ display: "flex", gap: 8 }}
-    >
-      <Form.Item
-        label="Person"
-        name="personId"
-        rules={[{ required: true, message: "Person is required" }]}
-        style={{ flex: 4 }}
-      >
-        <Select options={members} />
-      </Form.Item>
-      <Form.Item
-        name="amount"
-        rules={[{ required: true, message: "Amount is required" }]}
-        style={{ flex: 1 }}
-      >
-        <InputNumber prefix="$" />
-      </Form.Item>
-      <Form.Item style={{ flex: 1 }}>
-        <Button type="primary" htmlType="submit" loading={loading}>
-          Add Assignment
-        </Button>
-      </Form.Item>
-    </Form>
   );
 }

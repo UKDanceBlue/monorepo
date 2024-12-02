@@ -8,50 +8,22 @@ import {
 import type { WideFundraisingEntryWithMeta } from "./FundraisingRepository.js";
 
 export function fundraisingEntryModelToNode(
-  entryModel: WideFundraisingEntryWithMeta
+  entryModel: NonNullable<WideFundraisingEntryWithMeta>
 ): Promise<FundraisingEntryNode> {
-  let amount;
-  let donatedByText;
-  let donatedToText;
-  let donatedOn;
-
-  if (!entryModel) {
-    throw new Error("entrySource is missing");
-  }
-  if ("dbFundsEntry" in entryModel) {
-    ({
-      amount,
-      donatedBy: donatedByText,
-      donatedTo: donatedToText,
-      date: donatedOn,
-    } = entryModel.dbFundsEntry);
-  } else if ("ddn" in entryModel) {
-    ({
-      combinedAmount: amount,
-      comment: donatedToText,
-      combinedDonorName: donatedByText,
-    } = entryModel.ddn);
-    donatedOn =
-      entryModel.ddn.pledgedDate ??
-      entryModel.ddn.transactionDate ??
-      entryModel.ddn.effectiveDate;
-    if (!donatedOn) {
-      throw new Error("donatedOn is missing");
-    }
-  } else {
-    entryModel satisfies never;
-    throw new Error("entrySource is not a valid type");
-  }
-
   return Promise.resolve(
     FundraisingEntryNode.init({
       id: entryModel.uuid,
-      amount: amount.toDecimalPlaces(2).toNumber(),
+      amount: entryModel.amount?.toDecimalPlaces(2).toNumber() ?? 0,
+      amountOverride:
+        entryModel.amountOverride?.toDecimalPlaces(2).toNumber() ?? null,
       amountUnassigned:
         entryModel.unassigned?.toDecimalPlaces(2).toNumber() ?? 0,
-      donatedByText,
-      donatedToText,
-      donatedOn,
+      donatedByText: entryModel?.donatedBy,
+      donatedByOverride: entryModel.donatedByOverride,
+      donatedToText: entryModel.donatedTo,
+      donatedToOverride: entryModel.donatedToOverride,
+      donatedOn: entryModel.donatedOn,
+      donatedOnOverride: entryModel.donatedOnOverride,
       createdAt: entryModel.createdAt,
       updatedAt: entryModel.updatedAt,
       notes: entryModel.notes,
@@ -59,6 +31,7 @@ export function fundraisingEntryModelToNode(
         entryModel.solicitationCodeOverride &&
         solicitationCodeModelToNode(entryModel.solicitationCodeOverride),
       batchType: entryModel.batchType ?? BatchType.Unknown,
+      batchTypeOverride: entryModel.batchTypeOverride,
     })
   );
 }
