@@ -42,6 +42,8 @@ for (const resolver of resolversList) {
   replServer.context[resolver.name] = Container.get(resolver);
 }
 
+replServer.context.getService = Container.get.bind(Container);
+
 replServer.context.prisma = Container.get(prismaToken);
 
 replServer.context.env = getEnvironment();
