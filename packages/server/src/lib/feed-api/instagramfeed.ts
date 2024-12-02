@@ -1,22 +1,22 @@
+import { Service } from "@freshgum/typedi";
+import { ImageNode, InstagramFeedNode } from "@ukdanceblue/common";
 import {
   BasicError,
   ConcreteError,
   InvariantError,
 } from "@ukdanceblue/common/error";
 import { toBasicError } from "@ukdanceblue/common/error";
+import { hash } from "crypto";
+import { DateTime } from "luxon";
+import mime from "mime";
+import sharp from "sharp";
 import { AsyncResult, Result } from "ts-results-es";
 import { Err, Ok } from "ts-results-es";
 import { z } from "zod";
-import { Service } from "@freshgum/typedi";
 
 import { ZodError } from "#error/zod.js";
-import { instagramApiKeyToken } from "#lib/typediTokens.js";
-import { DateTime } from "luxon";
-import { ImageNode, InstagramFeedNode } from "@ukdanceblue/common";
-import mime from "mime";
-import sharp from "sharp";
-import { hash } from "crypto";
 import { generateThumbHash } from "#lib/thumbHash.js";
+import { instagramApiKeyToken } from "#lib/typediTokens.js";
 
 const feedSchema = z.object({
   data: z.array(
@@ -42,7 +42,7 @@ const feedSchema = z.object({
 
 export type InstagramFeedItem = z.TypeOf<typeof feedSchema>["data"][number];
 
-const thirtyMinutesInMs = 1_000 * 60 * 30;
+const thirtyMinutesInMs = 1000 * 60 * 30;
 
 @Service([instagramApiKeyToken])
 export class InsagramApi {
@@ -65,7 +65,7 @@ export class InsagramApi {
     const url = `https://graph.instagram.com/v21.0/${path}?${queryParams.toString()}`;
     return new AsyncResult(Result.wrapAsync(() => fetch(url)))
       .map((response) => response.json())
-      .map(zodSchema.safeParse)
+      .map((data) => zodSchema.safeParseAsync(data))
       .mapErr(toBasicError)
       .andThen((parsedData) =>
         parsedData.error
@@ -100,27 +100,28 @@ export class InsagramApi {
             .map(instagramFeedItemToNode)
         )
       )
-      .andThen(Result.all)
       .mapErr((error) =>
         this.cachedFeedResponse
           ? ([error, this.cachedFeedResponse] as const)
           : ([error] as const)
       )
       .andThen((response) => {
-        this.cachedFeedResponse = response;
+        const all = Result.all(response);
+        if (all.isErr()) return all;
+        this.cachedFeedResponse = all.value;
         this.cacheExpiry = Date.now() + thirtyMinutesInMs;
-        return Ok(response);
+        return all;
       });
   }
 }
 
 async function instagramFeedItemToNode(
   item: InstagramFeedItem
-): Promise<Result<InstagramFeedNode, InvariantError>> {
+): Promise<Result<InstagramFeedNode, [InvariantError]>> {
   const image = await instagramMediaUrlToNode(item.media_url);
 
   if (image.isErr()) {
-    return image;
+    return image.mapErr((error) => [error]);
   }
 
   return Ok(

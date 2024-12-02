@@ -611,6 +611,8 @@ enum EventResolverStringFilterKeys {
 }
 
 interface FeedItem {
+  createdAt: DateTimeISO
+  id: GlobalId!
   image: ImageNode
   link: URL
   textContent: String

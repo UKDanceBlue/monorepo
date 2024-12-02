@@ -1,11 +1,11 @@
+import { URLResolver } from "graphql-scalars";
 import { Field, InterfaceType, ObjectType } from "type-graphql";
 
 import { createNodeClasses, Node } from "../relay.js";
 import type { GlobalId } from "../scalars/GlobalId.js";
 import { GlobalIdScalar } from "../scalars/GlobalId.js";
-import { TimestampedResource } from "./Resource.js";
 import { ImageNode } from "./Image.js";
-import { URLResolver } from "graphql-scalars";
+import { TimestampedResource } from "./Resource.js";
 
 // TODO: Expand this to include more types of feed items
 // export const FeedResourceType = {
@@ -20,6 +20,9 @@ import { URLResolver } from "graphql-scalars";
 
 @InterfaceType()
 export class FeedItem {
+  @Field(() => GlobalIdScalar)
+  id!: GlobalId;
+
   @Field(() => String)
   title!: string;
 
@@ -31,6 +34,9 @@ export class FeedItem {
 
   @Field(() => URLResolver, { nullable: true })
   link?: URL | undefined | null;
+
+  @Field(() => Date, { nullable: true })
+  createdAt!: Date;
 }
 
 @ObjectType({
