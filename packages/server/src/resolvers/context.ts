@@ -144,7 +144,7 @@ export const graphqlContextFunction: ContextFunction<
   [ExpressContextFunctionArgument],
   GraphQLContext
 > = async ({ req }): Promise<GraphQLContext> => {
-  const defaultContext: Readonly<GraphQLContext> = {
+  const getDefaultContext = (): Readonly<GraphQLContext> => ({
     authenticatedUser: null,
     teamMemberships: [],
     userData: {
@@ -152,10 +152,10 @@ export const graphqlContextFunction: ContextFunction<
     },
     authorization: defaultAuthorization,
     serverUrl: getHostUrl(req),
-  };
+  });
 
   const anonymousContext: Readonly<GraphQLContext> = {
-    ...defaultContext,
+    ...getDefaultContext(),
     authorization: {
       accessLevel: AccessLevel.Public,
       effectiveCommitteeRoles: [],
@@ -179,7 +179,7 @@ export const graphqlContextFunction: ContextFunction<
   }
   if (!token) {
     // Short-circuit if no token is present
-    return defaultContext;
+    return getDefaultContext();
   }
 
   // Parse the token
@@ -197,15 +197,15 @@ export const graphqlContextFunction: ContextFunction<
 
   if (!userId) {
     logger.trace("graphqlContextFunction No user ID");
-    return structuredClone(defaultContext);
+    return getDefaultContext();
   }
 
   // If we have a user ID, look up the user
   let contextWithUser = await withUserInfo(
     {
-      ...defaultContext,
+      ...getDefaultContext(),
       authorization: {
-        ...defaultContext.authorization,
+        ...getDefaultContext().authorization,
         dbRole: authSourceDbRole,
       },
     },
@@ -216,7 +216,7 @@ export const graphqlContextFunction: ContextFunction<
       "graphqlContextFunction Error looking up user",
       contextWithUser.error
     );
-    return structuredClone(defaultContext);
+    return getDefaultContext();
   }
   let superAdmin = isSuperAdmin(
     contextWithUser.value.authorization.effectiveCommitteeRoles,
@@ -233,15 +233,15 @@ export const graphqlContextFunction: ContextFunction<
         "graphqlContextFunction Error parsing masquerade ID",
         parsedId.error
       );
-      return structuredClone(defaultContext);
+      return getDefaultContext();
     }
     logger.trace("graphqlContextFunction Masquerading as", parsedId.value.id);
     // We need to reset the dbRole to the default one in case the masquerade user is not a committee member
     contextWithUser = await withUserInfo(
       {
-        ...defaultContext,
+        ...getDefaultContext(),
         authorization: {
-          ...defaultContext.authorization,
+          ...getDefaultContext().authorization,
           dbRole: authSourceDbRole,
         },
       },
@@ -252,7 +252,7 @@ export const graphqlContextFunction: ContextFunction<
         "graphqlContextFunction Error looking up user",
         contextWithUser.error
       );
-      return structuredClone(defaultContext);
+      return getDefaultContext();
     }
     superAdmin = false;
   }
