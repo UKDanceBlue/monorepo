@@ -1,13 +1,12 @@
 import { Service } from "@freshgum/typedi";
-import type { GlobalId } from "@ukdanceblue/common";
+import type { CrudResolver, GlobalId } from "@ukdanceblue/common";
 import {
+  AccessControlAuthorized,
   AccessLevel,
   CommitteeIdentifier,
   GlobalIdScalar,
   MarathonHourNode,
   MarathonNode,
-  MutationAccessControl,
-  QueryAccessControl,
   SortDirection,
   TeamNode,
 } from "@ukdanceblue/common";
@@ -42,14 +41,15 @@ export class MarathonResolver
     Record<
       `${CommitteeIdentifier}Team`,
       (marathon: MarathonNode) => Promise<ConcreteResult<TeamNode>>
-    >
+    >,
+    CrudResolver<MarathonNode, "marathon">
 {
   constructor(
     private readonly marathonRepository: MarathonRepository,
     private readonly committeeRepository: CommitteeRepository
   ) {}
 
-  @QueryAccessControl({
+  @AccessControlAuthorized({
     accessLevel: AccessLevel.None,
   })
   @Query(() => MarathonNode)
@@ -60,7 +60,7 @@ export class MarathonResolver
     return marathon.map(marathonModelToResource);
   }
 
-  @QueryAccessControl({
+  @AccessControlAuthorized({
     accessLevel: AccessLevel.Committee,
   })
   @Query(() => MarathonNode)
@@ -71,7 +71,7 @@ export class MarathonResolver
     return marathon.map(marathonModelToResource);
   }
 
-  @QueryAccessControl({
+  @AccessControlAuthorized({
     accessLevel: AccessLevel.Committee,
   })
   @Query(() => ListMarathonsResponse)
@@ -100,7 +100,7 @@ export class MarathonResolver
     });
   }
 
-  @QueryAccessControl({
+  @AccessControlAuthorized({
     accessLevel: AccessLevel.None,
   })
   @Query(() => MarathonNode, {
@@ -113,7 +113,7 @@ export class MarathonResolver
     return marathon.map((m) => m.map(marathonModelToResource));
   }
 
-  @QueryAccessControl({
+  @AccessControlAuthorized({
     accessLevel: AccessLevel.None,
   })
   @Query(() => MarathonNode, {
@@ -126,7 +126,7 @@ export class MarathonResolver
     return marathon.map((m) => m.map(marathonModelToResource));
   }
 
-  @MutationAccessControl({
+  @AccessControlAuthorized({
     accessLevel: AccessLevel.SuperAdmin,
   })
   @Mutation(() => MarathonNode)
@@ -141,7 +141,7 @@ export class MarathonResolver
     }).promise;
   }
 
-  @MutationAccessControl({
+  @AccessControlAuthorized({
     accessLevel: AccessLevel.SuperAdmin,
   })
   @Mutation(() => MarathonNode)
@@ -156,7 +156,7 @@ export class MarathonResolver
     return marathon.map(marathonModelToResource);
   }
 
-  @MutationAccessControl({
+  @AccessControlAuthorized({
     accessLevel: AccessLevel.SuperAdmin,
   })
   @Mutation(() => MarathonNode)
@@ -184,7 +184,7 @@ export class MarathonResolver
   }
 
   // Committees
-  @MutationAccessControl({
+  @AccessControlAuthorized({
     accessLevel: AccessLevel.Public,
   })
   @FieldResolver(() => TeamNode)
@@ -195,7 +195,7 @@ export class MarathonResolver
     );
   }
 
-  @MutationAccessControl({
+  @AccessControlAuthorized({
     accessLevel: AccessLevel.Public,
   })
   @FieldResolver(() => TeamNode)
@@ -206,7 +206,7 @@ export class MarathonResolver
     );
   }
 
-  @MutationAccessControl({
+  @AccessControlAuthorized({
     accessLevel: AccessLevel.Public,
   })
   @FieldResolver(() => TeamNode)
@@ -217,7 +217,7 @@ export class MarathonResolver
     );
   }
 
-  @MutationAccessControl({
+  @AccessControlAuthorized({
     accessLevel: AccessLevel.Public,
   })
   @FieldResolver(() => TeamNode)
@@ -228,7 +228,7 @@ export class MarathonResolver
     );
   }
 
-  @MutationAccessControl({
+  @AccessControlAuthorized({
     accessLevel: AccessLevel.Public,
   })
   @FieldResolver(() => TeamNode)
@@ -239,7 +239,7 @@ export class MarathonResolver
     );
   }
 
-  @MutationAccessControl({
+  @AccessControlAuthorized({
     accessLevel: AccessLevel.Public,
   })
   @FieldResolver(() => TeamNode)
@@ -247,7 +247,7 @@ export class MarathonResolver
     return this.#committeeTeam(CommitteeIdentifier.techCommittee, marathon);
   }
 
-  @MutationAccessControl({
+  @AccessControlAuthorized({
     accessLevel: AccessLevel.Public,
   })
   @FieldResolver(() => TeamNode)
@@ -258,7 +258,7 @@ export class MarathonResolver
     );
   }
 
-  @MutationAccessControl({
+  @AccessControlAuthorized({
     accessLevel: AccessLevel.Public,
   })
   @FieldResolver(() => TeamNode)
@@ -269,7 +269,7 @@ export class MarathonResolver
     );
   }
 
-  @MutationAccessControl({
+  @AccessControlAuthorized({
     accessLevel: AccessLevel.Public,
   })
   @FieldResolver(() => TeamNode)
@@ -280,7 +280,7 @@ export class MarathonResolver
     );
   }
 
-  @MutationAccessControl({
+  @AccessControlAuthorized({
     accessLevel: AccessLevel.Public,
   })
   @FieldResolver(() => TeamNode)
@@ -291,7 +291,7 @@ export class MarathonResolver
     );
   }
 
-  @MutationAccessControl({
+  @AccessControlAuthorized({
     accessLevel: AccessLevel.Public,
   })
   @FieldResolver(() => TeamNode)
@@ -299,7 +299,7 @@ export class MarathonResolver
     return this.#committeeTeam(CommitteeIdentifier.viceCommittee, marathon);
   }
 
-  @MutationAccessControl({
+  @AccessControlAuthorized({
     accessLevel: AccessLevel.Public,
   })
   @FieldResolver(() => TeamNode)

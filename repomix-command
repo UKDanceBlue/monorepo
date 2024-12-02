@@ -1,0 +1,1 @@
+npx repomix --ignore "./DISCLAIMER,packages/mobile/assets/svgs/**,**/*.snap,**/graphql-env.d.ts,packages/mobile/src/graphql/**,packages/portal/src/routeTree.gen.ts,packages/server/prisma/migrations/**,./.*/**"

@@ -1,0 +1,48 @@
+/// This table is kept in sync with the DBFunds API and should not be modified
+model DBFundsTeam {
+  /// Unrelated to the 'id' field in the DBFunds API
+  id                 Int                       @id @default(autoincrement())
+  uuid               String                    @unique @default(uuid()) @db.Uuid
+  /// The team's DbNum from the DBFunds API is actually a solicitation code
+  solicitationCodeId Int
+  solicitationCode   SolicitationCode          @relation(fields: [solicitationCodeId], references: [id])
+  /// The team's name from the DBFunds API
+  name               String
+  /// The team's total fundraising amount from the DBFunds API
+  totalAmount        Float
+  /// Whether the team is active in DBFunds
+  active             Boolean
+  /// All fundraising entries for the team
+  fundraisingEntries DBFundsFundraisingEntry[]
+
+  /// The marathon the team is associated with
+  marathon   Marathon? @relation(fields: [marathonId], references: [id])
+  marathonId Int?
+
+  @@unique([solicitationCodeId, marathonId])
+}
+
+/// This table is kept in sync with the DBFunds API and should not be modified
+model DBFundsFundraisingEntry {
+  /// Unrelated to the 'id' field in the DBFunds API
+  id            Int         @id @default(autoincrement())
+  uuid          String      @unique @default(uuid()) @db.Uuid
+  /// The amount of the entry
+  amount        Decimal
+  /// Who made the donation
+  donatedBy     String?
+  /// Who the donation was made for
+  donatedTo     String?
+  /// The date of the donation
+  date          DateTime
+  /// The team's DbNum from the DBFunds API
+  dbFundsTeamId Int
+  dbFundsTeam   DBFundsTeam @relation(fields: [dbFundsTeamId], references: [id], onDelete: Cascade)
+
+  /// The corresponding fundraising entry in our database
+  fundraisingEntryWithMeta FundraisingEntryWithMeta? @relation(fields: [fundraisingEntryId], references: [id], map: "DBFundsFundraisingEntry_fundraisingEntryWithMeta")
+  fundraisingEntry         FundraisingEntry          @relation(fields: [fundraisingEntryId], references: [id], map: "DBFundsFundraisingEntry_fundraisingEntry", onDelete: Cascade)
+  fundraisingEntryId       Int                       @unique
+
+  @@unique([donatedTo, donatedBy, date, dbFundsTeamId])
+}

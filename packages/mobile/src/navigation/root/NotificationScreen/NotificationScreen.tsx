@@ -7,12 +7,12 @@ import { Button, SectionList, Text, useTheme, View } from "native-base";
 import { useEffect, useMemo } from "react";
 import { RefreshControl } from "react-native";
 
-import JumbotronGeometric from "#common/components/JumbotronGeometric";
-import { NotificationDeliveryFragment } from "#common/fragments/NotificationScreenGQL";
-import { Logger } from "#common/logger/Logger";
-import { universalCatch } from "#common/logging";
-import type { FragmentType } from "#graphql/index";
-import { getFragmentData } from "#graphql/index";
+import JumbotronGeometric from "@/common/components/JumbotronGeometric";
+import { NotificationDeliveryFragment } from "@/common/fragments/NotificationScreenGQL";
+import { Logger } from "@/common/logger/Logger";
+import { universalCatch } from "@/common/logging";
+import type { FragmentType } from "@/graphql/index";
+import { readFragment } from "@/graphql/index";
 
 import { useDeviceData, useLoading } from "../../../context";
 import { NotificationRow } from "./NotificationRow";
@@ -43,10 +43,7 @@ function NotificationScreen() {
     > = {};
 
     for (const notification of notifications ?? []) {
-      const delivery = getFragmentData(
-        NotificationDeliveryFragment,
-        notification
-      );
+      const delivery = readFragment(NotificationDeliveryFragment, notification);
       let dateString = "";
       if (delivery.sentAt != null) {
         const date = dateTimeFromSomething(delivery.sentAt);
@@ -119,7 +116,7 @@ function NotificationScreen() {
           data={notifications}
           sections={sections}
           keyExtractor={(data, i) =>
-            getFragmentData(NotificationDeliveryFragment, data)?.id ??
+            readFragment(NotificationDeliveryFragment, data)?.id ??
             `notification-${i}`
           }
           ListEmptyComponent={() => (

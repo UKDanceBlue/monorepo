@@ -2,12 +2,18 @@ import { LocalDateResolver } from "graphql-scalars";
 import { Err, Ok, Result } from "ts-results-es";
 import { Field, ObjectType, registerEnumType } from "type-graphql";
 
+import { InvalidArgumentError } from "../../error/direct.js";
 import { Node } from "../relay.js";
 import type { GlobalId } from "../scalars/GlobalId.js";
 import { GlobalIdScalar } from "../scalars/GlobalId.js";
 import { Resource } from "./Resource.js";
+import { SolicitationCodeNode } from "./SolicitationCode.js";
 
 export const BatchType = {
+  /**
+   * Legacy entries from DBFunds
+   */
+  DBFunds: "DBFunds",
   /**
    * Check batches (C) include gifts to UK mailed directly to the Office of Development or to Gift Receiving, generally response to a phonathon solicitation
    */
@@ -45,12 +51,12 @@ registerEnumType(BatchType, {
 
 export function extractDDNBatchType(
   batchId: string
-): Result<BatchType, string> {
+): Result<BatchType, InvalidArgumentError> {
   let code = "";
   for (let i = batchId.length - 1; i >= 0; i--) {
     const letter = batchId[i];
     if (!letter) {
-      return Err(batchId);
+      return Err(new InvalidArgumentError("Invalid batch ID"));
     }
     // Skip anything that isn't an uppercase letter
     if (letter < "A" || letter > "Z") {
@@ -62,9 +68,47 @@ export function extractDDNBatchType(
     }
     code = letter + code;
   }
-  return (BatchType[code as keyof typeof BatchType] as BatchType | undefined)
-    ? Ok(BatchType[code as keyof typeof BatchType])
-    : Err(code);
+
+  switch (code) {
+    case "C": {
+      return Ok(BatchType.Check);
+    }
+    case "T": {
+      return Ok(BatchType.Transmittal);
+    }
+    case "D": {
+      return Ok(BatchType.CreditCard);
+    }
+    case "A": {
+      return Ok(BatchType.ACH);
+    }
+    case "N": {
+      return Ok(BatchType.NonCash);
+    }
+    case "X": {
+      return Ok(BatchType.PayrollDeduction);
+    }
+    default: {
+      return Err(new InvalidArgumentError(`Unknown batch type: ${code}`));
+    }
+  }
+}
+
+export function stringifyDDNBatchType(batchType: BatchType): string {
+  switch (batchType) {
+    case BatchType.CreditCard: {
+      return "Credit Card";
+    }
+    case BatchType.NonCash: {
+      return "Non-cash";
+    }
+    case BatchType.PayrollDeduction: {
+      return "Payroll Deduction";
+    }
+    default: {
+      return batchType;
+    }
+  }
 }
 
 @ObjectType()
@@ -132,8 +176,8 @@ export class DailyDepartmentNotificationNode extends Resource implements Node {
   @Field(() => Boolean)
   onlineGift!: boolean;
 
-  @Field(() => String, { nullable: true })
-  solicitationCode?: string;
+  @Field(() => SolicitationCodeNode)
+  solicitationCode!: SolicitationCodeNode;
 
   @Field(() => String, { nullable: true })
   solicitation?: string;
@@ -254,6 +298,7 @@ export class DailyDepartmentNotificationNode extends Resource implements Node {
   }
 
   public static init(init: {
+    id: string;
     division?: string;
     department?: string;
     effectiveDate?: string;
@@ -274,7 +319,7 @@ export class DailyDepartmentNotificationNode extends Resource implements Node {
     gikType?: string;
     gikDescription?: string;
     onlineGift: boolean;
-    solicitationCode?: string;
+    solicitationCode: SolicitationCodeNode;
     solicitation?: string;
     behalfHonorMemorial?: string;
     matchingGift?: string;
@@ -314,10 +359,7 @@ export class DailyDepartmentNotificationNode extends Resource implements Node {
     advFeeStatus?: string;
     hcUnit?: string;
   }) {
-    return DailyDepartmentNotificationNode.createInstance().withValues({
-      ...init,
-      id: init.idSorter,
-    });
+    return DailyDepartmentNotificationNode.createInstance().withValues(init);
   }
 }
 
@@ -326,17 +368,21 @@ export class DailyDepartmentNotificationBatchNode extends Resource {
   @Field(() => GlobalIdScalar)
   id!: GlobalId;
 
+  @Field(() => String)
+  batchNumber!: string;
+
   @Field(() => BatchType)
-  batchType!: BatchType;
+  batchType(): BatchType {
+    return extractDDNBatchType(this.batchNumber).unwrap();
+  }
 
   public getUniqueId(): string {
     return this.id.id;
   }
 
-  public static init(init: { batchId: string; batchType: BatchType }) {
-    return DailyDepartmentNotificationBatchNode.createInstance().withValues({
-      id: init.batchId,
-      batchType: init.batchType,
-    });
+  public static init(init: { id: string; batchNumber: string }) {
+    return DailyDepartmentNotificationBatchNode.createInstance().withValues(
+      init
+    );
   }
 }

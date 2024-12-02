@@ -5,14 +5,14 @@ import type {
 } from "@react-navigation/native";
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
 
-import type { FragmentType } from "#graphql/index";
+import type { FragmentType } from "@/graphql/index";
 
 import type { EventScreenFragment } from "../navigation/root/EventScreen/EventScreenFragment";
 
 // eslint-disable-next-line @typescript-eslint/consistent-type-definitions
 export type SpiritStackParamList = {
-  MyTeam: undefined;
-  Scoreboard: undefined;
+  MyTeam: Record<string, never>;
+  Scoreboard: Record<string, never>;
 };
 
 export type SpiritStackScreenProps<T extends keyof SpiritStackParamList> =
@@ -20,14 +20,14 @@ export type SpiritStackScreenProps<T extends keyof SpiritStackParamList> =
 
 // eslint-disable-next-line @typescript-eslint/consistent-type-definitions
 export type TabNavigatorParamList = {
-  "Home": undefined;
-  "Events": undefined;
-  "Explore": undefined;
+  "Home": Record<string, never>;
+  "Events": Record<string, never>;
+  "Explore": Record<string, never>;
   "Teams": NavigatorScreenParams<SpiritStackParamList>;
-  "Marathon": undefined;
-  "DB Moments": undefined;
-  "DB Funds": undefined;
-  "Info": undefined;
+  "Marathon": Record<string, never>;
+  "DB Moments": Record<string, never>;
+  "DB Funds": Record<string, never>;
+  "Info": Record<string, never>;
 };
 
 export type TabNavigatorProps<T extends keyof TabNavigatorParamList> =
@@ -38,17 +38,17 @@ export type TabNavigatorProps<T extends keyof TabNavigatorParamList> =
 
 // eslint-disable-next-line @typescript-eslint/consistent-type-definitions
 export type RootStackParamList = {
-  "Main": undefined;
-  "SplashLogin": undefined;
+  "Main": Record<string, never>;
+  "SplashLogin": Record<string, never>;
   "Tab": NavigatorScreenParams<TabNavigatorParamList>;
-  "Notifications": undefined;
-  "Profile": undefined;
+  "Notifications": Record<string, never>;
+  "Profile": Record<string, never>;
   "Event": {
     event: FragmentType<typeof EventScreenFragment>;
     occurrenceId: string;
   };
-  "Explorer": undefined;
-  "Hour Details": undefined; // { firestoreHour: FirestoreHour };
+  "Explorer": Record<string, never>;
+  "Hour Details": Record<string, never>; // { firestoreHour: FirestoreHour };
 };
 
 export type RootStackScreenProps<T extends keyof RootStackParamList> =

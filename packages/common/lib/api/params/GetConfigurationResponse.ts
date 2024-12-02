@@ -1,48 +1,14 @@
-import { DateTimeISOResolver, VoidResolver } from "graphql-scalars";
-import { Field, InputType,ObjectType } from "type-graphql";
+import { DateTimeISOResolver } from "graphql-scalars";
+import { Field, InputType, ObjectType } from "type-graphql";
 
 import { ConfigurationNode } from "../resources/Configuration.js";
-import { VoidScalar } from "../scalars/Void.js";
-import {
-  AbstractGraphQLArrayOkResponse,
-  AbstractGraphQLCreatedResponse,
-  AbstractGraphQLOkResponse,
-} from "./ApiResponse.js";
 
-@ObjectType("GetConfigurationByUuidResponse", {
-  implements: AbstractGraphQLOkResponse<ConfigurationNode>,
-})
-export class GetConfigurationResponse extends AbstractGraphQLOkResponse<ConfigurationNode> {
+@ObjectType("GetConfigurationByUuidResponse")
+export class GetConfigurationResponse {
   @Field(() => ConfigurationNode)
   data!: ConfigurationNode;
 }
-@ObjectType("GetAllConfigurationsResponse", {
-  implements: AbstractGraphQLArrayOkResponse<ConfigurationNode>,
-})
-export class GetAllConfigurationsResponse extends AbstractGraphQLArrayOkResponse<ConfigurationNode> {
-  @Field(() => [ConfigurationNode])
-  data!: ConfigurationNode[];
-}
-@ObjectType("CreateConfigurationResponse", {
-  implements: AbstractGraphQLCreatedResponse<ConfigurationNode>,
-})
-export class CreateConfigurationResponse extends AbstractGraphQLCreatedResponse<ConfigurationNode> {
-  @Field(() => ConfigurationNode)
-  data!: ConfigurationNode;
-}
-@ObjectType("CreateConfigurationsResponse", {
-  implements: AbstractGraphQLCreatedResponse<typeof VoidScalar>,
-})
-export class CreateConfigurationsResponse extends AbstractGraphQLOkResponse<
-  typeof VoidScalar
-> {
-  @Field(() => VoidResolver)
-  data!: typeof VoidScalar;
-}
-@ObjectType("DeleteConfigurationResponse", {
-  implements: AbstractGraphQLOkResponse<boolean>,
-})
-export class DeleteConfigurationResponse extends AbstractGraphQLOkResponse<never> {}
+
 @InputType()
 export class CreateConfigurationInput implements Partial<ConfigurationNode> {
   @Field()

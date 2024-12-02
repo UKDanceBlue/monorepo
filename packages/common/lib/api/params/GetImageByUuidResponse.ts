@@ -1,30 +1,17 @@
-import { URLResolver } from "graphql-scalars";
-import { ArgsType,Field, InputType, ObjectType } from "type-graphql";
+import { NonEmptyStringResolver, URLResolver } from "graphql-scalars";
+import { ArgsType, Field, InputType, ObjectType } from "type-graphql";
 
 import { FilteredListQueryArgs } from "../filtering/list-query-args/FilteredListQueryArgs.js";
 import { ImageNode } from "../resources/Image.js";
-import {
-  AbstractGraphQLOkResponse,
-  AbstractGraphQLPaginatedResponse,
-} from "./ApiResponse.js";
+import { AbstractGraphQLPaginatedResponse } from "./ApiResponse.js";
 
-@ObjectType("GetImageByUuidResponse", { implements: AbstractGraphQLOkResponse })
-export class GetImageByUuidResponse extends AbstractGraphQLOkResponse<ImageNode> {
-  @Field(() => ImageNode)
-  data!: ImageNode;
-}
-
-@ObjectType("DeleteImageResponse", {
-  implements: AbstractGraphQLOkResponse<boolean>,
-})
-export class DeleteImageResponse extends AbstractGraphQLOkResponse<never> {}
 @InputType()
 export class CreateImageInput implements Partial<ImageNode> {
-  @Field(() => String, { nullable: true })
-  alt?: string | null;
+  @Field(() => NonEmptyStringResolver, { nullable: true })
+  alt?: string | undefined | null;
 
   @Field(() => URLResolver, { nullable: true })
-  url?: URL | null;
+  url?: URL | undefined | null;
 }
 
 @ArgsType()

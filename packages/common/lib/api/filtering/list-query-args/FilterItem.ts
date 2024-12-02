@@ -159,11 +159,11 @@ export abstract class AbstractOneOfFilterItem<
     Field extends string,
     ValueEnum extends string = string,
   >
-  extends FilterItem<Field, readonly ValueEnum[]>
+  extends FilterItem<Field, ValueEnum[]>
   implements OneOfFilterItemInterface<Field>
 {
   @Field(() => [String])
-  value!: readonly ValueEnum[];
+  value!: ValueEnum[];
 
   comparison!: never;
 }

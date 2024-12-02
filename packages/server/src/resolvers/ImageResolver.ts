@@ -1,27 +1,24 @@
 import { MIMEType } from "node:util";
 
 import { Service } from "@freshgum/typedi";
-import type { GlobalId } from "@ukdanceblue/common";
+import type { CrudResolver, GlobalId } from "@ukdanceblue/common";
 import {
+  AccessControlAuthorized,
   AccessLevel,
   GlobalIdScalar,
   ImageNode,
   LegacyError,
   LegacyErrorCode,
-  MutationAccessControl,
-  QueryAccessControl,
   SortDirection,
 } from "@ukdanceblue/common";
 import {
   CreateImageInput,
-  DeleteImageResponse,
-  GetImageByUuidResponse,
   ListImagesArgs,
   ListImagesResponse,
 } from "@ukdanceblue/common";
 import { URLResolver } from "graphql-scalars";
 import fetch from "node-fetch";
-import { Arg, Args, Mutation, Query, Resolver } from "type-graphql";
+import { Arg, Args, Ctx, Mutation, Query, Resolver } from "type-graphql";
 
 import { FileManager } from "#files/FileManager.js";
 import { generateThumbHash } from "#lib/thumbHash.js";
@@ -30,35 +27,42 @@ import { logger } from "#logging/standardLogging.js";
 import { imageModelToResource } from "#repositories/image/imageModelToResource.js";
 import { ImageRepository } from "#repositories/image/ImageRepository.js";
 
+import type { GraphQLContext } from "./context.js";
+
 @Resolver(() => ImageNode)
 @Service([ImageRepository, FileManager])
-export class ImageResolver {
+export class ImageResolver implements CrudResolver<ImageNode, "image"> {
   constructor(
     private readonly imageRepository: ImageRepository,
     private readonly fileManager: FileManager
   ) {}
 
-  @Query(() => GetImageByUuidResponse, { name: "image" })
-  async getByUuid(
-    @Arg("uuid", () => GlobalIdScalar) { id }: GlobalId
-  ): Promise<GetImageByUuidResponse> {
+  @Query(() => ImageNode, { name: "image" })
+  async image(
+    @Arg("uuid", () => GlobalIdScalar) { id }: GlobalId,
+    @Ctx() { serverUrl }: GraphQLContext
+  ): Promise<ImageNode> {
     const result = await this.imageRepository.findImageByUnique({ uuid: id });
 
     if (result == null) {
       throw new LegacyError(LegacyErrorCode.NotFound, "Image not found");
     }
 
-    return GetImageByUuidResponse.newOk(
-      await imageModelToResource(result, result.file, this.fileManager)
+    return imageModelToResource(
+      result,
+      result.file,
+      this.fileManager,
+      serverUrl
     );
   }
 
-  @QueryAccessControl({
+  @AccessControlAuthorized({
     accessLevel: AccessLevel.Committee,
   })
   @Query(() => ListImagesResponse, { name: "images" })
-  async list(
-    @Args(() => ListImagesArgs) args: ListImagesArgs
+  async images(
+    @Args(() => ListImagesArgs) args: ListImagesArgs,
+    @Ctx() { serverUrl }: GraphQLContext
   ): Promise<ListImagesResponse> {
     const result = await this.imageRepository.listImages({
       filters: args.filters,
@@ -80,7 +84,7 @@ export class ImageResolver {
     return ListImagesResponse.newPaginated({
       data: await Promise.all(
         result.map((model) =>
-          imageModelToResource(model, model.file, this.fileManager)
+          imageModelToResource(model, model.file, this.fileManager, serverUrl)
         )
       ),
       total: count,
@@ -89,11 +93,14 @@ export class ImageResolver {
     });
   }
 
-  @MutationAccessControl({
+  @AccessControlAuthorized({
     accessLevel: AccessLevel.CommitteeChairOrCoordinator,
   })
   @Mutation(() => ImageNode, { name: "createImage" })
-  async create(@Arg("input") input: CreateImageInput): Promise<ImageNode> {
+  async createImage(
+    @Arg("input") input: CreateImageInput,
+    @Ctx() { serverUrl }: GraphQLContext
+  ): Promise<ImageNode> {
     const { mime, thumbHash, width, height } = await handleImageUrl(input.url);
     const result = await this.imageRepository.createImage({
       width,
@@ -128,16 +135,17 @@ export class ImageResolver {
       thumbHash: thumbHash != null ? Buffer.from(thumbHash) : null,
     });
 
-    return imageModelToResource(result, null, this.fileManager);
+    return imageModelToResource(result, null, this.fileManager, serverUrl);
   }
 
-  @MutationAccessControl({
+  @AccessControlAuthorized({
     accessLevel: AccessLevel.CommitteeChairOrCoordinator,
   })
   @Mutation(() => ImageNode, { name: "setImageAltText" })
-  async setAltText(
+  async setImageAltText(
     @Arg("uuid", () => GlobalIdScalar) { id }: GlobalId,
-    @Arg("alt") alt: string
+    @Arg("alt") alt: string,
+    @Ctx() { serverUrl }: GraphQLContext
   ): Promise<ImageNode> {
     const result = await this.imageRepository.updateImage(
       {
@@ -154,16 +162,22 @@ export class ImageResolver {
 
     auditLogger.secure("Image alt text set", { image: result });
 
-    return imageModelToResource(result, result.file, this.fileManager);
+    return imageModelToResource(
+      result,
+      result.file,
+      this.fileManager,
+      serverUrl
+    );
   }
 
-  @MutationAccessControl({
+  @AccessControlAuthorized({
     accessLevel: AccessLevel.CommitteeChairOrCoordinator,
   })
   @Mutation(() => ImageNode, { name: "setImageUrl" })
   async setImageUrl(
     @Arg("uuid", () => GlobalIdScalar) { id }: GlobalId,
-    @Arg("url", () => URLResolver) url: URL
+    @Arg("url", () => URLResolver) url: URL,
+    @Ctx() { serverUrl }: GraphQLContext
   ): Promise<ImageNode> {
     const { mime, thumbHash, width, height } = await handleImageUrl(url);
     const result = await this.imageRepository.updateImage(
@@ -199,16 +213,22 @@ export class ImageResolver {
 
     auditLogger.secure("Image URL set", { image: result });
 
-    return imageModelToResource(result, result.file, this.fileManager);
+    return imageModelToResource(
+      result,
+      result.file,
+      this.fileManager,
+      serverUrl
+    );
   }
 
-  @MutationAccessControl({
+  @AccessControlAuthorized({
     accessLevel: AccessLevel.CommitteeChairOrCoordinator,
   })
-  @Mutation(() => DeleteImageResponse, { name: "deleteImage" })
-  async delete(
-    @Arg("uuid", () => GlobalIdScalar) { id }: GlobalId
-  ): Promise<DeleteImageResponse> {
+  @Mutation(() => ImageNode, { name: "deleteImage" })
+  async deleteImage(
+    @Arg("uuid", () => GlobalIdScalar) { id }: GlobalId,
+    @Ctx() { serverUrl }: GraphQLContext
+  ): Promise<ImageNode> {
     const result = await this.imageRepository.deleteImage({ uuid: id });
 
     if (result == null) {
@@ -217,7 +237,12 @@ export class ImageResolver {
 
     auditLogger.secure("Image deleted", { image: result });
 
-    return DeleteImageResponse.newOk(true);
+    return imageModelToResource(
+      result,
+      result.file,
+      this.fileManager,
+      serverUrl
+    );
   }
 }
 

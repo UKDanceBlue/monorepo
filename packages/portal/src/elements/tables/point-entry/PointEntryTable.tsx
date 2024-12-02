@@ -3,8 +3,8 @@ import { dateTimeFromSomething } from "@ukdanceblue/common";
 import { Button, Table } from "antd";
 import type { UseQueryExecute } from "urql";
 
-import type { FragmentType } from "#graphql/index.js";
-import { getFragmentData, graphql } from "#graphql/index.js";
+import type { FragmentOf } from "#graphql/index.js";
+import { graphql, readFragment } from "#graphql/index.js";
 
 import { usePointEntryDeletePopup } from "../../components/point-entry/PointEntryDeletePopup";
 
@@ -30,7 +30,7 @@ export function PointEntryTable({
   refetch,
 }: {
   teamFragment:
-    | readonly FragmentType<typeof PointEntryTableFragment>[]
+    | readonly FragmentOf<typeof PointEntryTableFragment>[]
     | undefined;
   loading: boolean;
   refetch: UseQueryExecute;
@@ -41,7 +41,7 @@ export function PointEntryTable({
     });
 
   const teamData =
-    getFragmentData(PointEntryTableFragment, teamFragment) ?? undefined;
+    teamFragment && readFragment(PointEntryTableFragment, teamFragment);
 
   return (
     <>

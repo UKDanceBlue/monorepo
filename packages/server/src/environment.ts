@@ -7,8 +7,7 @@ import { statSync } from "fs";
 import { readFile } from "fs/promises";
 import path, { isAbsolute } from "path";
 
-import { setEnvironment } from "#lib/environmentTokens.js";
-import { isDevelopment } from "#lib/nodeEnv.js";
+import { setEnvironment } from "#lib/typediTokens.js";
 import { type SyslogLevels } from "#logging/SyslogLevels.js";
 // NOTE: You cannot import any files that depend on environment variables from this file
 import { expoServiceToken } from "#notification/expoServiceToken.js";
@@ -20,6 +19,8 @@ if (process.env.NODE_ENV === "test") {
     "Environment variables are not set in test environment, instead add mock values to the container"
   );
 }
+
+const isDevelopment = process.env.NODE_ENV === "development";
 
 // Load environment variables
 const LOGGING_LEVEL = getEnv(
@@ -35,7 +36,6 @@ const MS_CLIENT_SECRET = getEnv("MS_CLIENT_SECRET", null);
 const EXPO_ACCESS_TOKEN = getEnv("EXPO_ACCESS_TOKEN", null);
 const DBFUNDS_API_KEY = getEnv("DBFUNDS_API_KEY", null);
 const DBFUNDS_API_ORIGIN = getEnv("DBFUNDS_API_ORIGIN", null);
-const SERVE_ORIGIN = getEnv("SERVE_ORIGIN", "http://localhost:8000");
 const MAX_FILE_SIZE = getEnv("MAX_FILE_SIZE", "10");
 const SERVE_PATH = getEnv("SERVE_PATH", "/data/serve");
 const UPLOAD_PATH = getEnv("UPLOAD_PATH", "/data/serve/uploads");
@@ -51,14 +51,6 @@ if (Number.isNaN(applicationPort)) {
 }
 if (applicationPort < 0 || applicationPort > 65_535) {
   throw new RangeError("APPLICATION_PORT is not a valid port number");
-}
-
-// Serve origin
-const serveOrigin = await SERVE_ORIGIN;
-try {
-  new URL(serveOrigin);
-} catch {
-  throw new Error("SERVE_ORIGIN is not a valid URL");
 }
 
 // File upload settings
@@ -110,17 +102,18 @@ setEnvironment({
   applicationPort,
   cookieSecret: await COOKIE_SECRET,
   jwtSecret: await JWT_SECRET,
-  msOidcUrl: await MS_OIDC_URL,
+  msOidcUrl: new URL(await MS_OIDC_URL),
   msClientId: await MS_CLIENT_ID,
   msClientSecret: await MS_CLIENT_SECRET,
   dbFundsApiKey: await DBFUNDS_API_KEY,
   dbFundsApiOrigin: await DBFUNDS_API_ORIGIN,
-  serveOrigin,
   maxFileSize,
   servePath,
   uploadPath,
   logDir: await LOG_DIR,
   superAdminLinkblues,
+  isDevelopmentToken: isDevelopment,
+  isRepl: false,
 });
 
 /**

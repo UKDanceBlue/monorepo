@@ -19,10 +19,10 @@ export function TeamCreator({
   const { message } = App.useApp();
 
   const { formApi } = useTeamCreatorForm((ret) => {
-    if (ret?.uuid) {
+    if (ret?.id) {
       navigate({
         to: "/teams/$teamId",
-        params: { teamId: ret.uuid },
+        params: { teamId: ret.id },
       }).catch((error: unknown) => console.error(error));
     }
   }, selectedMarathon?.id);

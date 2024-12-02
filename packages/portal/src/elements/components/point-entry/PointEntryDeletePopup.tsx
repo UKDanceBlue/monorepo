@@ -8,7 +8,7 @@ import { graphql } from "#graphql/index.js";
 const deletePointEntryDocument = graphql(/* GraphQL */ `
   mutation DeletePointEntry($uuid: GlobalId!) {
     deletePointEntry(uuid: $uuid) {
-      ok
+      id
     }
   }
 `);
@@ -37,11 +37,11 @@ export const usePointEntryDeletePopup = ({
   };
 
   useEffect(() => {
-    if (data?.deletePointEntry.ok) {
+    if (data?.deletePointEntry.id) {
       setUuid(null);
       setOpen(false);
     }
-  }, [data?.deletePointEntry.ok]);
+  }, [data?.deletePointEntry.id]);
 
   const PointEntryDeletePopup = (
     <>
@@ -53,7 +53,7 @@ export const usePointEntryDeletePopup = ({
           if (uuid) {
             deletePointEntry({ uuid })
               .then((value) => {
-                if (value.data?.deletePointEntry.ok) {
+                if (value.data?.deletePointEntry.id) {
                   showInfoMessage({
                     message: "Point entry successfully deleted",
                   });

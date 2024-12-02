@@ -8,7 +8,7 @@ import { graphql } from "#graphql/index.js";
 const deleteTeamDocument = graphql(/* GraphQL */ `
   mutation DeleteTeam($uuid: GlobalId!) {
     deleteTeam(uuid: $uuid) {
-      ok
+      id
     }
   }
 `);
@@ -34,10 +34,10 @@ export const useTeamDeletePopup = ({
   };
 
   useEffect(() => {
-    if (data?.deleteTeam.ok) {
+    if (data?.deleteTeam.id) {
       setOpen(false);
     }
-  }, [data?.deleteTeam.ok]);
+  }, [data?.deleteTeam.id]);
 
   const TeamDeletePopup = (
     <>
@@ -47,7 +47,7 @@ export const useTeamDeletePopup = ({
         open={open}
         onOk={() =>
           deleteTeam({ uuid }).then((value) => {
-            if (value.data?.deleteTeam.ok) {
+            if (value.data?.deleteTeam.id) {
               showInfoMessage({
                 message: "Team successfully deleted",
               });

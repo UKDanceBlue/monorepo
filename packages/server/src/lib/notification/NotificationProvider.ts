@@ -16,7 +16,9 @@ export interface NotificationAudienceFilter {
   memberOfTeamIds?: string[];
   personIds?: string[];
 }
-
+console.log(
+  "This page allows you to create a notification. The outline of the notification will be presented at the top of the page and who it will go to. You can send this to a specific person or group of people or everyone. After clicking create you will go to the “notification overview” page. On this page you will then click manage delivery. This is where you will schedule the notification or just send the notification."
+);
 export interface NotificationProvider {
   /**
    * Create a notification in the database, but takes no action on sending it.

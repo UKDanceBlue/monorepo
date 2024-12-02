@@ -38,7 +38,7 @@
     }
   },
 
-  "postCreateCommand": "yarn install",
+  "postCreateCommand": "/workspaces/${localWorkspaceFolderBasename}/.devcontainer/post-create.sh",
 
   "containerEnv": {
     "HOME": "/home/node",
@@ -47,30 +47,14 @@
     "APPLICATION_PORT": "8000",
     "MS_OIDC_URL": "https://login.microsoftonline.com/2b30530b-69b6-4457-b818-481cb53d42ae/v2.0/.well-known/openid-configuration",
     "SERVE_ORIGIN": "http://localhost:8000",
-    "SERVE_PATH": "/workspaces/monorepo/local-uploads",
-    "UPLOAD_PATH": "/workspaces/monorepo/local-uploads",
+    "SERVE_PATH": "/workspaces/${localWorkspaceFolderBasename}/local-uploads",
+    "UPLOAD_PATH": "/workspaces/${localWorkspaceFolderBasename}/local-uploads",
     "MAX_FILE_SIZE": "200",
-    "LOG_DIR": "/workspaces/monorepo/packages/server/logs"
+    "LOG_DIR": "/workspaces/${localWorkspaceFolderBasename}/packages/server/logs"
   },
 
   "customizations": {
     "vscode": {
-      "settings": {
-        "git.autofetch": true,
-        "cSpell.words": ["emerg", "healthcheck", "maxsize", "RNCAL", "umzug"],
-        "[typescriptreact]": {
-          "editor.defaultFormatter": "esbenp.prettier-vscode"
-        },
-        "[typescript]": {
-          "editor.defaultFormatter": "esbenp.prettier-vscode"
-        },
-        "[javascript]": {
-          "editor.defaultFormatter": "esbenp.prettier-vscode"
-        },
-        "[json]": {
-          "editor.defaultFormatter": "esbenp.prettier-vscode"
-        }
-      },
       "extensions": [
         "dbaeumer.vscode-eslint",
         "msjsdiag.vscode-react-native",
@@ -79,22 +63,19 @@
         "christian-kohler.npm-intellisense",
         "VisualStudioExptTeam.vscodeintellicode",
         "VisualStudioExptTeam.intellicode-api-usage-examples",
-        "cmstead.js-codeformer",
-        "cmstead.jsrefactor",
         "ecmel.vscode-html-css",
         "GraphQL.vscode-graphql-syntax",
-        "GraphQL.vscode-graphql@0.9.3",
         "eamodio.gitlens",
         "github.vscode-github-actions",
         "expo.vscode-expo-tools",
-        "ms-azuretools.vscode-docker",
         "naumovs.color-highlight",
         "streetsidesoftware.code-spell-checker",
         "vitest.explorer",
         "GitHub.copilot",
         "GitHub.vscode-pull-request-github",
         "mtxr.sqltools",
-        "mtxr.sqltools-driver-pg"
+        "mtxr.sqltools-driver-pg",
+        "fill-labs.dependi"
       ]
     }
   },

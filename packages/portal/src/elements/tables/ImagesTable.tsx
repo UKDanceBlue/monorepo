@@ -7,7 +7,7 @@ import { thumbHashToDataURL } from "thumbhash";
 import { useQuery } from "urql";
 
 import { API_BASE_URL } from "#config/api.js";
-import { getFragmentData, graphql } from "#graphql/index.js";
+import { graphql, readFragment } from "#graphql/index.js";
 import { useAntFeedback } from "#hooks/useAntFeedback.js";
 import { useListQuery } from "#hooks/useListQuery.js";
 import { useQueryStatusWatcher } from "#hooks/useQueryStatusWatcher.js";
@@ -25,38 +25,41 @@ const ImagesTableFragment = graphql(/* GraphQL */ `
   }
 `);
 
-const imagesTableQueryDocument = graphql(/* GraphQL */ `
-  query ImagesTable(
-    $page: Int
-    $pageSize: Int
-    $sortBy: [String!]
-    $sortDirection: [SortDirection!]
-    $dateFilters: [ImageResolverKeyedDateFilterItem!]
-    $isNullFilters: [ImageResolverKeyedIsNullFilterItem!]
-    $oneOfFilters: [ImageResolverKeyedOneOfFilterItem!]
-    $stringFilters: [ImageResolverKeyedStringFilterItem!]
-    $numericFilters: [ImageResolverKeyedNumericFilterItem!]
-  ) {
-    images(
-      page: $page
-      pageSize: $pageSize
-      sortBy: $sortBy
-      sortDirection: $sortDirection
-      dateFilters: $dateFilters
-      isNullFilters: $isNullFilters
-      oneOfFilters: $oneOfFilters
-      stringFilters: $stringFilters
-      numericFilters: $numericFilters
+const imagesTableQueryDocument = graphql(
+  /* GraphQL */ `
+    query ImagesTable(
+      $page: Int
+      $pageSize: Int
+      $sortBy: [String!]
+      $sortDirection: [SortDirection!]
+      $dateFilters: [ImageResolverKeyedDateFilterItem!]
+      $isNullFilters: [ImageResolverKeyedIsNullFilterItem!]
+      $oneOfFilters: [ImageResolverKeyedOneOfFilterItem!]
+      $stringFilters: [ImageResolverKeyedStringFilterItem!]
+      $numericFilters: [ImageResolverKeyedNumericFilterItem!]
     ) {
-      page
-      pageSize
-      total
-      data {
-        ...ImagesTableFragment
+      images(
+        page: $page
+        pageSize: $pageSize
+        sortBy: $sortBy
+        sortDirection: $sortDirection
+        dateFilters: $dateFilters
+        isNullFilters: $isNullFilters
+        oneOfFilters: $oneOfFilters
+        stringFilters: $stringFilters
+        numericFilters: $numericFilters
+      ) {
+        page
+        pageSize
+        total
+        data {
+          ...ImagesTableFragment
+        }
       }
     }
-  }
-`);
+  `,
+  [ImagesTableFragment]
+);
 
 export const ImagesTable = ({
   previewedImageId,
@@ -94,10 +97,9 @@ export const ImagesTable = ({
     loadingMessage: "Loading images...",
   });
 
-  const listImagesData = getFragmentData(
-    ImagesTableFragment,
-    imagesDocument?.images.data
-  );
+  const listImagesData =
+    imagesDocument?.images.data &&
+    readFragment(ImagesTableFragment, imagesDocument.images.data);
 
   const [uploadingImage, setUploadingImage] = useState<
     Exclude<typeof listImagesData, null | undefined>[number] | null

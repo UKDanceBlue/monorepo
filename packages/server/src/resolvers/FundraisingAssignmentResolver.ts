@@ -2,14 +2,15 @@ import { Container, Service } from "@freshgum/typedi";
 import type { AccessControlContext, GlobalId } from "@ukdanceblue/common";
 import {
   checkParam,
+  CrudResolver,
+  CustomMutationAccessControl,
+  CustomQueryAccessControl,
   FundraisingAssignmentNode,
   FundraisingEntryNode,
   GlobalIdScalar,
   isGlobalId,
   MembershipPositionType,
-  MutationAccessControl,
   PersonNode,
-  QueryAccessControl,
   TeamType,
 } from "@ukdanceblue/common";
 import {
@@ -17,7 +18,7 @@ import {
   UpdateFundraisingAssignmentInput,
 } from "@ukdanceblue/common";
 import { ConcreteResult } from "@ukdanceblue/common/error";
-import { Option } from "ts-results-es";
+import { AsyncResult, Option } from "ts-results-es";
 import {
   Arg,
   FieldResolver,
@@ -37,13 +38,15 @@ import { globalFundraisingAccessParam } from "./accessParams.js";
 
 @Resolver(() => FundraisingAssignmentNode)
 @Service([FundraisingEntryRepository, PersonRepository])
-export class FundraisingAssignmentResolver {
+export class FundraisingAssignmentResolver
+  implements CrudResolver<FundraisingAssignmentNode, "fundraisingAssignment">
+{
   constructor(
     private readonly fundraisingEntryRepository: FundraisingEntryRepository,
     private readonly personRepository: PersonRepository
   ) {}
 
-  @QueryAccessControl<never, FundraisingAssignmentNode>(
+  @CustomQueryAccessControl<never, FundraisingAssignmentNode>(
     async (
       root: never,
       context: AccessControlContext,
@@ -103,50 +106,53 @@ export class FundraisingAssignmentResolver {
       .promise;
   }
 
-  @MutationAccessControl(async (context, args): Promise<boolean | null> => {
-    const globalFundraisingAccess = checkParam(
-      globalFundraisingAccessParam,
-      context.authorization,
-      {},
-      args,
-      context
-    );
-    if (globalFundraisingAccess.isErr()) {
-      return false;
-    }
-    if (globalFundraisingAccess.value) {
-      return true;
-    }
-    const { teamMemberships } = context;
-
-    const {
-      personId: { id: personId },
-    } = args as { personId: GlobalId };
-
-    const personRepository: PersonRepository = Container.get(PersonRepository);
-    const membership = await personRepository.findMembershipsOfPerson(
-      { uuid: personId },
-      undefined,
-      [TeamType.Spirit],
-      true
-    );
-    if (membership.isErr()) {
-      return false;
-    }
-
-    for (const userCaptaincy of teamMemberships) {
-      if (
-        membership.value.some(
-          (personMembership) =>
-            personMembership.team.uuid === userCaptaincy.teamId
-        ) &&
-        userCaptaincy.position === MembershipPositionType.Captain
-      ) {
+  @CustomMutationAccessControl(
+    async (context, args): Promise<boolean | null> => {
+      const globalFundraisingAccess = checkParam(
+        globalFundraisingAccessParam,
+        context.authorization,
+        {},
+        args,
+        context
+      );
+      if (globalFundraisingAccess.isErr()) {
+        return false;
+      }
+      if (globalFundraisingAccess.value) {
         return true;
       }
+      const { teamMemberships } = context;
+
+      const {
+        personId: { id: personId },
+      } = args as { personId: GlobalId };
+
+      const personRepository: PersonRepository =
+        Container.get(PersonRepository);
+      const membership = await personRepository.findMembershipsOfPerson(
+        { uuid: personId },
+        undefined,
+        [TeamType.Spirit],
+        true
+      );
+      if (membership.isErr()) {
+        return false;
+      }
+
+      for (const userCaptaincy of teamMemberships) {
+        if (
+          membership.value.some(
+            (personMembership) =>
+              personMembership.team.uuid === userCaptaincy.teamId
+          ) &&
+          userCaptaincy.position === MembershipPositionType.Captain
+        ) {
+          return true;
+        }
+      }
+      return false;
     }
-    return false;
-  })
+  )
   @Mutation(() => FundraisingAssignmentNode)
   async assignEntryToPerson(
     @Arg("entryId", () => GlobalIdScalar) { id: entryId }: GlobalId,
@@ -163,7 +169,7 @@ export class FundraisingAssignmentResolver {
     return assignment.map(fundraisingAssignmentModelToNode);
   }
 
-  @MutationAccessControl(
+  @CustomMutationAccessControl(
     async (
       context,
       { id: fundraisingAssignmentId }
@@ -221,7 +227,7 @@ export class FundraisingAssignmentResolver {
     return assignment.map(fundraisingAssignmentModelToNode);
   }
 
-  @MutationAccessControl(
+  @CustomMutationAccessControl(
     async (
       context,
       { id: fundraisingAssignmentId }
@@ -269,15 +275,17 @@ export class FundraisingAssignmentResolver {
   @Mutation(() => FundraisingAssignmentNode)
   async deleteFundraisingAssignment(
     @Arg("id", () => GlobalIdScalar) { id }: GlobalId
-  ): Promise<ConcreteResult<Promise<FundraisingAssignmentNode>>> {
-    const assignment = await this.fundraisingEntryRepository.deleteAssignment({
-      uuid: id,
-    });
+  ): Promise<ConcreteResult<FundraisingAssignmentNode>> {
+    const assignment = new AsyncResult(
+      this.fundraisingEntryRepository.deleteAssignment({
+        uuid: id,
+      })
+    );
 
-    return assignment.map(fundraisingAssignmentModelToNode);
+    return assignment.map(fundraisingAssignmentModelToNode).promise;
   }
 
-  @QueryAccessControl<never, PersonNode>(
+  @CustomQueryAccessControl<never, PersonNode>(
     async (root, context, result): Promise<boolean | null> => {
       // We can't grant blanket access as otherwise people would see who else was assigned to an entry
 
@@ -342,7 +350,7 @@ export class FundraisingAssignmentResolver {
       .promise;
   }
 
-  @QueryAccessControl<never, PersonNode>(
+  @CustomQueryAccessControl<never, PersonNode>(
     async (root, context, result): Promise<boolean | null> => {
       // We can't grant blanket access as otherwise people would see who else was assigned to an entry
 

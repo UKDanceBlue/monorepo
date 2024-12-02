@@ -2,22 +2,20 @@ import { useForm } from "@tanstack/react-form";
 import { TeamType } from "@ukdanceblue/common";
 import { useMutation } from "urql";
 
-import { type SetTeamInput } from "#graphql/graphql.js";
-import type { DocumentType, FragmentType } from "#graphql/index.js";
-import { getFragmentData } from "#graphql/index.js";
+import { teamEditorDocument, TeamEditorFragment } from "#documents/team.js";
+import type { FragmentOf, InputOf, ResultOf } from "#graphql/index.js";
+import { readFragment } from "#graphql/index.js";
 import { useQueryStatusWatcher } from "#hooks/useQueryStatusWatcher.js";
 
-import { teamEditorDocument, TeamEditorFragment } from "./TeamEditorGQL.js";
-
 export function useTeamEditorForm(
-  teamFragment: FragmentType<typeof TeamEditorFragment> | undefined,
+  teamFragment: FragmentOf<typeof TeamEditorFragment> | undefined,
   afterSubmit:
     | ((
-        ret: DocumentType<typeof teamEditorDocument>["setTeam"] | undefined
+        ret: ResultOf<typeof teamEditorDocument>["setTeam"] | undefined
       ) => void | Promise<void>)
     | undefined
 ) {
-  const teamData = getFragmentData(TeamEditorFragment, teamFragment);
+  const teamData = readFragment(TeamEditorFragment, teamFragment);
 
   // Form
   const [{ fetching, error }, setTeam] = useMutation(teamEditorDocument);
@@ -27,7 +25,7 @@ export function useTeamEditorForm(
     loadingMessage: "Saving team...",
   });
 
-  const Form = useForm<SetTeamInput>({
+  const Form = useForm<InputOf<typeof teamEditorDocument>>({
     defaultValues: {
       name: teamData?.name ?? "",
       legacyStatus: teamData?.legacyStatus ?? null,

@@ -1,17 +1,12 @@
-import { ArgsType, Field, InputType, Int,ObjectType } from "type-graphql";
+import { ArgsType, Field, InputType, Int, ObjectType } from "type-graphql";
 
 import { FilteredListQueryArgs } from "../filtering/list-query-args/FilteredListQueryArgs.js";
 import { DeviceNode } from "../resources/Device.js";
 import { GlobalId, GlobalIdScalar } from "../scalars/GlobalId.js";
-import {
-  AbstractGraphQLOkResponse,
-  AbstractGraphQLPaginatedResponse,
-} from "./ApiResponse.js";
+import { AbstractGraphQLPaginatedResponse } from "./ApiResponse.js";
 
-@ObjectType("GetDeviceByUuidResponse", {
-  implements: AbstractGraphQLOkResponse<DeviceNode>,
-})
-export class GetDeviceByUuidResponse extends AbstractGraphQLOkResponse<DeviceNode> {
+@ObjectType("GetDeviceByUuidResponse")
+export class GetDeviceByUuidResponse {
   @Field(() => DeviceNode)
   data!: DeviceNode;
 }
@@ -22,18 +17,14 @@ export class ListDevicesResponse extends AbstractGraphQLPaginatedResponse<Device
   @Field(() => [DeviceNode])
   data!: DeviceNode[];
 }
-@ObjectType("RegisterDeviceResponse", {
-  implements: AbstractGraphQLOkResponse<DeviceNode>,
-})
-export class RegisterDeviceResponse extends AbstractGraphQLOkResponse<DeviceNode> {
+@ObjectType("RegisterDeviceResponse")
+export class RegisterDeviceResponse {
+  @Field(() => Boolean)
+  ok!: true;
+
   @Field(() => DeviceNode)
   data!: DeviceNode;
 }
-@ObjectType("DeleteDeviceResponse", {
-  implements: AbstractGraphQLOkResponse<boolean>,
-})
-export class DeleteDeviceResponse extends AbstractGraphQLOkResponse<never> {}
-
 @InputType()
 export class RegisterDeviceInput {
   @Field(() => String, {
@@ -45,7 +36,7 @@ export class RegisterDeviceInput {
     description: "The Expo push token of the device",
     nullable: true,
   })
-  expoPushToken?: string | null;
+  expoPushToken?: string | undefined | null;
 
   @Field(() => String, {
     description: "base64 encoded SHA-256 hash of a secret known to the device",
@@ -56,7 +47,7 @@ export class RegisterDeviceInput {
     description: "The ID of the last user to log in on this device",
     nullable: true,
   })
-  lastUserId?: GlobalId | null;
+  lastUserId?: GlobalId | undefined | null;
 }
 
 @ArgsType()

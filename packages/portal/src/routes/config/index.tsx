@@ -1,3 +1,6 @@
+console.log(
+  "This page shows different possible formats. the very top config is of our tab bar for example."
+);
 import { createFileRoute } from "@tanstack/react-router";
 import { AccessLevel } from "@ukdanceblue/common";
 import { Button, Collapse, Divider, Flex, Form, Input, Space } from "antd";

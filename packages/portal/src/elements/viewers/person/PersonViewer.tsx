@@ -14,8 +14,8 @@ import {
 } from "@ukdanceblue/common";
 import { Button, Card, Descriptions, Empty, Flex, Typography } from "antd";
 
-import type { FragmentType } from "#graphql/index.js";
-import { getFragmentData, graphql } from "#graphql/index.js";
+import type { FragmentOf } from "#graphql/index.js";
+import { graphql,readFragment } from "#graphql/index.js";
 import { useAuthorizationRequirement } from "#hooks/useLoginState.js";
 
 import { usePersonDeletePopup } from "../../components/person/PersonDeletePopup";
@@ -27,6 +27,16 @@ export const PersonViewerFragment = graphql(/* GraphQL */ `
     linkblue
     email
     dbRole
+    primarySpiritTeam: primaryTeam(teamType: Spirit) {
+      team {
+        id
+      }
+    }
+    primaryMoraleTeam: primaryTeam(teamType: Morale) {
+      team {
+        id
+      }
+    }
     teams {
       position
       team {
@@ -46,10 +56,10 @@ export function PersonViewer({
   personFragment: PersonFragment,
   authorization,
 }: {
-  personFragment?: FragmentType<typeof PersonViewerFragment> | undefined | null;
+  personFragment?: FragmentOf<typeof PersonViewerFragment> | undefined | null;
   authorization: Authorization | undefined;
 }) {
-  const personData = getFragmentData(PersonViewerFragment, PersonFragment);
+  const personData = readFragment(PersonViewerFragment, PersonFragment);
 
   const navigate = useNavigate();
   const { PersonDeletePopup, showModal } = usePersonDeletePopup({
@@ -170,7 +180,17 @@ export function PersonViewer({
 
                         return (
                           <div key={team.team.id}>
-                            <dt>
+                            <dt
+                              style={{
+                                fontWeight:
+                                  personData.primarySpiritTeam?.team.id ===
+                                    team.team.id ||
+                                  personData.primaryMoraleTeam?.team.id ===
+                                    team.team.id
+                                    ? "bold"
+                                    : "normal",
+                              }}
+                            >
                               {team.team.name} ({team.team.marathon.year})
                             </dt>
                             <dd>{children}</dd>

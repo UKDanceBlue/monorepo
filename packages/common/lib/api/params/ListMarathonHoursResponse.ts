@@ -1,5 +1,5 @@
-import { DateTimeISOResolver } from "graphql-scalars";
-import { ArgsType,Field, InputType, ObjectType } from "type-graphql";
+import { DateTimeISOResolver, NonEmptyStringResolver } from "graphql-scalars";
+import { ArgsType, Field, InputType, ObjectType } from "type-graphql";
 
 import { FilteredListQueryArgs } from "../filtering/list-query-args/FilteredListQueryArgs.js";
 import { MarathonHourNode } from "../resources/MarathonHour.js";
@@ -15,13 +15,13 @@ export class ListMarathonHoursResponse extends AbstractGraphQLPaginatedResponse<
 
 @InputType()
 export class CreateMarathonHourInput {
-  @Field(() => String)
+  @Field(() => NonEmptyStringResolver)
   title!: string;
 
-  @Field(() => String, { nullable: true })
-  details?: string | null;
+  @Field(() => NonEmptyStringResolver, { nullable: true })
+  details?: string | undefined | null;
 
-  @Field(() => String)
+  @Field(() => NonEmptyStringResolver)
   durationInfo!: string;
 
   @Field(() => DateTimeISOResolver)
@@ -30,13 +30,13 @@ export class CreateMarathonHourInput {
 
 @InputType()
 export class SetMarathonHourInput {
-  @Field(() => String)
+  @Field(() => NonEmptyStringResolver)
   title!: string;
 
-  @Field(() => String, { nullable: true })
-  details?: string | null;
+  @Field(() => NonEmptyStringResolver, { nullable: true })
+  details?: string | undefined | null;
 
-  @Field(() => String)
+  @Field(() => NonEmptyStringResolver)
   durationInfo!: string;
 
   @Field(() => DateTimeISOResolver)

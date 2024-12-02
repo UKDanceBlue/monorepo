@@ -17,8 +17,8 @@ export class CommitteeNode extends TimestampedResource implements Node {
   static init(init: {
     id: string;
     identifier: CommitteeIdentifier;
-    updatedAt?: Date | null;
-    createdAt?: Date | null;
+    updatedAt?: Date | undefined | null;
+    createdAt?: Date | undefined | null;
   }) {
     return this.createInstance().withValues(init);
   }

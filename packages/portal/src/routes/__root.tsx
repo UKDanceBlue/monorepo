@@ -4,7 +4,6 @@ import type { useAppProps } from "antd/es/app/context.js";
 import { lazy, Suspense } from "react";
 import type { Client as UrqlClient } from "urql";
 
-import { ServerCanary } from "#elements/components/ServerCanary";
 import { NavigationMenu } from "#elements/singletons/NavigationMenu.js";
 import { refreshLoginState } from "#hooks/useLoginState.js";
 import { routerAuthCheck } from "#tools/routerAuthCheck.js";
@@ -40,7 +39,6 @@ function RootComponent() {
           }}
         >
           <Layout.Content style={{ padding: "1vh 15vw" }}>
-            <ServerCanary />
             <Outlet />
           </Layout.Content>
           <Layout.Footer></Layout.Footer>

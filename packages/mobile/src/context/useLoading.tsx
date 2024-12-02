@@ -1,9 +1,11 @@
-import { useCallback, useContext, useId, useState } from "react";
+import { createContext, useCallback, useContext, useId, useState } from "react";
 
-import { useTimeout } from "#common/hooks/useTimeout";
-import { Logger } from "#common/logger/Logger";
+import { useTimeout } from "@/common/hooks/useTimeout";
+import { Logger } from "@/common/logger/Logger";
 
-import { LoadingContext } from "./loading";
+export const LoadingContext = createContext<
+  [Partial<Record<string, boolean>>, (state: boolean, id: string) => void]
+>([{}, () => undefined]);
 
 /**
  * For local purposes this is identical to useState<boolean>(false), but it also sets the loading state in the global LoadingContext.

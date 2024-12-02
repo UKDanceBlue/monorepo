@@ -19,6 +19,7 @@ import { universalCatch } from "../common/logging";
 import RootScreen from "../navigation/root/RootScreen";
 import { useReactNavigationTheme } from "../theme";
 import type { RootStackParamList } from "../types/navigationTypes";
+import { navigationIntegration } from "./routingInstrumentation";
 
 const linkingPrefixes = [createLinkingURL("/")];
 
@@ -116,6 +117,9 @@ export const FilledNavigationContainer = () => {
               },
             },
           },
+        }}
+        onReady={() => {
+          navigationIntegration.registerNavigationContainer(navigationRef);
         }}
       >
         <WebpageModal

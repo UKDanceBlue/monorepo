@@ -35,7 +35,7 @@ export type ImageFilters = FilterItems<
 
 type UniqueImageParam = { id: number } | { uuid: string };
 
-import { prismaToken } from "#prisma";
+import { prismaToken } from "#lib/typediTokens.js";
 
 @Service([prismaToken])
 export class ImageRepository {
@@ -108,7 +108,11 @@ export class ImageRepository {
 
   deleteImage(param: UniqueImageParam) {
     try {
-      return this.prisma.image.delete({ where: param });
+      // TODO: Clean up orphaned files
+      return this.prisma.image.delete({
+        where: param,
+        include: { file: true },
+      });
     } catch (error) {
       if (
         error instanceof Prisma.PrismaClientKnownRequestError &&

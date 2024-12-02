@@ -18,12 +18,12 @@ import {
 } from "native-base";
 import { useMemo } from "react";
 
-import { useLogin } from "#common/auth";
-import JumbotronGeometric from "#common/components/JumbotronGeometric";
-import { useThemeFonts } from "#common/customHooks";
-import { universalCatch } from "#common/logging";
-import type { FragmentType } from "#graphql/index";
-import { getFragmentData, graphql } from "#graphql/index";
+import { useLogin } from "@/common/auth";
+import JumbotronGeometric from "@/common/components/JumbotronGeometric";
+import { useThemeFonts } from "@/common/customHooks";
+import { universalCatch } from "@/common/logging";
+import type { FragmentType } from "@/graphql/index";
+import { graphql,readFragment } from "@/graphql/index";
 
 import { ProfileFooter } from "./ProfileFooter";
 
@@ -65,11 +65,11 @@ const ProfileScreen = ({
     typeof ProfileScreenUserFragment
   > | null;
 }) => {
-  const authData = getFragmentData(
+  const authData = readFragment(
     ProfileScreenAuthFragment,
     profileScreenAuthFragment
   );
-  const userData = getFragmentData(
+  const userData = readFragment(
     ProfileScreenUserFragment,
     profileScreenUserFragment
   );

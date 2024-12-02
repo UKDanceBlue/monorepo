@@ -90,7 +90,7 @@ function normalizeReceiptErrorCode(
   return normalizedCode;
 }
 
-import { prismaToken } from "#prisma";
+import { prismaToken } from "#lib/typediTokens.js";
 
 @Service([prismaToken])
 export class NotificationDeliveryRepository {

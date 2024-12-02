@@ -56,7 +56,7 @@ type CommitteeUniqueParam =
   | SimpleUniqueParam
   | { identifier: CommitteeIdentifier };
 
-import { prismaToken } from "#prisma";
+import { prismaToken } from "#lib/typediTokens.js";
 
 @Service([prismaToken, MembershipRepository, MarathonRepository])
 export class CommitteeRepository {

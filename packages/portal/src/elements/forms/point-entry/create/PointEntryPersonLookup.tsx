@@ -16,7 +16,7 @@ import {
   getPersonByLinkBlueDocument,
   getPersonByUuidDocument,
   searchPersonByNameDocument,
-} from "./PointEntryCreatorGQL.js";
+} from "../../../../documents/pointEntry.js";
 import type { usePointEntryCreatorForm } from "./usePointEntryCreatorForm.js";
 
 const generalLinkblueRegex = new RegExp(/^[A-Za-z]{3,4}\d{3}$/);
@@ -259,7 +259,7 @@ export function PointEntryPersonLookup({
                         try {
                           if (!generalLinkblueRegex.test(linkblueFieldValue)) {
                             try {
-                              await openConfirmModal();
+                              await openConfirmModal(undefined);
                             } catch (error) {
                               if (error === "cancel") {
                                 return;

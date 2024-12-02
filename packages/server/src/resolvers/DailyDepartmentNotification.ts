@@ -1,13 +1,12 @@
 import { Service } from "@freshgum/typedi";
-import type { GlobalId } from "@ukdanceblue/common";
+import type { CrudResolver, GlobalId } from "@ukdanceblue/common";
 import {
+  AccessControlAuthorized,
   AccessLevel,
   DailyDepartmentNotificationBatchNode,
   DailyDepartmentNotificationNode,
   fundraisingAccess,
   GlobalIdScalar,
-  MutationAccessControl,
-  QueryAccessControl,
   SortDirection,
 } from "@ukdanceblue/common";
 import {
@@ -16,10 +15,11 @@ import {
   ListDailyDepartmentNotificationsResponse,
 } from "@ukdanceblue/common";
 import { ConcreteError, ConcreteResult } from "@ukdanceblue/common/error";
-import { AsyncResult, Ok, Result } from "ts-results-es";
+import { AsyncResult, Ok, Option, Result } from "ts-results-es";
 import {
   Arg,
   Args,
+  Ctx,
   FieldResolver,
   Mutation,
   Query,
@@ -33,14 +33,22 @@ import {
 } from "#repositories/dailyDepartmentNotification/ddnModelToResource.js";
 import { DailyDepartmentNotificationRepository } from "#repositories/dailyDepartmentNotification/DDNRepository.js";
 
+import type { GraphQLContext } from "./context.js";
+
 @Resolver(() => DailyDepartmentNotificationNode)
 @Service([DailyDepartmentNotificationRepository])
-export class DailyDepartmentNotificationResolver {
+export class DailyDepartmentNotificationResolver
+  implements
+    CrudResolver<
+      DailyDepartmentNotificationNode,
+      "dailyDepartmentNotification"
+    >
+{
   constructor(
     private readonly dailyDepartmentNotificationRepository: DailyDepartmentNotificationRepository
   ) {}
 
-  @QueryAccessControl(
+  @AccessControlAuthorized(
     {
       accessLevel: AccessLevel.SuperAdmin,
     },
@@ -49,17 +57,19 @@ export class DailyDepartmentNotificationResolver {
   @Query(() => DailyDepartmentNotificationNode)
   async dailyDepartmentNotification(
     @Arg("id", () => GlobalIdScalar) { id }: GlobalId
-  ): Promise<ConcreteResult<DailyDepartmentNotificationNode>> {
+  ): Promise<ConcreteResult<Option<DailyDepartmentNotificationNode>>> {
     const dailyDepartmentNotification =
       await this.dailyDepartmentNotificationRepository.findDDNByUnique({
-        idSorter: id,
+        uuid: id,
       });
-    return dailyDepartmentNotification.map(
-      dailyDepartmentNotificationModelToResource
+    return dailyDepartmentNotification.map((dailyDepartmentNotification) =>
+      dailyDepartmentNotification.map(
+        dailyDepartmentNotificationModelToResource
+      )
     );
   }
 
-  @QueryAccessControl(
+  @AccessControlAuthorized(
     {
       accessLevel: AccessLevel.SuperAdmin,
     },
@@ -109,7 +119,7 @@ export class DailyDepartmentNotificationResolver {
     );
   }
 
-  @MutationAccessControl(
+  @AccessControlAuthorized(
     {
       accessLevel: AccessLevel.SuperAdmin,
     },
@@ -117,14 +127,17 @@ export class DailyDepartmentNotificationResolver {
   )
   @Mutation(() => DailyDepartmentNotificationNode)
   async createDailyDepartmentNotification(
+    @Ctx() { userData: { userId } }: GraphQLContext,
     @Arg("input") input: DailyDepartmentNotificationInput
   ) {
     return new AsyncResult(
-      this.dailyDepartmentNotificationRepository.createDDN(input)
+      this.dailyDepartmentNotificationRepository.createDDN(input, {
+        enteredBy: userId ? { uuid: userId } : null,
+      })
     ).map(dailyDepartmentNotificationModelToResource).promise;
   }
 
-  @MutationAccessControl(
+  @AccessControlAuthorized(
     {
       accessLevel: AccessLevel.SuperAdmin,
     },
@@ -134,20 +147,18 @@ export class DailyDepartmentNotificationResolver {
   async setDailyDepartmentNotification(
     @Arg("id", () => GlobalIdScalar) { id }: GlobalId,
     @Arg("input") input: DailyDepartmentNotificationInput
-  ) {
+  ): Promise<ConcreteResult<DailyDepartmentNotificationNode>> {
     const dailyDepartmentNotification =
       await this.dailyDepartmentNotificationRepository.updateDDN(
-        { idSorter: id },
+        { uuid: id },
         input
       );
-    return dailyDepartmentNotification.map((dailyDepartmentNotification) =>
-      dailyDepartmentNotification.map(
-        dailyDepartmentNotificationModelToResource
-      )
+    return dailyDepartmentNotification.map(
+      dailyDepartmentNotificationModelToResource
     );
   }
 
-  @MutationAccessControl(
+  @AccessControlAuthorized(
     {
       accessLevel: AccessLevel.SuperAdmin,
     },
@@ -155,11 +166,14 @@ export class DailyDepartmentNotificationResolver {
   )
   @Mutation(() => [DailyDepartmentNotificationNode])
   async batchUploadDailyDepartmentNotifications(
+    @Ctx() { userData: { userId } }: GraphQLContext,
     @Arg("input", () => [DailyDepartmentNotificationInput])
     input: DailyDepartmentNotificationInput[]
   ) {
     return new AsyncResult(
-      this.dailyDepartmentNotificationRepository.batchLoadDDNs(input)
+      this.dailyDepartmentNotificationRepository.batchLoadDDNs(input, {
+        enteredBy: userId ? { uuid: userId } : null,
+      })
     ).map((dailyDepartmentNotifications) =>
       dailyDepartmentNotifications.map(
         dailyDepartmentNotificationModelToResource
@@ -167,7 +181,7 @@ export class DailyDepartmentNotificationResolver {
     ).promise;
   }
 
-  @MutationAccessControl(
+  @AccessControlAuthorized(
     {
       accessLevel: AccessLevel.SuperAdmin,
     },
@@ -179,12 +193,10 @@ export class DailyDepartmentNotificationResolver {
   ) {
     const dailyDepartmentNotification =
       await this.dailyDepartmentNotificationRepository.deleteDDN({
-        idSorter: id,
+        uuid: id,
       });
-    return dailyDepartmentNotification.map((dailyDepartmentNotification) =>
-      dailyDepartmentNotification.map(
-        dailyDepartmentNotificationModelToResource
-      )
+    return dailyDepartmentNotification.map(
+      dailyDepartmentNotificationModelToResource
     );
   }
 
@@ -194,7 +206,7 @@ export class DailyDepartmentNotificationResolver {
   ): Promise<Result<DailyDepartmentNotificationBatchNode, ConcreteError>> {
     return new AsyncResult(
       this.dailyDepartmentNotificationRepository.findBatchForDDN({
-        idSorter: dailyDepartmentNotification.id.id,
+        uuid: dailyDepartmentNotification.id.id,
       })
     ).map(dailyDepartmentNotificationBatchModelToResource).promise;
   }
@@ -207,7 +219,7 @@ export class DailyDepartmentNotificationBatchResolver {
     private readonly dailyDepartmentNotificationRepository: DailyDepartmentNotificationRepository
   ) {}
 
-  @QueryAccessControl(
+  @AccessControlAuthorized(
     {
       accessLevel: AccessLevel.SuperAdmin,
     },
@@ -218,13 +230,15 @@ export class DailyDepartmentNotificationBatchResolver {
     @Arg("id", () => GlobalIdScalar) { id }: GlobalId
   ): Promise<ConcreteResult<DailyDepartmentNotificationBatchNode>> {
     const dailyDepartmentNotificationBatch =
-      await this.dailyDepartmentNotificationRepository.findBatchByBatchId(id);
+      await this.dailyDepartmentNotificationRepository.findBatchByUnique({
+        uuid: id,
+      });
     return dailyDepartmentNotificationBatch.map(
       dailyDepartmentNotificationBatchModelToResource
     );
   }
 
-  @MutationAccessControl(
+  @AccessControlAuthorized(
     {
       accessLevel: AccessLevel.SuperAdmin,
     },
@@ -235,7 +249,9 @@ export class DailyDepartmentNotificationBatchResolver {
     @Arg("id", () => GlobalIdScalar) { id }: GlobalId
   ) {
     const dailyDepartmentNotificationBatch =
-      await this.dailyDepartmentNotificationRepository.deleteDDNBatch(id);
+      await this.dailyDepartmentNotificationRepository.deleteDDNBatch({
+        uuid: id,
+      });
     return dailyDepartmentNotificationBatch.map(
       (dailyDepartmentNotificationBatch) =>
         dailyDepartmentNotificationBatch.map(
@@ -250,9 +266,9 @@ export class DailyDepartmentNotificationBatchResolver {
     dailyDepartmentNotificationBatch: DailyDepartmentNotificationBatchNode
   ): Promise<Result<DailyDepartmentNotificationNode[], ConcreteError>> {
     return new AsyncResult(
-      this.dailyDepartmentNotificationRepository.findDDNsByBatchId(
-        dailyDepartmentNotificationBatch.id.id
-      )
+      this.dailyDepartmentNotificationRepository.findDDNsByBatch({
+        uuid: dailyDepartmentNotificationBatch.id.id,
+      })
     ).map((dailyDepartmentNotifications) =>
       dailyDepartmentNotifications.map(
         dailyDepartmentNotificationModelToResource

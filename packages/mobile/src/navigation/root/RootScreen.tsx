@@ -1,4 +1,3 @@
-import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { DbRole } from "@ukdanceblue/common";
 import { useTheme } from "native-base";
@@ -8,9 +7,9 @@ import { useQuery } from "urql";
 
 import ErrorBoundary, {
   withErrorBoundary,
-} from "#common/components/ErrorBoundary";
-import { Logger } from "#common/logger/Logger";
-import { getFragmentData, graphql } from "#graphql/index";
+} from "@/common/components/ErrorBoundary";
+import { Logger } from "@/common/logger/Logger";
+import { graphql,readFragment } from "@/graphql/index";
 
 import { useColorModeValue } from "../../common/customHooks";
 import { useLoading } from "../../context";
@@ -74,7 +73,7 @@ const RootScreen = () => {
     }
   }, [fetching, setRootScreenLoading]);
 
-  const authData = getFragmentData(
+  const authData = readFragment(
     RootScreenAuthFragment,
     rootScreenData?.loginState ?? null
   );
@@ -90,18 +89,12 @@ const RootScreen = () => {
     <>
       {!rootScreenLoading && (
         <RootStack.Navigator
-          screenOptions={({
-            navigation,
-          }: {
-            navigation: NativeStackNavigationProp<RootStackParamList>;
-          }) => ({
+          screenOptions={{
             headerStyle: { backgroundColor: headerBgColor },
             headerTitleStyle: { color: headerFgColor },
-            headerRight: () => (
-              <HeaderIcons navigation={navigation} /* color={headerFgColor}*/ />
-            ),
+            headerRight: HeaderIcons,
             headerBackTitle: "Back",
-          })}
+          }}
         >
           {isLoggedIn ? (
             <>
@@ -136,7 +129,7 @@ const RootScreen = () => {
                 options={({ route }) => {
                   let eventTitle = "Event";
                   let spacesInTitle = 0;
-                  const eventData = getFragmentData(
+                  const eventData = readFragment(
                     EventScreenFragment,
                     route.params.event
                   );

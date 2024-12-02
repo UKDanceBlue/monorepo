@@ -34,7 +34,7 @@ export function CreateImagePopup({
         .mutation(createImageDocument, {
           input: {
             alt,
-            url: url ? new URL(url) : undefined,
+            url,
           },
         })
         .toPromise();

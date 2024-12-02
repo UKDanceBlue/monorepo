@@ -24,9 +24,39 @@ const enforceConsistentDependenciesAcrossTheProject = ({ Yarn }) => {
   }
 };
 
+const packageInfo = {
+  private: true,
+  repository: {
+    type: "git",
+    url: "https://github.com/UKDanceBlue/monorepo.git",
+  },
+  license: "MPL-2.0",
+  author: {
+    name: "University of Kentucky DanceBlue Tech Committee",
+    email: "app@danceblue.org",
+    url: "https://danceblue.org",
+  },
+};
+
+/**
+ * @param {import('@yarnpkg/types').Yarn.Constraints.Context} context
+ */
+const enforcePackageInfo = ({ Yarn }) => {
+  for (const w of Yarn.workspaces()) {
+    w.set(`license`, packageInfo.license);
+    w.set("private", packageInfo.private);
+    w.set(["repository", "type"], packageInfo.repository.type);
+    w.set(["repository", "url"], packageInfo.repository.url);
+    w.set(["author", "name"], packageInfo.author.name);
+    w.set(["author", "email"], packageInfo.author.email);
+    w.set(["author", "url"], packageInfo.author.url);
+  }
+};
+
 module.exports = defineConfig({
   constraints: (ctx) => {
     enforceConsistentDependenciesAcrossTheProject(ctx);
+    enforcePackageInfo(ctx);
     return Promise.resolve();
   },
 });

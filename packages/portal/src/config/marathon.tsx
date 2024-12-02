@@ -1,8 +1,9 @@
-import { dateTimeFromSomething } from "@ukdanceblue/common";
+import { AccessLevel, dateTimeFromSomething } from "@ukdanceblue/common";
 import { useEffect, useMemo, useState } from "react";
 import { useQuery } from "urql";
 
 import { graphql } from "#graphql/index.js";
+import { useAuthorizationRequirement } from "#hooks/useLoginState.js";
 
 import type { MarathonContextData } from "./marathonContext.js";
 import { marathonContext } from "./marathonContext.js";
@@ -16,6 +17,11 @@ const latestMarathonDocument = graphql(/* GraphQL */ `
       startDate
       endDate
     }
+  }
+`);
+
+const allMarathonsDocument = graphql(/* GraphQL */ `
+  query AllMarathons {
     marathons(sendAll: true) {
       data {
         id
@@ -43,6 +49,8 @@ export const MarathonConfigProvider = ({
   children: React.ReactNode;
   valueOverride?: Pick<MarathonContextData, "marathon" | "marathons">;
 }) => {
+  const canSeeMarathonList = useAuthorizationRequirement(AccessLevel.Committee);
+
   const [marathonId, setMarathonId] = useState<string | null>(null);
 
   useEffect(() => {
@@ -57,6 +65,10 @@ export const MarathonConfigProvider = ({
     query: latestMarathonDocument,
     pause: valueOverride != null,
   });
+  const [allMarathonsResult] = useQuery({
+    query: allMarathonsDocument,
+    pause: !canSeeMarathonList || valueOverride != null,
+  });
   const [selectedMarathonResult] = useQuery({
     query: selectedMarathonDocument,
     variables: { marathonId: marathonId ?? "" },
@@ -69,7 +81,7 @@ export const MarathonConfigProvider = ({
     );
     if (storedMarathonId) {
       if (
-        latestMarathonResult.data?.marathons.data.some(
+        allMarathonsResult.data?.marathons.data.some(
           (m) => m.id === storedMarathonId
         )
       ) {
@@ -78,7 +90,7 @@ export const MarathonConfigProvider = ({
         localStorage.removeItem(LocalStorageKeys.SelectedMarathon);
       }
     }
-  }, [latestMarathonResult.data?.marathons.data]);
+  }, [allMarathonsResult.data?.marathons.data]);
 
   let marathon = null;
   if (marathonId != null && selectedMarathonResult.data != null) {
@@ -121,7 +133,11 @@ export const MarathonConfigProvider = ({
               endDate,
             }
           : null,
-        marathons: latestMarathonResult.data?.marathons.data ?? [],
+        marathons:
+          allMarathonsResult.data?.marathons.data ??
+          (latestMarathonResult.data?.latestMarathon
+            ? [latestMarathonResult.data.latestMarathon]
+            : []),
         loading:
           latestMarathonResult.fetching || selectedMarathonResult.fetching,
       }}

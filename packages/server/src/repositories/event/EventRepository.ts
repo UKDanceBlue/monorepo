@@ -57,7 +57,7 @@ export type EventFilters = FilterItems<
 
 type UniqueEventParam = { id: number } | { uuid: string };
 
-import { prismaToken } from "#prisma";
+import { prismaToken } from "#lib/typediTokens.js";
 
 @Service([prismaToken])
 export class EventRepository {
@@ -212,7 +212,10 @@ export class EventRepository {
 
   deleteEvent(param: UniqueEventParam) {
     try {
-      return this.prisma.event.delete({ where: param });
+      return this.prisma.event.delete({
+        where: param,
+        include: { eventOccurrences: true },
+      });
     } catch (error) {
       if (
         error instanceof Prisma.PrismaClientKnownRequestError &&

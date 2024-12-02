@@ -2,101 +2,15 @@ import { NonNegativeIntResolver, PositiveIntResolver } from "graphql-scalars";
 import type { ClassType } from "type-graphql";
 import { Field, InterfaceType } from "type-graphql";
 
-import { type GlobalId, GlobalIdScalar } from "../scalars/GlobalId.js";
-
 const DEFAULT_PAGE_SIZE = 10;
 const FIRST_PAGE = 1;
 
-/** @deprecated There isn't really any reason to use these types, but that's just how the API was structured originally. Do not use them in new code */
-@InterfaceType({ description: "API response" })
-export class GraphQLBaseResponse {
-  @Field(() => Boolean)
-  ok!: boolean;
-
-  toJson() {
-    return {};
-  }
-}
-
-/** @deprecated There isn't really any reason to use these types, but that's just how the API was structured originally. Do not use them in new code */
-@InterfaceType({ description: "API response", implements: GraphQLBaseResponse })
-export abstract class AbstractGraphQLOkResponse<T> extends GraphQLBaseResponse {
-  data?: T;
-
-  toJson() {
-    return {
-      ...super.toJson(),
-      ok: true,
-      data: this.data,
-    };
-  }
-
-  static newOk<T, OkRes extends AbstractGraphQLOkResponse<T>>(
-    this: ClassType<OkRes>,
-    data?: T
-  ): OkRes {
-    const response = new this();
-    response.ok = true;
-    if (data != null) {
-      response.data = data;
-    }
-    return response;
-  }
-}
-
-/** @deprecated There isn't really any reason to use these types, but that's just how the API was structured originally. Do not use them in new code */
-@InterfaceType({ description: "API response", implements: GraphQLBaseResponse })
-export abstract class AbstractGraphQLArrayOkResponse<
-  T,
-> extends AbstractGraphQLOkResponse<T[]> {
-  toJson() {
-    return {
-      ...super.toJson(),
-    };
-  }
-}
-
-/** @deprecated There isn't really any reason to use these types, but that's just how the API was structured originally. Do not use them in new code */
 @InterfaceType({
   description: "API response",
-  implements: AbstractGraphQLOkResponse,
 })
-export abstract class AbstractGraphQLCreatedResponse<
-  T,
-> extends AbstractGraphQLOkResponse<T> {
-  @Field(() => GlobalIdScalar)
-  uuid!: GlobalId;
+export abstract class AbstractGraphQLPaginatedResponse<T> {
+  abstract data: T[];
 
-  toJson() {
-    return {
-      ...super.toJson(),
-      uuid: this.uuid,
-    };
-  }
-
-  declare static newOk: never;
-
-  static newCreated<
-    T extends { id: GlobalId },
-    OkRes extends AbstractGraphQLCreatedResponse<T>,
-  >(this: ClassType<OkRes>, data: T): OkRes {
-    const response = new this();
-    response.ok = true;
-    response.data = data;
-
-    response.uuid = data.id;
-
-    return response;
-  }
-}
-
-@InterfaceType({
-  description: "API response",
-  implements: AbstractGraphQLArrayOkResponse,
-})
-export abstract class AbstractGraphQLPaginatedResponse<
-  T,
-> extends AbstractGraphQLArrayOkResponse<T> {
   @Field(() => NonNegativeIntResolver, {
     description: "The total number of items",
   })
@@ -112,12 +26,6 @@ export abstract class AbstractGraphQLPaginatedResponse<
   })
   page!: number;
 
-  static newOk(): never {
-    throw new Error(
-      "Cannot call newOk on a subclass of AbstractGraphQLPaginatedResponse, use newPaginated instead"
-    );
-  }
-
   static newPaginated<T, PRes extends AbstractGraphQLPaginatedResponse<T>>(
     this: ClassType<PRes>,
     {
@@ -128,28 +36,15 @@ export abstract class AbstractGraphQLPaginatedResponse<
     }: {
       data: T[];
       total: number;
-      page?: number | null | undefined;
-      pageSize?: number | null | undefined;
+      page?: number | undefined | null;
+      pageSize?: number | undefined | null;
     }
   ): PRes {
     const response = new this();
-    response.ok = true;
     response.data = data;
     response.total = total;
     response.page = page ?? FIRST_PAGE;
     response.pageSize = pageSize ?? DEFAULT_PAGE_SIZE;
     return response;
-  }
-
-  toJson() {
-    const baseResponse = {
-      ...super.toJson(),
-      pagination: {
-        total: this.total,
-        pageSize: this.pageSize,
-        page: this.page,
-      },
-    };
-    return baseResponse;
   }
 }

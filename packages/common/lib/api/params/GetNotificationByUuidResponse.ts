@@ -1,4 +1,5 @@
-import { ArgsType, Field, InputType, Int,ObjectType } from "type-graphql";
+import { NonEmptyStringResolver, URLResolver } from "graphql-scalars";
+import { ArgsType, Field, InputType, Int, ObjectType } from "type-graphql";
 
 import { FilteredListQueryArgs } from "../filtering/list-query-args/FilteredListQueryArgs.js";
 import {
@@ -7,19 +8,8 @@ import {
 } from "../resources/Notification.js";
 import { TeamType } from "../resources/Team.js";
 import { type GlobalId, GlobalIdScalar } from "../scalars/GlobalId.js";
-import {
-  AbstractGraphQLCreatedResponse,
-  AbstractGraphQLOkResponse,
-  AbstractGraphQLPaginatedResponse,
-} from "./ApiResponse.js";
+import { AbstractGraphQLPaginatedResponse } from "./ApiResponse.js";
 
-@ObjectType("GetNotificationByUuidResponse", {
-  implements: AbstractGraphQLOkResponse<NotificationNode>,
-})
-export class GetNotificationByUuidResponse extends AbstractGraphQLOkResponse<NotificationNode> {
-  @Field(() => NotificationNode)
-  data!: NotificationNode;
-}
 @ObjectType("ListNotificationsResponse", {
   implements: AbstractGraphQLPaginatedResponse<NotificationNode>,
 })
@@ -34,76 +24,28 @@ class NotificationAudienceInput {
   all?: boolean;
 
   @Field(() => TeamType, { nullable: true })
-  memberOfTeamType?: TeamType | null;
+  memberOfTeamType?: TeamType | undefined | null;
 
   @Field(() => [GlobalIdScalar], { nullable: true })
-  memberOfTeams?: GlobalId[] | null;
+  memberOfTeams?: GlobalId[] | undefined | null;
 
   @Field(() => [GlobalIdScalar], { nullable: true })
-  users?: GlobalId[] | null;
+  users?: GlobalId[] | undefined | null;
 }
 
 @ArgsType()
 export class StageNotificationArgs {
-  @Field(() => String)
+  @Field(() => NonEmptyStringResolver)
   title!: string;
 
-  @Field(() => String)
+  @Field(() => NonEmptyStringResolver)
   body!: string;
 
-  @Field(() => String, { nullable: true })
-  url?: string | null;
+  @Field(() => URLResolver, { nullable: true })
+  url?: string | undefined | null;
 
   @Field(() => NotificationAudienceInput)
   audience!: NotificationAudienceInput;
-}
-
-@ObjectType("StageNotificationResponse", {
-  implements: AbstractGraphQLCreatedResponse<NotificationNode>,
-})
-export class StageNotificationResponse extends AbstractGraphQLCreatedResponse<NotificationNode> {
-  @Field(() => NotificationNode)
-  data!: NotificationNode;
-}
-
-@ObjectType("SendNotificationResponse", {
-  implements: AbstractGraphQLOkResponse<boolean>,
-})
-export class SendNotificationResponse extends AbstractGraphQLOkResponse<boolean> {
-  @Field(() => Boolean)
-  data!: boolean;
-}
-
-@ObjectType("ScheduleNotificationResponse", {
-  implements: AbstractGraphQLOkResponse<boolean>,
-})
-export class ScheduleNotificationResponse extends AbstractGraphQLOkResponse<boolean> {
-  @Field(() => Boolean)
-  data!: boolean;
-}
-
-@ObjectType("AcknowledgeDeliveryIssueResponse", {
-  implements: AbstractGraphQLOkResponse<boolean>,
-})
-export class AcknowledgeDeliveryIssueResponse extends AbstractGraphQLOkResponse<boolean> {
-  @Field(() => Boolean)
-  data!: boolean;
-}
-
-@ObjectType("AbortScheduledNotificationResponse", {
-  implements: AbstractGraphQLOkResponse<boolean>,
-})
-export class AbortScheduledNotificationResponse extends AbstractGraphQLOkResponse<boolean> {
-  @Field(() => Boolean)
-  data!: boolean;
-}
-
-@ObjectType("DeleteNotificationResponse", {
-  implements: AbstractGraphQLOkResponse<boolean>,
-})
-export class DeleteNotificationResponse extends AbstractGraphQLOkResponse<boolean> {
-  @Field(() => Boolean)
-  data!: boolean;
 }
 
 @ArgsType()

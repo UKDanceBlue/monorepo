@@ -30,11 +30,11 @@ export async function findPersonForLogin(
   client: PrismaClient,
   authIds: [AuthSource, string][],
   userInfo: {
-    uuid?: string | null;
-    email?: string | null;
-    linkblue?: string | null;
-    name?: string | null;
-    dbRole?: DbRole | null;
+    uuid?: string | undefined | null;
+    email?: string | undefined | null;
+    linkblue?: string | undefined | null;
+    name?: string | undefined | null;
+    dbRole?: DbRole | undefined | null;
   },
   memberOf?: (string | number)[],
   captainOf?: (string | number)[]

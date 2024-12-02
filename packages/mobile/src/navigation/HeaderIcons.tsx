@@ -1,5 +1,5 @@
 import { FontAwesome, FontAwesome5 } from "@expo/vector-icons";
-import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import { useNavigation } from "@react-navigation/core";
 import { View } from "native-base";
 import {
   PixelRatio,
@@ -7,14 +7,10 @@ import {
   useWindowDimensions,
 } from "react-native";
 
-import type { RootStackParamList } from "../types/navigationTypes";
-
-const HeaderIcons = ({
-  navigation,
-}: {
-  navigation: NativeStackNavigationProp<RootStackParamList>;
-}) => {
+const HeaderIcons = () => {
   const { width } = useWindowDimensions();
+
+  const navigation = useNavigation();
 
   return (
     <View
@@ -48,7 +44,9 @@ const HeaderIcons = ({
         />
       </TouchableOpacity> */}
       <View>
-        <TouchableOpacity onPress={() => navigation.navigate("Notifications")}>
+        <TouchableOpacity
+          onPress={() => navigation.navigate("Notifications", {})}
+        >
           <FontAwesome
             name="bell"
             color="#0032A0"
@@ -59,7 +57,7 @@ const HeaderIcons = ({
           />
         </TouchableOpacity>
       </View>
-      <TouchableOpacity onPress={() => navigation.navigate("Profile")}>
+      <TouchableOpacity onPress={() => navigation.navigate("Profile", {})}>
         <FontAwesome5
           name="user-alt"
           color="#0032A0"

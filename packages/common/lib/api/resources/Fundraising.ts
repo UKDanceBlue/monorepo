@@ -1,13 +1,14 @@
 import { DateTimeISOResolver } from "graphql-scalars";
 import type { DateTime } from "luxon";
-import { None, Option, Some } from "ts-results-es";
 import { Field, Float, ObjectType } from "type-graphql";
 
 import { dateTimeFromSomething } from "../../utility/time/intervalTools.js";
-import { createNodeClasses,Node } from "../relay.js";
+import { createNodeClasses, Node } from "../relay.js";
 import type { GlobalId } from "../scalars/GlobalId.js";
 import { GlobalIdScalar } from "../scalars/GlobalId.js";
+import { BatchType } from "./DailyDepartmentNotification.js";
 import { TimestampedResource } from "./Resource.js";
+import { SolicitationCodeNode } from "./SolicitationCode.js";
 
 @ObjectType({
   implements: [Node],
@@ -15,31 +16,54 @@ import { TimestampedResource } from "./Resource.js";
 export class FundraisingEntryNode extends TimestampedResource implements Node {
   @Field(() => GlobalIdScalar)
   id!: GlobalId;
+
   @Field(() => String, { nullable: true, name: "donatedByText" })
-  private _donatedByText!: string | null;
-  get donatedByText(): Option<string> {
-    return this._donatedByText ? Some(this._donatedByText) : None;
-  }
-  set donatedByText(value: Option<string>) {
-    this._donatedByText = value.unwrapOr(null);
-  }
+  donatedByText!: string | null | undefined;
+
+  @Field(() => String, { nullable: true, name: "donatedByOverride" })
+  donatedByOverride!: string | null | undefined;
+
   @Field(() => String, { nullable: true, name: "donatedToText" })
-  private _donatedToText!: string | null;
-  get donatedToText(): Option<string> {
-    return this._donatedToText ? Some(this._donatedToText) : None;
-  }
-  set donatedToText(value: Option<string>) {
-    this._donatedToText = value.unwrapOr(null);
-  }
-  @Field(() => DateTimeISOResolver)
-  donatedOn!: Date;
-  get donatedOnDateTime(): DateTime {
+  donatedToText!: string | null | undefined;
+
+  @Field(() => String, { nullable: true, name: "donatedToOverride" })
+  donatedToOverride!: string | null | undefined;
+
+  @Field(() => DateTimeISOResolver, { nullable: true, name: "donatedOn" })
+  donatedOn!: Date | null | undefined;
+  get donatedOnDateTime(): DateTime | null | undefined {
     return dateTimeFromSomething(this.donatedOn);
   }
+
+  @Field(() => DateTimeISOResolver, {
+    nullable: true,
+    name: "donatedOnOverride",
+  })
+  donatedOnOverride!: Date | null | undefined;
+  get donatedOnOverrideDateTime(): DateTime | null | undefined {
+    return dateTimeFromSomething(this.donatedOnOverride);
+  }
+
   @Field(() => Float)
   amount!: number;
+
+  @Field(() => Float, { nullable: true })
+  amountOverride!: number | null | undefined;
+
   @Field(() => Float)
   amountUnassigned!: number;
+
+  @Field(() => String, { nullable: true })
+  notes?: string | null | undefined;
+
+  @Field(() => SolicitationCodeNode, { nullable: true })
+  solicitationCodeOverride?: SolicitationCodeNode | null | undefined;
+
+  @Field(() => BatchType)
+  batchType!: BatchType;
+
+  @Field(() => BatchType, { nullable: true })
+  batchTypeOverride!: BatchType | null | undefined;
 
   public getUniqueId(): string {
     return this.id.id;
@@ -47,38 +71,23 @@ export class FundraisingEntryNode extends TimestampedResource implements Node {
 
   public static init(init: {
     id: string;
-    donatedByText: Option<string> | string | null;
-    donatedToText: Option<string> | string | null;
-    donatedOn: Date;
+    donatedByText: string | null;
+    donatedByOverride: string | null;
+    donatedToText: string | null;
+    donatedToOverride: string | null;
+    donatedOn: Date | null;
+    donatedOnOverride: Date | null;
     amount: number;
+    amountOverride: number | null;
     amountUnassigned: number;
     createdAt: Date;
     updatedAt: Date;
+    notes?: string | null;
+    solicitationCodeOverride?: SolicitationCodeNode | null;
+    batchType: BatchType;
+    batchTypeOverride: BatchType | null;
   }) {
-    const node = new FundraisingEntryNode();
-    node.id = {
-      id: init.id,
-      typename: "FundraisingEntryNode",
-    };
-    node.donatedByText =
-      init.donatedByText == null
-        ? None
-        : typeof init.donatedByText === "string"
-          ? Some(init.donatedByText)
-          : init.donatedByText;
-    node.donatedToText =
-      init.donatedToText == null
-        ? None
-        : typeof init.donatedToText === "string"
-          ? Some(init.donatedToText)
-          : init.donatedToText;
-    node.donatedOn = init.donatedOn;
-    node.amount = init.amount;
-    node.amountUnassigned = init.amountUnassigned;
-    node.createdAt = init.createdAt;
-    node.updatedAt = init.updatedAt;
-
-    return node;
+    return FundraisingEntryNode.createInstance().withValues(init);
   }
 }
 

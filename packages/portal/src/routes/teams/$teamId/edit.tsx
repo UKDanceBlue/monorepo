@@ -2,20 +2,22 @@ import { createFileRoute } from "@tanstack/react-router";
 import { AccessLevel, CommitteeIdentifier } from "@ukdanceblue/common";
 import { useQuery } from "urql";
 
+import { TeamEditorFragment } from "#documents/team.ts";
 import { TeamEditor } from "#elements/forms/team/edit/TeamEditor.js";
 import { graphql } from "#graphql/index.js";
 import { useQueryStatusWatcher } from "#hooks/useQueryStatusWatcher.js";
 import { routerAuthCheck } from "#tools/routerAuthCheck.js";
 
-const viewTeamPageDocument = graphql(/* GraphQL */ `
-  query EditTeamPage($uuid: GlobalId!) {
-    team(uuid: $uuid) {
-      data {
+const viewTeamPageDocument = graphql(
+  /* GraphQL */ `
+    query EditTeamPage($uuid: GlobalId!) {
+      team(uuid: $uuid) {
         ...TeamEditorFragment
       }
     }
-  }
-`);
+  `,
+  [TeamEditorFragment]
+);
 
 function EditTeamPage() {
   const { teamId } = Route.useParams();
@@ -34,7 +36,7 @@ function EditTeamPage() {
   return (
     <div>
       <h1>Edit Team</h1>
-      <TeamEditor teamFragment={data?.team.data} refetchTeam={refetchTeam} />
+      <TeamEditor teamFragment={data?.team} refetchTeam={refetchTeam} />
     </div>
   );
 }

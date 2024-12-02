@@ -51,6 +51,50 @@ interface SortOption<Field> {
   direction: SortDirection;
 }
 
+export interface UseListQueryHookReturn<
+  AllFields extends string,
+  DateFields extends AllFields,
+  NumericFields extends AllFields,
+  StringFields extends AllFields,
+  OneOfFields extends AllFields,
+  IsNullFields extends AllFields,
+  BooleanFields extends AllFields,
+> {
+  queryOptions: ListQueryOptions<
+    DateFields,
+    IsNullFields,
+    NumericFields,
+    OneOfFields,
+    StringFields,
+    BooleanFields
+  >;
+  updatePagination: (paginationOptions: {
+    page?: number | undefined;
+    pageSize?: number | undefined;
+  }) => void;
+  setSorting: Dispatch<SetStateAction<SortOption<AllFields>[]>>;
+  pushSorting: (sortingOption: SortOption<AllFields>) => void;
+  clearSorting: () => void;
+  updateFilter: <Field extends AllFields>(
+    field: Field,
+    filter: Field extends DateFields
+      ? DateFilterItemInterface<Field>
+      : Field extends IsNullFields
+        ? IsNullFilterItemInterface<Field>
+        : Field extends NumericFields
+          ? NumericFilterItemInterface<Field>
+          : Field extends OneOfFields
+            ? OneOfFilterItemInterface<Field>
+            : Field extends StringFields
+              ? StringFilterItemInterface<Field>
+              : Field extends BooleanFields
+                ? BooleanFilterItemInterface<Field>
+                : never
+  ) => void;
+  clearFilter: (field: AllFields) => void;
+  clearFilters: () => void;
+}
+
 export function useListQuery<
   AllFields extends string,
   DateFields extends AllFields,
@@ -96,41 +140,15 @@ export function useListQuery<
     isNullFields: IsNullFields[];
     booleanFields: BooleanFields[];
   }
-): {
-  queryOptions: ListQueryOptions<
-    DateFields,
-    IsNullFields,
-    NumericFields,
-    OneOfFields,
-    StringFields,
-    BooleanFields
-  >;
-  updatePagination: (paginationOptions: {
-    page?: number | undefined;
-    pageSize?: number | undefined;
-  }) => void;
-  setSorting: Dispatch<SetStateAction<SortOption<AllFields>[]>>;
-  pushSorting: (sortingOption: SortOption<AllFields>) => void;
-  clearSorting: () => void;
-  updateFilter: <Field extends AllFields>(
-    field: Field,
-    filter: Field extends DateFields
-      ? DateFilterItemInterface<Field>
-      : Field extends IsNullFields
-        ? IsNullFilterItemInterface<Field>
-        : Field extends NumericFields
-          ? NumericFilterItemInterface<Field>
-          : Field extends OneOfFields
-            ? OneOfFilterItemInterface<Field>
-            : Field extends StringFields
-              ? StringFilterItemInterface<Field>
-              : Field extends BooleanFields
-                ? BooleanFilterItemInterface<Field>
-                : never
-  ) => void;
-  clearFilter: (field: AllFields) => void;
-  clearFilters: () => void;
-} {
+): UseListQueryHookReturn<
+  AllFields,
+  DateFields,
+  NumericFields,
+  StringFields,
+  OneOfFields,
+  IsNullFields,
+  BooleanFields
+> {
   const [initSortDirection, initSortBy] = useMemo(() => {
     const initSortDirection: SortDirection[] = [];
     const initSortBy: AllFields[] = [];

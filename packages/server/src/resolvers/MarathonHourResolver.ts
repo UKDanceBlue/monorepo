@@ -1,7 +1,8 @@
 import { Service } from "@freshgum/typedi";
 import { CommitteeRole } from "@prisma/client";
-import type { GlobalId } from "@ukdanceblue/common";
+import type { CrudResolver, GlobalId } from "@ukdanceblue/common";
 import {
+  AccessControlAuthorized,
   AccessLevel,
   CommitteeIdentifier,
   GlobalIdScalar,
@@ -9,7 +10,6 @@ import {
   LegacyError,
   LegacyErrorCode,
   MarathonHourNode,
-  MutationAccessControl,
 } from "@ukdanceblue/common";
 import {
   CreateMarathonHourInput,
@@ -33,12 +33,14 @@ import { MarathonHourRepository } from "#repositories/marathonHour/MarathonHourR
 
 @Resolver(() => MarathonHourNode)
 @Service([MarathonHourRepository])
-export class MarathonHourResolver {
+export class MarathonHourResolver
+  implements CrudResolver<MarathonHourNode, "marathonHour">
+{
   constructor(
     private readonly marathonHourRepository: MarathonHourRepository
   ) {}
 
-  @MutationAccessControl({
+  @AccessControlAuthorized({
     accessLevel: AccessLevel.Public,
   })
   @Query(() => MarathonHourNode)
@@ -53,7 +55,7 @@ export class MarathonHourResolver {
     return marathonHourModelToResource(marathonHour);
   }
 
-  @MutationAccessControl({
+  @AccessControlAuthorized({
     accessLevel: AccessLevel.Public,
   })
   @Query(() => MarathonHourNode, { nullable: true })
@@ -67,7 +69,7 @@ export class MarathonHourResolver {
   }
 
   // TODO: Double check that this access is correct
-  @MutationAccessControl({
+  @AccessControlAuthorized({
     accessLevel: AccessLevel.Committee,
   })
   @Query(() => ListMarathonHoursResponse)
@@ -83,7 +85,7 @@ export class MarathonHourResolver {
     });
   }
 
-  @MutationAccessControl({
+  @AccessControlAuthorized({
     accessLevel: AccessLevel.Public,
   })
   @FieldResolver(() => [ImageNode])
@@ -91,7 +93,7 @@ export class MarathonHourResolver {
     return this.marathonHourRepository.getMaps({ uuid: id });
   }
 
-  @MutationAccessControl(
+  @AccessControlAuthorized(
     {
       accessLevel: AccessLevel.Admin,
     },
@@ -116,7 +118,7 @@ export class MarathonHourResolver {
     return marathonHourModelToResource(marathonHour);
   }
 
-  @MutationAccessControl(
+  @AccessControlAuthorized(
     {
       accessLevel: AccessLevel.Admin,
     },
@@ -144,7 +146,7 @@ export class MarathonHourResolver {
     return marathonHourModelToResource(marathonHour);
   }
 
-  @MutationAccessControl(
+  @AccessControlAuthorized(
     {
       accessLevel: AccessLevel.Admin,
     },
@@ -157,7 +159,7 @@ export class MarathonHourResolver {
       ],
     }
   )
-  @Mutation(() => VoidResolver)
+  @Mutation(() => MarathonHourNode)
   async deleteMarathonHour(
     @Arg("uuid", () => GlobalIdScalar) { id }: GlobalId
   ) {
@@ -167,9 +169,10 @@ export class MarathonHourResolver {
     if (marathonHour == null) {
       throw new LegacyError(LegacyErrorCode.NotFound, "MarathonHour not found");
     }
+    return marathonHourModelToResource(marathonHour);
   }
 
-  @MutationAccessControl(
+  @AccessControlAuthorized(
     {
       accessLevel: AccessLevel.Admin,
     },
@@ -197,7 +200,7 @@ export class MarathonHourResolver {
     return marathonHourModelToResource(marathonHour);
   }
 
-  @MutationAccessControl(
+  @AccessControlAuthorized(
     {
       accessLevel: AccessLevel.Admin,
     },

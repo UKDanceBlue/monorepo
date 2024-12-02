@@ -3,6 +3,7 @@ import { Button, Flex, Table, Upload } from "antd";
 import type { ColumnType } from "antd/es/table";
 import { useState } from "react";
 import { read, utils } from "xlsx";
+import type { ZodSchema, ZodTypeDef } from "zod";
 
 import { useAntFeedback } from "#hooks/useAntFeedback.js";
 
@@ -10,29 +11,41 @@ export function SpreadsheetUploader<
   RowType extends object,
   OutputType extends object = RowType,
 >({
-  rowValidator,
-  rowMapper,
   onUpload,
   onFail,
   noPreview,
   showIcon = true,
   showUploadList = false,
   text,
-}: {
-  rowValidator: (row: unknown) => row is RowType;
-  rowMapper: (row: RowType) => OutputType | Promise<OutputType>;
-  onUpload: (output: OutputType[]) => void | Promise<void>;
-  onFail?: (error: Error) => void;
-  noPreview?: boolean;
-  showIcon?: boolean;
-  showUploadList?: boolean;
-  text?: string;
-}) {
+  paginate = true,
+  ...props
+}:
+  | {
+      rowValidator: (row: unknown) => row is RowType;
+      rowMapper: (row: RowType) => OutputType | Promise<OutputType>;
+      onUpload: (output: OutputType[]) => void | Promise<void>;
+      onFail?: (error: Error) => void;
+      noPreview?: boolean;
+      showIcon?: boolean;
+      showUploadList?: boolean;
+      text?: string;
+      paginate?: boolean;
+    }
+  | {
+      rowSchema: ZodSchema<OutputType, ZodTypeDef, RowType>;
+      onUpload: (output: OutputType[]) => void | Promise<void>;
+      onFail?: (error: Error) => void;
+      noPreview?: boolean;
+      showIcon?: boolean;
+      showUploadList?: boolean;
+      text?: string;
+      paginate?: boolean;
+    }) {
   const { showErrorMessage, showSuccessNotification } = useAntFeedback();
   const [data, setData] = useState<OutputType[] | null>(null);
 
   return (
-    <>
+    <Flex vertical gap={8}>
       <Upload.Dragger
         accept=".xlsx,.csv"
         multiple={false}
@@ -54,19 +67,37 @@ export function SpreadsheetUploader<
 
             const json = utils.sheet_to_json(sheet, { header: 2 });
 
-            if (!json.every(rowValidator)) {
-              throw new Error("Invalid row format");
-            }
-
-            const output = await Promise.all(
-              json.map(rowMapper).map((row) => {
-                if (row instanceof Promise) {
-                  return row;
+            let output: OutputType[] = [];
+            if ("rowSchema" in props) {
+              const results = json.map((row) => props.rowSchema.safeParse(row));
+              for (const result of results) {
+                if (result.success) {
+                  output.push(result.data);
+                } else {
+                  throw new Error(
+                    `Invalid row format: ${result.error.issues
+                      .map(
+                        (error) => `${error.path.join(".")}: ${error.message}`
+                      )
+                      .join("; ")}`
+                  );
                 }
+              }
+            } else {
+              if (!json.every(props.rowValidator)) {
+                throw new Error("Invalid row format");
+              }
 
-                return Promise.resolve(row);
-              })
-            );
+              output = await Promise.all(
+                json.map(props.rowMapper).map((row) => {
+                  if (row instanceof Promise) {
+                    return row;
+                  }
+
+                  return Promise.resolve(row);
+                })
+              );
+            }
 
             setData(output);
             showSuccessNotification({ message: "File parsed successfully" });
@@ -96,14 +127,33 @@ export function SpreadsheetUploader<
         </p>
       </Upload.Dragger>
       {data && !noPreview && (
-        <Flex vertical gap={8}>
+        <>
           <Table
             dataSource={data}
+            pagination={paginate ? undefined : false}
+            scroll={{ x: "max-content", y: 500 }}
             columns={Object.keys(data[0]!).map(
               (key): ColumnType<OutputType> => ({
                 title: key,
                 dataIndex: key,
                 key,
+                width: `${Math.min(
+                  Math.max(
+                    data.reduce(
+                      (max, row) =>
+                        Math.max(
+                          max,
+                          String((row as Record<string, unknown>)[key]).length
+                        ),
+                      key.length
+                    ),
+                    key.length
+                  ) + 5,
+                  100
+                )}ch`,
+                hidden: data.every(
+                  (row) => !(row as Record<string, unknown>)[key]
+                ),
                 render(value) {
                   if (Array.isArray(value)) {
                     return (
@@ -177,8 +227,8 @@ export function SpreadsheetUploader<
               Upload
             </Button>
           </Flex>
-        </Flex>
+        </>
       )}
-    </>
+    </Flex>
   );
 }

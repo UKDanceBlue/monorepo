@@ -31,7 +31,7 @@ export type ConfigurationFilters = FilterItems<
   ConfigurationStringKey
 >;
 
-import { prismaToken } from "#prisma";
+import { prismaToken } from "#lib/typediTokens.js";
 
 @Service([prismaToken])
 export class ConfigurationRepository {
@@ -143,7 +143,7 @@ export class ConfigurationRepository {
       ([_, existing]) => !existing
     );
 
-    return this.prisma.configuration.createMany({
+    return this.prisma.configuration.createManyAndReturn({
       data: newConfigurations.map(([configuration]) => ({
         key: configuration.key,
         value: configuration.value,

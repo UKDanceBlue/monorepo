@@ -4,7 +4,7 @@ import {
   CommitteeIdentifier,
   CommitteeRole,
 } from "../../authorization/structures.js";
-import { createNodeClasses,Node } from "../relay.js";
+import { createNodeClasses, Node } from "../relay.js";
 import type { GlobalId } from "../scalars/GlobalId.js";
 import { GlobalIdScalar } from "../scalars/GlobalId.js";
 import { TimestampedResource } from "./Resource.js";
@@ -38,8 +38,8 @@ export class MembershipNode extends TimestampedResource implements Node {
   public static init(init: {
     id: string;
     position: MembershipPositionType;
-    createdAt?: Date | null;
-    updatedAt?: Date | null;
+    createdAt?: Date | undefined | null;
+    updatedAt?: Date | undefined | null;
   }) {
     return MembershipNode.createInstance().withValues(init);
   }
@@ -60,8 +60,8 @@ export class CommitteeMembershipNode extends MembershipNode implements Node {
     position: MembershipPositionType;
     identifier: CommitteeIdentifier;
     role: CommitteeRole;
-    createdAt?: Date | null;
-    updatedAt?: Date | null;
+    createdAt?: Date | undefined | null;
+    updatedAt?: Date | undefined | null;
   }) {
     return CommitteeMembershipNode.createInstance().withValues(init);
   }

@@ -1,21 +1,19 @@
 import { Container, Service } from "@freshgum/typedi";
-import type { GlobalId } from "@ukdanceblue/common";
+import type { CrudResolver, GlobalId } from "@ukdanceblue/common";
 import {
-  checkParam,
-  ListFundraisingEntriesArgs,
-  ListFundraisingEntriesResponse,
-  MutationAccessControl,
-} from "@ukdanceblue/common";
-import {
+  AccessControlAuthorized,
   AccessLevel,
+  checkParam,
   CommitteeMembershipNode,
+  CustomQueryAccessControl,
   FundraisingAssignmentNode,
   FundraisingEntryNode,
   GlobalIdScalar,
+  ListFundraisingEntriesArgs,
+  ListFundraisingEntriesResponse,
   MembershipNode,
   MembershipPositionType,
   PersonNode,
-  QueryAccessControl,
   SortDirection,
   TeamType,
 } from "@ukdanceblue/common";
@@ -56,7 +54,6 @@ import {
 } from "type-graphql";
 
 import { auditLogger } from "#logging/auditLogging.js";
-import { DBFundsRepository } from "#repositories/fundraising/DBFundsRepository.js";
 import { fundraisingAssignmentModelToNode } from "#repositories/fundraising/fundraisingAssignmentModelToNode.js";
 import { fundraisingEntryModelToNode } from "#repositories/fundraising/fundraisingEntryModelToNode.js";
 import { FundraisingEntryRepository } from "#repositories/fundraising/FundraisingRepository.js";
@@ -73,16 +70,18 @@ import { globalFundraisingAccessParam } from "./accessParams.js";
 
 @Resolver(() => PersonNode)
 @Service([PersonRepository, MembershipRepository, FundraisingEntryRepository])
-export class PersonResolver {
+export class PersonResolver
+  implements CrudResolver<PersonNode, "person", "people">
+{
   constructor(
     private readonly personRepository: PersonRepository,
     private readonly membershipRepository: MembershipRepository,
     private readonly fundraisingEntryRepository: FundraisingEntryRepository
   ) {}
 
-  @QueryAccessControl({ accessLevel: AccessLevel.Committee })
+  @AccessControlAuthorized({ accessLevel: AccessLevel.Committee })
   @Query(() => PersonNode, { name: "person" })
-  async getByUuid(
+  async person(
     @Arg("uuid", () => GlobalIdScalar) { id }: GlobalId
   ): Promise<ConcreteResult<PersonNode>> {
     return new AsyncResult(
@@ -93,7 +92,7 @@ export class PersonResolver {
       .promise;
   }
 
-  @QueryAccessControl({ accessLevel: AccessLevel.Committee })
+  @AccessControlAuthorized({ accessLevel: AccessLevel.Committee })
   @Query(() => PersonNode, { name: "personByLinkBlue", nullable: true })
   async getByLinkBlueId(
     @Arg("linkBlueId") linkBlueId: string
@@ -113,9 +112,9 @@ export class PersonResolver {
     ).promise;
   }
 
-  @QueryAccessControl({ accessLevel: AccessLevel.Committee })
-  @Query(() => ListPeopleResponse, { name: "listPeople" })
-  async list(
+  @AccessControlAuthorized({ accessLevel: AccessLevel.Committee })
+  @Query(() => ListPeopleResponse, { name: "people" })
+  async people(
     @Args(() => ListPeopleArgs) args: ListPeopleArgs
   ): Promise<ConcreteResult<ListPeopleResponse>> {
     const [rows, total] = await Promise.all([
@@ -166,7 +165,7 @@ export class PersonResolver {
     return ctx.authenticatedUser;
   }
 
-  @QueryAccessControl({ accessLevel: AccessLevel.Committee })
+  @AccessControlAuthorized({ accessLevel: AccessLevel.Committee })
   @Query(() => [PersonNode], { name: "searchPeopleByName" })
   async searchByName(
     @Arg("name") name: string
@@ -183,11 +182,11 @@ export class PersonResolver {
     ).promise;
   }
 
-  @MutationAccessControl({
+  @AccessControlAuthorized({
     accessLevel: AccessLevel.CommitteeChairOrCoordinator,
   })
   @Mutation(() => PersonNode, { name: "createPerson" })
-  async create(
+  async createPerson(
     @Arg("input") input: CreatePersonInput,
     @Ctx() { authorization: { accessLevel } }: GraphQLContext
   ): Promise<ConcreteResult<PersonNode>> {
@@ -231,11 +230,11 @@ export class PersonResolver {
       .promise;
   }
 
-  @MutationAccessControl({
+  @AccessControlAuthorized({
     accessLevel: AccessLevel.CommitteeChairOrCoordinator,
   })
   @Mutation(() => PersonNode, { name: "setPerson" })
-  async set(
+  async setPerson(
     @Arg("uuid", () => GlobalIdScalar) { id }: GlobalId,
     @Arg("input") input: SetPersonInput,
     @Ctx() { authorization: { accessLevel } }: GraphQLContext
@@ -283,7 +282,7 @@ export class PersonResolver {
       .promise;
   }
 
-  @MutationAccessControl({ accessLevel: AccessLevel.SuperAdmin })
+  @AccessControlAuthorized({ accessLevel: AccessLevel.SuperAdmin })
   @Mutation(() => [PersonNode], { name: "bulkLoadPeople" })
   async bulkLoad(
     @Arg("people", () => [BulkPersonInput]) people: BulkPersonInput[],
@@ -304,7 +303,7 @@ export class PersonResolver {
     ).promise;
   }
 
-  @MutationAccessControl({
+  @AccessControlAuthorized({
     accessLevel: AccessLevel.CommitteeChairOrCoordinator,
   })
   @Mutation(() => MembershipNode, { name: "addPersonToTeam" })
@@ -329,7 +328,7 @@ export class PersonResolver {
     ).map(membershipModelToResource).promise;
   }
 
-  @MutationAccessControl({
+  @AccessControlAuthorized({
     accessLevel: AccessLevel.CommitteeChairOrCoordinator,
   })
   @Mutation(() => MembershipNode, { name: "removePersonFromTeam" })
@@ -349,11 +348,11 @@ export class PersonResolver {
     ).map(membershipModelToResource).promise;
   }
 
-  @MutationAccessControl({
+  @AccessControlAuthorized({
     accessLevel: AccessLevel.CommitteeChairOrCoordinator,
   })
   @Mutation(() => PersonNode, { name: "deletePerson" })
-  async delete(
+  async deletePerson(
     @Arg("uuid", () => GlobalIdScalar) { id }: GlobalId
   ): Promise<ConcreteResult<PersonNode>> {
     return new AsyncResult(this.personRepository.deletePerson({ uuid: id }))
@@ -371,7 +370,7 @@ export class PersonResolver {
       }).promise;
   }
 
-  @QueryAccessControl(
+  @AccessControlAuthorized(
     { accessLevel: AccessLevel.Committee },
     {
       rootMatch: [
@@ -400,7 +399,7 @@ export class PersonResolver {
     ).promise;
   }
 
-  @QueryAccessControl(
+  @AccessControlAuthorized(
     { accessLevel: AccessLevel.Committee },
     {
       rootMatch: [
@@ -426,7 +425,7 @@ export class PersonResolver {
     ).map((models) => models.map(membershipModelToResource)).promise;
   }
 
-  @QueryAccessControl(
+  @AccessControlAuthorized(
     { accessLevel: AccessLevel.Committee },
     {
       rootMatch: [
@@ -452,7 +451,7 @@ export class PersonResolver {
     ).map((models) => models.map(membershipModelToResource)).promise;
   }
 
-  @QueryAccessControl(
+  @AccessControlAuthorized(
     { accessLevel: AccessLevel.Committee },
     {
       rootMatch: [
@@ -478,7 +477,7 @@ export class PersonResolver {
     );
   }
 
-  @QueryAccessControl(
+  @AccessControlAuthorized(
     { accessLevel: AccessLevel.Committee },
     {
       rootMatch: [
@@ -504,8 +503,8 @@ export class PersonResolver {
     return model.map((option) => option.map(membershipModelToResource));
   }
 
-  @QueryAccessControl<FundraisingEntryNode>(
-    async ({ id: { id } }, context): Promise<boolean> => {
+  @CustomQueryAccessControl<FundraisingEntryNode>(
+    async ({ id: { id: rootPersonId } }, context): Promise<boolean> => {
       // We can't grant blanket access as otherwise people would see who else was assigned to an entry
       // You can view all assignments for an entry if you are:
       // 1. A fundraising coordinator or chair
@@ -526,10 +525,16 @@ export class PersonResolver {
         teamMemberships,
         userData: { userId },
       } = context;
-      // 2. The captain of the team the entry is associated with
+
       if (userId == null) {
         return false;
       }
+      // 2. The user themselves
+      if (rootPersonId === userId) {
+        return true;
+      }
+
+      // 3. The captain of the team the user is on
       const captainOf = teamMemberships.filter(
         (membership) => membership.position === MembershipPositionType.Captain
       );
@@ -537,24 +542,19 @@ export class PersonResolver {
         return false;
       }
 
-      const fundraisingEntryRepository = Container.get(
-        FundraisingEntryRepository
-      );
-      const entry = await fundraisingEntryRepository.findEntryByUnique({
-        uuid: id,
+      const rootPersonMembership = await Container.get(
+        PersonRepository
+      ).findMembershipsOfPerson({
+        uuid: rootPersonId,
       });
-      if (entry.isErr()) {
+      if (rootPersonMembership.isErr()) {
         return false;
       }
-      const dbFundsRepository = Container.get(DBFundsRepository);
-      const teams = await dbFundsRepository.getTeamsForDbFundsTeam({
-        id: entry.value.dbFundsEntry.dbFundsTeamId,
-      });
-      if (teams.isErr()) {
-        return false;
-      }
-      return captainOf.some(({ teamId }) =>
-        teams.value.some((team) => team.uuid === teamId)
+
+      return captainOf.some((captain) =>
+        rootPersonMembership.value.some(
+          (membership) => membership.team.uuid === captain.teamId
+        )
       );
     }
   )
@@ -579,7 +579,7 @@ export class PersonResolver {
       },
       {
         // EXTREMELY IMPORTANT FOR SECURITY
-        assignedToPerson: { uuid: id },
+        onlyAssignedToPerson: { uuid: id },
       }
     );
     const count = await this.fundraisingEntryRepository.countEntries(
@@ -587,7 +587,7 @@ export class PersonResolver {
         filters: args.filters,
       },
       {
-        assignedToPerson: { uuid: id },
+        onlyAssignedToPerson: { uuid: id },
       }
     );
 
@@ -608,7 +608,7 @@ export class PersonResolver {
     });
   }
 
-  @QueryAccessControl(
+  @AccessControlAuthorized(
     // We can't grant blanket access as otherwise people would see who else was assigned to an entry
     // You can view all assignments for an entry if you are:
     // 1. A fundraising coordinator or chair
@@ -635,7 +635,7 @@ export class PersonResolver {
   // This is the only way normal dancers or committee members can access fundraising info
   // as it will only grant them the individual assignment they are associated with plus
   // shallow access to the entry itself
-  @QueryAccessControl<FundraisingAssignmentNode>({
+  @AccessControlAuthorized<FundraisingAssignmentNode>({
     rootMatch: [
       {
         root: "id",

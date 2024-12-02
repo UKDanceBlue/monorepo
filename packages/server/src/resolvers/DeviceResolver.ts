@@ -1,26 +1,22 @@
 import { Service } from "@freshgum/typedi";
-import type { GlobalId } from "@ukdanceblue/common";
+import type { CrudResolver, GlobalId } from "@ukdanceblue/common";
 import {
+  AccessControlAuthorized,
   AccessLevel,
   DeviceNode,
+  GetDeviceByUuidResponse,
   GlobalIdScalar,
   LegacyError,
   LegacyErrorCode,
-  MutationAccessControl,
-  NotificationDeliveryNode,
-  parseGlobalId,
-  PersonNode,
-  QueryAccessControl,
-  SortDirection,
-} from "@ukdanceblue/common";
-import {
-  DeleteDeviceResponse,
-  GetDeviceByUuidResponse,
   ListDevicesArgs,
   ListDevicesResponse,
   NotificationDeliveriesArgs,
+  NotificationDeliveryNode,
+  parseGlobalId,
+  PersonNode,
   RegisterDeviceInput,
   RegisterDeviceResponse,
+  SortDirection,
 } from "@ukdanceblue/common";
 import { ConcreteResult } from "@ukdanceblue/common/error";
 import {
@@ -43,7 +39,9 @@ import { PersonRepository } from "#repositories/person/PersonRepository.js";
 
 @Resolver(() => DeviceNode)
 @Service([DeviceRepository, PersonRepository])
-export class DeviceResolver {
+export class DeviceResolver
+  implements Omit<CrudResolver<DeviceNode, "device">, "device">
+{
   constructor(
     private readonly deviceRepository: DeviceRepository,
     private readonly personRepository: PersonRepository
@@ -53,7 +51,7 @@ export class DeviceResolver {
     name: "device",
     description: "Get a device by it's UUID",
   })
-  async getByUuid(
+  async device(
     @Arg("uuid", () => String, {
       description: "For legacy reasons, this can be a GlobalId or a raw UUID",
     })
@@ -68,15 +66,17 @@ export class DeviceResolver {
       throw new LegacyError(LegacyErrorCode.NotFound, "Device not found");
     }
 
-    return GetDeviceByUuidResponse.newOk(deviceModelToResource(row));
+    const resp = new GetDeviceByUuidResponse();
+    resp.data = deviceModelToResource(row);
+    return resp;
   }
 
-  @QueryAccessControl({ accessLevel: AccessLevel.Admin })
+  @AccessControlAuthorized({ accessLevel: AccessLevel.Admin })
   @Query(() => ListDevicesResponse, {
     name: "devices",
     description: "List all devices",
   })
-  async list(
+  async devices(
     @Args(() => ListDevicesArgs) query: ListDevicesArgs
   ): Promise<ListDevicesResponse> {
     const [rows, count] = await Promise.all([
@@ -108,7 +108,7 @@ export class DeviceResolver {
     name: "registerDevice",
     description: "Register a new device, or update an existing one",
   })
-  async register(
+  async registerDevice(
     @Arg("input") input: RegisterDeviceInput
   ): Promise<ConcreteResult<RegisterDeviceResponse>> {
     let deviceId: string;
@@ -130,24 +130,27 @@ export class DeviceResolver {
       }
     );
 
-    return row.map((row) =>
-      RegisterDeviceResponse.newOk(deviceModelToResource(row))
-    );
+    return row.map((row) => {
+      const resp = new RegisterDeviceResponse();
+      resp.ok = true;
+      resp.data = deviceModelToResource(row);
+      return resp;
+    });
   }
 
-  @MutationAccessControl({ accessLevel: AccessLevel.Admin })
-  @Mutation(() => DeleteDeviceResponse, {
+  @AccessControlAuthorized({ accessLevel: AccessLevel.Admin })
+  @Mutation(() => DeviceNode, {
     name: "deleteDevice",
     description: "Delete a device by it's UUID",
   })
-  async delete(
+  async deleteDevice(
     @Arg("uuid", () => GlobalIdScalar) { id }: GlobalId
-  ): Promise<DeleteDeviceResponse> {
-    await this.deviceRepository.deleteDevice({ uuid: id });
+  ): Promise<DeviceNode> {
+    const row = await this.deviceRepository.deleteDevice({ uuid: id });
 
     auditLogger.secure("Device deleted", { uuid: id });
 
-    return DeleteDeviceResponse.newOk(true);
+    return deviceModelToResource(row);
   }
 
   @FieldResolver(() => PersonNode, { nullable: true })
@@ -186,13 +189,15 @@ export class DeviceResolver {
     }
 
     const rows =
-      await this.deviceRepository.findNotificationDeliveriesForDevice(id, {
-        skip:
-          query.page != null && query.pageSize != null
-            ? (query.page - 1) * query.pageSize
-            : undefined,
-        take: query.pageSize,
-      });
+      await this.deviceRepository.findNotificationDeliveriesForDevice(
+        id,
+        query.page != null && query.pageSize != null
+          ? {
+              skip: (query.page - 1) * query.pageSize,
+              take: query.pageSize,
+            }
+          : {}
+      );
 
     return rows.map(notificationDeliveryModelToResource);
   }

@@ -11,8 +11,8 @@ import { DateTime } from "luxon";
 import { useMemo } from "react";
 import { thumbHashToDataURL } from "thumbhash";
 
-import type { FragmentType } from "#graphql/index.js";
-import { getFragmentData, graphql } from "#graphql/index.js";
+import type { FragmentOf } from "#graphql/index.js";
+import { graphql,readFragment } from "#graphql/index.js";
 
 import { useEventDeletePopup } from "../../components/event/EventDeletePopup";
 
@@ -45,9 +45,9 @@ export const EventViewerFragment = graphql(/* GraphQL */ `
 export function EventViewer({
   eventFragment,
 }: {
-  eventFragment?: FragmentType<typeof EventViewerFragment> | undefined;
+  eventFragment?: FragmentOf<typeof EventViewerFragment> | undefined;
 }) {
-  const eventData = getFragmentData(EventViewerFragment, eventFragment);
+  const eventData = readFragment(EventViewerFragment, eventFragment);
 
   const occurrences = useMemo<
     { interval: Interval; fullDay: boolean }[] | undefined

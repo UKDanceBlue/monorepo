@@ -1,7 +1,8 @@
 import { Service } from "@freshgum/typedi";
 import type { Prisma } from "@prisma/client";
-import type { GlobalId } from "@ukdanceblue/common";
+import type { CrudResolver, GlobalId } from "@ukdanceblue/common";
 import {
+  AccessControlAuthorized,
   AccessLevel,
   CommitteeRole,
   EventNode,
@@ -9,25 +10,19 @@ import {
   ImageNode,
   LegacyError,
   LegacyErrorCode,
-  MutationAccessControl,
-  QueryAccessControl,
   SortDirection,
 } from "@ukdanceblue/common";
 import {
-  AddEventImageResponse,
   CreateEventInput,
-  CreateEventResponse,
-  DeleteEventResponse,
-  GetEventByUuidResponse,
   ListEventsArgs,
   ListEventsResponse,
-  RemoveEventImageResponse,
   SetEventInput,
-  SetEventResponse,
 } from "@ukdanceblue/common";
+import { VoidResolver } from "graphql-scalars";
 import {
   Arg,
   Args,
+  Ctx,
   FieldResolver,
   Mutation,
   Query,
@@ -45,47 +40,47 @@ import { EventRepository } from "#repositories/event/EventRepository.js";
 import { EventImagesRepository } from "#repositories/event/images/EventImagesRepository.js";
 import { imageModelToResource } from "#repositories/image/imageModelToResource.js";
 
+import type { GraphQLContext } from "./context.js";
+
 @Service([EventRepository, EventImagesRepository, FileManager])
 @Resolver(() => EventNode)
-export class EventResolver {
+export class EventResolver implements CrudResolver<EventNode, "event"> {
   constructor(
     private readonly eventRepository: EventRepository,
     private readonly eventImageRepository: EventImagesRepository,
     private readonly fileManager: FileManager
   ) {}
 
-  @QueryAccessControl({
+  @AccessControlAuthorized({
     accessLevel: AccessLevel.Public,
   })
-  @Query(() => GetEventByUuidResponse, {
+  @Query(() => EventNode, {
     name: "event",
     description: "Get an event by UUID",
   })
-  async getByUuid(
+  async event(
     @Arg("uuid", () => GlobalIdScalar) { id }: GlobalId
-  ): Promise<GetEventByUuidResponse> {
+  ): Promise<EventNode> {
     const row = await this.eventRepository.findEventByUnique({ uuid: id });
 
     if (row == null) {
       throw new LegacyError(LegacyErrorCode.NotFound, "Event not found");
     }
 
-    return GetEventByUuidResponse.newOk(
-      eventModelToResource(
-        row,
-        row.eventOccurrences.map(eventOccurrenceModelToResource)
-      )
+    return eventModelToResource(
+      row,
+      row.eventOccurrences.map(eventOccurrenceModelToResource)
     );
   }
 
-  @QueryAccessControl({
+  @AccessControlAuthorized({
     accessLevel: AccessLevel.Public,
   })
   @Query(() => ListEventsResponse, {
     name: "events",
     description: "List events",
   })
-  async list(@Args() query: ListEventsArgs) {
+  async events(@Args() query: ListEventsArgs) {
     const rows = await this.eventRepository.listEvents({
       filters: query.filters,
       order:
@@ -113,7 +108,7 @@ export class EventResolver {
     });
   }
 
-  @MutationAccessControl(
+  @AccessControlAuthorized(
     {
       accessLevel: AccessLevel.Admin,
     },
@@ -121,13 +116,11 @@ export class EventResolver {
       authRules: [{ minCommitteeRole: CommitteeRole.Chair }],
     }
   )
-  @Mutation(() => CreateEventResponse, {
+  @Mutation(() => EventNode, {
     name: "createEvent",
     description: "Create a new event",
   })
-  async create(
-    @Arg("input") input: CreateEventInput
-  ): Promise<CreateEventResponse> {
+  async createEvent(@Arg("input") input: CreateEventInput): Promise<EventNode> {
     const row = await this.eventRepository.createEvent({
       title: input.title,
       summary: input.summary,
@@ -148,15 +141,13 @@ export class EventResolver {
 
     auditLogger.secure("Event created", { event: row });
 
-    return CreateEventResponse.newCreated(
-      eventModelToResource(
-        row,
-        row.eventOccurrences.map(eventOccurrenceModelToResource)
-      )
+    return eventModelToResource(
+      row,
+      row.eventOccurrences.map(eventOccurrenceModelToResource)
     );
   }
 
-  @MutationAccessControl(
+  @AccessControlAuthorized(
     {
       accessLevel: AccessLevel.Admin,
     },
@@ -164,13 +155,13 @@ export class EventResolver {
       authRules: [{ minCommitteeRole: CommitteeRole.Chair }],
     }
   )
-  @Mutation(() => DeleteEventResponse, {
+  @Mutation(() => EventNode, {
     name: "deleteEvent",
     description: "Delete an event by UUID",
   })
-  async delete(
+  async deleteEvent(
     @Arg("uuid", () => GlobalIdScalar) { id }: GlobalId
-  ): Promise<DeleteEventResponse> {
+  ): Promise<EventNode> {
     const row = await this.eventRepository.deleteEvent({ uuid: id });
 
     if (row == null) {
@@ -179,10 +170,13 @@ export class EventResolver {
 
     auditLogger.secure("Event deleted", { uuid: id });
 
-    return DeleteEventResponse.newOk(true);
+    return eventModelToResource(
+      row,
+      row.eventOccurrences.map(eventOccurrenceModelToResource)
+    );
   }
 
-  @MutationAccessControl(
+  @AccessControlAuthorized(
     {
       accessLevel: AccessLevel.Admin,
     },
@@ -190,14 +184,14 @@ export class EventResolver {
       authRules: [{ minCommitteeRole: CommitteeRole.Chair }],
     }
   )
-  @Mutation(() => SetEventResponse, {
+  @Mutation(() => EventNode, {
     name: "setEvent",
     description: "Update an event by UUID",
   })
-  async set(
+  async setEvent(
     @Arg("uuid", () => GlobalIdScalar) { id }: GlobalId,
     @Arg("input") input: SetEventInput
-  ): Promise<SetEventResponse> {
+  ): Promise<EventNode> {
     const row = await this.eventRepository.updateEvent(
       { uuid: id },
       {
@@ -249,15 +243,13 @@ export class EventResolver {
 
     auditLogger.secure("Event updated", { event: row });
 
-    return SetEventResponse.newOk(
-      eventModelToResource(
-        row,
-        row.eventOccurrences.map(eventOccurrenceModelToResource)
-      )
+    return eventModelToResource(
+      row,
+      row.eventOccurrences.map(eventOccurrenceModelToResource)
     );
   }
 
-  @MutationAccessControl(
+  @AccessControlAuthorized(
     {
       accessLevel: AccessLevel.Admin,
     },
@@ -265,14 +257,14 @@ export class EventResolver {
       authRules: [{ minCommitteeRole: CommitteeRole.Chair }],
     }
   )
-  @Mutation(() => RemoveEventImageResponse, {
+  @Mutation(() => VoidResolver, {
     name: "removeImageFromEvent",
     description: "Remove an image from an event",
   })
   async removeImage(
     @Arg("eventId", () => GlobalIdScalar) eventUuid: GlobalId,
     @Arg("imageId", () => GlobalIdScalar) imageUuid: GlobalId
-  ): Promise<RemoveEventImageResponse> {
+  ): Promise<void> {
     const row = await this.eventImageRepository.removeEventImageByUnique({
       eventUuid: eventUuid.id,
       imageUuid: imageUuid.id,
@@ -283,11 +275,9 @@ export class EventResolver {
     }
 
     auditLogger.secure("Event image removed", { eventUuid, imageUuid });
-
-    return RemoveEventImageResponse.newOk(true);
   }
 
-  @MutationAccessControl(
+  @AccessControlAuthorized(
     {
       accessLevel: AccessLevel.Admin,
     },
@@ -295,35 +285,47 @@ export class EventResolver {
       authRules: [{ minCommitteeRole: CommitteeRole.Chair }],
     }
   )
-  @Mutation(() => AddEventImageResponse, {
+  @Mutation(() => ImageNode, {
     name: "addExistingImageToEvent",
     description: "Add an existing image to an event",
   })
   async addExistingImage(
+    @Ctx() { serverUrl }: GraphQLContext,
     @Arg("eventId", () => GlobalIdScalar) eventId: GlobalId,
     @Arg("imageId", () => GlobalIdScalar) imageId: GlobalId
-  ): Promise<AddEventImageResponse> {
+  ): Promise<ImageNode> {
     const row = await this.eventImageRepository.addExistingImageToEvent(
       { uuid: eventId.id },
       { uuid: imageId.id }
     );
 
-    return AddEventImageResponse.newOk(
-      await imageModelToResource(row.image, row.image.file, this.fileManager)
+    return imageModelToResource(
+      row.image,
+      row.image.file,
+      this.fileManager,
+      serverUrl
     );
   }
 
   @FieldResolver(() => [ImageNode], {
     description: "List all images for this event",
   })
-  async images(@Root() event: EventNode): Promise<ImageNode[]> {
+  async images(
+    @Root() event: EventNode,
+    @Ctx() { serverUrl }: GraphQLContext
+  ): Promise<ImageNode[]> {
     const rows = await this.eventImageRepository.findEventImagesByEventUnique({
       uuid: event.id.id,
     });
 
     return Promise.all(
       rows.map((row) =>
-        imageModelToResource(row.image, row.image.file, this.fileManager)
+        imageModelToResource(
+          row.image,
+          row.image.file,
+          this.fileManager,
+          serverUrl
+        )
       )
     );
   }

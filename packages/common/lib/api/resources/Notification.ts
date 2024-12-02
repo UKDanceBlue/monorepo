@@ -2,10 +2,10 @@ import { DateTimeISOResolver, URLResolver } from "graphql-scalars";
 import type { DateTime } from "luxon";
 import { Field, ObjectType } from "type-graphql";
 
-import { QueryAccessControl } from "../../authorization/accessControl.js";
+import { AccessControlAuthorized } from "../../authorization/accessControl.js";
 import { AccessLevel } from "../../authorization/structures.js";
 import { dateTimeFromSomething } from "../../utility/time/intervalTools.js";
-import { createNodeClasses,Node } from "../relay.js";
+import { createNodeClasses, Node } from "../relay.js";
 import type { GlobalId } from "../scalars/GlobalId.js";
 import { GlobalIdScalar } from "../scalars/GlobalId.js";
 import { TimestampedResource } from "./Resource.js";
@@ -24,15 +24,19 @@ export class NotificationNode extends TimestampedResource implements Node {
   body!: string;
 
   @Field(() => URLResolver, { nullable: true })
-  url?: URL | null;
+  url?: URL | undefined | null;
 
   @Field(() => String, { nullable: true })
-  @QueryAccessControl({ accessLevel: AccessLevel.CommitteeChairOrCoordinator })
-  deliveryIssue?: string | null;
+  @AccessControlAuthorized({
+    accessLevel: AccessLevel.CommitteeChairOrCoordinator,
+  })
+  deliveryIssue?: string | undefined | null;
 
   @Field(() => DateTimeISOResolver, { nullable: true })
-  @QueryAccessControl({ accessLevel: AccessLevel.CommitteeChairOrCoordinator })
-  deliveryIssueAcknowledgedAt?: Date | null;
+  @AccessControlAuthorized({
+    accessLevel: AccessLevel.CommitteeChairOrCoordinator,
+  })
+  deliveryIssueAcknowledgedAt?: Date | undefined | null;
   get deliveryIssueAcknowledgedAtDateTime(): DateTime | null {
     return dateTimeFromSomething(this.deliveryIssueAcknowledgedAt ?? null);
   }
@@ -42,7 +46,7 @@ export class NotificationNode extends TimestampedResource implements Node {
     description:
       "The time the notification is scheduled to be sent, if null it is either already sent or unscheduled.",
   })
-  sendAt?: Date | null;
+  sendAt?: Date | undefined | null;
   get sendAtDateTime(): DateTime | null {
     return dateTimeFromSomething(this.sendAt ?? null);
   }
@@ -51,7 +55,7 @@ export class NotificationNode extends TimestampedResource implements Node {
     nullable: true,
     description: "The time the server started sending the notification.",
   })
-  startedSendingAt?: Date | null;
+  startedSendingAt?: Date | undefined | null;
   get startedSendingAtDateTime(): DateTime | null {
     return dateTimeFromSomething(this.startedSendingAt ?? null);
   }
@@ -64,11 +68,11 @@ export class NotificationNode extends TimestampedResource implements Node {
     id: string;
     title: string;
     body: string;
-    url?: URL | null;
-    deliveryIssue?: string | null;
-    deliveryIssueAcknowledgedAt?: Date | null;
-    sendAt?: Date | null;
-    startedSendingAt?: Date | null;
+    url?: URL | undefined | null;
+    deliveryIssue?: string | undefined | null;
+    deliveryIssueAcknowledgedAt?: Date | undefined | null;
+    sendAt?: Date | undefined | null;
+    startedSendingAt?: Date | undefined | null;
     createdAt: Date;
     updatedAt: Date;
   }) {
@@ -94,31 +98,37 @@ export class NotificationDeliveryNode
     description:
       "The time the server sent the notification to Expo for delivery.",
   })
-  sentAt?: Date | null;
+  sentAt?: Date | undefined | null;
 
   @Field(() => Date, {
     nullable: true,
     description:
       "The time the server received a delivery receipt from the user.",
   })
-  @QueryAccessControl({ accessLevel: AccessLevel.CommitteeChairOrCoordinator })
-  receiptCheckedAt?: Date | null;
+  @AccessControlAuthorized({
+    accessLevel: AccessLevel.CommitteeChairOrCoordinator,
+  })
+  receiptCheckedAt?: Date | undefined | null;
 
   @Field(() => String, {
     nullable: true,
     description:
       "A unique identifier corresponding the group of notifications this was sent to Expo with.",
   })
-  @QueryAccessControl({ accessLevel: AccessLevel.CommitteeChairOrCoordinator })
-  chunkUuid?: string | null;
+  @AccessControlAuthorized({
+    accessLevel: AccessLevel.CommitteeChairOrCoordinator,
+  })
+  chunkUuid?: string | undefined | null;
 
   @Field(() => String, {
     nullable: true,
     description:
       "Any error message returned by Expo when sending the notification.",
   })
-  @QueryAccessControl({ accessLevel: AccessLevel.CommitteeChairOrCoordinator })
-  deliveryError?: string | null;
+  @AccessControlAuthorized({
+    accessLevel: AccessLevel.CommitteeChairOrCoordinator,
+  })
+  deliveryError?: string | undefined | null;
 
   public getUniqueId(): string {
     return this.id.id;
@@ -126,10 +136,10 @@ export class NotificationDeliveryNode
 
   public static init(init: {
     id: string;
-    sentAt?: Date | null;
-    receiptCheckedAt?: Date | null;
-    chunkUuid?: string | null;
-    deliveryError?: string | null;
+    sentAt?: Date | undefined | null;
+    receiptCheckedAt?: Date | undefined | null;
+    chunkUuid?: string | undefined | null;
+    deliveryError?: string | undefined | null;
     createdAt: Date;
     updatedAt: Date;
   }) {

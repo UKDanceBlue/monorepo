@@ -20,13 +20,15 @@ import { ErrorCode } from "@ukdanceblue/common/error";
 import { Ok } from "ts-results-es";
 
 import { defaultAuthorization, parseUserJwt } from "#auth/index.js";
-import { superAdminLinkbluesToken } from "#lib/environmentTokens.js";
+import { getHostUrl } from "#lib/host.js";
+import { superAdminLinkbluesToken } from "#lib/typediTokens.js";
 import { logger } from "#logging/logger.js";
 import { personModelToResource } from "#repositories/person/personModelToResource.js";
 import { PersonRepository } from "#repositories/person/PersonRepository.js";
 
-// eslint-disable-next-line @typescript-eslint/no-empty-object-type
-export interface GraphQLContext extends AuthorizationContext {}
+export interface GraphQLContext extends AuthorizationContext {
+  serverUrl: URL;
+}
 
 const superAdminLinkblues = Container.get(superAdminLinkbluesToken);
 
@@ -37,7 +39,6 @@ function isSuperAdmin(
   return (
     (typeof superAdminLinkblues !== "symbol" &&
       linkblue &&
-      // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
       superAdminLinkblues.includes(linkblue)) ||
     committeeRoles.some(
       (role) =>
@@ -52,7 +53,7 @@ async function withUserInfo(
   inputContext: GraphQLContext,
   userId: string
 ): Promise<ConcreteResult<GraphQLContext>> {
-  const outputContext = structuredClone(inputContext);
+  const outputContext = { ...inputContext };
   const personRepository = Container.get(PersonRepository);
   const person = await personRepository.findPersonAndTeamsByUnique({
     uuid: userId,
@@ -77,7 +78,10 @@ async function withUserInfo(
   }
   logger.trace("graphqlContextFunction Found user", personResource.value);
   outputContext.authenticatedUser = personResource.value;
-  outputContext.userData.userId = userId;
+  outputContext.userData = {
+    ...outputContext.userData,
+    userId,
+  };
 
   // Set the teams the user is on
   let teamMemberships = await personRepository.findMembershipsOfPerson(
@@ -120,44 +124,52 @@ async function withUserInfo(
     "graphqlContextFunction Effective committee roles",
     ...effectiveCommitteeRoles.value
   );
-  outputContext.authorization.effectiveCommitteeRoles =
-    effectiveCommitteeRoles.value;
+  outputContext.authorization = {
+    ...outputContext.authorization,
+    effectiveCommitteeRoles: effectiveCommitteeRoles.value,
+  };
 
   // If the user is on a committee, override the dbRole
   if (effectiveCommitteeRoles.value.length > 0) {
-    outputContext.authorization.dbRole = DbRole.Committee;
+    outputContext.authorization = {
+      ...outputContext.authorization,
+      dbRole: DbRole.Committee,
+    };
   }
 
   return Ok(outputContext);
 }
 
-const defaultContext: Readonly<GraphQLContext> = Object.freeze<GraphQLContext>({
-  authenticatedUser: null,
-  teamMemberships: [],
-  userData: {
-    authSource: AuthSource.None,
-  },
-  authorization: defaultAuthorization,
-});
+export const graphqlContextFunction: ContextFunction<
+  [ExpressContextFunctionArgument],
+  GraphQLContext
+> = async ({ req }): Promise<GraphQLContext> => {
+  const getDefaultContext = (): Readonly<GraphQLContext> => ({
+    authenticatedUser: null,
+    teamMemberships: [],
+    userData: {
+      authSource: AuthSource.None,
+    },
+    authorization: defaultAuthorization,
+    serverUrl: getHostUrl(req),
+  });
 
-const anonymousContext: Readonly<GraphQLContext> =
-  Object.freeze<GraphQLContext>({
-    ...defaultContext,
+  const anonymousContext: Readonly<GraphQLContext> = {
+    ...getDefaultContext(),
     authorization: {
       accessLevel: AccessLevel.Public,
       effectiveCommitteeRoles: [],
       dbRole: DbRole.Public,
     },
-  });
+  };
 
-export const graphqlContextFunction: ContextFunction<
-  [ExpressContextFunctionArgument],
-  GraphQLContext
-> = async ({ req }): Promise<GraphQLContext> => {
   // Get the token from the cookies or the Authorization header
-  let token = req.cookies.token ? String(req.cookies.token) : undefined;
+  let token = (req.cookies as Partial<Record<string, string>>).token
+    ? String((req.cookies as Partial<Record<string, string>>).token)
+    : undefined;
   if (!token) {
-    let authorizationHeader = req.headers.Authorization;
+    let authorizationHeader =
+      req.headers.Authorization || req.headers.authorization;
     if (Array.isArray(authorizationHeader)) {
       authorizationHeader = authorizationHeader[0];
     }
@@ -167,7 +179,7 @@ export const graphqlContextFunction: ContextFunction<
   }
   if (!token) {
     // Short-circuit if no token is present
-    return defaultContext;
+    return getDefaultContext();
   }
 
   // Parse the token
@@ -185,15 +197,15 @@ export const graphqlContextFunction: ContextFunction<
 
   if (!userId) {
     logger.trace("graphqlContextFunction No user ID");
-    return structuredClone(defaultContext);
+    return getDefaultContext();
   }
 
   // If we have a user ID, look up the user
   let contextWithUser = await withUserInfo(
     {
-      ...defaultContext,
+      ...getDefaultContext(),
       authorization: {
-        ...defaultContext.authorization,
+        ...getDefaultContext().authorization,
         dbRole: authSourceDbRole,
       },
     },
@@ -204,7 +216,7 @@ export const graphqlContextFunction: ContextFunction<
       "graphqlContextFunction Error looking up user",
       contextWithUser.error
     );
-    return structuredClone(defaultContext);
+    return getDefaultContext();
   }
   let superAdmin = isSuperAdmin(
     contextWithUser.value.authorization.effectiveCommitteeRoles,
@@ -221,15 +233,15 @@ export const graphqlContextFunction: ContextFunction<
         "graphqlContextFunction Error parsing masquerade ID",
         parsedId.error
       );
-      return structuredClone(defaultContext);
+      return getDefaultContext();
     }
     logger.trace("graphqlContextFunction Masquerading as", parsedId.value.id);
     // We need to reset the dbRole to the default one in case the masquerade user is not a committee member
     contextWithUser = await withUserInfo(
       {
-        ...defaultContext,
+        ...getDefaultContext(),
         authorization: {
-          ...defaultContext.authorization,
+          ...getDefaultContext().authorization,
           dbRole: authSourceDbRole,
         },
       },
@@ -240,7 +252,7 @@ export const graphqlContextFunction: ContextFunction<
         "graphqlContextFunction Error looking up user",
         contextWithUser.error
       );
-      return structuredClone(defaultContext);
+      return getDefaultContext();
     }
     superAdmin = false;
   }

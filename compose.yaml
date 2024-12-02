@@ -12,6 +12,7 @@ services:
       database:
         aliases:
           - postgres
+      monitoring:
     restart: unless-stopped
   server:
     build:
@@ -22,6 +23,7 @@ services:
       proxy:
         aliases:
           - ${HOST_PREFIX:-}-server
+      monitoring:
       database:
     depends_on:
       - postgres
@@ -31,7 +33,7 @@ services:
       UPLOAD_PATH: /data/serve/uploads
       MAX_FILE_SIZE: 200
       LOG_DIR: /data/logs
-      DATABASE_URL: postgres://danceblue:danceblue@postgres:5432/danceblue?schema=danceblue
+      DATABASE_URL: postgres://danceblue:danceblue@danceblue-${HOST_PREFIX:-}-postgres-1:5432/danceblue?schema=danceblue
       SERVE_ORIGIN: https://${HOST_PREFIX:-}.danceblue.org
       LOGGING_LEVEL: ${LOGGING_LEVEL:-info}
       SUPER_ADMIN_LINKBLUE: ${SUPER_ADMIN_LINKBLUE}
@@ -53,6 +55,9 @@ networks:
     name: proxy
   database:
     internal: true
+  monitoring:
+    external: true
+    name: monitoring
 
 volumes:
   content:

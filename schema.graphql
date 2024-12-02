@@ -3,31 +3,8 @@
 # !!!   DO NOT MODIFY THIS FILE BY YOURSELF   !!!
 # -----------------------------------------------
 
-type AbortScheduledNotificationResponse implements AbstractGraphQLOkResponse & GraphQLBaseResponse {
-  data: Boolean!
-  ok: Boolean!
-}
-
 """API response"""
-interface AbstractGraphQLArrayOkResponse implements GraphQLBaseResponse {
-  ok: Boolean!
-}
-
-"""API response"""
-interface AbstractGraphQLCreatedResponse implements AbstractGraphQLOkResponse & GraphQLBaseResponse {
-  ok: Boolean!
-  uuid: GlobalId!
-}
-
-"""API response"""
-interface AbstractGraphQLOkResponse implements GraphQLBaseResponse {
-  ok: Boolean!
-}
-
-"""API response"""
-interface AbstractGraphQLPaginatedResponse implements AbstractGraphQLArrayOkResponse & GraphQLBaseResponse {
-  ok: Boolean!
-
+interface AbstractGraphQLPaginatedResponse {
   """The current page number (1-indexed)"""
   page: PositiveInt!
 
@@ -49,16 +26,6 @@ enum AccessLevel {
   UKY
 }
 
-type AcknowledgeDeliveryIssueResponse implements AbstractGraphQLOkResponse & GraphQLBaseResponse {
-  data: Boolean!
-  ok: Boolean!
-}
-
-type AddEventImageResponse implements AbstractGraphQLOkResponse & GraphQLBaseResponse {
-  data: ImageNode!
-  ok: Boolean!
-}
-
 input AssignEntryToPersonInput {
   amount: Float!
 }
@@ -75,6 +42,7 @@ enum BatchType {
   ACH
   Check
   CreditCard
+  DBFunds
   NonCash
   PayrollDeduction
   Transmittal
@@ -84,16 +52,16 @@ enum BatchType {
 input BulkPersonInput {
   committee: CommitteeIdentifier
   email: EmailAddress!
-  linkblue: String!
-  name: String!
+  linkblue: NonEmptyString!
+  name: NonEmptyString!
   role: CommitteeRole
 }
 
 input BulkTeamInput {
-  captainLinkblues: [String!]
+  captainLinkblues: [NonEmptyString!]
   legacyStatus: TeamLegacyStatus!
-  memberLinkblues: [String!]
-  name: String!
+  memberLinkblues: [NonEmptyString!]
+  name: NonEmptyString!
   type: TeamType!
 }
 
@@ -156,18 +124,12 @@ input CreateConfigurationInput {
   value: String!
 }
 
-type CreateConfigurationResponse implements AbstractGraphQLCreatedResponse & AbstractGraphQLOkResponse & GraphQLBaseResponse {
-  data: ConfigurationNode!
-  ok: Boolean!
-  uuid: GlobalId!
-}
-
 input CreateEventInput {
-  description: String
-  location: String
+  description: NonEmptyString
+  location: NonEmptyString
   occurrences: [CreateEventOccurrenceInput!]!
-  summary: String
-  title: String!
+  summary: NonEmptyString
+  title: NonEmptyString!
 }
 
 input CreateEventOccurrenceInput {
@@ -175,124 +137,128 @@ input CreateEventOccurrenceInput {
   interval: IntervalISOInput!
 }
 
-type CreateEventResponse implements AbstractGraphQLCreatedResponse & AbstractGraphQLOkResponse & GraphQLBaseResponse {
-  data: EventNode!
-  ok: Boolean!
-  uuid: GlobalId!
-}
-
 input CreateFeedInput {
-  imageUuid: String
-  textContent: String
-  title: String!
+  imageUuid: GlobalId
+  textContent: NonEmptyString
+  title: NonEmptyString!
 }
 
 input CreateImageInput {
-  alt: String
+  alt: NonEmptyString
   url: URL
 }
 
 input CreateMarathonHourInput {
-  details: String
-  durationInfo: String!
+  details: NonEmptyString
+  durationInfo: NonEmptyString!
   shownStartingAt: DateTimeISO!
-  title: String!
+  title: NonEmptyString!
 }
 
 input CreateMarathonInput {
   endDate: DateTimeISO
   startDate: DateTimeISO
-  year: String!
+  year: NonEmptyString!
 }
 
 input CreatePersonInput {
   captainOf: [MemberOf!]! = []
   dbRole: DbRole @deprecated(reason: "DBRole can no longer be set directly")
   email: EmailAddress!
-  linkblue: String
+  linkblue: NonEmptyString
   memberOf: [MemberOf!]! = []
-  name: String
+  name: NonEmptyString
 }
 
 input CreatePointEntryInput {
-  comment: String
+  comment: NonEmptyString
   opportunityUuid: GlobalId
   personFromUuid: GlobalId
   points: Int!
   teamUuid: GlobalId!
 }
 
-type CreatePointEntryResponse implements AbstractGraphQLCreatedResponse & AbstractGraphQLOkResponse & GraphQLBaseResponse {
-  data: PointEntryNode!
-  ok: Boolean!
-  uuid: GlobalId!
-}
-
 input CreatePointOpportunityInput {
   eventUuid: GlobalId
   marathonUuid: GlobalId!
-  name: String!
+  name: NonEmptyString!
   opportunityDate: DateTimeISO
   type: TeamType!
 }
 
-type CreatePointOpportunityResponse implements AbstractGraphQLCreatedResponse & AbstractGraphQLOkResponse & GraphQLBaseResponse {
-  data: PointOpportunityNode!
-  ok: Boolean!
-  uuid: GlobalId!
-}
-
 input CreateTeamInput {
   legacyStatus: TeamLegacyStatus!
-  name: String!
+  name: NonEmptyString!
   type: TeamType!
 }
 
-type CreateTeamResponse implements AbstractGraphQLCreatedResponse & AbstractGraphQLOkResponse & GraphQLBaseResponse {
-  data: TeamNode!
-  ok: Boolean!
-  uuid: GlobalId!
-}
-
 type DailyDepartmentNotificationBatchNode {
+  batchNumber: String!
   batchType: BatchType!
   dailyDepartmentNotifications: [DailyDepartmentNotificationNode!]!
   id: GlobalId!
 }
 
 input DailyDepartmentNotificationInput {
-  accountName: String!
-  accountNumber: String!
-  batchId: String!
-  behalfHonorMemorial: String
+  accountName: NonEmptyString!
+  accountNumber: NonEmptyString!
+  advFeeAmtPhil: Float
+  advFeeAmtUnit: Float
+  advFeeCcPhil: NonEmptyString
+  advFeeCcUnit: NonEmptyString
+  advFeeStatus: NonEmptyString
+  batchId: NonEmptyString!
+  behalfHonorMemorial: NonEmptyString
   combinedAmount: Float!
-  combinedDonorName: String!
-  combinedDonorSalutation: String!
-  combinedDonorSort: String
-  comment: String
-  department: String
+  combinedDonorName: NonEmptyString!
+  combinedDonorSalutation: NonEmptyString!
+  combinedDonorSort: NonEmptyString
+  comment: NonEmptyString
+  department: NonEmptyString
   divFirstGift: Boolean!
-  division: String
+  division: NonEmptyString
   donor1Amount: Float
+  donor1Constituency: NonEmptyString
+  donor1Deceased: Boolean
+  donor1Degrees: NonEmptyString
+  donor1GiftKey: NonEmptyString
+  donor1Id: NonEmptyString
+  donor1Name: NonEmptyString
+  donor1Pm: NonEmptyString
+  donor1Relation: NonEmptyString
+  donor1TitleBar: NonEmptyString
   donor2Amount: Float
+  donor2Constituency: NonEmptyString
+  donor2Deceased: Boolean
+  donor2Degrees: NonEmptyString
+  donor2GiftKey: NonEmptyString
+  donor2Id: NonEmptyString
+  donor2Name: NonEmptyString
+  donor2Pm: NonEmptyString
+  donor2Relation: NonEmptyString
+  donor2TitleBar: NonEmptyString
   effectiveDate: LocalDate
-  endDate: DateTimeISO
-  gikDescription: String
-  gikType: String
-  holdingDestination: String
-  idSorter: String!
-  matchingGift: String
+  gikDescription: NonEmptyString
+  gikType: NonEmptyString
+  hcUnit: NonEmptyString
+  holdingDestination: NonEmptyString
+  idSorter: NonEmptyString!
+  jvDocDate: LocalDate
+  jvDocNum: NonEmptyString
+  matchingGift: NonEmptyString
   onlineGift: Boolean!
   pledgedAmount: Float!
   pledgedDate: LocalDate
-  processDate: LocalDate
-  secShares: String
-  secType: String
-  solicitation: String
-  solicitationCode: String
-  startDate: DateTimeISO
+  processDate: LocalDate!
+  sapDocDate: LocalDate
+  sapDocNum: NonEmptyString
+  secShares: NonEmptyString
+  secType: NonEmptyString
+  solicitation: NonEmptyString
+  solicitationCode: NonEmptyString!
   transactionDate: LocalDate
-  transactionType: String!
+  transactionType: NonEmptyString!
+  transmittalSn: NonEmptyString
   ukFirstGift: Boolean!
 }
 
@@ -353,11 +319,86 @@ type DailyDepartmentNotificationNode {
   secShares: String
   secType: String
   solicitation: String
-  solicitationCode: String
+  solicitationCode: SolicitationCodeNode!
   transactionDate: LocalDate
   transactionType: String!
   transmittalSn: String
   ukFirstGift: Boolean!
+}
+
+enum DailyDepartmentNotificationResolverAllKeys {
+  Amount
+  BatchType
+  Comment
+  Donor
+  SolicitationCodeName
+  SolicitationCodeNumber
+  SolicitationCodePrefix
+}
+
+input DailyDepartmentNotificationResolverKeyedIsNullFilterItem {
+  """The field to filter on"""
+  field: DailyDepartmentNotificationResolverAllKeys!
+
+  """
+  Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation.
+  """
+  negate: Boolean = false
+}
+
+input DailyDepartmentNotificationResolverKeyedNumericFilterItem {
+  """The comparator to use for the filter"""
+  comparison: NumericComparator!
+
+  """The field to filter on"""
+  field: DailyDepartmentNotificationResolverNumericFilterKeys!
+
+  """
+  Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation.
+  """
+  negate: Boolean = false
+  value: Float!
+}
+
+input DailyDepartmentNotificationResolverKeyedOneOfFilterItem {
+  """The field to filter on"""
+  field: DailyDepartmentNotificationResolverOneOfFilterKeys!
+
+  """
+  Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation.
+  """
+  negate: Boolean = false
+  value: [String!]!
+}
+
+input DailyDepartmentNotificationResolverKeyedStringFilterItem {
+  """The comparator to use for the filter"""
+  comparison: StringComparator!
+
+  """The field to filter on"""
+  field: DailyDepartmentNotificationResolverStringFilterKeys!
+
+  """
+  Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation.
+  """
+  negate: Boolean = false
+  value: String!
+}
+
+enum DailyDepartmentNotificationResolverNumericFilterKeys {
+  Amount
+}
+
+enum DailyDepartmentNotificationResolverOneOfFilterKeys {
+  BatchType
+  SolicitationCodeNumber
+  SolicitationCodePrefix
+}
+
+enum DailyDepartmentNotificationResolverStringFilterKeys {
+  Comment
+  Donor
+  SolicitationCodeName
 }
 
 """
@@ -376,39 +417,6 @@ enum DbRole {
   None
   Public
   UKY
-}
-
-type DeleteConfigurationResponse implements AbstractGraphQLOkResponse & GraphQLBaseResponse {
-  ok: Boolean!
-}
-
-type DeleteDeviceResponse implements AbstractGraphQLOkResponse & GraphQLBaseResponse {
-  ok: Boolean!
-}
-
-type DeleteEventResponse implements AbstractGraphQLOkResponse & GraphQLBaseResponse {
-  ok: Boolean!
-}
-
-type DeleteImageResponse implements AbstractGraphQLOkResponse & GraphQLBaseResponse {
-  ok: Boolean!
-}
-
-type DeleteNotificationResponse implements AbstractGraphQLOkResponse & GraphQLBaseResponse {
-  data: Boolean!
-  ok: Boolean!
-}
-
-type DeletePointEntryResponse implements AbstractGraphQLOkResponse & GraphQLBaseResponse {
-  ok: Boolean!
-}
-
-type DeletePointOpportunityResponse implements AbstractGraphQLOkResponse & GraphQLBaseResponse {
-  ok: Boolean!
-}
-
-type DeleteTeamResponse implements AbstractGraphQLOkResponse & GraphQLBaseResponse {
-  ok: Boolean!
 }
 
 type DeviceNode implements Node {
@@ -628,23 +636,35 @@ type FundraisingAssignmentNode implements Node {
 
 type FundraisingEntryNode implements Node {
   amount: Float!
+  amountOverride: Float
   amountUnassigned: Float!
   assignments: [FundraisingAssignmentNode!]!
+  batchType: BatchType!
+  batchTypeOverride: BatchType
   createdAt: DateTimeISO
+  dailyDepartmentNotification: DailyDepartmentNotificationNode
+  donatedByOverride: String
   donatedByText: String
-  donatedOn: DateTimeISO!
+  donatedOn: DateTimeISO
+  donatedOnOverride: DateTimeISO
+  donatedToOverride: String
   donatedToText: String
   id: GlobalId!
+  notes: String
+  solicitationCode: SolicitationCodeNode!
+  solicitationCodeOverride: SolicitationCodeNode
   updatedAt: DateTimeISO
 }
 
 enum FundraisingEntryResolverAllKeys {
   amount
   amountUnassigned
+  batchType
   createdAt
   donatedBy
   donatedOn
   donatedTo
+  solicitationCode
   teamId
   updatedAt
 }
@@ -724,56 +744,26 @@ enum FundraisingEntryResolverNumericFilterKeys {
 }
 
 enum FundraisingEntryResolverOneOfFilterKeys {
+  batchType
   teamId
 }
 
 enum FundraisingEntryResolverStringFilterKeys {
   donatedBy
   donatedTo
+  solicitationCode
 }
 
-type GetAllConfigurationsResponse implements AbstractGraphQLArrayOkResponse & GraphQLBaseResponse {
-  data: [ConfigurationNode!]!
-  ok: Boolean!
-}
-
-type GetConfigurationByUuidResponse implements AbstractGraphQLOkResponse & GraphQLBaseResponse {
+type GetConfigurationByUuidResponse {
   data: ConfigurationNode!
-  ok: Boolean!
 }
 
-type GetDeviceByUuidResponse implements AbstractGraphQLOkResponse & GraphQLBaseResponse {
+type GetDeviceByUuidResponse {
   data: DeviceNode!
-  ok: Boolean!
-}
-
-type GetEventByUuidResponse implements AbstractGraphQLOkResponse & GraphQLBaseResponse {
-  data: EventNode!
-  ok: Boolean!
-}
-
-type GetImageByUuidResponse implements AbstractGraphQLOkResponse & GraphQLBaseResponse {
-  data: ImageNode!
-  ok: Boolean!
-}
-
-type GetNotificationByUuidResponse implements AbstractGraphQLOkResponse & GraphQLBaseResponse {
-  data: NotificationNode!
-  ok: Boolean!
-}
-
-type GetPointEntryByUuidResponse implements AbstractGraphQLOkResponse & GraphQLBaseResponse {
-  data: PointEntryNode!
-  ok: Boolean!
 }
 
 """GlobalId custom scalar type"""
 scalar GlobalId
-
-"""API response"""
-interface GraphQLBaseResponse {
-  ok: Boolean!
-}
 
 type ImageNode implements Node {
   alt: String
@@ -882,9 +872,8 @@ input IntervalISOInput {
   start: DateTimeISO!
 }
 
-type ListDailyDepartmentNotificationsResponse implements AbstractGraphQLArrayOkResponse & AbstractGraphQLPaginatedResponse & GraphQLBaseResponse {
+type ListDailyDepartmentNotificationsResponse implements AbstractGraphQLPaginatedResponse {
   data: [DailyDepartmentNotificationNode!]!
-  ok: Boolean!
 
   """The current page number (1-indexed)"""
   page: PositiveInt!
@@ -896,9 +885,8 @@ type ListDailyDepartmentNotificationsResponse implements AbstractGraphQLArrayOkR
   total: NonNegativeInt!
 }
 
-type ListDevicesResponse implements AbstractGraphQLArrayOkResponse & AbstractGraphQLPaginatedResponse & GraphQLBaseResponse {
+type ListDevicesResponse implements AbstractGraphQLPaginatedResponse {
   data: [DeviceNode!]!
-  ok: Boolean!
 
   """The current page number (1-indexed)"""
   page: PositiveInt!
@@ -910,9 +898,8 @@ type ListDevicesResponse implements AbstractGraphQLArrayOkResponse & AbstractGra
   total: NonNegativeInt!
 }
 
-type ListEventsResponse implements AbstractGraphQLArrayOkResponse & AbstractGraphQLPaginatedResponse & GraphQLBaseResponse {
+type ListEventsResponse implements AbstractGraphQLPaginatedResponse {
   data: [EventNode!]!
-  ok: Boolean!
 
   """The current page number (1-indexed)"""
   page: PositiveInt!
@@ -924,9 +911,8 @@ type ListEventsResponse implements AbstractGraphQLArrayOkResponse & AbstractGrap
   total: NonNegativeInt!
 }
 
-type ListFundraisingEntriesResponse implements AbstractGraphQLArrayOkResponse & AbstractGraphQLPaginatedResponse & GraphQLBaseResponse {
+type ListFundraisingEntriesResponse implements AbstractGraphQLPaginatedResponse {
   data: [FundraisingEntryNode!]!
-  ok: Boolean!
 
   """The current page number (1-indexed)"""
   page: PositiveInt!
@@ -938,9 +924,8 @@ type ListFundraisingEntriesResponse implements AbstractGraphQLArrayOkResponse & 
   total: NonNegativeInt!
 }
 
-type ListImagesResponse implements AbstractGraphQLArrayOkResponse & AbstractGraphQLPaginatedResponse & GraphQLBaseResponse {
+type ListImagesResponse implements AbstractGraphQLPaginatedResponse {
   data: [ImageNode!]!
-  ok: Boolean!
 
   """The current page number (1-indexed)"""
   page: PositiveInt!
@@ -952,9 +937,8 @@ type ListImagesResponse implements AbstractGraphQLArrayOkResponse & AbstractGrap
   total: NonNegativeInt!
 }
 
-type ListMarathonHoursResponse implements AbstractGraphQLArrayOkResponse & AbstractGraphQLPaginatedResponse & GraphQLBaseResponse {
+type ListMarathonHoursResponse implements AbstractGraphQLPaginatedResponse {
   data: [MarathonHourNode!]!
-  ok: Boolean!
 
   """The current page number (1-indexed)"""
   page: PositiveInt!
@@ -966,9 +950,8 @@ type ListMarathonHoursResponse implements AbstractGraphQLArrayOkResponse & Abstr
   total: NonNegativeInt!
 }
 
-type ListMarathonsResponse implements AbstractGraphQLArrayOkResponse & AbstractGraphQLPaginatedResponse & GraphQLBaseResponse {
+type ListMarathonsResponse implements AbstractGraphQLPaginatedResponse {
   data: [MarathonNode!]!
-  ok: Boolean!
 
   """The current page number (1-indexed)"""
   page: PositiveInt!
@@ -980,9 +963,8 @@ type ListMarathonsResponse implements AbstractGraphQLArrayOkResponse & AbstractG
   total: NonNegativeInt!
 }
 
-type ListNotificationDeliveriesResponse implements AbstractGraphQLArrayOkResponse & AbstractGraphQLPaginatedResponse & GraphQLBaseResponse {
+type ListNotificationDeliveriesResponse implements AbstractGraphQLPaginatedResponse {
   data: [NotificationDeliveryNode!]!
-  ok: Boolean!
 
   """The current page number (1-indexed)"""
   page: PositiveInt!
@@ -994,9 +976,8 @@ type ListNotificationDeliveriesResponse implements AbstractGraphQLArrayOkRespons
   total: NonNegativeInt!
 }
 
-type ListNotificationsResponse implements AbstractGraphQLArrayOkResponse & AbstractGraphQLPaginatedResponse & GraphQLBaseResponse {
+type ListNotificationsResponse implements AbstractGraphQLPaginatedResponse {
   data: [NotificationNode!]!
-  ok: Boolean!
 
   """The current page number (1-indexed)"""
   page: PositiveInt!
@@ -1008,9 +989,8 @@ type ListNotificationsResponse implements AbstractGraphQLArrayOkResponse & Abstr
   total: NonNegativeInt!
 }
 
-type ListPeopleResponse implements AbstractGraphQLArrayOkResponse & AbstractGraphQLPaginatedResponse & GraphQLBaseResponse {
+type ListPeopleResponse implements AbstractGraphQLPaginatedResponse {
   data: [PersonNode!]!
-  ok: Boolean!
 
   """The current page number (1-indexed)"""
   page: PositiveInt!
@@ -1022,9 +1002,8 @@ type ListPeopleResponse implements AbstractGraphQLArrayOkResponse & AbstractGrap
   total: NonNegativeInt!
 }
 
-type ListPointEntriesResponse implements AbstractGraphQLArrayOkResponse & AbstractGraphQLPaginatedResponse & GraphQLBaseResponse {
+type ListPointEntriesResponse implements AbstractGraphQLPaginatedResponse {
   data: [PointEntryNode!]!
-  ok: Boolean!
 
   """The current page number (1-indexed)"""
   page: PositiveInt!
@@ -1036,9 +1015,8 @@ type ListPointEntriesResponse implements AbstractGraphQLArrayOkResponse & Abstra
   total: NonNegativeInt!
 }
 
-type ListPointOpportunitiesResponse implements AbstractGraphQLArrayOkResponse & AbstractGraphQLPaginatedResponse & GraphQLBaseResponse {
+type ListPointOpportunitiesResponse implements AbstractGraphQLPaginatedResponse {
   data: [PointOpportunityNode!]!
-  ok: Boolean!
 
   """The current page number (1-indexed)"""
   page: PositiveInt!
@@ -1050,9 +1028,8 @@ type ListPointOpportunitiesResponse implements AbstractGraphQLArrayOkResponse & 
   total: NonNegativeInt!
 }
 
-type ListTeamsResponse implements AbstractGraphQLArrayOkResponse & AbstractGraphQLPaginatedResponse & GraphQLBaseResponse {
+type ListTeamsResponse implements AbstractGraphQLPaginatedResponse {
   data: [TeamNode!]!
-  ok: Boolean!
 
   """The current page number (1-indexed)"""
   page: PositiveInt!
@@ -1246,35 +1223,34 @@ enum MembershipPositionType {
 }
 
 type Mutation {
-  abortScheduledNotification(uuid: GlobalId!): AbortScheduledNotificationResponse!
-  acknowledgeDeliveryIssue(uuid: GlobalId!): AcknowledgeDeliveryIssueResponse!
+  abortScheduledNotification(uuid: GlobalId!): NotificationNode!
+  acknowledgeDeliveryIssue(uuid: GlobalId!): NotificationNode!
 
   """Add an existing image to an event"""
-  addExistingImageToEvent(eventId: GlobalId!, imageId: GlobalId!): AddEventImageResponse!
+  addExistingImageToEvent(eventId: GlobalId!, imageId: GlobalId!): ImageNode!
   addMap(imageUuid: GlobalId!, uuid: GlobalId!): MarathonHourNode!
   addPersonToTeam(personUuid: GlobalId!, position: MembershipPositionType! = Member, teamUuid: GlobalId!): MembershipNode!
   assignEntryToPerson(entryId: GlobalId!, input: AssignEntryToPersonInput!, personId: GlobalId!): FundraisingAssignmentNode!
-  assignTeamToDbFundsTeam(dbFundsTeamDbNum: Int!, teamId: GlobalId!): Void!
+  assignSolicitationCodeToTeam(solicitationCode: GlobalId!, teamId: GlobalId!): Void!
 
   """Attach an image to a feed item"""
   attachImageToFeedItem(feedItemUuid: GlobalId!, imageUuid: GlobalId!): FeedNode!
   batchUploadDailyDepartmentNotifications(input: [DailyDepartmentNotificationInput!]!): [DailyDepartmentNotificationNode!]!
   bulkLoadPeople(marathonId: GlobalId!, people: [BulkPersonInput!]!): [PersonNode!]!
-  bulkLoadTeams(marathonId: GlobalId!, teams: [BulkTeamInput!]!): [TeamNode!]!
 
   """
   Create a new configuration, superseding existing configurations with the same key (depending on the validAfter and validUntil fields)
   """
-  createConfiguration(input: CreateConfigurationInput!): CreateConfigurationResponse!
+  createConfiguration(input: CreateConfigurationInput!): ConfigurationNode!
 
   """
   Create multiple configurations, superseding existing configurations with the same key (depending on the validAfter and validUntil fields)
   """
-  createConfigurations(input: [CreateConfigurationInput!]!): CreateConfigurationResponse!
+  createConfigurations(input: [CreateConfigurationInput!]!): [ConfigurationNode!]!
   createDailyDepartmentNotification(input: DailyDepartmentNotificationInput!): DailyDepartmentNotificationNode!
 
   """Create a new event"""
-  createEvent(input: CreateEventInput!): CreateEventResponse!
+  createEvent(input: CreateEventInput!): EventNode!
 
   """Add a new item to the feed"""
   createFeedItem(input: CreateFeedInput!): FeedNode!
@@ -1282,74 +1258,80 @@ type Mutation {
   createMarathon(input: CreateMarathonInput!): MarathonNode!
   createMarathonHour(input: CreateMarathonHourInput!, marathonUuid: GlobalId!): MarathonHourNode!
   createPerson(input: CreatePersonInput!): PersonNode!
-  createPointEntry(input: CreatePointEntryInput!): CreatePointEntryResponse!
-  createPointOpportunity(input: CreatePointOpportunityInput!): CreatePointOpportunityResponse!
-  createTeam(input: CreateTeamInput!, marathon: GlobalId!): CreateTeamResponse!
+  createPointEntry(input: CreatePointEntryInput!): PointEntryNode!
+  createPointOpportunity(input: CreatePointOpportunityInput!): PointOpportunityNode!
+  createTeam(input: CreateTeamInput!, marathon: GlobalId!): TeamNode!
+  createTeams(marathonId: GlobalId!, teams: [BulkTeamInput!]!): [TeamNode!]!
 
   """Delete a configuration by UUID"""
-  deleteConfiguration(uuid: GlobalId!): DeleteConfigurationResponse!
+  deleteConfiguration(uuid: GlobalId!): ConfigurationNode!
   deleteDailyDepartmentNotification(id: GlobalId!): DailyDepartmentNotificationNode!
   deleteDailyDepartmentNotificationBatch(id: GlobalId!): DailyDepartmentNotificationBatchNode!
 
   """Delete a device by it's UUID"""
-  deleteDevice(uuid: GlobalId!): DeleteDeviceResponse!
+  deleteDevice(uuid: GlobalId!): DeviceNode!
 
   """Delete an event by UUID"""
-  deleteEvent(uuid: GlobalId!): DeleteEventResponse!
+  deleteEvent(uuid: GlobalId!): EventNode!
 
   """Delete a feed item"""
   deleteFeedItem(feedItemUuid: GlobalId!): Boolean!
   deleteFundraisingAssignment(id: GlobalId!): FundraisingAssignmentNode!
-  deleteImage(uuid: GlobalId!): DeleteImageResponse!
+  deleteImage(uuid: GlobalId!): ImageNode!
   deleteMarathon(uuid: GlobalId!): MarathonNode!
-  deleteMarathonHour(uuid: GlobalId!): Void!
+  deleteMarathonHour(uuid: GlobalId!): MarathonHourNode!
   deleteNotification(
     """
     If true, the notification will be deleted even if it has already been sent, which will also delete the delivery records.
     """
     force: Boolean
     uuid: GlobalId!
-  ): DeleteNotificationResponse!
+  ): NotificationNode!
   deletePerson(uuid: GlobalId!): PersonNode!
-  deletePointEntry(uuid: GlobalId!): DeletePointEntryResponse!
-  deletePointOpportunity(uuid: GlobalId!): DeletePointOpportunityResponse!
-  deleteTeam(uuid: GlobalId!): DeleteTeamResponse!
+  deletePointEntry(uuid: GlobalId!): PointEntryNode!
+  deletePointOpportunity(uuid: GlobalId!): PointOpportunityNode!
+  deleteTeam(uuid: GlobalId!): TeamNode!
 
   """Register a new device, or update an existing one"""
   registerDevice(input: RegisterDeviceInput!): RegisterDeviceResponse!
 
   """Remove an image from an event"""
-  removeImageFromEvent(eventId: GlobalId!, imageId: GlobalId!): RemoveEventImageResponse!
+  removeImageFromEvent(eventId: GlobalId!, imageId: GlobalId!): Void!
 
   """Remove an image from a feed item"""
   removeImageFromFeedItem(feedItemUuid: GlobalId!): FeedNode!
   removeMap(imageUuid: GlobalId!, uuid: GlobalId!): Void!
   removePersonFromTeam(personUuid: GlobalId!, teamUuid: GlobalId!): MembershipNode!
-  scheduleNotification(sendAt: DateTimeISO!, uuid: GlobalId!): ScheduleNotificationResponse!
+  removeSolicitationCodeFromTeam(teamId: GlobalId!): Void!
+  scheduleNotification(sendAt: DateTimeISO!, uuid: GlobalId!): NotificationNode!
 
   """Send a notification immediately."""
-  sendNotification(uuid: GlobalId!): SendNotificationResponse!
+  sendNotification(uuid: GlobalId!): Void!
   setDailyDepartmentNotification(id: GlobalId!, input: DailyDepartmentNotificationInput!): DailyDepartmentNotificationNode!
 
   """Update an event by UUID"""
-  setEvent(input: SetEventInput!, uuid: GlobalId!): SetEventResponse!
+  setEvent(input: SetEventInput!, uuid: GlobalId!): EventNode!
 
   """Set the content of a feed item"""
   setFeedItem(feedItemUuid: GlobalId!, input: SetFeedInput!): FeedNode!
+  setFundraisingEntry(id: GlobalId!, input: SetFundraisingEntryInput!): FundraisingEntryNode!
   setImageAltText(alt: String!, uuid: GlobalId!): ImageNode!
   setImageUrl(url: URL!, uuid: GlobalId!): ImageNode!
   setMarathon(input: SetMarathonInput!, uuid: GlobalId!): MarathonNode!
   setMarathonHour(input: SetMarathonHourInput!, uuid: GlobalId!): MarathonHourNode!
   setPerson(input: SetPersonInput!, uuid: GlobalId!): PersonNode!
-  setPointOpportunity(input: SetPointOpportunityInput!, uuid: GlobalId!): SinglePointOpportunityResponse!
-  setTeam(input: SetTeamInput!, uuid: GlobalId!): SingleTeamResponse!
-  stageNotification(audience: NotificationAudienceInput!, body: String!, title: String!, url: String): StageNotificationResponse!
+  setPointOpportunity(input: SetPointOpportunityInput!, uuid: GlobalId!): PointOpportunityNode!
+  setTeam(input: SetTeamInput!, uuid: GlobalId!): TeamNode!
+  stageNotification(audience: NotificationAudienceInput!, body: NonEmptyString!, title: NonEmptyString!, url: URL): NotificationNode!
   updateFundraisingAssignment(id: GlobalId!, input: UpdateFundraisingAssignmentInput!): FundraisingAssignmentNode!
 }
 
 interface Node {
   id: GlobalId!
 }
+
+"""A string that cannot be passed as an empty value"""
+scalar NonEmptyString
 
 """Integers that will have a value of 0 or more."""
 scalar NonNegativeInt
@@ -1564,7 +1546,7 @@ type PersonNode implements Node {
     """
     Whether to send all results in a single page, defaults to false (should generally be avoided)
     """
-    sendAll: Boolean
+    sendAll: Boolean = false
 
     """
     The fields to sort by, in order of priority. If unspecified, the sort order is undefined
@@ -1787,13 +1769,13 @@ type Query {
   activeConfiguration(key: String!): GetConfigurationByUuidResponse!
 
   """Get all configurations, irrespective of time"""
-  allConfigurations: GetAllConfigurationsResponse!
+  allConfigurations: [ConfigurationNode!]!
 
   """Get the audit log file from the server"""
   auditLog(lines: Float! = 25, offset: Float! = 0): String!
 
   """Get a particular configuration entry by UUID"""
-  configuration(id: GlobalId!): GetConfigurationByUuidResponse!
+  configuration(id: GlobalId!): ConfigurationNode!
 
   """
   The marathon that is currently happening, i.e. the marathon with the latest start date that has not yet ended.
@@ -1813,13 +1795,13 @@ type Query {
     includeDeleted: Boolean @deprecated(reason: "Soft-deletion is no longer used in this project, this parameter is ignored")
 
     """The is-null filters to apply to the query"""
-    isNullFilters: Void
+    isNullFilters: [DailyDepartmentNotificationResolverKeyedIsNullFilterItem!]
 
     """The numeric filters to apply to the query"""
-    numericFilters: Void
+    numericFilters: [DailyDepartmentNotificationResolverKeyedNumericFilterItem!]
 
     """The one-of filters to apply to the query"""
-    oneOfFilters: Void
+    oneOfFilters: [DailyDepartmentNotificationResolverKeyedOneOfFilterItem!]
 
     """The page number to return, defaults to 1"""
     page: Int
@@ -1830,7 +1812,7 @@ type Query {
     """
     Whether to send all results in a single page, defaults to false (should generally be avoided)
     """
-    sendAll: Boolean
+    sendAll: Boolean = false
 
     """
     The fields to sort by, in order of priority. If unspecified, the sort order is undefined
@@ -1843,7 +1825,7 @@ type Query {
     sortDirection: [SortDirection!]
 
     """The string filters to apply to the query"""
-    stringFilters: Void
+    stringFilters: [DailyDepartmentNotificationResolverKeyedStringFilterItem!]
   ): ListDailyDepartmentNotificationsResponse!
   dbFundsTeams(search: String!): [DbFundsTeamInfo!]!
 
@@ -1882,7 +1864,7 @@ type Query {
     """
     Whether to send all results in a single page, defaults to false (should generally be avoided)
     """
-    sendAll: Boolean
+    sendAll: Boolean = false
 
     """
     The fields to sort by, in order of priority. If unspecified, the sort order is undefined
@@ -1899,7 +1881,7 @@ type Query {
   ): ListDevicesResponse!
 
   """Get an event by UUID"""
-  event(uuid: GlobalId!): GetEventByUuidResponse!
+  event(uuid: GlobalId!): EventNode!
 
   """List events"""
   events(
@@ -1930,7 +1912,7 @@ type Query {
     """
     Whether to send all results in a single page, defaults to false (should generally be avoided)
     """
-    sendAll: Boolean
+    sendAll: Boolean = false
 
     """
     The fields to sort by, in order of priority. If unspecified, the sort order is undefined
@@ -1980,7 +1962,7 @@ type Query {
     """
     Whether to send all results in a single page, defaults to false (should generally be avoided)
     """
-    sendAll: Boolean
+    sendAll: Boolean = false
 
     """
     The fields to sort by, in order of priority. If unspecified, the sort order is undefined
@@ -1996,7 +1978,7 @@ type Query {
     stringFilters: [FundraisingEntryResolverKeyedStringFilterItem!]
   ): ListFundraisingEntriesResponse!
   fundraisingEntry(id: GlobalId!): FundraisingEntryNode!
-  image(uuid: GlobalId!): GetImageByUuidResponse!
+  image(uuid: GlobalId!): ImageNode!
   images(
     """The boolean filters to apply to the query"""
     booleanFilters: Void
@@ -2025,7 +2007,7 @@ type Query {
     """
     Whether to send all results in a single page, defaults to false (should generally be avoided)
     """
-    sendAll: Boolean
+    sendAll: Boolean = false
 
     """
     The fields to sort by, in order of priority. If unspecified, the sort order is undefined
@@ -2045,49 +2027,6 @@ type Query {
   The most recent marathon, regardless of whether it is currently happening, i.e. the marathon with the latest year.
   """
   latestMarathon: MarathonNode
-  listPeople(
-    """The boolean filters to apply to the query"""
-    booleanFilters: Void
-
-    """The date filters to apply to the query"""
-    dateFilters: Void
-
-    """Whether to include deleted items in the results"""
-    includeDeleted: Boolean @deprecated(reason: "Soft-deletion is no longer used in this project, this parameter is ignored")
-
-    """The is-null filters to apply to the query"""
-    isNullFilters: [PersonResolverKeyedIsNullFilterItem!]
-
-    """The numeric filters to apply to the query"""
-    numericFilters: Void
-
-    """The one-of filters to apply to the query"""
-    oneOfFilters: [PersonResolverKeyedOneOfFilterItem!]
-
-    """The page number to return, defaults to 1"""
-    page: Int
-
-    """The number of items to return per page, defaults to 10"""
-    pageSize: Int
-
-    """
-    Whether to send all results in a single page, defaults to false (should generally be avoided)
-    """
-    sendAll: Boolean
-
-    """
-    The fields to sort by, in order of priority. If unspecified, the sort order is undefined
-    """
-    sortBy: [String!]
-
-    """
-    The direction to sort, if not specified will default to ascending, the order of the values in this array should match the order of the values in the sortBy array, if only one value is specified it will be used for all sortBy values, otherwise the lengths must match
-    """
-    sortDirection: [SortDirection!]
-
-    """The string filters to apply to the query"""
-    stringFilters: [PersonResolverKeyedStringFilterItem!]
-  ): ListPeopleResponse!
   loginState: LoginState!
   marathon(uuid: GlobalId!): MarathonNode!
   marathonForYear(year: String!): MarathonNode!
@@ -2120,7 +2059,7 @@ type Query {
     """
     Whether to send all results in a single page, defaults to false (should generally be avoided)
     """
-    sendAll: Boolean
+    sendAll: Boolean = false
 
     """
     The fields to sort by, in order of priority. If unspecified, the sort order is undefined
@@ -2163,7 +2102,7 @@ type Query {
     """
     Whether to send all results in a single page, defaults to false (should generally be avoided)
     """
-    sendAll: Boolean
+    sendAll: Boolean = false
 
     """
     The fields to sort by, in order of priority. If unspecified, the sort order is undefined
@@ -2180,7 +2119,7 @@ type Query {
   ): ListMarathonsResponse!
   me: PersonNode
   node(id: GlobalId!): Node!
-  notification(uuid: GlobalId!): GetNotificationByUuidResponse!
+  notification(uuid: GlobalId!): NotificationNode!
   notificationDeliveries(
     """The boolean filters to apply to the query"""
     booleanFilters: Void
@@ -2210,7 +2149,7 @@ type Query {
     """
     Whether to send all results in a single page, defaults to false (should generally be avoided)
     """
-    sendAll: Boolean
+    sendAll: Boolean = false
 
     """
     The fields to sort by, in order of priority. If unspecified, the sort order is undefined
@@ -2253,7 +2192,7 @@ type Query {
     """
     Whether to send all results in a single page, defaults to false (should generally be avoided)
     """
-    sendAll: Boolean
+    sendAll: Boolean = false
 
     """
     The fields to sort by, in order of priority. If unspecified, the sort order is undefined
@@ -2268,6 +2207,49 @@ type Query {
     """The string filters to apply to the query"""
     stringFilters: [NotificationResolverKeyedStringFilterItem!]
   ): ListNotificationsResponse!
+  people(
+    """The boolean filters to apply to the query"""
+    booleanFilters: Void
+
+    """The date filters to apply to the query"""
+    dateFilters: Void
+
+    """Whether to include deleted items in the results"""
+    includeDeleted: Boolean @deprecated(reason: "Soft-deletion is no longer used in this project, this parameter is ignored")
+
+    """The is-null filters to apply to the query"""
+    isNullFilters: [PersonResolverKeyedIsNullFilterItem!]
+
+    """The numeric filters to apply to the query"""
+    numericFilters: Void
+
+    """The one-of filters to apply to the query"""
+    oneOfFilters: [PersonResolverKeyedOneOfFilterItem!]
+
+    """The page number to return, defaults to 1"""
+    page: Int
+
+    """The number of items to return per page, defaults to 10"""
+    pageSize: Int
+
+    """
+    Whether to send all results in a single page, defaults to false (should generally be avoided)
+    """
+    sendAll: Boolean = false
+
+    """
+    The fields to sort by, in order of priority. If unspecified, the sort order is undefined
+    """
+    sortBy: [String!]
+
+    """
+    The direction to sort, if not specified will default to ascending, the order of the values in this array should match the order of the values in the sortBy array, if only one value is specified it will be used for all sortBy values, otherwise the lengths must match
+    """
+    sortDirection: [SortDirection!]
+
+    """The string filters to apply to the query"""
+    stringFilters: [PersonResolverKeyedStringFilterItem!]
+  ): ListPeopleResponse!
   person(uuid: GlobalId!): PersonNode!
   personByLinkBlue(linkBlueId: String!): PersonNode
   pointEntries(
@@ -2298,7 +2280,7 @@ type Query {
     """
     Whether to send all results in a single page, defaults to false (should generally be avoided)
     """
-    sendAll: Boolean
+    sendAll: Boolean = false
 
     """
     The fields to sort by, in order of priority. If unspecified, the sort order is undefined
@@ -2313,7 +2295,7 @@ type Query {
     """The string filters to apply to the query"""
     stringFilters: Void
   ): ListPointEntriesResponse!
-  pointEntry(uuid: GlobalId!): GetPointEntryByUuidResponse!
+  pointEntry(uuid: GlobalId!): PointEntryNode!
   pointOpportunities(
     """The boolean filters to apply to the query"""
     booleanFilters: Void
@@ -2342,7 +2324,7 @@ type Query {
     """
     Whether to send all results in a single page, defaults to false (should generally be avoided)
     """
-    sendAll: Boolean
+    sendAll: Boolean = false
 
     """
     The fields to sort by, in order of priority. If unspecified, the sort order is undefined
@@ -2357,11 +2339,18 @@ type Query {
     """The string filters to apply to the query"""
     stringFilters: [PointOpportunityResolverKeyedStringFilterItem!]
   ): ListPointOpportunitiesResponse!
-  pointOpportunity(uuid: GlobalId!): SinglePointOpportunityResponse!
+  pointOpportunity(uuid: GlobalId!): PointOpportunityNode!
   rawFundraisingEntries(identifier: Int!, marathonYear: String!): String!
   rawFundraisingTotals(marathonYear: String!): String!
+
+  """
+  The output of this query is not stable. Do not rely on an exact format.
+  """
+  report(from: DateTimeISO, report: NonEmptyString!, to: DateTimeISO): Report!
   searchPeopleByName(name: String!): [PersonNode!]!
-  team(uuid: GlobalId!): SingleTeamResponse!
+  solicitationCode(id: GlobalId!): SolicitationCodeNode!
+  solicitationCodes: [SolicitationCodeNode!]!
+  team(uuid: GlobalId!): TeamNode!
   teams(
     """The boolean filters to apply to the query"""
     booleanFilters: Void
@@ -2392,7 +2381,7 @@ type Query {
     """
     Whether to send all results in a single page, defaults to false (should generally be avoided)
     """
-    sendAll: Boolean
+    sendAll: Boolean = false
 
     """
     The fields to sort by, in order of priority. If unspecified, the sort order is undefined
@@ -2425,31 +2414,26 @@ input RegisterDeviceInput {
   verifier: String!
 }
 
-type RegisterDeviceResponse implements AbstractGraphQLOkResponse & GraphQLBaseResponse {
+type RegisterDeviceResponse {
   data: DeviceNode!
   ok: Boolean!
 }
 
-type RemoveEventImageResponse implements AbstractGraphQLOkResponse & GraphQLBaseResponse {
-  data: Boolean!
-  ok: Boolean!
+type Report {
+  pages: [ReportPage!]!
 }
 
-type ScheduleNotificationResponse implements AbstractGraphQLOkResponse & GraphQLBaseResponse {
-  data: Boolean!
-  ok: Boolean!
-}
-
-type SendNotificationResponse implements AbstractGraphQLOkResponse & GraphQLBaseResponse {
-  data: Boolean!
-  ok: Boolean!
+type ReportPage {
+  header: [String!]!
+  rows: [[String!]!]!
+  title: NonEmptyString!
 }
 
 input SetEventInput {
-  description: String
-  location: String
+  description: NonEmptyString
+  location: NonEmptyString
   occurrences: [SetEventOccurrenceInput!]!
-  summary: String
+  summary: NonEmptyString
   title: String!
 }
 
@@ -2463,70 +2447,113 @@ input SetEventOccurrenceInput {
   uuid: GlobalId
 }
 
-type SetEventResponse implements AbstractGraphQLOkResponse & GraphQLBaseResponse {
-  data: EventNode!
-  ok: Boolean!
+input SetFeedInput {
+  textContent: NonEmptyString
+  title: NonEmptyString!
 }
 
-input SetFeedInput {
-  textContent: String
-  title: String!
+input SetFundraisingEntryInput {
+  amountOverride: Float
+  batchTypeOverride: BatchType
+  donatedByOverride: NonEmptyString
+  donatedOnOverride: LocalDate
+  donatedToOverride: NonEmptyString
+  notes: NonEmptyString
+  solicitationCodeOverrideId: GlobalId
 }
 
 input SetMarathonHourInput {
-  details: String
-  durationInfo: String!
+  details: NonEmptyString
+  durationInfo: NonEmptyString!
   shownStartingAt: DateTimeISO!
-  title: String!
+  title: NonEmptyString!
 }
 
 input SetMarathonInput {
   endDate: DateTimeISO
   startDate: DateTimeISO
-  year: String!
+  year: NonEmptyString!
 }
 
 input SetPersonInput {
   captainOf: [MemberOf!]
   email: EmailAddress
-  linkblue: String
+  linkblue: NonEmptyString
   memberOf: [MemberOf!]
-  name: String
+  name: NonEmptyString
 }
 
 input SetPointOpportunityInput {
   eventUuid: GlobalId
-  name: String
+  name: NonEmptyString
   opportunityDate: DateTimeISO
   type: TeamType
 }
 
 input SetTeamInput {
   legacyStatus: TeamLegacyStatus
-  name: String
-  persistentIdentifier: String
+  name: NonEmptyString
+  persistentIdentifier: NonEmptyString
   type: TeamType
 }
 
-type SinglePointOpportunityResponse implements AbstractGraphQLOkResponse & GraphQLBaseResponse {
-  data: PointOpportunityNode!
-  ok: Boolean!
-}
+type SolicitationCodeNode implements Node {
+  code: NonNegativeInt!
+  createdAt: DateTimeISO
+  entries(
+    """The boolean filters to apply to the query"""
+    booleanFilters: Void
 
-type SingleTeamResponse implements AbstractGraphQLOkResponse & GraphQLBaseResponse {
-  data: TeamNode!
-  ok: Boolean!
+    """The date filters to apply to the query"""
+    dateFilters: [FundraisingEntryResolverKeyedDateFilterItem!]
+
+    """Whether to include deleted items in the results"""
+    includeDeleted: Boolean @deprecated(reason: "Soft-deletion is no longer used in this project, this parameter is ignored")
+
+    """The is-null filters to apply to the query"""
+    isNullFilters: [FundraisingEntryResolverKeyedIsNullFilterItem!]
+
+    """The numeric filters to apply to the query"""
+    numericFilters: [FundraisingEntryResolverKeyedNumericFilterItem!]
+
+    """The one-of filters to apply to the query"""
+    oneOfFilters: [FundraisingEntryResolverKeyedOneOfFilterItem!]
+
+    """The page number to return, defaults to 1"""
+    page: Int
+
+    """The number of items to return per page, defaults to 10"""
+    pageSize: Int
+
+    """
+    Whether to send all results in a single page, defaults to false (should generally be avoided)
+    """
+    sendAll: Boolean = false
+
+    """
+    The fields to sort by, in order of priority. If unspecified, the sort order is undefined
+    """
+    sortBy: [String!]
+
+    """
+    The direction to sort, if not specified will default to ascending, the order of the values in this array should match the order of the values in the sortBy array, if only one value is specified it will be used for all sortBy values, otherwise the lengths must match
+    """
+    sortDirection: [SortDirection!]
+
+    """The string filters to apply to the query"""
+    stringFilters: [FundraisingEntryResolverKeyedStringFilterItem!]
+  ): ListFundraisingEntriesResponse!
+  id: GlobalId!
+  name: String
+  prefix: String!
+  teams(marathonId: GlobalId): [TeamNode!]!
+  text: String!
+  updatedAt: DateTimeISO
 }
 
 enum SortDirection {
   asc
   desc
-}
-
-type StageNotificationResponse implements AbstractGraphQLCreatedResponse & AbstractGraphQLOkResponse & GraphQLBaseResponse {
-  data: NotificationNode!
-  ok: Boolean!
-  uuid: GlobalId!
 }
 
 enum StringComparator {
@@ -2577,7 +2604,7 @@ type TeamNode implements Node {
     """
     Whether to send all results in a single page, defaults to false (should generally be avoided)
     """
-    sendAll: Boolean
+    sendAll: Boolean = false
 
     """
     The fields to sort by, in order of priority. If unspecified, the sort order is undefined
@@ -2599,6 +2626,7 @@ type TeamNode implements Node {
   members: [MembershipNode!]!
   name: String!
   pointEntries: [PointEntryNode!]!
+  solicitationCode: SolicitationCodeNode
   totalPoints: Int!
   type: TeamType!
   updatedAt: DateTimeISO

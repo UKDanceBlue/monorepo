@@ -1,6 +1,6 @@
 import "reflect-metadata";
 
-import { logDirToken, loggingLevelToken } from "#lib/environmentTokens.js";
+import { logDirToken, loggingLevelToken } from "#lib/typediTokens.js";
 import { expressToken } from "#routes/expressToken.js";
 
 // No top level imports that cause side effects should be used in this file

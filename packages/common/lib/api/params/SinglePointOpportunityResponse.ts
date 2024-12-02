@@ -1,23 +1,12 @@
-import { DateTimeISOResolver } from "graphql-scalars";
-import { ArgsType,Field, InputType, ObjectType } from "type-graphql";
+import { DateTimeISOResolver, NonEmptyStringResolver } from "graphql-scalars";
+import { ArgsType, Field, InputType, ObjectType } from "type-graphql";
 
 import { FilteredListQueryArgs } from "../filtering/list-query-args/FilteredListQueryArgs.js";
 import { PointOpportunityNode } from "../resources/PointOpportunity.js";
 import { TeamType } from "../resources/Team.js";
-import { type GlobalId,GlobalIdScalar } from "../scalars/GlobalId.js";
-import {
-  AbstractGraphQLCreatedResponse,
-  AbstractGraphQLOkResponse,
-  AbstractGraphQLPaginatedResponse,
-} from "./ApiResponse.js";
+import { type GlobalId, GlobalIdScalar } from "../scalars/GlobalId.js";
+import { AbstractGraphQLPaginatedResponse } from "./ApiResponse.js";
 
-@ObjectType("SinglePointOpportunityResponse", {
-  implements: AbstractGraphQLOkResponse<PointOpportunityNode>,
-})
-export class SinglePointOpportunityResponse extends AbstractGraphQLOkResponse<PointOpportunityNode> {
-  @Field(() => PointOpportunityNode)
-  data!: PointOpportunityNode;
-}
 @ObjectType("ListPointOpportunitiesResponse", {
   implements: AbstractGraphQLPaginatedResponse<PointOpportunityNode>,
 })
@@ -25,21 +14,10 @@ export class ListPointOpportunitiesResponse extends AbstractGraphQLPaginatedResp
   @Field(() => [PointOpportunityNode])
   data!: PointOpportunityNode[];
 }
-@ObjectType("CreatePointOpportunityResponse", {
-  implements: AbstractGraphQLCreatedResponse<PointOpportunityNode>,
-})
-export class CreatePointOpportunityResponse extends AbstractGraphQLCreatedResponse<PointOpportunityNode> {
-  @Field(() => PointOpportunityNode)
-  data!: PointOpportunityNode;
-}
-@ObjectType("DeletePointOpportunityResponse", {
-  implements: AbstractGraphQLOkResponse<boolean>,
-})
-export class DeletePointOpportunityResponse extends AbstractGraphQLOkResponse<never> {}
 
 @InputType()
 export class CreatePointOpportunityInput {
-  @Field(() => String)
+  @Field(() => NonEmptyStringResolver)
   name!: string;
 
   @Field(() => DateTimeISOResolver, { nullable: true })
@@ -57,7 +35,7 @@ export class CreatePointOpportunityInput {
 
 @InputType()
 export class SetPointOpportunityInput {
-  @Field(() => String, { nullable: true })
+  @Field(() => NonEmptyStringResolver, { nullable: true })
   name!: string | null;
 
   @Field(() => DateTimeISOResolver, { nullable: true })

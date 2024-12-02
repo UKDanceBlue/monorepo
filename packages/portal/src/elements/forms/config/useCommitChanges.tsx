@@ -12,7 +12,7 @@ import type { ConfigValue } from "./useConfig.js";
 const commitConfigChangesMutation = graphql(/* GraphQL */ `
   mutation CommitConfigChanges($changes: [CreateConfigurationInput!]!) {
     createConfigurations(input: $changes) {
-      ok
+      id
     }
   }
 `);

@@ -3,9 +3,9 @@ import { Center, Text } from "native-base";
 import { useEffect } from "react";
 import { useWindowDimensions } from "react-native";
 
-import type { StandingType } from "#common-types/StandingType";
-import type { FragmentType } from "#graphql/index.js";
-import { getFragmentData, graphql } from "#graphql/index.js";
+import type { StandingType } from "@/common-types/StandingType";
+import type { FragmentType } from "@/graphql/index.js";
+import { graphql, readFragment } from "@/graphql/index.js";
 
 export const MyTeamFragment = graphql(/* GraphQL */ `
   fragment MyTeamFragment on TeamNode {
@@ -58,8 +58,8 @@ const TeamScreen = ({
   loading: boolean;
   refresh: () => void;
 }) => {
-  const team = getFragmentData(MyTeamFragment, myTeamFragment);
-  // const fundraising = getFragmentData(
+  const team = readFragment(MyTeamFragment, myTeamFragment);
+  // const fundraising = readFragment(
   //   MyFundraisingFragment,
   //   myFundraisingFragment
   // );

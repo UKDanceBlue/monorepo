@@ -1,19 +1,18 @@
 import { fileURLToPath } from "node:url";
 
 import eslintJs from "@eslint/js";
+import graphqlPlugin from "@graphql-eslint/eslint-plugin";
+import eslintPluginVitest from "@vitest/eslint-plugin";
 import eslintConfigPrettier from "eslint-config-prettier";
-import eslintPluginJsdoc from "eslint-plugin-jsdoc";
 import eslintPluginNode from "eslint-plugin-n";
 import eslintPluginReact from "eslint-plugin-react";
 import eslintPluginReactHooks from "eslint-plugin-react-hooks";
 import eslintPluginReactRefresh from "eslint-plugin-react-refresh";
 import eslintPluginSortImports from "eslint-plugin-simple-import-sort";
 import eslintPluginUnicorn from "eslint-plugin-unicorn";
-import eslintPluginVitest from "eslint-plugin-vitest";
 import globals from "globals";
 import { dirname } from "path";
 import eslintTs from "typescript-eslint";
-
 const projectRoot = dirname(dirname(dirname(fileURLToPath(import.meta.url))));
 
 /**
@@ -46,6 +45,7 @@ export default eslintTs.config(
       ".yarn/**/*",
       "compose-volumes/**/*",
       "packages/mobile/.expo",
+      "**/typedoc.config.mjs",
     ],
   },
   {
@@ -62,15 +62,7 @@ export default eslintTs.config(
       reportUnusedDisableDirectives: true,
     },
     plugins: {
-      jsdoc: eslintPluginJsdoc,
       unicorn: eslintPluginUnicorn,
-    },
-    settings: {
-      jsdoc: {
-        tagNamePreference: {
-          returns: "return",
-        },
-      },
     },
     rules: {
       // Possible Errors
@@ -107,6 +99,15 @@ export default eslintTs.config(
           enforceForRenamedProperties: false,
         },
       ],
+      // TODO: Enable these rules and use them to guide cleaning up the codebase, figure out exact limits later
+      // "complexity": ["warn", { max: 10, variant: "modified" }],
+      // "max-lines": [
+      //   "warn",
+      //   { max: 300, skipBlankLines: true, skipComments: true },
+      // ],
+      // "max-nested-callbacks": ["warn", { max: 4 }],
+      // "max-depth": ["warn", { max: 4 }],
+      // "max-params": ["warn", { max: 4 }],
       "no-useless-concat": "error",
       "prefer-numeric-literals": "error",
       "prefer-object-spread": "error",
@@ -117,12 +118,6 @@ export default eslintTs.config(
       "no-self-compare": "error",
       "require-atomic-updates": ["error", { allowProperties: true }],
       "eqeqeq": ["error", "smart"],
-      // jsdoc
-      "jsdoc/no-types": "off",
-      "jsdoc/require-param-type": "off",
-      "jsdoc/require-returns-type": "off",
-      // Don't require jsdoc
-      "jsdoc/require-jsdoc": "off",
       // Unicorn Plugin
       "unicorn/better-regex": "error",
       "unicorn/catch-error-name": "error",
@@ -215,7 +210,10 @@ export default eslintTs.config(
       },
     },
     rules: {
-      "react-refresh/only-export-components": "warn",
+      "react-refresh/only-export-components": [
+        "warn",
+        { allowConstantExport: true },
+      ],
       "react-hooks/rules-of-hooks": "error",
       "react-hooks/exhaustive-deps": "warn",
       // We don't need to import React in every file for JSX
@@ -225,6 +223,7 @@ export default eslintTs.config(
   },
   {
     name: "Baseline TypeScript",
+    files: ["**/*.ts", "**/*.tsx", "**/*.js", "**/*.jsx"],
     languageOptions: {
       parser: eslintTs.parser,
       parserOptions: {
@@ -282,7 +281,7 @@ export default eslintTs.config(
             allowNumber: true,
           },
         ],
-        "@typescript-eslint/prefer-nullish-coalescing": "warn",
+        "@typescript-eslint/prefer-nullish-coalescing": "off",
       },
       eslintTs.configs.strictTypeChecked,
       eslintTs.configs.stylisticTypeChecked
@@ -338,6 +337,30 @@ export default eslintTs.config(
       "@typescript-eslint/no-require-imports": "off",
     },
   },
+  {
+    name: "GraphQL (Portal)",
+    files: ["packages/portal/**/*.ts", "packages/portal/**/*.tsx"],
+    processor: graphqlPlugin.processor,
+  },
+  {
+    name: "GraphQL (Mobile)",
+    files: ["packages/mobile/**/*.ts", "packages/mobile/**/*.tsx"],
+    processor: graphqlPlugin.processor,
+  },
+  // {
+  //   name: "GraphQL",
+  //   files: ["packages/**/*.graphql"],
+  //   languageOptions: {
+  //     parser: graphqlPlugin.parser,
+  //   },
+  //   plugins: {
+  //     "@graphql-eslint": graphqlPlugin,
+  //   },
+  //   rules: {
+  //     ...graphqlPlugin.configs["flat/operations-recommended"].rules,
+  //     "@graphql-eslint/require-selections": "off",
+  //   },
+  // },
   {
     name: "Server-specific",
     files: ["packages/server/src/**/*.ts"],
@@ -426,8 +449,7 @@ export default eslintTs.config(
     name: "CJS Rules",
     files: ["packages/**/*.cjs", "*.cjs"],
     languageOptions: {
-      // Assume we're pretty limited in what we can use in CJS
-      ecmaVersion: 2017,
+      ecmaVersion: 2020,
       sourceType: "commonjs",
     },
     rules: {

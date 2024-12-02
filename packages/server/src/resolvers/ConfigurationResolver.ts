@@ -1,20 +1,15 @@
 import { Service } from "@freshgum/typedi";
-import type { GlobalId } from "@ukdanceblue/common";
+import type { CrudResolver, GlobalId } from "@ukdanceblue/common";
 import {
+  AccessControlAuthorized,
   AccessLevel,
   ConfigurationNode,
   dateTimeFromSomething,
   GlobalIdScalar,
-  MutationAccessControl,
-  QueryAccessControl,
   SortDirection,
 } from "@ukdanceblue/common";
 import {
   CreateConfigurationInput,
-  CreateConfigurationResponse,
-  CreateConfigurationsResponse,
-  DeleteConfigurationResponse,
-  GetAllConfigurationsResponse,
   GetConfigurationResponse,
 } from "@ukdanceblue/common";
 import {
@@ -27,14 +22,16 @@ import { join } from "path";
 import { Err, Ok } from "ts-results-es";
 import { Arg, Mutation, Query, Resolver } from "type-graphql";
 
-import { logDirToken } from "#lib/environmentTokens.js";
+import { logDirToken } from "#lib/typediTokens.js";
 import { auditLogger, auditLoggerFileName } from "#logging/auditLogging.js";
 import { configurationModelToResource } from "#repositories/configuration/configurationModelToResource.js";
 import { ConfigurationRepository } from "#repositories/configuration/ConfigurationRepository.js";
 
 @Resolver(() => ConfigurationNode)
 @Service([ConfigurationRepository, logDirToken])
-export class ConfigurationResolver {
+export class ConfigurationResolver
+  implements CrudResolver<ConfigurationNode, "configuration">
+{
   constructor(
     private readonly configurationRepository: ConfigurationRepository,
     private readonly logDir: string
@@ -62,19 +59,19 @@ export class ConfigurationResolver {
       );
     }
 
-    return Ok(
-      GetConfigurationResponse.newOk(configurationModelToResource(row))
-    );
+    const resp = new GetConfigurationResponse();
+    resp.data = configurationModelToResource(row);
+    return Ok(resp);
   }
 
-  @QueryAccessControl({ accessLevel: AccessLevel.Admin })
-  @Query(() => GetConfigurationResponse, {
+  @AccessControlAuthorized({ accessLevel: AccessLevel.Admin })
+  @Query(() => ConfigurationNode, {
     name: "configuration",
     description: "Get a particular configuration entry by UUID",
   })
-  async getByUuid(
+  async configuration(
     @Arg("id", () => GlobalIdScalar) { id }: GlobalId
-  ): Promise<ConcreteResult<GetConfigurationResponse>> {
+  ): Promise<ConcreteResult<ConfigurationNode>> {
     const row = await this.configurationRepository.findConfigurationByUnique({
       uuid: id,
     });
@@ -88,35 +85,31 @@ export class ConfigurationResolver {
       );
     }
 
-    return Ok(
-      GetConfigurationResponse.newOk(configurationModelToResource(row))
-    );
+    return Ok(configurationModelToResource(row));
   }
 
-  @QueryAccessControl({ accessLevel: AccessLevel.Admin })
-  @Query(() => GetAllConfigurationsResponse, {
+  @AccessControlAuthorized({ accessLevel: AccessLevel.Admin })
+  @Query(() => [ConfigurationNode], {
     name: "allConfigurations",
     description: "Get all configurations, irrespective of time",
   })
-  async getAll(): Promise<ConcreteResult<GetAllConfigurationsResponse>> {
+  async allConfigurations(): Promise<ConcreteResult<ConfigurationNode[]>> {
     const rows = await this.configurationRepository.findConfigurations(null, [
       ["createdAt", SortDirection.desc],
     ]);
 
-    return Ok(
-      GetAllConfigurationsResponse.newOk(rows.map(configurationModelToResource))
-    );
+    return Ok(rows.map(configurationModelToResource));
   }
 
-  @MutationAccessControl({ accessLevel: AccessLevel.Admin })
-  @Mutation(() => CreateConfigurationResponse, {
+  @AccessControlAuthorized({ accessLevel: AccessLevel.Admin })
+  @Mutation(() => ConfigurationNode, {
     name: "createConfiguration",
     description:
       "Create a new configuration, superseding existing configurations with the same key (depending on the validAfter and validUntil fields)",
   })
-  async create(
+  async createConfiguration(
     @Arg("input") input: CreateConfigurationInput
-  ): Promise<ConcreteResult<CreateConfigurationResponse>> {
+  ): Promise<ConcreteResult<ConfigurationNode>> {
     const row = await this.configurationRepository.createConfiguration({
       key: input.key,
       value: input.value,
@@ -126,13 +119,11 @@ export class ConfigurationResolver {
 
     auditLogger.dangerous("Configuration created", { configuration: row });
 
-    return Ok(
-      CreateConfigurationResponse.newCreated(configurationModelToResource(row))
-    );
+    return Ok(configurationModelToResource(row));
   }
 
-  @MutationAccessControl({ accessLevel: AccessLevel.Admin })
-  @Mutation(() => CreateConfigurationResponse, {
+  @AccessControlAuthorized({ accessLevel: AccessLevel.Admin })
+  @Mutation(() => [ConfigurationNode], {
     name: "createConfigurations",
     description:
       "Create multiple configurations, superseding existing configurations with the same key (depending on the validAfter and validUntil fields)",
@@ -140,8 +131,7 @@ export class ConfigurationResolver {
   async batchCreate(
     @Arg("input", () => [CreateConfigurationInput])
     input: CreateConfigurationInput[]
-  ): Promise<ConcreteResult<CreateConfigurationsResponse>> {
-    // TODO: This should be converted into a batch operation
+  ): Promise<ConcreteResult<ConfigurationNode[]>> {
     const rows = await this.configurationRepository.bulkCreateConfigurations(
       input.map((i) => ({
         key: i.key,
@@ -155,17 +145,17 @@ export class ConfigurationResolver {
       configurations: rows,
     });
 
-    return Ok(CreateConfigurationsResponse.newOk(""));
+    return Ok(rows.map(configurationModelToResource));
   }
 
-  @MutationAccessControl({ accessLevel: AccessLevel.Admin })
-  @Mutation(() => DeleteConfigurationResponse, {
+  @AccessControlAuthorized({ accessLevel: AccessLevel.Admin })
+  @Mutation(() => ConfigurationNode, {
     name: "deleteConfiguration",
     description: "Delete a configuration by UUID",
   })
-  async delete(
+  async deleteConfiguration(
     @Arg("uuid", () => GlobalIdScalar) { id }: GlobalId
-  ): Promise<ConcreteResult<DeleteConfigurationResponse>> {
+  ): Promise<ConcreteResult<ConfigurationNode>> {
     const row = await this.configurationRepository.deleteConfiguration(id);
 
     if (row == null) {
@@ -179,10 +169,10 @@ export class ConfigurationResolver {
 
     auditLogger.dangerous("Configuration deleted", { configuration: row });
 
-    return Ok(DeleteConfigurationResponse.newOk(true));
+    return Ok(configurationModelToResource(row));
   }
 
-  @QueryAccessControl({ accessLevel: AccessLevel.SuperAdmin })
+  @AccessControlAuthorized({ accessLevel: AccessLevel.SuperAdmin })
   @Query(() => String, {
     name: "auditLog",
     description: "Get the audit log file from the server",

@@ -18,53 +18,81 @@
       "import": "./dist/*"
     }
   },
+  "imports": {
+    "#config/*": "./src/config/*",
+    "#elements/*": "./src/elements/*",
+    "#hooks/*": "./src/hooks/*",
+    "#pages/*": "./src/pages/*",
+    "#routing/*": "./src/routing/*",
+    "#tools/*": "./src/tools/*",
+    "#assets/*": "./assets/*",
+    "#documents/*": "./src/documents/*",
+    "#graphql/*": "./graphql/*",
+    "#mocks/*": "./mocks/*"
+  },
   "scripts": {
-    "dev": "vite --host",
-    "build": "vite build",
+    "refine": "refine",
+    "dev": "refine dev --devtools true --platform vite --host",
+    "build": "refine build",
     "check": "tsc --noEmit",
-    "preview": "vite preview"
+    "preview": "refine preview"
   },
   "dependencies": {
     "@ant-design/icons": "^5.5.1",
-    "@sentry/react": "^8.35.0",
+    "@refinedev/antd": "^5.44.0",
+    "@refinedev/core": "^4.56.0",
+    "@refinedev/devtools": "^1.2.10",
+    "@sentry/react": "^8.38.0",
     "@sentry/vite-plugin": "^2.22.6",
-    "@tanstack/react-form": "^0.34.0",
-    "@tanstack/react-router": "^1.74.5",
+    "@tanstack/react-form": "^0.36.0",
+    "@tanstack/react-router": "^1.81.14",
     "@ukdanceblue/common": "workspace:^",
     "@urql/core": "^5.0.8",
     "@urql/devtools": "^2.0.3",
     "@wysimark/react": "^3.0.20",
-    "antd": "^5.21.5",
+    "antd": "^5.22.1",
+    "camelcase": "^8.0.0",
     "class-validator": "^0.14.1",
+    "gql.tada": "^1.8.10",
     "graphql": "^16.9.0",
     "graphql-scalars": "^1.23.0",
     "lodash.isequal": "^4.5.0",
     "luxon": "^3.5.0",
     "normalize.css": "^8.0.1",
+    "pluralize": "^8.0.0",
     "react": "18.3.1",
     "react-dom": "~18.3.1",
-    "react-hook-form": "^7.53.1",
+    "react-hook-form": "^7.53.2",
+    "react-to-print": "^3.0.2",
     "reflect-metadata": "^0.2.2",
     "thumbhash": "^0.1.1",
     "type-graphql": "^2.0.0-rc.2",
     "typedi": "^0.10.0",
-    "urql": "^4.2.0",
+    "urql": "^4.2.1",
     "use-debounce": "^10.0.4",
     "utility-types": "^3.11.0",
     "validator": "^13.12.0",
     "wonka": "^6.3.4",
-    "xlsx": "https://cdn.sheetjs.com/xlsx-0.20.3/xlsx-0.20.3.tgz"
+    "xlsx": "https://cdn.sheetjs.com/xlsx-0.20.3/xlsx-0.20.3.tgz",
+    "zod": "^3.23.8"
   },
   "devDependencies": {
-    "@tanstack/router-devtools": "^1.74.5",
-    "@tanstack/router-plugin": "^1.74.2",
+    "@refinedev/cli": "^2.16.40",
+    "@tanstack/router-devtools": "^1.81.14",
+    "@tanstack/router-plugin": "^1.81.9",
     "@types/lodash.isequal": "^4.5.8",
     "@types/luxon": "^3.4.2",
-    "@types/react": "~18.3.11",
+    "@types/pluralize": "^0.0.33",
+    "@types/react": "~18.3.12",
     "@types/react-dom": "~18.3.1",
     "@vitejs/plugin-react-swc": "^3.7.1",
+    "cypress": "^13.15.2",
+    "cypress-vite": "^1.5.0",
     "typescript": "^5.6.3",
-    "vite": "^5.4.9"
+    "vite": "^5.4.11"
   },
-  "packageManager": "yarn@4.5.1"
+  "packageManager": "yarn@4.5.3+sha512.3003a14012e2987072d244c720506549c1aab73ee728208f1b2580a9fd67b92d61ba6b08fe93f6dce68fd771e3af1e59a0afa28dd242dd0940d73b95fedd4e90",
+  "refine": {
+    "projectId": "DqkUbD-wpgLRK-UO3SFV"
+  }
 }

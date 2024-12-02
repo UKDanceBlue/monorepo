@@ -12,10 +12,10 @@ import { useMemo } from "react";
 import type { Client, OperationResult } from "urql";
 import { useQuery } from "urql";
 
-import type { LoginStateQuery } from "#graphql/graphql.js";
+import type { ResultOf, VariablesOf } from "#graphql/index.js";
 import { graphql } from "#graphql/index.js";
 
-export const loginStateDocument = graphql(/* GraphQL */ `
+const loginStateDocument = graphql(/* GraphQL */ `
   query LoginState {
     loginState {
       loggedIn
@@ -25,22 +25,43 @@ export const loginStateDocument = graphql(/* GraphQL */ `
         identifier
       }
     }
+    me {
+      name
+      linkblue
+      email
+    }
   }
 `);
 
 export interface PortalAuthData {
   authorization: Authorization | undefined;
   loggedIn: boolean | undefined;
+  me:
+    | {
+        name?: string | null | undefined;
+        linkblue?: string | null | undefined;
+        email?: string | null | undefined;
+      }
+    | null
+    | undefined;
 }
 
 function parseLoginState(
-  result: // eslint-disable-next-line @typescript-eslint/no-empty-object-type
-  { data?: OperationResult<LoginStateQuery, {}>["data"] } | undefined | null
+  result:
+    | {
+        data?: OperationResult<
+          ResultOf<typeof loginStateDocument>,
+          VariablesOf<typeof loginStateDocument>
+        >["data"];
+      }
+    | undefined
+    | null
 ): PortalAuthData {
   if (result?.data == null) {
     return {
       loggedIn: undefined,
       authorization: undefined,
+      me: undefined,
     };
   }
 
@@ -59,11 +80,13 @@ function parseLoginState(
           effectiveCommitteeRoles: committees,
         }),
       },
+      me: result.data.me,
     };
   } else {
     return {
       loggedIn: false,
       authorization: defaultAuthorization,
+      me: null,
     };
   }
 }

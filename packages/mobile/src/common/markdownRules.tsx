@@ -1,10 +1,8 @@
-import type { RenderRules } from "@jonasmerlin/react-native-markdown-display";
 import {
   hasParents,
+  openUrl,
   renderRules,
-} from "@jonasmerlin/react-native-markdown-display";
-// @ts-expect-error - this is a private type
-import { openUrl } from "@jonasmerlin/react-native-markdown-display/src/lib/util/openUrl";
+} from "@ukdanceblue/react-native-markdown-display";
 import { Platform } from "expo-modules-core";
 import { Box, Divider, Heading, Link, Row, Text, VStack } from "native-base";
 import type { FlexAlignType, TextStyle } from "react-native";
@@ -121,13 +119,12 @@ export type MarkdownRuleStyles = Partial<
 >;
 
 // This is a modified clone of https://github.com/iamacup/react-native-markdown-display/blob/master/src/lib/renderRules.js
-export const rules: RenderRules = {
+export const rules: typeof renderRules = {
   // when unknown elements are introduced, so it wont break
   unknown: renderRules.unknown,
 
   // The main container
   body: (node, children, _parent, styles: MarkdownRuleStyles) => (
-    // @ts-expect-error - TODO: Fix these errors, seems ok for now
     <Box key={node.key} style={styles._VIEW_SAFE_body}>
       {children}
     </Box>
@@ -135,37 +132,31 @@ export const rules: RenderRules = {
 
   // Headings
   heading1: (node, children, _parent, styles: MarkdownRuleStyles) => (
-    // @ts-expect-error - TODO: Fix these errors, seems ok for now
     <Heading size="2xl" key={node.key} style={styles.heading1} selectable>
       {children}
     </Heading>
   ),
   heading2: (node, children, _parent, styles: MarkdownRuleStyles) => (
-    // @ts-expect-error - TODO: Fix these errors, seems ok for now
     <Heading size="xl" key={node.key} style={styles.heading2} selectable>
       {children}
     </Heading>
   ),
   heading3: (node, children, _parent, styles: MarkdownRuleStyles) => (
-    // @ts-expect-error - TODO: Fix these errors, seems ok for now
     <Heading size="lg" key={node.key} style={styles.heading3} selectable>
       {children}
     </Heading>
   ),
   heading4: (node, children, _parent, styles: MarkdownRuleStyles) => (
-    // @ts-expect-error - TODO: Fix these errors, seems ok for now
     <Heading size="md" key={node.key} style={styles.heading4} selectable>
       {children}
     </Heading>
   ),
   heading5: (node, children, _parent, styles: MarkdownRuleStyles) => (
-    // @ts-expect-error - TODO: Fix these errors, seems ok for now
     <Heading size="sm" key={node.key} style={styles.heading5} selectable>
       {children}
     </Heading>
   ),
   heading6: (node, children, _parent, styles: MarkdownRuleStyles) => (
-    // @ts-expect-error - TODO: Fix these errors, seems ok for now
     <Heading size="xs" key={node.key} style={styles.heading6} selectable>
       {children}
     </Heading>
@@ -175,7 +166,6 @@ export const rules: RenderRules = {
   hr: (node, _children, _parent, styles: MarkdownRuleStyles) => (
     <Divider
       key={node.key}
-      // @ts-expect-error - TODO: Fix these errors, seems ok for now
       style={styles._VIEW_SAFE_hr}
       thickness={styles._VIEW_SAFE_hr?.height}
     />
@@ -183,19 +173,16 @@ export const rules: RenderRules = {
 
   // Emphasis
   strong: (node, children, _parent, styles: MarkdownRuleStyles) => (
-    // @ts-expect-error - TODO: Fix these errors, seems ok for now
     <Text bold key={node.key} style={styles.strong} selectable>
       {children}
     </Text>
   ),
   em: (node, children, _parent, styles: MarkdownRuleStyles) => (
-    // @ts-expect-error - TODO: Fix these errors, seems ok for now
     <Text italic key={node.key} style={styles.em} selectable>
       {children}
     </Text>
   ),
   s: (node, children, _parent, styles: MarkdownRuleStyles) => (
-    // @ts-expect-error - TODO: Fix these errors, seems ok for now
     <Text strikeThrough key={node.key} style={styles.s} selectable>
       {children}
     </Text>
@@ -203,7 +190,6 @@ export const rules: RenderRules = {
 
   // Blockquotes
   blockquote: (node, children, _parent, styles: MarkdownRuleStyles) => (
-    // @ts-expect-error - TODO: Fix these errors, seems ok for now
     <Box key={node.key} style={styles._VIEW_SAFE_blockquote}>
       {children}
     </Box>
@@ -211,13 +197,11 @@ export const rules: RenderRules = {
 
   // Lists
   bullet_list: (node, children, _parent, styles: MarkdownRuleStyles) => (
-    // @ts-expect-error - TODO: Fix these errors, seems ok for now
     <Box key={node.key} style={styles._VIEW_SAFE_bullet_list}>
       {children}
     </Box>
   ),
   ordered_list: (node, children, _parent, styles: MarkdownRuleStyles) => (
-    // @ts-expect-error - TODO: Fix these errors, seems ok for now
     <Box key={node.key} style={styles._VIEW_SAFE_ordered_list}>
       {children}
     </Box>
@@ -251,17 +235,15 @@ export const rules: RenderRules = {
     // eslint-disable-next-line @typescript-eslint/prefer-for-of
     for (let b = 0; b < arr.length; b++) {
       if (markdownTextStyleKeys.has(arr[b])) {
-        // @ts-expect-error Dunno why this is angry, but it's fine
+        // @ts-expect-error - TODO: Fix these errors, seems ok for now
         modifiedInheritedStylesObj[arr[b]] = refStyle[arr[b]];
       }
     }
 
     if (hasParents(parent, "bullet_list")) {
       return (
-        // @ts-expect-error - TODO: Fix these errors, seems ok for now
         <Box key={node.key} style={styles._VIEW_SAFE_list_item}>
           <Text
-            // @ts-expect-error - TODO: Fix these errors, seems ok for now
             style={[modifiedInheritedStylesObj, styles.bullet_list_icon]}
             accessible={false}
             selectable
@@ -272,7 +254,6 @@ export const rules: RenderRules = {
               default: "\u2022",
             })}
           </Text>
-          {/* @ts-expect-error - TODO: Fix these errors, seems ok for now */}
           <Box style={styles._VIEW_SAFE_bullet_list_content}>{children}</Box>
         </Box>
       );
@@ -285,23 +266,20 @@ export const rules: RenderRules = {
 
       const orderedList = parent[orderedListIndex];
       const listItemNumber = (
-        orderedList.attributes as undefined | Record<string, unknown>
+        orderedList.attributes
       )?.start
-        ? Number(orderedList.attributes.start) + node.index
-        : node.index + 1;
+        ? Number(orderedList.attributes.start) + (node.index ?? Number.NaN)
+        : (node.index ?? Number.NaN) + 1;
 
       return (
-        // @ts-expect-error - TODO: Fix these errors, seems ok for now
         <Box key={node.key} style={styles._VIEW_SAFE_list_item}>
           <Text
-            // @ts-expect-error - TODO: Fix these errors, seems ok for now
             style={[modifiedInheritedStylesObj, styles.ordered_list_icon]}
             selectable
           >
             {String(listItemNumber)}
             {node.markup}
           </Text>
-          {/* @ts-expect-error - TODO: Fix these errors, seems ok for now */}
           <Box style={styles._VIEW_SAFE_ordered_list_content}>{children}</Box>
         </Box>
       );
@@ -309,7 +287,6 @@ export const rules: RenderRules = {
 
     // we should not need this, but just in case
     return (
-      // @ts-expect-error - TODO: Fix these errors, seems ok for now
       <Box key={node.key} style={styles._VIEW_SAFE_list_item}>
         {children}
       </Box>
@@ -377,25 +354,21 @@ export const rules: RenderRules = {
 
   // Tables
   table: (node, children, _parent, styles: MarkdownRuleStyles) => (
-    // @ts-expect-error - TODO: Fix these errors, seems ok for now
     <VStack key={node.key} style={styles._VIEW_SAFE_table}>
       {children}
     </VStack>
   ),
   thead: (node, children, _parent, styles: MarkdownRuleStyles) => (
-    // @ts-expect-error - TODO: Fix these errors, seems ok for now
     <VStack key={node.key} style={styles._VIEW_SAFE_thead}>
       {children}
     </VStack>
   ),
   tbody: (node, children, _parent, styles: MarkdownRuleStyles) => (
-    // @ts-expect-error - TODO: Fix these errors, seems ok for now
     <VStack key={node.key} style={styles._VIEW_SAFE_tbody}>
       {children}
     </VStack>
   ),
   th: (node, children, _parent, styles: MarkdownRuleStyles) => (
-    // @ts-expect-error - TODO: Fix these errors, seems ok for now
     <Row key={node.key} style={styles._VIEW_SAFE_th}>
       {children}
     </Row>
@@ -417,7 +390,6 @@ export const rules: RenderRules = {
           : styles._VIEW_SAFE_tr;
 
       return (
-        // @ts-expect-error - TODO: Fix these errors, seems ok for now
         <Row key={node.key} style={styleForRow}>
           {children}
         </Row>
@@ -425,7 +397,6 @@ export const rules: RenderRules = {
     }
   },
   td: (node, children, _parent, styles: MarkdownRuleStyles) => (
-    // @ts-expect-error - TODO: Fix these errors, seems ok for now
     <Box key={node.key} style={styles._VIEW_SAFE_td}>
       {children}
     </Box>
@@ -435,9 +406,8 @@ export const rules: RenderRules = {
   link: (node, children, _parent, styles: MarkdownRuleStyles) => (
     <Link
       key={node.key}
-      /* @ts-expect-error - TODO: Fix these errors, seems ok for now */
       style={styles._VIEW_SAFE_link}
-      href={String(node.attributes.href)}
+      href={String(node.attributes?.href)}
     >
       <Text color={"blue.600"}>{children}</Text>
     </Link>
@@ -457,12 +427,10 @@ export const rules: RenderRules = {
             url: string,
             callback?: (url: string) => boolean
           ) => undefined
-        )(String(node.attributes.href), onLinkPress)
+        )(String(node.attributes?.href), onLinkPress)
       }
-      /* @ts-expect-error - TODO: Fix these errors, seems ok for now */
       style={styles._VIEW_SAFE_blocklink}
     >
-      {/* @ts-expect-error - TODO: Fix these errors, seems ok for now */}
       <Box style={styles.image}>{children}</Box>
     </Link>
   ),
@@ -498,25 +466,21 @@ export const rules: RenderRules = {
     </Text>
   ),
   textgroup: (node, children, _parent, styles: MarkdownRuleStyles) => (
-    // @ts-expect-error - TODO: Fix these errors, seems ok for now
     <Text key={node.key} style={styles.textgroup} selectable>
       {children}
     </Text>
   ),
   paragraph: (node, children, _parent, styles: MarkdownRuleStyles) => (
-    // @ts-expect-error - TODO: Fix these errors, seems ok for now
     <Box key={node.key} style={styles._VIEW_SAFE_paragraph}>
       {children}
     </Box>
   ),
   hardbreak: (node, _children, _parent, styles: MarkdownRuleStyles) => (
-    // @ts-expect-error - TODO: Fix these errors, seems ok for now
     <Text key={node.key} style={styles.hardbreak} selectable>
       {"\n"}
     </Text>
   ),
   softbreak: (node, _children, _parent, styles: MarkdownRuleStyles) => (
-    // @ts-expect-error - TODO: Fix these errors, seems ok for now
     <Text key={node.key} style={styles.softbreak} selectable>
       {"\n"}
     </Text>
@@ -524,24 +488,22 @@ export const rules: RenderRules = {
 
   // Believe these are never used but retained for completeness
   pre: (node, children, _parent, styles: MarkdownRuleStyles) => (
-    // @ts-expect-error - TODO: Fix these errors, seems ok for now
     <Box key={node.key} style={styles._VIEW_SAFE_pre}>
       {children}
     </Box>
   ),
   inline: (node, children, _parent, styles: MarkdownRuleStyles) => (
-    // @ts-expect-error - TODO: Fix these errors, seems ok for now
     <Text key={node.key} style={styles.inline} selectable>
       {children}
     </Text>
   ),
   span: (node, children, _parent, styles: MarkdownRuleStyles) => (
-    // @ts-expect-error - TODO: Fix these errors, seems ok for now
     <Text key={node.key} style={styles.span} selectable>
       {children}
     </Text>
   ),
 
+  // @ts-expect-error - this is fine
   html_inline: ({ content, key }: { content: string; key: React.Key }) => {
     if (content === "<br>" || content === "<br/>" || content === "<br />") {
       return <Text key={key}>{"\n"}</Text>;

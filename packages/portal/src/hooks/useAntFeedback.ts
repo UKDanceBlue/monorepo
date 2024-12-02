@@ -29,7 +29,7 @@ export const useAntFeedback = () => {
   };
 };
 
-export const useAskConfirm = ({
+export const useAskConfirm = <T = undefined>({
   modalTitle = "Confirm",
   modalContent,
   onOk,
@@ -39,13 +39,17 @@ export const useAskConfirm = ({
 }: {
   modalTitle?: string;
   modalContent: ReactNode;
-  onOk?: () => void;
-  onCancel?: () => void;
+  onOk?: T extends undefined
+    ? () => void | Promise<void>
+    : (arg: T) => void | Promise<void>;
+  onCancel?: T extends undefined
+    ? () => void | Promise<void>
+    : (arg: T) => void | Promise<void>;
   okText?: string;
   cancelText?: string;
   danger?: boolean;
 }): {
-  openConfirmModal: () => Promise<void>;
+  openConfirmModal: (arg: T) => Promise<void>;
   closeConfirmModal: () => void;
 } => {
   const { showConfirmModal } = useAntFeedback();
@@ -53,51 +57,54 @@ export const useAskConfirm = ({
     ReturnType<ModalFunc> | undefined
   >(undefined);
 
-  const openConfirmModal = useCallback(() => {
-    return new Promise<void>((resolve, reject) => {
-      setActiveModal(
-        showConfirmModal({
-          title: modalTitle,
-          content: modalContent,
-          onOk: () => {
-            try {
-              onOk?.();
-            } catch (error) {
+  const openConfirmModal = useCallback(
+    (arg: T) => {
+      return new Promise<void>((resolve, reject) => {
+        setActiveModal(
+          showConfirmModal({
+            title: modalTitle,
+            content: modalContent,
+            onOk: async () => {
+              try {
+                await onOk?.(arg);
+              } catch (error) {
+                // eslint-disable-next-line @typescript-eslint/prefer-promise-reject-errors
+                reject(error);
+              }
+              resolve();
+            },
+            onCancel: async () => {
+              try {
+                await onCancel?.(arg);
+              } catch (error) {
+                // eslint-disable-next-line @typescript-eslint/prefer-promise-reject-errors
+                reject(error);
+              }
               // eslint-disable-next-line @typescript-eslint/prefer-promise-reject-errors
-              reject(error);
-            }
-            resolve();
-          },
-          onCancel: () => {
-            try {
-              onCancel?.();
-            } catch (error) {
-              // eslint-disable-next-line @typescript-eslint/prefer-promise-reject-errors
-              reject(error);
-            }
-            // eslint-disable-next-line @typescript-eslint/prefer-promise-reject-errors
-            reject("cancel");
-          },
-          afterClose: () => {
-            setActiveModal(undefined);
-          },
-          okText,
-          cancelText,
-          okButtonProps: {
-            danger: true,
-          },
-        })
-      );
-    });
-  }, [
-    showConfirmModal,
-    modalTitle,
-    modalContent,
-    onOk,
-    onCancel,
-    okText,
-    cancelText,
-  ]);
+              reject("cancel");
+            },
+            afterClose: () => {
+              setActiveModal(undefined);
+            },
+            okText,
+            cancelText,
+            okButtonProps: {
+              danger: true,
+            },
+          })
+        );
+      });
+    },
+    [
+      showConfirmModal,
+      modalTitle,
+      modalContent,
+      onOk,
+      onCancel,
+      okText,
+      cancelText,
+    ]
+  );
 
   return { openConfirmModal, closeConfirmModal: () => activeModal?.destroy() };
 };

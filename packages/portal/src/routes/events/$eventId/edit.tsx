@@ -3,19 +3,21 @@ import { AccessLevel, CommitteeRole } from "@ukdanceblue/common";
 import { useQuery } from "urql";
 
 import { EventEditor } from "#elements/forms/event/edit/EventEditor.js";
+import { EventEditorFragment } from "#elements/forms/event/edit/EventEditorGQL.ts";
 import { graphql } from "#graphql/index.js";
 import { useQueryStatusWatcher } from "#hooks/useQueryStatusWatcher.js";
 import { routerAuthCheck } from "#tools/routerAuthCheck.js";
 
-const viewEventPageDocument = graphql(/* GraphQL */ `
-  query EditEventPage($uuid: GlobalId!) {
-    event(uuid: $uuid) {
-      data {
+const viewEventPageDocument = graphql(
+  /* GraphQL */ `
+    query EditEventPage($uuid: GlobalId!) {
+      event(uuid: $uuid) {
         ...EventEditorFragment
       }
     }
-  }
-`);
+  `,
+  [EventEditorFragment]
+);
 
 export function EditEvent() {
   const { eventId } = Route.useParams();
@@ -33,10 +35,7 @@ export function EditEvent() {
 
   return (
     <div>
-      <EventEditor
-        eventFragment={data?.event.data}
-        refetchEvent={refetchEvent}
-      />
+      <EventEditor eventFragment={data?.event} refetchEvent={refetchEvent} />
     </div>
   );
 }

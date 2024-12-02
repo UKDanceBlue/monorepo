@@ -17,18 +17,22 @@ export default class AuthRouter extends RouterService {
   constructor() {
     super("/auth");
 
-    this.addGetRoute("/logout", (req, res) => {
-      res.clearCookie("token");
+    this.addGetRoute("/logout", (req, res, next) => {
+      try {
+        res.clearCookie("token");
 
-      let redirectTo = "/";
-      const queryRedirectTo = Array.isArray(req.query.redirectTo)
-        ? req.query.redirectTo[0]
-        : req.query.redirectTo;
-      if (queryRedirectTo && (queryRedirectTo as string).length > 0) {
-        redirectTo = queryRedirectTo as string;
+        let redirectTo = "/";
+        const queryRedirectTo = Array.isArray(req.query.redirectTo)
+          ? req.query.redirectTo[0]
+          : req.query.redirectTo;
+        if (queryRedirectTo && (queryRedirectTo as string).length > 0) {
+          redirectTo = queryRedirectTo as string;
+        }
+
+        res.redirect(redirectTo);
+      } catch (error) {
+        next(error);
       }
-
-      res.redirect(redirectTo);
     });
 
     this.addPostRoute(

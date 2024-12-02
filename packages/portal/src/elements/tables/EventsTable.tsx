@@ -9,7 +9,7 @@ import { Button, Flex, Table } from "antd";
 import { useCallback, useMemo } from "react";
 import { useQuery } from "urql";
 
-import { getFragmentData, graphql } from "#graphql/index.js";
+import { graphql, readFragment } from "#graphql/index.js";
 import { useListQuery } from "#hooks/useListQuery.js";
 import { useQueryStatusWatcher } from "#hooks/useQueryStatusWatcher.js";
 
@@ -30,36 +30,39 @@ const EventsTableFragment = graphql(/* GraphQL */ `
   }
 `);
 
-const eventsTableQueryDocument = graphql(/* GraphQL */ `
-  query EventsTable(
-    $page: Int
-    $pageSize: Int
-    $sortBy: [String!]
-    $sortDirection: [SortDirection!]
-    $dateFilters: [EventResolverKeyedDateFilterItem!]
-    $isNullFilters: [EventResolverKeyedIsNullFilterItem!]
-    $oneOfFilters: [EventResolverKeyedOneOfFilterItem!]
-    $stringFilters: [EventResolverKeyedStringFilterItem!]
-  ) {
-    events(
-      page: $page
-      pageSize: $pageSize
-      sortBy: $sortBy
-      sortDirection: $sortDirection
-      dateFilters: $dateFilters
-      isNullFilters: $isNullFilters
-      oneOfFilters: $oneOfFilters
-      stringFilters: $stringFilters
+const eventsTableQueryDocument = graphql(
+  /* GraphQL */ `
+    query EventsTable(
+      $page: Int
+      $pageSize: Int
+      $sortBy: [String!]
+      $sortDirection: [SortDirection!]
+      $dateFilters: [EventResolverKeyedDateFilterItem!]
+      $isNullFilters: [EventResolverKeyedIsNullFilterItem!]
+      $oneOfFilters: [EventResolverKeyedOneOfFilterItem!]
+      $stringFilters: [EventResolverKeyedStringFilterItem!]
     ) {
-      page
-      pageSize
-      total
-      data {
-        ...EventsTableFragment
+      events(
+        page: $page
+        pageSize: $pageSize
+        sortBy: $sortBy
+        sortDirection: $sortDirection
+        dateFilters: $dateFilters
+        isNullFilters: $isNullFilters
+        oneOfFilters: $oneOfFilters
+        stringFilters: $stringFilters
+      ) {
+        page
+        pageSize
+        total
+        data {
+          ...EventsTableFragment
+        }
       }
     }
-  }
-`);
+  `,
+  [EventsTableFragment]
+);
 
 export const EventsTable = () => {
   const {
@@ -128,10 +131,9 @@ export const EventsTable = () => {
     loadingMessage: "Loading events...",
   });
 
-  const listEventsData = getFragmentData(
-    EventsTableFragment,
-    eventsDocument?.events.data
-  );
+  const listEventsData =
+    eventsDocument?.events.data &&
+    readFragment(EventsTableFragment, eventsDocument.events.data);
 
   return (
     <>

@@ -1,6 +1,6 @@
 import { Field, ID, ObjectType } from "type-graphql";
 
-import { createNodeClasses,Node } from "../relay.js";
+import { createNodeClasses, Node } from "../relay.js";
 import type { GlobalId } from "../scalars/GlobalId.js";
 import { GlobalIdScalar } from "../scalars/GlobalId.js";
 import { IntervalISO } from "../types/IntervalISO.js";
@@ -30,11 +30,11 @@ export class EventNode extends TimestampedResource implements Node {
   public static init(init: {
     id: string;
     title: string;
-    summary?: string | null;
-    description?: string | null;
-    location?: string | null;
-    updatedAt?: Date | null;
-    createdAt?: Date | null;
+    summary?: string | undefined | null;
+    description?: string | undefined | null;
+    location?: string | undefined | null;
+    updatedAt?: Date | undefined | null;
+    createdAt?: Date | undefined | null;
     occurrences: EventOccurrenceNode[];
   }) {
     return this.createInstance().withValues(init);

@@ -1,6 +1,7 @@
 import { Service } from "@freshgum/typedi";
 import { CommitteeRole } from "@prisma/client";
 import {
+  AccessControlAuthorized,
   AccessLevel,
   FeedNode,
   type GlobalId,
@@ -8,14 +9,13 @@ import {
   ImageNode,
   LegacyError,
   LegacyErrorCode,
-  MutationAccessControl,
-  QueryAccessControl,
 } from "@ukdanceblue/common";
 import { CreateFeedInput, SetFeedInput } from "@ukdanceblue/common";
 import { ConcreteResult, NotFoundError } from "@ukdanceblue/common/error";
 import { Err, Ok } from "ts-results-es";
 import {
   Arg,
+  Ctx,
   FieldResolver,
   Int,
   Mutation,
@@ -29,6 +29,8 @@ import { feedItemModelToResource } from "#repositories/feed/feedModelToResource.
 import { FeedRepository } from "#repositories/feed/FeedRepository.js";
 import { imageModelToResource } from "#repositories/image/imageModelToResource.js";
 
+import type { GraphQLContext } from "./context.js";
+
 @Resolver(() => FeedNode)
 @Service([FeedRepository, FileManager])
 export class FeedResolver {
@@ -38,7 +40,7 @@ export class FeedResolver {
   ) {}
 
   @Query(() => FeedNode, { description: "Get a feed item by its UUID" })
-  @QueryAccessControl({
+  @AccessControlAuthorized({
     accessLevel: AccessLevel.Public,
   })
   async feedItem(
@@ -54,7 +56,7 @@ export class FeedResolver {
   }
 
   @Query(() => [FeedNode], { description: "Get the active feed" })
-  @QueryAccessControl({
+  @AccessControlAuthorized({
     accessLevel: AccessLevel.Public,
   })
   async feed(
@@ -64,8 +66,15 @@ export class FeedResolver {
     const rows = await this.feedRepository.getCompleteFeed({ limit });
     return rows.map(feedItemModelToResource);
   }
+  async instagramfeed(
+    @Arg("limit", () => Int, { defaultValue: 10, nullable: true })
+    limit: number | null
+  ): Promise<FeedNode[]> {
+    const rows = await this.feedRepository.getCompleteFeed({ limit });
+    return rows.map(feedItemModelToResource);
+  }
 
-  @MutationAccessControl(
+  @AccessControlAuthorized(
     {
       accessLevel: AccessLevel.Admin,
     },
@@ -85,7 +94,7 @@ export class FeedResolver {
     return feedItemModelToResource(feedItem);
   }
 
-  @MutationAccessControl(
+  @AccessControlAuthorized(
     {
       accessLevel: AccessLevel.Admin,
     },
@@ -112,7 +121,7 @@ export class FeedResolver {
     return feedItemModelToResource(feedItem);
   }
 
-  @MutationAccessControl(
+  @AccessControlAuthorized(
     {
       accessLevel: AccessLevel.Admin,
     },
@@ -133,7 +142,7 @@ export class FeedResolver {
     return feedItemModelToResource(feedItem);
   }
 
-  @MutationAccessControl(
+  @AccessControlAuthorized(
     {
       accessLevel: AccessLevel.Admin,
     },
@@ -159,7 +168,7 @@ export class FeedResolver {
     return feedItemModelToResource(feedItem);
   }
 
-  @MutationAccessControl(
+  @AccessControlAuthorized(
     {
       accessLevel: AccessLevel.Admin,
     },
@@ -181,11 +190,14 @@ export class FeedResolver {
     nullable: true,
     description: "The image associated with this feed item",
   })
-  async image(@Root() { id: { id } }: FeedNode) {
+  async image(
+    @Root() { id: { id } }: FeedNode,
+    @Ctx() { serverUrl }: GraphQLContext
+  ) {
     const row = await this.feedRepository.getFeedItemImage({ uuid: id });
     if (row == null) {
       return null;
     }
-    return imageModelToResource(row, row.file, this.fileManager);
+    return imageModelToResource(row, row.file, this.fileManager, serverUrl);
   }
 }

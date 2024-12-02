@@ -3,6 +3,7 @@ import type { Notification } from "@prisma/client";
 import { ConcreteResult, ErrorCode } from "@ukdanceblue/common/error";
 import { Cron, scheduledJobs } from "croner";
 
+import { isReplToken } from "#lib/typediTokens.js";
 import { logger } from "#logging/standardLogging.js";
 import { ExpoNotificationProvider } from "#notification/ExpoNotificationProvider.js";
 import * as NotificationProviderJs from "#notification/NotificationProvider.js";
@@ -19,11 +20,12 @@ function makeScheduledJobsMap() {
 /**
  * This class acts as a service wrapper for a cron job that schedules notifications
  */
-@Service([NotificationRepository, ExpoNotificationProvider])
+@Service([NotificationRepository, ExpoNotificationProvider, isReplToken])
 export class NotificationScheduler {
   constructor(
     private readonly notificationRepository: NotificationRepository,
-    private readonly notificationProvider: NotificationProviderJs.NotificationProvider
+    private readonly notificationProvider: NotificationProviderJs.NotificationProvider,
+    private readonly isRepl: boolean
   ) {
     this.ensureNotificationScheduler();
   }
@@ -33,6 +35,10 @@ export class NotificationScheduler {
    * is not loaded, it will create one
    */
   public ensureNotificationScheduler() {
+    if (this.isRepl) {
+      return;
+    }
+
     if (
       !scheduledJobs.some((job) => job.name === "check-scheduled-notifications")
     ) {
@@ -141,6 +147,10 @@ export class NotificationScheduler {
    * notification service.
    */
   private scheduleNotification(notification: Notification) {
+    if (this.isRepl) {
+      throw new Error("Cannot schedule notifications in REPL");
+    }
+
     if (!notification.sendAt) {
       throw new Error("Notification has no sendAt date, cannot schedule it");
     }

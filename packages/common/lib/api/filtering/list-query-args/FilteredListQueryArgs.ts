@@ -22,11 +22,11 @@ import { UnfilteredListQueryArgs } from "./UnfilteredListQueryArgs.js";
 
 export abstract class AbstractFilteredListQueryArgs<
   AllKeys extends string,
-  StringFilterKeys extends AllKeys,
-  OneOfFilterKeys extends AllKeys,
-  NumericFilterKeys extends AllKeys,
-  DateFilterKeys extends AllKeys,
-  BooleanFilterKeys extends AllKeys,
+  StringFilterKeys extends string,
+  OneOfFilterKeys extends string,
+  NumericFilterKeys extends string,
+  DateFilterKeys extends string,
+  BooleanFilterKeys extends string,
 > extends UnfilteredListQueryArgs<AllKeys> {
   stringFilters!: AbstractStringFilterItem<StringFilterKeys>[] | null;
   numericFilters!: AbstractNumericFilterItem<NumericFilterKeys>[] | null;
@@ -56,11 +56,11 @@ export abstract class AbstractFilteredListQueryArgs<
 
 export function FilteredListQueryArgs<
   AllKeys extends string,
-  StringFilterKeys extends AllKeys,
-  OneOfFilterKeys extends AllKeys,
-  NumericFilterKeys extends AllKeys,
-  DateFilterKeys extends AllKeys,
-  BooleanFilterKeys extends AllKeys,
+  StringFilterKeys extends string,
+  OneOfFilterKeys extends string,
+  NumericFilterKeys extends string,
+  DateFilterKeys extends string,
+  BooleanFilterKeys extends string,
 >(
   resolverName: string,
   {
@@ -79,6 +79,23 @@ export function FilteredListQueryArgs<
     boolean?: BooleanFilterKeys[];
   }
 ) {
+  const allSet = new Set<string>(allKeys);
+  const otherSet = new Set();
+  for (const key of [
+    ...stringFilterKeys,
+    ...oneOfFilterKeys,
+    ...numericFilterKeys,
+    ...dateFilterKeys,
+    ...booleanFilterKeys,
+  ]) {
+    if (!allSet.has(key)) {
+      throw new Error(`Filter key ${key} not in all keys`);
+    }
+    if (otherSet.has(key)) {
+      throw new Error(`Duplicate filter key ${key}`);
+    }
+  }
+
   const {
     StringFilterKeysEnum,
     OneOfFilterKeysEnum,

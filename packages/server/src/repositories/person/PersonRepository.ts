@@ -1,5 +1,11 @@
 import { Service } from "@freshgum/typedi";
-import type { Committee, Membership, Person, Team } from "@prisma/client";
+import type {
+  Committee,
+  Marathon,
+  Membership,
+  Person,
+  Team,
+} from "@prisma/client";
 import { Prisma, PrismaClient } from "@prisma/client";
 import {
   AuthSource,
@@ -91,7 +97,7 @@ export type UniquePersonParam =
       linkblue: string;
     };
 
-import { prismaToken } from "#prisma";
+import { prismaToken } from "#lib/typediTokens.js";
 import { CommitteeRepository } from "#repositories/committee/CommitteeRepository.js";
 
 @Service([
@@ -113,11 +119,11 @@ export class PersonRepository {
   async findPersonForLogin(
     authIds: [Exclude<AuthSource, "None">, string][],
     userInfo: {
-      uuid?: string | null;
-      email?: string | null;
-      linkblue?: string | null;
-      name?: string | null;
-      dbRole?: DbRole | null;
+      uuid?: string | undefined | null;
+      email?: string | undefined | null;
+      linkblue?: string | undefined | null;
+      name?: string | undefined | null;
+      dbRole?: DbRole | undefined | null;
     },
     memberOf?: (string | number)[],
     captainOf?: (string | number)[]
@@ -524,10 +530,13 @@ export class PersonRepository {
     memberOf,
     captainOf,
   }: {
-    name?: string | null;
+    name?: string | undefined | null;
     email: string;
-    linkblue?: string | null;
-    authIds?: { source: Exclude<AuthSource, "None">; value: string }[] | null;
+    linkblue?: string | undefined | null;
+    authIds?:
+      | { source: Exclude<AuthSource, "None">; value: string }[]
+      | undefined
+      | null;
     memberOf?: SimpleUniqueParam[] | undefined | null;
     captainOf?: SimpleUniqueParam[] | undefined | null;
   }): Promise<
@@ -659,14 +668,14 @@ export class PersonRepository {
       memberOf?:
         | {
             id: string | number;
-            committeeRole?: CommitteeRole | null | undefined;
+            committeeRole?: CommitteeRole | undefined | null;
           }[]
         | undefined
         | null;
       captainOf?:
         | {
             id: string | number;
-            committeeRole?: CommitteeRole | null | undefined;
+            committeeRole?: CommitteeRole | undefined | null;
           }[]
         | undefined
         | null;
@@ -1281,58 +1290,67 @@ export class PersonRepository {
     }
   }
 
+  private scoreTeamForPrimary(
+    membership: Membership & {
+      team: Team & {
+        _count: {
+          pointEntries: number;
+        };
+        marathon: Marathon;
+      };
+    }
+  ): number {
+    let score = 0;
+    const distanceFromCurrentYear = Math.abs(
+      Number.parseInt(membership.team.marathon.year.substring(2), 10) +
+        2000 -
+        (new Date().getFullYear() + 1)
+    );
+    score += 500 - distanceFromCurrentYear * 100;
+    score += membership.team._count.pointEntries;
+    score += membership.committeeRole ? 100 : 0;
+    return score;
+  }
+
   async getPrimaryTeamOfPerson(
     personParam: UniquePersonParam,
     teamType: TeamType
   ): Promise<Result<Option<Membership & { team: Team }>, RepositoryError>> {
     try {
-      const activeMarathon = await this.marathonRepository.findActiveMarathon();
-      if (activeMarathon.isErr()) {
-        return Err(activeMarathon.error);
-      }
-      if (activeMarathon.value.isNone()) {
-        return Err(new NotFoundError({ what: "active marathon" }));
-      }
-
-      const pointEntriesPerTeam = await this.prisma.pointEntry.groupBy({
-        by: ["teamId"],
-        _count: {
-          id: true,
-        },
+      // First we get the teams for this marathon
+      const teams = await this.prisma.membership.findMany({
         where: {
-          person: personParam,
           team: {
             type: teamType,
+          },
+          person: personParam,
+        },
+        include: {
+          team: {
+            include: {
+              marathon: true,
+              _count: {
+                select: {
+                  pointEntries: {
+                    where: {
+                      person: personParam,
+                    },
+                  },
+                },
+              },
+            },
           },
         },
       });
 
-      let teamId: number | undefined;
-      if (!pointEntriesPerTeam[0]) {
-        return Ok(None);
-      } else if (pointEntriesPerTeam.length === 1) {
-        teamId = pointEntriesPerTeam[0].teamId;
-      } else {
-        teamId = pointEntriesPerTeam.reduce((prev, curr) =>
-          prev._count.id > curr._count.id ? prev : curr
-        ).teamId;
-      }
+      const best = teams
+        .map(
+          (membership) =>
+            [membership, this.scoreTeamForPrimary(membership)] as const
+        )
+        .sort((a, b) => b[1] - a[1])[0]?.[0];
 
-      if (!teamId) {
-        return Ok(None);
-      }
-
-      const team = await this.prisma.membership.findFirst({
-        where: {
-          person: personParam,
-          teamId,
-        },
-        include: {
-          team: true,
-        },
-      });
-
-      return Ok(optionOf(team));
+      return Ok(optionOf(best));
     } catch (error) {
       return handleRepositoryError(error);
     }

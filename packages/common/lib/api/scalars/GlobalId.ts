@@ -2,7 +2,7 @@ import { GraphQLScalarType, Kind } from "graphql";
 import type { Result } from "ts-results-es";
 import { Err, Ok } from "ts-results-es";
 
-import { InvalidArgumentError } from "../../error/direct.js";
+import { InvalidArgumentError } from "../../error/index.js";
 import {
   arrayToBase64String,
   base64StringToArray,
@@ -55,10 +55,7 @@ export function isGlobalId(value: unknown): value is GlobalId {
   return false;
 }
 
-export const GlobalIdScalar = new GraphQLScalarType<
-  { typename: string; id: string },
-  string
->({
+export const GlobalIdScalar = new GraphQLScalarType({
   name: "GlobalId",
   description: "GlobalId custom scalar type",
   extensions: {},

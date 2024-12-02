@@ -21,8 +21,9 @@ export class UnfilteredListQueryArgs<SortByKeys extends string = never>
     nullable: true,
     description:
       "Whether to send all results in a single page, defaults to false (should generally be avoided)",
+    defaultValue: false,
   })
-  sendAll!: boolean | null;
+  sendAll = false;
 
   @Field(() => Int, {
     nullable: true,
@@ -48,10 +49,11 @@ export class UnfilteredListQueryArgs<SortByKeys extends string = never>
       "The fields to sort by, in order of priority. If unspecified, the sort order is undefined",
   })
   sortBy!: SortByKeys[] | null;
+
   @Field(() => [SortDirection], {
     nullable: true,
     description:
       "The direction to sort, if not specified will default to ascending, the order of the values in this array should match the order of the values in the sortBy array, if only one value is specified it will be used for all sortBy values, otherwise the lengths must match",
   })
-  sortDirection?: SortDirection[] | null;
+  sortDirection!: SortDirection[] | null;
 }

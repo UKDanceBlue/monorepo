@@ -1,7 +1,6 @@
-/* eslint-disable @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-member-access */
-import type { TypedDocumentNode as DocumentNode } from "@graphql-typed-document-node/core";
-
+/* eslint-disable */
 import * as types from "./graphql";
+import type { TypedDocumentNode as DocumentNode } from "@graphql-typed-document-node/core";
 
 /**
  * Map of all GraphQL operations in the project.
@@ -53,6 +52,10 @@ const documents = {
     types.EventsDocument,
   "\n  query ServerFeed {\n    feed(limit: 20) {\n      id\n      title\n      createdAt\n      textContent\n      image {\n        url\n        alt\n        width\n        height\n        thumbHash\n      }\n    }\n  }\n":
     types.ServerFeedDocument,
+  "\n  fragment MyTeamFragment on TeamNode {\n    id\n    name\n    totalPoints\n    fundraisingTotalAmount\n    pointEntries {\n      personFrom {\n        id\n        name\n        linkblue\n      }\n      points\n    }\n    members {\n      position\n      person {\n        linkblue\n        name\n      }\n    }\n  }\n":
+    types.MyTeamFragmentFragmentDoc,
+  "\n  fragment MyFundraisingFragment on PersonNode {\n    fundraisingTotalAmount\n    fundraisingAssignments {\n      amount\n      entry {\n        donatedToText\n        donatedByText\n        donatedOn\n      }\n    }\n  }\n":
+    types.MyFundraisingFragmentFragmentDoc,
   "\n  fragment HourScreenFragment on MarathonHourNode {\n    id\n    title\n    details\n    durationInfo\n    mapImages {\n      ...ImageViewFragment\n    }\n  }\n":
     types.HourScreenFragmentFragmentDoc,
   "\n  query MarathonScreen {\n    currentMarathonHour {\n      ...HourScreenFragment\n    }\n    latestMarathon {\n      startDate\n      endDate\n      hours {\n        ...HourScreenFragment\n      }\n    }\n  }\n":
@@ -65,10 +68,6 @@ const documents = {
     types.ScoreBoardDocumentDocument,
   "\n  query ActiveMarathonDocument {\n    currentMarathon {\n      id\n    }\n    latestMarathon {\n      id\n    }\n  }\n":
     types.ActiveMarathonDocumentDocument,
-  "\n  fragment MyTeamFragment on TeamNode {\n    id\n    name\n    totalPoints\n    fundraisingTotalAmount\n    pointEntries {\n      personFrom {\n        id\n        name\n        linkblue\n      }\n      points\n    }\n    members {\n      position\n      person {\n        linkblue\n        name\n      }\n    }\n  }\n":
-    types.MyTeamFragmentFragmentDoc,
-  "\n  fragment MyFundraisingFragment on PersonNode {\n    fundraisingTotalAmount\n    fundraisingAssignments {\n      amount\n      entry {\n        donatedToText\n        donatedByText\n        donatedOn\n      }\n    }\n  }\n":
-    types.MyFundraisingFragmentFragmentDoc,
 };
 
 /**
@@ -203,6 +202,18 @@ export function graphql(
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function graphql(
+  source: "\n  fragment MyTeamFragment on TeamNode {\n    id\n    name\n    totalPoints\n    fundraisingTotalAmount\n    pointEntries {\n      personFrom {\n        id\n        name\n        linkblue\n      }\n      points\n    }\n    members {\n      position\n      person {\n        linkblue\n        name\n      }\n    }\n  }\n"
+): (typeof documents)["\n  fragment MyTeamFragment on TeamNode {\n    id\n    name\n    totalPoints\n    fundraisingTotalAmount\n    pointEntries {\n      personFrom {\n        id\n        name\n        linkblue\n      }\n      points\n    }\n    members {\n      position\n      person {\n        linkblue\n        name\n      }\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(
+  source: "\n  fragment MyFundraisingFragment on PersonNode {\n    fundraisingTotalAmount\n    fundraisingAssignments {\n      amount\n      entry {\n        donatedToText\n        donatedByText\n        donatedOn\n      }\n    }\n  }\n"
+): (typeof documents)["\n  fragment MyFundraisingFragment on PersonNode {\n    fundraisingTotalAmount\n    fundraisingAssignments {\n      amount\n      entry {\n        donatedToText\n        donatedByText\n        donatedOn\n      }\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(
   source: "\n  fragment HourScreenFragment on MarathonHourNode {\n    id\n    title\n    details\n    durationInfo\n    mapImages {\n      ...ImageViewFragment\n    }\n  }\n"
 ): (typeof documents)["\n  fragment HourScreenFragment on MarathonHourNode {\n    id\n    title\n    details\n    durationInfo\n    mapImages {\n      ...ImageViewFragment\n    }\n  }\n"];
 /**
@@ -235,18 +246,6 @@ export function graphql(
 export function graphql(
   source: "\n  query ActiveMarathonDocument {\n    currentMarathon {\n      id\n    }\n    latestMarathon {\n      id\n    }\n  }\n"
 ): (typeof documents)["\n  query ActiveMarathonDocument {\n    currentMarathon {\n      id\n    }\n    latestMarathon {\n      id\n    }\n  }\n"];
-/**
- * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
- */
-export function graphql(
-  source: "\n  fragment MyTeamFragment on TeamNode {\n    id\n    name\n    totalPoints\n    fundraisingTotalAmount\n    pointEntries {\n      personFrom {\n        id\n        name\n        linkblue\n      }\n      points\n    }\n    members {\n      position\n      person {\n        linkblue\n        name\n      }\n    }\n  }\n"
-): (typeof documents)["\n  fragment MyTeamFragment on TeamNode {\n    id\n    name\n    totalPoints\n    fundraisingTotalAmount\n    pointEntries {\n      personFrom {\n        id\n        name\n        linkblue\n      }\n      points\n    }\n    members {\n      position\n      person {\n        linkblue\n        name\n      }\n    }\n  }\n"];
-/**
- * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
- */
-export function graphql(
-  source: "\n  fragment MyFundraisingFragment on PersonNode {\n    fundraisingTotalAmount\n    fundraisingAssignments {\n      amount\n      entry {\n        donatedToText\n        donatedByText\n        donatedOn\n      }\n    }\n  }\n"
-): (typeof documents)["\n  fragment MyFundraisingFragment on PersonNode {\n    fundraisingTotalAmount\n    fundraisingAssignments {\n      amount\n      entry {\n        donatedToText\n        donatedByText\n        donatedOn\n      }\n    }\n  }\n"];
 
 export function graphql(source: string) {
   return (documents as any)[source] ?? {};

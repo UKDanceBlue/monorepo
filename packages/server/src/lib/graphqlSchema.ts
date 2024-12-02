@@ -1,42 +1,24 @@
 import { Container } from "@freshgum/typedi";
+import type { AccessControlParam } from "@ukdanceblue/common";
+import { AccessLevel, checkParam } from "@ukdanceblue/common";
 import {
   ConcreteError,
   FormattedConcreteError,
   toBasicError,
 } from "@ukdanceblue/common/error";
+import type { GraphQLResolveInfo } from "graphql";
 import { Err, Option, Result } from "ts-results-es";
-import type { MiddlewareFn } from "type-graphql";
+import type { ArgsDictionary, MiddlewareFn } from "type-graphql";
 import { buildSchema } from "type-graphql";
 import { fileURLToPath } from "url";
 
 import { logger } from "#logging/logger.js";
-import { ConfigurationResolver } from "#resolvers/ConfigurationResolver.js";
-import {
-  DailyDepartmentNotificationBatchResolver,
-  DailyDepartmentNotificationResolver,
-} from "#resolvers/DailyDepartmentNotification.js";
-import { DeviceResolver } from "#resolvers/DeviceResolver.js";
-import { EventResolver } from "#resolvers/EventResolver.js";
-import { FeedResolver } from "#resolvers/FeedResolver.js";
-import { FundraisingAssignmentResolver } from "#resolvers/FundraisingAssignmentResolver.js";
-import { FundraisingEntryResolver } from "#resolvers/FundraisingEntryResolver.js";
-import { ImageResolver } from "#resolvers/ImageResolver.js";
-import { LoginStateResolver } from "#resolvers/LoginState.js";
-import { MarathonHourResolver } from "#resolvers/MarathonHourResolver.js";
-import { MarathonResolver } from "#resolvers/MarathonResolver.js";
-import { MembershipResolver } from "#resolvers/MembershipResolver.js";
-import { NodeResolver } from "#resolvers/NodeResolver.js";
-import {
-  NotificationDeliveryResolver,
-  NotificationResolver,
-} from "#resolvers/NotificationResolver.js";
-import { PersonResolver } from "#resolvers/PersonResolver.js";
-import { PointEntryResolver } from "#resolvers/PointEntryResolver.js";
-import { PointOpportunityResolver } from "#resolvers/PointOpportunityResolver.js";
-import { TeamResolver } from "#resolvers/TeamResolver.js";
+import type { GraphQLContext } from "#resolvers/context.js";
+
+import { resolversList } from "./resolversList.js";
 
 const schemaPath = fileURLToPath(
-  new URL("../../../../schema.graphql", import.meta.url)
+  import.meta.resolve("../../../../../schema.graphql")
 );
 
 /**
@@ -69,10 +51,9 @@ const errorHandlingMiddleware: MiddlewareFn = async ({ info }, next) => {
       }
 
       const error = new FormattedConcreteError(concreteError, info);
-      logger.error("An error occurred in a resolver", {
-        message: concreteError.error.detailedMessage,
-        stack,
-      });
+      logger.error(
+        `An error occurred in a resolver: ${concreteError.error.detailedMessage}\nStack: ${stack && stack.length > 0 ? `${stack.slice(0, 1000)}...` : stack}`
+      );
       throw error;
     } else {
       result = result.value as unknown;
@@ -86,30 +67,7 @@ const errorHandlingMiddleware: MiddlewareFn = async ({ info }, next) => {
   return result;
 };
 
-const resolvers = [
-  ConfigurationResolver,
-  DeviceResolver,
-  DailyDepartmentNotificationResolver,
-  DailyDepartmentNotificationBatchResolver,
-  EventResolver,
-  ImageResolver,
-  PersonResolver,
-  MembershipResolver,
-  NotificationResolver,
-  NotificationDeliveryResolver,
-  TeamResolver,
-  LoginStateResolver,
-  PointEntryResolver,
-  PointOpportunityResolver,
-  MarathonHourResolver,
-  MarathonResolver,
-  FeedResolver,
-  FundraisingAssignmentResolver,
-  FundraisingEntryResolver,
-  NodeResolver,
-] as const;
-
-for (const service of resolvers) {
+for (const service of resolversList) {
   try {
     // @ts-expect-error This is a valid operation
     Container.get(service);
@@ -120,8 +78,46 @@ for (const service of resolvers) {
 }
 
 export default await buildSchema({
-  resolvers,
+  resolvers: resolversList,
   emitSchemaFile: schemaPath,
+  authChecker<RootType extends object>(
+    resolverData: {
+      root: RootType;
+      args: ArgsDictionary;
+      context: GraphQLContext;
+      info: GraphQLResolveInfo;
+    },
+    params: AccessControlParam<RootType>[]
+  ): boolean {
+    const { context, args, root } = resolverData;
+    const { authorization } = context;
+
+    if (authorization.accessLevel === AccessLevel.SuperAdmin) {
+      return true;
+    }
+
+    let ok = false;
+
+    for (const rule of params) {
+      const result = checkParam<RootType>(
+        rule,
+        authorization,
+        root,
+        args,
+        context
+      );
+      if (result.isErr()) {
+        throw new Error(result.error.detailedMessage);
+      }
+
+      ok = result.value;
+      if (ok) {
+        break;
+      }
+    }
+
+    return ok;
+  },
   globalMiddlewares: [errorHandlingMiddleware],
   container: {
     get(someClass) {

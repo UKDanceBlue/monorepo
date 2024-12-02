@@ -4,13 +4,13 @@ import { DateTime } from "luxon";
 import { useEffect, useState } from "react";
 import type { UseQueryExecute } from "urql";
 
+import { SingleNotificationFragment } from "#documents/notification.js";
 import { LuxonDatePicker } from "#elements/components/antLuxonComponents.js";
 import { NotificationViewer } from "#elements/viewers/notification/NotificationViewer.js";
-import type { FragmentType } from "#graphql/index.js";
-import { getFragmentData } from "#graphql/index.js";
+import type { FragmentOf } from "#graphql/index.js";
+import { readFragment } from "#graphql/index.js";
 import { useAntFeedback } from "#hooks/useAntFeedback.js";
 
-import { SingleNotificationFragment } from "../SingleNotificationGQL";
 import { useNotificationManagerForm } from "./useNotificationManager.js";
 
 const confirmationModalProps: ModalFuncProps = {
@@ -28,10 +28,13 @@ export const ManageNotificationForm = ({
   notificationFragment,
   refetchNotification,
 }: {
-  notificationFragment?: FragmentType<typeof SingleNotificationFragment> | null;
+  notificationFragment?:
+    | FragmentOf<typeof SingleNotificationFragment>
+    | undefined
+    | null;
   refetchNotification: UseQueryExecute;
 }) => {
-  const notification = getFragmentData(
+  const notification = readFragment(
     SingleNotificationFragment,
     notificationFragment
   );
@@ -73,14 +76,14 @@ export const ManageNotificationForm = ({
   } = actions;
 
   function handleOperationResult<T extends string>(
-    promise: Promise<{ data?: Record<T, { ok: boolean }> | undefined }>,
+    promise: Promise<{ data?: Record<T, unknown> | undefined }>,
     responseKey: T,
     operationText: string
   ) {
     promise
       .then(async (result) => {
         refetchNotification({ requestPolicy: "network-only" });
-        await (result.data?.[responseKey].ok
+        await (result.data?.[responseKey]
           ? showInfoMessage(`${operationText} successful`)
           : showErrorMessage(`${operationText} failed`));
       })

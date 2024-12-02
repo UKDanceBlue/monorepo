@@ -3,7 +3,7 @@ import { AccessLevel, CommitteeIdentifier } from "@ukdanceblue/common";
 import { Flex } from "antd";
 import { useQuery } from "urql";
 
-import { teamPageDocument } from "#documents/teamPageDocument.js";
+import { teamPageDocument } from "#documents/team.js";
 import { PointEntryCreator } from "#elements/forms/point-entry/create/PointEntryCreator.js";
 import { PointEntryTable } from "#elements/tables/point-entry/PointEntryTable.js";
 import { useAuthorizationRequirement } from "#hooks/useLoginState.js";
@@ -40,14 +40,14 @@ function ViewTeamPoints() {
         <PointEntryTable
           loading={fetching}
           refetch={refetch}
-          teamFragment={data?.team.data.pointEntries}
+          teamFragment={data?.team.pointEntries}
         />
       </div>
       {canAddPoints && (
         <div style={{ flex: 1 }}>
           <h2>Create Point Entry</h2>
           <PointEntryCreator
-            team={data?.team.data}
+            team={data?.team}
             refetch={() => refetch({ requestPolicy: "network-only" })}
           />
         </div>

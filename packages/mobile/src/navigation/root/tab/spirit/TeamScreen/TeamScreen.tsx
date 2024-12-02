@@ -4,9 +4,9 @@ import { Center, Text } from "native-base";
 import { useEffect, useState } from "react";
 import { useWindowDimensions } from "react-native";
 
-import type { StandingType } from "#common-types/StandingType";
-import type { FragmentType } from "#graphql/index";
-import { getFragmentData, graphql } from "#graphql/index";
+import type { StandingType } from "@/common-types/StandingType";
+import type { FragmentType } from "@/graphql/index";
+import { graphql,readFragment } from "@/graphql/index";
 
 import TeamInformation from "./TeamInformation";
 
@@ -61,8 +61,8 @@ const TeamScreen = ({
   loading: boolean;
   refresh: () => void;
 }) => {
-  const team = getFragmentData(MyTeamFragment, myTeamFragment);
-  const fundraising = getFragmentData(
+  const team = readFragment(MyTeamFragment, myTeamFragment);
+  const fundraising = readFragment(
     MyFundraisingFragment,
     myFundraisingFragment
   );

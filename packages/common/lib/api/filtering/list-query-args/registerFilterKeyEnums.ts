@@ -2,11 +2,11 @@ import { registerEnumType } from "type-graphql";
 
 export function registerFilterKeyEnums<
   AllKeys extends string,
-  StringFilterKeys extends AllKeys,
-  OneOfFilterKeys extends AllKeys,
-  NumericFilterKeys extends AllKeys,
-  DateFilterKeys extends AllKeys,
-  BooleanFilterKeys extends AllKeys,
+  StringFilterKeys extends string,
+  OneOfFilterKeys extends string,
+  NumericFilterKeys extends string,
+  DateFilterKeys extends string,
+  BooleanFilterKeys extends string,
 >(
   allKeys: AllKeys[],
   resolverName: string,
@@ -24,7 +24,7 @@ export function registerFilterKeyEnums<
   }
   const allKeysSet = new Set<string>(allKeys);
 
-  function register<K extends AllKeys>(keys: K[], typeName: string) {
+  function register<K extends string>(keys: K[], typeName: string) {
     const FilterKeysEnum: {
       [key in K]: key;
     } = {} as {

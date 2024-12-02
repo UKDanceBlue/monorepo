@@ -1,0 +1,71 @@
+model Person {
+  id                                Int                        @id @default(autoincrement())
+  uuid                              String                     @unique() @default(uuid()) @db.Uuid
+  createdAt                         DateTime                   @default(now()) @db.Timestamptz(6)
+  updatedAt                         DateTime                   @updatedAt @db.Timestamptz(6)
+  name                              String?                    @db.Citext
+  email                             String                     @unique() @db.Citext
+  linkblue                          String?                    @unique() @db.Citext
+  authIdPairs                       AuthIdPair[]
+  devices                           Device[]
+  memberships                       Membership[]
+  pointEntries                      PointEntry[]
+  ownedFiles                        File[]
+  createdFundraisingEntriesWithMeta FundraisingEntryWithMeta[]
+  createdFundraisingEntries         FundraisingEntry[]
+  fundraisingAssignment             FundraisingAssignment[]
+  assignedFundraisingEntries        FundraisingAssignment[]    @relation("fundraising_assignment_assigned_by_person")
+
+  edits Edit[]
+
+  @@index([uuid])
+}
+
+model AuthIdPair {
+  source   AuthSource
+  value    String
+  personId Int
+  person   Person     @relation(fields: [personId], references: [id], onDelete: Cascade)
+
+  @@id([personId, source])
+}
+
+enum AuthSource {
+  LinkBlue
+  Anonymous
+  Demo
+}
+
+model Membership {
+  id            Int                @id @default(autoincrement())
+  uuid          String             @unique() @default(uuid()) @db.Uuid
+  createdAt     DateTime           @default(now()) @db.Timestamptz(6)
+  updatedAt     DateTime           @updatedAt @db.Timestamptz(6)
+  personId      Int
+  teamId        Int
+  committeeRole CommitteeRole?
+  position      MembershipPosition
+  person        Person             @relation(fields: [personId], references: [id], onDelete: Cascade)
+  team          Team               @relation(fields: [teamId], references: [id], onDelete: Cascade)
+
+  @@unique([personId, teamId])
+  @@index([uuid])
+}
+
+enum MembershipPosition {
+  Member
+  Captain
+}
+
+model LoginFlowSession {
+  id                   Int      @id @default(autoincrement())
+  uuid                 String   @unique() @default(uuid()) @db.Uuid
+  createdAt            DateTime @default(now()) @db.Timestamptz(6)
+  updatedAt            DateTime @updatedAt @db.Timestamptz(6)
+  codeVerifier         String
+  redirectToAfterLogin String
+  setCookie            Boolean  @default(false)
+  sendToken            Boolean  @default(false)
+
+  @@index([uuid])
+}

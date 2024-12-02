@@ -8,11 +8,11 @@ import {
 
 import ImageView, {
   ImageViewFragment,
-} from "#common/components/ImageView/ImageView";
-import NativeBaseMarkdown from "#common/components/NativeBaseMarkdown";
-import { TriviaCrack } from "#common/marathonComponents/TriviaCrack";
-import type { FragmentType } from "#graphql/index";
-import { getFragmentData, graphql } from "#graphql/index";
+} from "@/common/components/ImageView/ImageView";
+import NativeBaseMarkdown from "@/common/components/NativeBaseMarkdown";
+import { TriviaCrack } from "@/common/marathonComponents/TriviaCrack";
+import type { FragmentType } from "@/graphql/index";
+import { graphql,readFragment } from "@/graphql/index";
 
 const HourScreenFragment = graphql(/* GraphQL */ `
   fragment HourScreenFragment on MarathonHourNode {
@@ -48,10 +48,7 @@ export const HourScreenComponent = ({
 
   const { width: screenWidth, height: screenHeight } = useWindowDimensions();
 
-  const hourScreenData = getFragmentData(
-    HourScreenFragment,
-    hourScreenFragment
-  );
+  const hourScreenData = readFragment(HourScreenFragment, hourScreenFragment);
   return (
     <ScrollView
       marginTop={3}
@@ -104,7 +101,7 @@ export const HourScreenComponent = ({
         >
           {hourScreenData.mapImages.map((image, i) => (
             <ImageView
-              key={`${getFragmentData(ImageViewFragment, image).id}-${i}`}
+              key={`${readFragment(ImageViewFragment, image).id}-${i}`}
               imageFragment={image}
               contentFit="contain"
               renderHeight={screenHeight / 4}

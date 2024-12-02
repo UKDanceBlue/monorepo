@@ -1,7 +1,7 @@
 import { Field, ObjectType } from "type-graphql";
 
 import { DbRole } from "../../authorization/structures.js";
-import { createNodeClasses,Node } from "../relay.js";
+import { createNodeClasses, Node } from "../relay.js";
 import type { GlobalId } from "../scalars/GlobalId.js";
 import { GlobalIdScalar } from "../scalars/GlobalId.js";
 import { TimestampedResource } from "./Resource.js";
@@ -27,12 +27,12 @@ export class PersonNode extends TimestampedResource implements Node {
 
   public static init(init: {
     id: string;
-    name?: string | null;
+    name?: string | undefined | null;
     email: string;
-    linkblue?: string | null;
-    dbRole?: DbRole | null;
-    createdAt?: Date | null;
-    updatedAt?: Date | null;
+    linkblue?: string | undefined | null;
+    dbRole?: DbRole | undefined | null;
+    createdAt?: Date | undefined | null;
+    updatedAt?: Date | undefined | null;
   }) {
     return this.createInstance().withValues(init);
   }

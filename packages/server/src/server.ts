@@ -21,10 +21,7 @@ import type {
 } from "express";
 import express from "express";
 
-import {
-  applicationPortToken,
-  loggingLevelToken,
-} from "#lib/environmentTokens.js";
+import { applicationPortToken, loggingLevelToken } from "#lib/typediTokens.js";
 import { logger } from "#logging/logger.js";
 import type { GraphQLContext } from "#resolvers/context.js";
 
@@ -66,6 +63,7 @@ export async function createServer() {
   const { formatError } = await import("./lib/formatError.js");
 
   const app = express();
+  app.set("trust proxy", true);
 
   setupExpressErrorHandler(app);
 

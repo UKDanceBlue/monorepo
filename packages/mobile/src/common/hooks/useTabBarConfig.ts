@@ -1,9 +1,9 @@
 import { useEffect, useMemo } from "react";
 import { useQuery } from "urql";
 
-import { SimpleConfigFragment } from "#common/fragments/Configuration";
-import { Logger } from "#common/logger/Logger";
-import { getFragmentData, graphql } from "#graphql/index";
+import { SimpleConfigFragment } from "@/common/fragments/Configuration";
+import { Logger } from "@/common/logger/Logger";
+import { graphql,readFragment } from "@/graphql/index";
 
 const useTabBarConfigQuery = graphql(/* GraphQL */ `
   query useTabBarConfig {
@@ -27,7 +27,7 @@ export function useTabBarConfig(): {
   const [{ data, fetching, error }] = useQuery({
     query: useTabBarConfigQuery,
   });
-  const tabBarConfig = getFragmentData(
+  const tabBarConfig = readFragment(
     SimpleConfigFragment,
     data?.activeConfiguration.data
   );

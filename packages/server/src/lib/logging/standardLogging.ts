@@ -2,7 +2,7 @@ import { Container } from "@freshgum/typedi";
 import type winston from "winston";
 import { createLogger, format, transports } from "winston";
 
-import { logDirToken, loggingLevelToken } from "#lib/environmentTokens.js";
+import { logDirToken, loggingLevelToken } from "#lib/typediTokens.js";
 
 import { SyslogLevels } from "./SyslogLevels.js";
 

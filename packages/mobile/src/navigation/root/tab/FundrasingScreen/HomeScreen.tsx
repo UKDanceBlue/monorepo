@@ -5,7 +5,7 @@ import { Box, Button, HStack, Text, VStack } from "native-base";
 import { PixelRatio, StatusBar, useWindowDimensions } from "react-native";
 import { TouchableOpacity } from "react-native-gesture-handler";
 
-import { universalCatch } from "#common/logging";
+import { universalCatch } from "@/common/logging";
 
 import { useReactNavigationTheme } from "../../../../theme";
 import HeaderImage from "./HeaderImage";

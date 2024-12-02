@@ -10,8 +10,8 @@ import type {
 import { Box, useTheme, View, VStack, ZStack } from "native-base";
 import { Text, TouchableOpacity, useWindowDimensions } from "react-native";
 
-import { useColorModeValue, useThemeColors } from "#common/customHooks";
-import { colors } from "#theme/colors";
+import { useColorModeValue, useThemeColors } from "@/common/customHooks";
+import { colors } from "@/theme/colors";
 
 import BackgroundCutout from "../../../../assets/screens/navigation/background-cutout";
 import DanceBlueRibbon from "../../../../assets/svgs/DBRibbon";
@@ -90,7 +90,6 @@ function TabBarIcon({
       accessibilityRole="button"
       accessibilityState={isFocused ? { selected: true } : {}}
       accessibilityLabel={options.tabBarAccessibilityLabel}
-      testID={options.tabBarTestID}
       onPress={onPress}
       onLongPress={onLongPress}
       style={{

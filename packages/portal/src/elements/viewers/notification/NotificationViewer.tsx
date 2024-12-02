@@ -3,20 +3,23 @@ import { DateTime } from "luxon";
 import { useEffect } from "react";
 import type { UseQueryExecute } from "urql";
 
+import { SingleNotificationFragment } from "#documents/notification.ts";
 import { NotificationPreview } from "#elements/components/notification/NotificationPreview.js";
-import { SingleNotificationFragment } from "#elements/forms/notification/SingleNotificationGQL.js";
-import type { FragmentType } from "#graphql/index.js";
-import { getFragmentData } from "#graphql/index.js";
+import type { FragmentOf } from "#graphql/index.js";
+import { readFragment } from "#graphql/index.js";
 import { renderDateTime } from "#tools/luxonTools.js";
 
 export const NotificationViewer = ({
   notificationFragment,
   refetch,
 }: {
-  notificationFragment?: FragmentType<typeof SingleNotificationFragment> | null;
+  notificationFragment?:
+    | FragmentOf<typeof SingleNotificationFragment>
+    | undefined
+    | null;
   refetch: UseQueryExecute;
 }) => {
-  const notification = getFragmentData(
+  const notification = readFragment(
     SingleNotificationFragment,
     notificationFragment
   );
@@ -45,7 +48,9 @@ export const NotificationViewer = ({
     notification.deliveryIssueCount
   ).reduce<number>(
     (acc, val) =>
-      val === "NotificationDeliveryIssueCount" ? acc : acc + Number(val),
+      (val as unknown) === "NotificationDeliveryIssueCount"
+        ? acc
+        : acc + Number(val),
     0
   );
 
@@ -110,7 +115,7 @@ export const NotificationViewer = ({
                     .map(([key, value]) => ({
                       label: key,
                       children:
-                        value === "NotificationDeliveryIssueCount"
+                        (value as unknown) === "NotificationDeliveryIssueCount"
                           ? "No issues"
                           : Number(value),
                     }))}

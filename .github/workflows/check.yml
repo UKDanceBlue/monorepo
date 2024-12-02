@@ -1,0 +1,79 @@
+name: Lint
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      [
+        "packages/**",
+        "eslint.config.js",
+        "graphql.config.json",
+        "package.json",
+        "yarn.lock",
+        ".yarnrc.yml",
+        "codegen.ts",
+        "tsconfig.json",
+      ]
+  pull_request:
+    branches:
+      - main
+    paths:
+      [
+        "packages/**",
+        "eslint.config.js",
+        "graphql.config.json",
+        "package.json",
+        "yarn.lock",
+        ".yarnrc.yml",
+        "codegen.ts",
+        "tsconfig.json",
+      ]
+
+jobs:
+  run-eslint:
+    name: Check Repository
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Enable Corepack before setting up Node
+        run: corepack enable
+
+      - name: Set up node 22.x
+        uses: actions/setup-node@v4.0.4
+        with:
+          node-version: 22
+          cache: yarn
+
+      - name: Install dependencies
+        run: yarn install
+
+      - name: Generate Prisma Client
+        run: yarn run server:prisma generate
+
+      - name: Build common
+        run: yarn run common:build
+
+      - name: Run Check
+        run: yarn run repo:check
+
+      - name: Save Code Linting Report JSON
+        # npm script for ESLint
+        # eslint --output-file eslint_report.json --format json src
+        # See https://eslint.org/docs/user-guide/command-line-interface#options
+        run: npm run repo:lint:report
+        continue-on-error: true
+      - name: Upload ESLint report
+        uses: actions/upload-artifact@v4
+        with:
+          name: eslint_report.json
+          path: eslint_report.json
+          retention-days: 7
+      - name: Annotate Code Linting Results
+        uses: ataylorme/eslint-annotate-action@3.0.0
+        with:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          report-json: "eslint_report.json"

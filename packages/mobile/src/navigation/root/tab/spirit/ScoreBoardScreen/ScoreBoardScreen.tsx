@@ -12,9 +12,9 @@ import {
 } from "native-base";
 import { useEffect, useMemo, useState } from "react";
 
-import Jumbotron from "#common/components/Jumbotron";
-import type { FragmentType } from "#graphql/index";
-import { getFragmentData, graphql } from "#graphql/index";
+import Jumbotron from "@/common/components/Jumbotron";
+import type { FragmentType } from "@/graphql/index";
+import { graphql,readFragment } from "@/graphql/index";
 
 import type { SpiritStackScreenProps } from "../../../../../types/navigationTypes";
 import type { StandingType } from "../../../../../types/StandingType";
@@ -79,8 +79,8 @@ const ScoreBoardScreen = ({
   const { navigate } =
     useNavigation<SpiritStackScreenProps<"Scoreboard">["navigation"]>();
 
-  const teamsData = getFragmentData(ScoreBoardFragment, scoreBoardFragment);
-  const userTeamData = getFragmentData(
+  const teamsData = readFragment(ScoreBoardFragment, scoreBoardFragment);
+  const userTeamData = readFragment(
     HighlightedTeamFragment,
     highlightedTeamFragment
   );
@@ -145,7 +145,7 @@ const ScoreBoardScreen = ({
         ) : (
           <Pressable
             onPress={() => {
-              navigate("MyTeam");
+              navigate("MyTeam", {});
             }}
             _pressed={{ opacity: 0.5 }}
           >
@@ -200,7 +200,9 @@ const ScoreBoardScreen = ({
         data={standingData}
         refreshing={loading}
         onRefresh={refresh}
-        onTeamClick={userTeamData?.id ? () => navigate("MyTeam") : undefined}
+        onTeamClick={
+          userTeamData?.id ? () => navigate("MyTeam", {}) : undefined
+        }
       />
     </View>
   );
