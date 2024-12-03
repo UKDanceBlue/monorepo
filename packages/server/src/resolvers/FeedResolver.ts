@@ -27,13 +27,13 @@ import {
 } from "type-graphql";
 
 import { FileManager } from "#files/FileManager.js";
+import { InsagramApi } from "#lib/feed-api/instagramfeed.js";
+import { logger } from "#lib/logging/standardLogging.js";
 import { feedItemModelToResource } from "#repositories/feed/feedModelToResource.js";
 import { FeedRepository } from "#repositories/feed/FeedRepository.js";
 import { imageModelToResource } from "#repositories/image/imageModelToResource.js";
 
 import type { GraphQLContext } from "./context.js";
-import { InsagramApi } from "#lib/feed-api/instagramfeed.js";
-import { logger } from "#lib/logging/standardLogging.js";
 
 @Resolver(() => FeedNode)
 @Service([FeedRepository, FileManager, InsagramApi])
@@ -79,7 +79,10 @@ export class FeedResolver {
       instagramFeed = instagramFeedResult.value;
     }
 
-    const fullFeed = [...appFeed, ...instagramFeed].sort(
+    const fullFeed = [
+      ...appFeed.map(feedItemModelToResource),
+      ...instagramFeed,
+    ].sort(
       ({ createdAt: createdAtA }, { createdAt: createdAtB }) =>
         createdAtB.getTime() - createdAtA.getTime()
     );
