@@ -32,10 +32,11 @@
   },
   "scripts": {
     "refine": "refine",
-    "dev": "refine dev --devtools true --platform vite --host",
-    "build": "refine build",
+    "refine-devtools": "refine devtools",
+    "dev": "vite --host",
+    "build": "vite build",
     "check": "tsc --noEmit",
-    "preview": "refine preview"
+    "preview": "vite preview"
   },
   "dependencies": {
     "@ant-design/icons": "^5.5.1",

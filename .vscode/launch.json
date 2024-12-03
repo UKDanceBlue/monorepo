@@ -69,6 +69,19 @@
       "autoAttachChildProcesses": false
     },
     {
+      "name": "Portal: Refine Devtools",
+      "request": "launch",
+      "runtimeArgs": ["run", "portal:refine-devtools"],
+      "runtimeExecutable": "yarn",
+      "skipFiles": ["<node_internals>/**"],
+      "type": "node",
+      "console": "integratedTerminal",
+      "presentation": {
+        "group": "5portal"
+      },
+      "autoAttachChildProcesses": false
+    },
+    {
       "name": "Mobile: Start",
       "request": "launch",
       "runtimeArgs": ["run", "mobile:start"],
@@ -165,7 +178,12 @@
     },
     {
       "name": "Dev Environment: Portal",
-      "configurations": ["Server: Dev", "Portal: Dev", "Common: Watch"],
+      "configurations": [
+        "Server: Dev",
+        "Portal: Dev",
+        "Portal: Refine Devtools",
+        "Common: Watch"
+      ],
       "presentation": {
         "group": "0dev-enviroment",
         "order": 2
@@ -190,6 +208,7 @@
       "configurations": [
         "Server: Dev",
         "Portal: Dev",
+        "Portal: Refine Devtools",
         "Mobile: Start",
         "Common: Watch",
         "GraphQL: Watch Mobile",

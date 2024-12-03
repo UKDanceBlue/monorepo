@@ -17,6 +17,10 @@
       "label": "Admin Portal",
       "onAutoForward": "openBrowserOnce"
     },
+    "5001": {
+      "label": "Refine Devtools",
+      "onAutoForward": "silent"
+    },
     "8000": {
       "label": "Server",
       "onAutoForward": "silent"

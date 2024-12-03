@@ -30,6 +30,7 @@
     "portal:build": "yarn workspace @ukdanceblue/portal build",
     "portal:check": "yarn workspace @ukdanceblue/portal check",
     "portal:dev": "yarn workspace @ukdanceblue/portal dev",
+    "portal:refine-devtools": "yarn workspace @ukdanceblue/portal refine-devtools",
     "repo:check": "yarn server:check && echo 'Server \t\tOK' && yarn portal:check && echo 'Portal \t\tOK' && yarn mobile:check&& echo 'Mobile \t\tOK'",
     "repo:check-and-lint": "yarn repo:check && yarn repo:lint && echo 'Lint \t\tOK'",
     "repo:coverage": "vitest run --coverage",
