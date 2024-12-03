@@ -4,6 +4,10 @@ import { AccessLevel, CommitteeIdentifier } from "@ukdanceblue/common";
 import { Flex } from "antd";
 import { useMutation, useQuery } from "urql";
 
+import {
+  AssignTeamToSolicitationCodeDocument,
+  UnassignTeamFromSolicitationCodeDocument,
+} from "#documents/solicitationCode.ts";
 import { TeamSelect } from "#elements/components/team/TeamSelect";
 import {
   FundraisingEntriesTable,
@@ -74,24 +78,6 @@ const SolicitationCodeDocument = graphql(
   `,
   [TeamsTableFragment, FundraisingEntryTableFragment]
 );
-
-const AssignTeamToSolicitationCodeDocument = graphql(/* GraphQL */ `
-  mutation AssignTeamToSolicitationCodeDocument(
-    $teamId: GlobalId!
-    $solicitationCodeId: GlobalId!
-  ) {
-    assignSolicitationCodeToTeam(
-      teamId: $teamId
-      solicitationCode: $solicitationCodeId
-    )
-  }
-`);
-
-const UnassignTeamFromSolicitationCodeDocument = graphql(/* GraphQL */ `
-  mutation UnassignTeamFromSolicitationCodeDocument($teamId: GlobalId!) {
-    removeSolicitationCodeFromTeam(teamId: $teamId)
-  }
-`);
 
 function RouteComponent() {
   const { showErrorMessage } = useAntFeedback();

@@ -1,10 +1,15 @@
 import { BarsOutlined, SearchOutlined } from "@ant-design/icons";
 import { Link } from "@tanstack/react-router";
-import { Button, Input, Table } from "antd";
+import { Button, Input, Select, Table } from "antd";
 import { useMemo, useState } from "react";
-import { useQuery } from "urql";
+import { useMutation, useQuery } from "urql";
 
 import { useMarathon } from "#config/marathonContext";
+import {
+  AssignTeamToSolicitationCodeDocument,
+  UnassignTeamFromSolicitationCodeDocument,
+} from "#documents/solicitationCode.ts";
+import { TeamSelectFragment } from "#documents/team.ts";
 import { readFragment } from "#graphql/index";
 import { graphql } from "#graphql/index";
 import { useQueryStatusWatcher } from "#hooks/useQueryStatusWatcher";
@@ -14,6 +19,7 @@ const SolicitationCodeTableFragment = graphql(/* GraphQL */ `
     id
     text
     teams(marathonId: $marathonId) {
+      id
       name
     }
   }
@@ -30,10 +36,27 @@ const SolicitationCodeTableDocument = graphql(
   [SolicitationCodeTableFragment]
 );
 
+const SearchTeamsDocument = graphql(
+  /* GraphQL */ `
+    query SearchTeams($search: String!, $marathonId: GlobalId!) {
+      teams(
+        marathonId: [$marathonId]
+        stringFilters: [{ comparison: SUBSTRING, field: name, value: $search }]
+        sendAll: true
+      ) {
+        data {
+          ...TeamSelect
+        }
+      }
+    }
+  `,
+  [TeamSelectFragment]
+);
+
 export function SolicitationCodeTable() {
   const { id: marathonId } = useMarathon() ?? {};
 
-  const [result] = useQuery({
+  const [result, refetch] = useQuery({
     query: SolicitationCodeTableDocument,
     variables: { marathonId: marathonId ?? "" },
     pause: !marathonId,
@@ -54,7 +77,7 @@ export function SolicitationCodeTable() {
     return data.map((solicitationCode) => ({
       text: solicitationCode.text,
       key: solicitationCode.id,
-      teams: solicitationCode.teams.map((team) => team.name).join(", "),
+      teams: solicitationCode.teams,
     }));
   }, [data]);
 
@@ -70,7 +93,11 @@ export function SolicitationCodeTable() {
       }
       if (
         teamSearch &&
-        !solicitationCode.teams.toLowerCase().includes(teamSearch.toLowerCase())
+        !solicitationCode.teams
+          .map((team) => team.name)
+          .join(", ")
+          .toLowerCase()
+          .includes(teamSearch.toLowerCase())
       ) {
         return false;
       }
@@ -124,6 +151,16 @@ export function SolicitationCodeTable() {
           filterIcon: (
             <SearchOutlined color={teamSearch ? "blue" : undefined} />
           ),
+          render(_, record) {
+            return (
+              <TeamSelect
+                marathonId={marathonId}
+                record={record}
+                loading={result.fetching}
+                refetch={() => refetch({ requestPolicy: "network-only" })}
+              />
+            );
+          },
         },
         {
           title: "Actions",
@@ -139,6 +176,103 @@ export function SolicitationCodeTable() {
           ),
         },
       ]}
+    />
+  );
+}
+
+function TeamSelect({
+  marathonId,
+  record,
+  loading,
+  refetch,
+}: {
+  marathonId?: string;
+  record: {
+    text: string;
+    key: string;
+    teams: {
+      id: string;
+      name: string;
+    }[];
+  };
+  loading: boolean;
+  refetch: () => void;
+}) {
+  const [assignTeamToSolicitationCodeStatus, assignTeamToSolicitationCode] =
+    useMutation(AssignTeamToSolicitationCodeDocument);
+  useQueryStatusWatcher(assignTeamToSolicitationCodeStatus);
+
+  const [
+    unassignTeamFromSolicitationCodeStatus,
+    unassignTeamFromSolicitationCode,
+  ] = useMutation(UnassignTeamFromSolicitationCodeDocument);
+  useQueryStatusWatcher(unassignTeamFromSolicitationCodeStatus);
+
+  const [assignToTeamSearch, setAssignToTeamSearch] = useState<string>("");
+  const [searchTeamsDocumentResult] = useQuery({
+    query: SearchTeamsDocument,
+    variables: {
+      search: assignToTeamSearch,
+      marathonId: marathonId ?? "",
+    },
+    pause: assignToTeamSearch.length < 3 || !marathonId,
+  });
+  useQueryStatusWatcher(searchTeamsDocumentResult);
+
+  const teamOptions = useMemo(
+    () =>
+      readFragment(
+        TeamSelectFragment,
+        searchTeamsDocumentResult.data?.teams.data ?? []
+      ).map((value) => [value.id, value.name]),
+    [searchTeamsDocumentResult]
+  );
+  const selectedTeams = useMemo(
+    () => record.teams.map((value) => [value.id, value.name]),
+    [record]
+  );
+
+  const options = useMemo(
+    () =>
+      Object.entries(
+        Object.fromEntries([...teamOptions, ...selectedTeams]) as Record<
+          string,
+          string
+        >
+      ).map(([id, value]) => ({ label: value, value: id })),
+    [teamOptions, selectedTeams]
+  );
+
+  return (
+    <Select
+      style={{ width: "100%" }}
+      options={options}
+      showSearch
+      onSearch={setAssignToTeamSearch}
+      filterOption={false}
+      onSelect={(value) => {
+        assignTeamToSolicitationCode({
+          solicitationCodeId: record.key,
+          teamId: value,
+        })
+          .then(() => refetch())
+          .catch(console.error);
+      }}
+      onDeselect={(value) => {
+        unassignTeamFromSolicitationCode({
+          teamId: value,
+        })
+          .then(() => refetch())
+          .catch(console.error);
+      }}
+      value={record.teams.map((value) => value.id)}
+      mode="multiple"
+      loading={
+        searchTeamsDocumentResult.fetching ||
+        assignTeamToSolicitationCodeStatus.fetching ||
+        unassignTeamFromSolicitationCodeStatus.fetching ||
+        loading
+      }
     />
   );
 }
