@@ -37,6 +37,7 @@ services:
       SERVE_ORIGIN: https://${HOST_PREFIX:-}.danceblue.org
       LOGGING_LEVEL: ${LOGGING_LEVEL:-info}
       SUPER_ADMIN_LINKBLUE: ${SUPER_ADMIN_LINKBLUE}
+      INSTAGRAM_API_KEY: ${INSTAGRAM_API_KEY}
     secrets:
       - cookie_secret
       - jwt_secret
