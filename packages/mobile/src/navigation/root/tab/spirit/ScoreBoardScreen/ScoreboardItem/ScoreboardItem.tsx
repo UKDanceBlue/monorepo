@@ -53,18 +53,22 @@ function Award({ rank, size }: { rank: number; size: number }) {
 const ScoreboardItem = ({
   rank,
   name,
-  points,
-  highlighted,
+  amount,
+  amountPrefix = "",
+  amountDecimalPlaces = 0,
+  highlighted = false,
 }: {
-  rank: number;
+  rank?: number;
   name: string;
-  points: number;
-  highlighted: boolean;
+  amount: number;
+  amountPrefix?: string;
+  amountDecimalPlaces?: number;
+  highlighted?: boolean;
 }) => {
   const { width: screenWidth } = useWindowDimensions();
 
   const icon = useMemo(
-    () => <Award rank={rank} size={screenWidth * 0.1} />,
+    () => rank != null && <Award rank={rank} size={screenWidth * 0.1} />,
     [rank, screenWidth]
   );
 
@@ -74,14 +78,16 @@ const ScoreboardItem = ({
       backgroundColor={highlighted ? "primary.50" : undefined}
     >
       <Flex direction="row" alignItems="center" flex={1}>
-        <Container
-          justifyContent="center"
-          alignItems="center"
-          flex={1.5}
-          ml="2"
-        >
-          {icon}
-        </Container>
+        {icon && (
+          <Container
+            justifyContent="center"
+            alignItems="center"
+            flex={1.5}
+            ml="2"
+          >
+            {icon}
+          </Container>
+        )}
         <Container justifyContent="flex-start" flex={8}>
           <Flex direction="row">
             <Container justifyContent="center" alignItems="flex-start" flex={0}>
@@ -110,7 +116,8 @@ const ScoreboardItem = ({
           paddingRight={4}
         >
           <Text color="primary.600" fontSize="lg" fontFamily="mono">
-            {points}
+            {amountPrefix}
+            {amount.toFixed(amountDecimalPlaces)}
           </Text>
           <Text color="primary.600" fontSize="lg" fontFamily="mono">
             {" "}

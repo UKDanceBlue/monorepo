@@ -1,28 +1,28 @@
 #!/bin/bash
 #cSpell:disable
 
-echo "!!! ATTENTION !!!"
-echo "DO NOT CLOSE THIS TERMINAL WINDOW UNTIL THE SETUP IS COMPLETE"
-echo "!!! ATTENTION !!!"
-echo ""
+# echo "!!! ATTENTION !!!"
+# echo "DO NOT CLOSE THIS TERMINAL WINDOW UNTIL THE SETUP IS COMPLETE"
+# echo "!!! ATTENTION !!!"
+# echo ""
 
-sleep 1
+# sleep 1
 
-corepack use yarn@*
-pushd packages/portal
-corepack use yarn@*
-popd
-pushd packages/mobile
-corepack use yarn@*
-popd
-pushd packages/server
-corepack use yarn@*
-popd
-pushd packages/common
-corepack use yarn@*
-popd
+# corepack use yarn@*
+# pushd packages/portal
+# corepack use yarn@*
+# popd
+# pushd packages/mobile
+# corepack use yarn@*
+# popd
+# pushd packages/server
+# corepack use yarn@*
+# popd
+# pushd packages/common
+# corepack use yarn@*
+# popd
 
-yarn install
+# yarn install
 
 zrok config set apiEndpoint https://tunnel.danceblue.org
 

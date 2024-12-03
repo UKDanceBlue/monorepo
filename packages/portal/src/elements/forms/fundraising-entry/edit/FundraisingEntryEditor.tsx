@@ -31,7 +31,7 @@ export function FundraisingEntryEditor({ id }: { id: string }) {
       ResultOf<typeof FundraisingEntryEditorFragment>,
       "donatedOn" | "donatedOnOverride"
     > & {
-      donatedOn: DateTime;
+      donatedOn: DateTime | undefined;
       donatedOnOverride: DateTime | undefined;
     },
     ResultOf<typeof setFundraisingEntryDocument>["setFundraisingEntry"]
@@ -49,7 +49,9 @@ export function FundraisingEntryEditor({ id }: { id: string }) {
         return {
           data: {
             ...fragmentData,
-            donatedOn: DateTime.fromISO(fragmentData.donatedOn),
+            donatedOn: fragmentData.donatedOn
+              ? DateTime.fromISO(fragmentData.donatedOn)
+              : undefined,
             donatedOnOverride: fragmentData.donatedOnOverride
               ? DateTime.fromISO(fragmentData.donatedOnOverride)
               : undefined,

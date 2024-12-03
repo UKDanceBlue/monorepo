@@ -610,12 +610,22 @@ enum EventResolverStringFilterKeys {
   title
 }
 
-type FeedNode implements Node {
+interface FeedItem {
+  createdAt: DateTimeISO
+  id: GlobalId!
+  image: ImageNode
+  link: URL
+  textContent: String
+  title: String!
+}
+
+type FeedNode implements FeedItem & Node {
   createdAt: DateTimeISO
   id: GlobalId!
 
   """The image associated with this feed item"""
   image: ImageNode
+  link: URL
   textContent: String
   title: String!
   updatedAt: DateTimeISO
@@ -860,6 +870,16 @@ enum ImageResolverNumericFilterKeys {
 
 enum ImageResolverStringFilterKeys {
   alt
+}
+
+type InstagramFeedNode implements FeedItem & Node {
+  createdAt: DateTimeISO
+  id: GlobalId!
+  image: ImageNode
+  link: URL
+  textContent: String
+  title: String!
+  updatedAt: DateTimeISO
 }
 
 type IntervalISO {
@@ -1929,7 +1949,7 @@ type Query {
   ): ListEventsResponse!
 
   """Get the active feed"""
-  feed(limit: Int = 10): [FeedNode!]!
+  feed(limit: Int = 10): [FeedItem!]!
 
   """Get a feed item by its UUID"""
   feedItem(feedItemId: GlobalId!): FeedNode!

@@ -6,7 +6,7 @@ import { useWindowDimensions } from "react-native";
 
 import type { StandingType } from "@/common-types/StandingType";
 import type { FragmentType } from "@/graphql/index";
-import { graphql,readFragment } from "@/graphql/index";
+import { graphql, readFragment } from "@/graphql/index";
 
 import TeamInformation from "./TeamInformation";
 
@@ -50,22 +50,16 @@ export const MyFundraisingFragment = graphql(/* GraphQL */ `
 
 const TeamScreen = ({
   myTeamFragment,
-  myFundraisingFragment,
   userUuid,
   loading: _loading,
   refresh: _refresh,
 }: {
   myTeamFragment: FragmentType<typeof MyTeamFragment> | null;
-  myFundraisingFragment: FragmentType<typeof MyFundraisingFragment> | null;
   userUuid: string;
   loading: boolean;
   refresh: () => void;
 }) => {
   const team = readFragment(MyTeamFragment, myTeamFragment);
-  const fundraising = readFragment(
-    MyFundraisingFragment,
-    myFundraisingFragment
-  );
 
   const [teamStandings, setTeamStandings] = useState<StandingType[]>([]);
 
@@ -160,8 +154,6 @@ const TeamScreen = ({
         name={name}
         scoreboardData={teamStandings}
         teamTotal={totalPoints}
-        teamFundraisingTotal={fundraising?.fundraisingTotalAmount ?? 0}
-        myFundraisingEntries={fundraising?.fundraisingAssignments ?? []}
       />
     );
   }

@@ -3,10 +3,12 @@ import { CommitteeRole } from "@prisma/client";
 import {
   AccessControlAuthorized,
   AccessLevel,
+  FeedItem,
   FeedNode,
   type GlobalId,
   GlobalIdScalar,
   ImageNode,
+  InstagramFeedNode,
   LegacyError,
   LegacyErrorCode,
 } from "@ukdanceblue/common";
@@ -30,13 +32,16 @@ import { FeedRepository } from "#repositories/feed/FeedRepository.js";
 import { imageModelToResource } from "#repositories/image/imageModelToResource.js";
 
 import type { GraphQLContext } from "./context.js";
+import { InsagramApi } from "#lib/feed-api/instagramfeed.js";
+import { logger } from "#lib/logging/standardLogging.js";
 
 @Resolver(() => FeedNode)
-@Service([FeedRepository, FileManager])
+@Service([FeedRepository, FileManager, InsagramApi])
 export class FeedResolver {
   constructor(
     private readonly feedRepository: FeedRepository,
-    private readonly fileManager: FileManager
+    private readonly fileManager: FileManager,
+    private readonly instagramApi: InsagramApi
   ) {}
 
   @Query(() => FeedNode, { description: "Get a feed item by its UUID" })
@@ -55,23 +60,33 @@ export class FeedResolver {
     return Ok(feedItemModelToResource(feedItem));
   }
 
-  @Query(() => [FeedNode], { description: "Get the active feed" })
+  @Query(() => [FeedItem], { description: "Get the active feed" })
   @AccessControlAuthorized({
     accessLevel: AccessLevel.Public,
   })
   async feed(
     @Arg("limit", () => Int, { defaultValue: 10, nullable: true })
-    limit: number | null
-  ): Promise<FeedNode[]> {
-    const rows = await this.feedRepository.getCompleteFeed({ limit });
-    return rows.map(feedItemModelToResource);
-  }
-  async instagramfeed(
-    @Arg("limit", () => Int, { defaultValue: 10, nullable: true })
-    limit: number | null
-  ): Promise<FeedNode[]> {
-    const rows = await this.feedRepository.getCompleteFeed({ limit });
-    return rows.map(feedItemModelToResource);
+    limit: number
+  ): Promise<ConcreteResult<FeedItem[]>> {
+    const appFeed = await this.feedRepository.getCompleteFeed({ limit });
+
+    const instagramFeedResult = await this.instagramApi.getFeed(limit).promise;
+    let instagramFeed: InstagramFeedNode[];
+    if (instagramFeedResult.isErr()) {
+      logger.error(instagramFeedResult.error[0].toString());
+      instagramFeed = instagramFeedResult.error[1] ?? [];
+    } else {
+      instagramFeed = instagramFeedResult.value;
+    }
+
+    const fullFeed = [...appFeed, ...instagramFeed].sort(
+      ({ createdAt: createdAtA }, { createdAt: createdAtB }) =>
+        createdAtB.getTime() - createdAtA.getTime()
+    );
+
+    const mostRecentNItems: FeedItem[] = fullFeed.slice(0, limit);
+
+    return Ok(mostRecentNItems);
   }
 
   @AccessControlAuthorized(

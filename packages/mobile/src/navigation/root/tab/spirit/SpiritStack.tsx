@@ -8,6 +8,7 @@ import { showMessage } from "@/common/util/alertUtils";
 import { graphql } from "@/graphql/index";
 
 import type { SpiritStackParamList } from "../../../../types/navigationTypes";
+import FundraisingScreen from "./FundraisingScreen/FundraisingScreen";
 import ScoreboardScreen from "./ScoreBoardScreen";
 import TeamScreen from "./TeamScreen";
 
@@ -122,10 +123,19 @@ const SpiritScreen = () => {
         {() => (
           <TeamScreen
             myTeamFragment={query.data?.me?.primaryTeam?.team ?? null}
-            myFundraisingFragment={query.data?.me ?? null}
             userUuid={query.data?.me?.id ?? ""}
             loading={!spiritMode || query.fetching}
-            refresh={refresh}
+            refresh={() => refresh({ requestPolicy: "network-only" })}
+          />
+        )}
+      </SpiritStack.Screen>
+      <SpiritStack.Screen name="Fundraising">
+        {() => (
+          <FundraisingScreen
+            myTeamFragment={query.data?.me?.primaryTeam?.team ?? null}
+            myFundraisingFragment={query.data?.me ?? null}
+            loading={!spiritMode || query.fetching}
+            refresh={() => refresh({ requestPolicy: "network-only" })}
           />
         )}
       </SpiritStack.Screen>
