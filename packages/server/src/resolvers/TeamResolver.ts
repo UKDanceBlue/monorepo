@@ -72,18 +72,7 @@ export class TeamResolver implements CrudResolver<TeamNode, "team"> {
   ) {}
 
   @AccessControlAuthorized({
-    argumentMatch: [
-      {
-        extractor: ({ teamMemberships }) =>
-          teamMemberships
-            .filter(
-              ({ position }) => position === MembershipPositionType.Captain
-            )
-            .map(({ teamId }) => teamId),
-        // TODO: Figure out if this needs to be "uuid" or "id"
-        argument: "id",
-      },
-    ],
+    accessLevel: AccessLevel.Public,
   })
   @Query(() => TeamNode, { name: "team" })
   async team(
@@ -162,6 +151,10 @@ export class TeamResolver implements CrudResolver<TeamNode, "team"> {
           committeeIdentifier: CommitteeIdentifier.dancerRelationsCommittee,
           minCommitteeRole: CommitteeRole.Coordinator,
         },
+        {
+          committeeIdentifier: CommitteeIdentifier.fundraisingCommittee,
+          minCommitteeRole: CommitteeRole.Coordinator,
+        },
       ],
     }
   )
@@ -190,6 +183,10 @@ export class TeamResolver implements CrudResolver<TeamNode, "team"> {
       authRules: [
         {
           committeeIdentifier: CommitteeIdentifier.dancerRelationsCommittee,
+          minCommitteeRole: CommitteeRole.Coordinator,
+        },
+        {
+          committeeIdentifier: CommitteeIdentifier.fundraisingCommittee,
           minCommitteeRole: CommitteeRole.Coordinator,
         },
       ],
@@ -226,6 +223,10 @@ export class TeamResolver implements CrudResolver<TeamNode, "team"> {
       authRules: [
         {
           committeeIdentifier: CommitteeIdentifier.dancerRelationsCommittee,
+          minCommitteeRole: CommitteeRole.Chair,
+        },
+        {
+          committeeIdentifier: CommitteeIdentifier.fundraisingCommittee,
           minCommitteeRole: CommitteeRole.Chair,
         },
       ],

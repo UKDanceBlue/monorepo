@@ -23,7 +23,7 @@ export const fundraisingAccess: AccessControlParam<FundraisingAssignmentNode> =
     authRules: [
       {
         minCommitteeRole: CommitteeRole.Coordinator,
-        committeeIdentifiers: [CommitteeIdentifier.fundraisingCommittee],
+        committeeIdentifiers: [CommitteeIdentifier.fundraisingCommittee, CommitteeIdentifier.dancerRelationsCommittee],
       },
     ],
   };
