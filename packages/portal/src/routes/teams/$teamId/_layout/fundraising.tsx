@@ -4,7 +4,7 @@ import {
   CommitteeIdentifier,
   CommitteeRole,
 } from "@ukdanceblue/common";
-import { AutoComplete, Button, Flex, Form, Space } from "antd";
+import { AutoComplete, Button, Card, Flex, Form, Space } from "antd";
 import { useState } from "react";
 import { useMutation, useQuery } from "urql";
 
@@ -32,6 +32,7 @@ const ViewTeamFundraisingDocument = graphql(
       $numericFilters: [FundraisingEntryResolverKeyedNumericFilterItem!]
     ) {
       team(uuid: $teamUuid) {
+        fundraisingTotalAmount
         solicitationCode {
           id
           name
@@ -182,6 +183,33 @@ function ViewTeamFundraising() {
   } else {
     return (
       <Flex vertical>
+        <Flex justify="center" style={{ paddingBottom: "1em" }}>
+          <Card
+            title="Total!!!"
+            styles={{
+              header: {
+                padding: "0.5rem",
+                display: "flex",
+                justifyContent: "center",
+              },
+              title: {
+                padding: "0.5rem",
+                display: "flex",
+                justifyContent: "center",
+              },
+              body: {
+                padding: "1rem",
+                display: "flex",
+                justifyContent: "center",
+                fontSize: 24,
+                fontWeight: "bold",
+              },
+            }}
+            style={{ width: "100%" }}
+          >
+            ${(data?.team.fundraisingTotalAmount ?? 0).toFixed(2)}
+          </Card>
+        </Flex>
         <Form.Item label="Solicitation Code">
           <Space.Compact style={{ width: "100%" }}>
             <AutoComplete
