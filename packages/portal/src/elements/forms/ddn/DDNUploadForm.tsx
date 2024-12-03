@@ -20,10 +20,21 @@ const defaultDateValidator = z
   .optional();
 
 const defaultFloatValidator = z
-  .string()
+  .string({ coerce: true })
+  .regex(/^\d*(,\d+)*(\.\d+)?$/)
   .trim()
-  .default("")
-  .transform((v) => (v === "" ? 0 : Number.parseFloat(v)));
+  .default("0")
+  .transform((v) => {
+    if (v === "") {
+      return 0;
+    }
+    v = v.replaceAll(",", "");
+    const parsed = Number.parseFloat(v);
+    if (Number.isNaN(parsed)) {
+      return 0;
+    }
+    return parsed;
+  });
 
 const inputTypeSchema = z.object({
   "Division": z.string().trim(),
@@ -36,16 +47,8 @@ const inputTypeSchema = z.object({
   "Pledged Date": defaultDateValidator,
   "Transaction Date": defaultDateValidator,
   "Transaction  Type": z.string().trim(),
-  "Donor1 Amount": z
-    .string()
-    .trim()
-    .transform((v) => (v === "" ? undefined : Number.parseFloat(v)))
-    .optional(),
-  "Donor2 Amount": z
-    .string()
-    .trim()
-    .transform((v) => (v === "" ? undefined : Number.parseFloat(v)))
-    .optional(),
+  "Donor1 Amount": defaultFloatValidator.optional(),
+  "Donor2 Amount": defaultFloatValidator.optional(),
   "Combined Amount": defaultFloatValidator,
   "Pledged Amount": defaultFloatValidator,
   "Account Number": z.string().trim(),
