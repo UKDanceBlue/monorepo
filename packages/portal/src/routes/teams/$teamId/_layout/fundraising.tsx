@@ -174,8 +174,9 @@ function ViewTeamFundraising() {
   if (!canSetSolicitationCode && !data?.team.solicitationCode) {
     return (
       <p>
-        Please reach out to Dancer Relations and ask them to assign your team to
-        a Solicitation Code
+        Your team has not been assigned any fundraising entries yet. This does
+        not mean that your donations have not been recorded, just that they have
+        not been fully processed and assigned to you yet.
       </p>
     );
   } else {
