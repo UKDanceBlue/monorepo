@@ -13,6 +13,7 @@ import type { EventScreenFragment } from "../navigation/root/EventScreen/EventSc
 export type SpiritStackParamList = {
   MyTeam: Record<string, never>;
   Scoreboard: Record<string, never>;
+  Fundraising: Record<string, never>;
 };
 
 export type SpiritStackScreenProps<T extends keyof SpiritStackParamList> =
@@ -26,7 +27,6 @@ export type TabNavigatorParamList = {
   "Teams": NavigatorScreenParams<SpiritStackParamList>;
   "Marathon": Record<string, never>;
   "DB Moments": Record<string, never>;
-  "DB Funds": Record<string, never>;
   "Info": Record<string, never>;
 };
 

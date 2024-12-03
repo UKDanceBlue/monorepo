@@ -64,7 +64,7 @@ const Scoreboard = ({
               key={item.id}
               rank={index + 1}
               name={item.name}
-              points={item.points}
+              amount={item.points}
               highlighted={item.highlighted}
             />
           );

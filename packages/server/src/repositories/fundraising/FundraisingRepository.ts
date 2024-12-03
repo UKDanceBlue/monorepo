@@ -16,6 +16,7 @@ import {
   SolicitationCode,
   Team,
 } from "@prisma/client";
+import { Decimal } from "@prisma/client/runtime/library";
 import {
   LocalDate,
   localDateToLuxon,
@@ -31,6 +32,8 @@ import {
 import { Err, None, Ok, Option, Result, Some } from "ts-results-es";
 
 import type { FilterItems } from "#lib/prisma-utils/gqlFilterToPrismaFilter.js";
+import { prismaToken } from "#lib/typediTokens.js";
+import { UniqueMarathonParam } from "#repositories/marathon/MarathonRepository.js";
 import { UniquePersonParam } from "#repositories/person/PersonRepository.js";
 import {
   handleRepositoryError,
@@ -42,11 +45,6 @@ import {
   buildFundraisingEntryOrder,
   buildFundraisingEntryWhere,
 } from "./fundraisingEntryRepositoryUtils.js";
-
-import { Decimal } from "@prisma/client/runtime/library";
-
-import { prismaToken } from "#lib/typediTokens.js";
-import { UniqueMarathonParam } from "#repositories/marathon/MarathonRepository.js";
 
 const fundraisingEntryBooleanKeys = [] as const;
 type FundraisingEntryBooleanKey = (typeof fundraisingEntryBooleanKeys)[number];
@@ -162,7 +160,6 @@ function asWideFundraisingEntryWithMeta(
     solicitationCodeOverrideId: entry.solicitationCodeOverrideId,
     createdAt: entry.createdAt,
     updatedAt: entry.updatedAt,
-    ddn: entry.ddn,
     solicitationCodeOverride: entry.solicitationCodeOverride,
     amountOverride: entry.amountOverride,
     batchTypeOverride: entry.batchTypeOverride,
@@ -553,9 +550,6 @@ export class FundraisingEntryRepository {
       const assignments = await this.getAssignmentsForEntry(entryParam);
       if (assignments.isErr()) {
         return Err(assignments.error);
-      }
-      if (entry.value == null) {
-        return Err(new NotFoundError({ what: "FundraisingEntry" }));
       }
 
       const totalAssigned = assignments.value.reduce(
