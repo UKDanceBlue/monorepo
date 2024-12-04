@@ -7,14 +7,9 @@ import type {
   TeamType,
 } from "@ukdanceblue/common";
 import { MembershipPositionType, TeamLegacyStatus } from "@ukdanceblue/common";
-import {
-  BasicError,
-  ConcreteResult,
-  optionOf,
-} from "@ukdanceblue/common/error";
+import { ConcreteResult, optionOf } from "@ukdanceblue/common/error";
 import { None, Ok, Option, Result, Some } from "ts-results-es";
 
-import { SomePrismaError } from "#error/prisma.js";
 import type { FilterItems } from "#lib/prisma-utils/gqlFilterToPrismaFilter.js";
 import type { UniqueMarathonParam } from "#repositories/marathon/MarathonRepository.js";
 import {
@@ -236,7 +231,7 @@ export class TeamRepository {
 
   async getTotalFundraisingAmount(
     param: SimpleUniqueParam
-  ): Promise<ConcreteResult<Option<number>, SomePrismaError | BasicError>> {
+  ): Promise<ConcreteResult<Option<number>, RepositoryError>> {
     try {
       const {
         _sum: { amount },
@@ -448,9 +443,7 @@ export class TeamRepository {
 
   async getSolicitationCodeForTeam(
     param: SimpleUniqueParam
-  ): Promise<
-    ConcreteResult<Option<SolicitationCode>, SomePrismaError | BasicError>
-  > {
+  ): Promise<ConcreteResult<Option<SolicitationCode>, RepositoryError>> {
     try {
       const team = await this.prisma.team.findUnique({
         where: param,

@@ -1,6 +1,6 @@
 import type { BasicError, NotFoundError } from "@ukdanceblue/common/error";
 import { toBasicError } from "@ukdanceblue/common/error";
-import { Err } from "ts-results-es";
+import { Err, Some } from "ts-results-es";
 
 import type { SomePrismaError } from "#error/prisma.js";
 import { toPrismaError } from "#error/prisma.js";
@@ -17,18 +17,14 @@ export type RepositoryError = SomePrismaError | BasicError | NotFoundError;
 /**
  * Takes in an arbitrary error and returns a PrismaError subclass if it is a Prisma error, or a BasicError if it is not
  */
-export function unwrapRepositoryError(
-  error: unknown
-): SomePrismaError | BasicError {
+export function unwrapRepositoryError(error: unknown): RepositoryError {
   const prismaError = toPrismaError(error);
-  return prismaError.isSome() ? prismaError.unwrap() : toBasicError(error);
+  return prismaError.orElse(() => Some(toBasicError(error))).unwrap();
 }
 
 /**
  * Takes in an arbitrary error and returns a PrismaError subclass if it is a Prisma error, or a BasicError if it is not (wrapped by Err)
  */
-export function handleRepositoryError(
-  error: unknown
-): Err<SomePrismaError | BasicError> {
+export function handleRepositoryError(error: unknown): Err<RepositoryError> {
   return Err(unwrapRepositoryError(error));
 }

@@ -186,6 +186,12 @@ input CreatePointOpportunityInput {
   type: TeamType!
 }
 
+input CreateSolicitationCodeInput {
+  code: NonNegativeInt!
+  name: NonEmptyString
+  prefix: NonEmptyString!
+}
+
 input CreateTeamInput {
   legacyStatus: TeamLegacyStatus!
   name: NonEmptyString!
@@ -1293,6 +1299,7 @@ type Mutation {
   createPerson(input: CreatePersonInput!): PersonNode!
   createPointEntry(input: CreatePointEntryInput!): PointEntryNode!
   createPointOpportunity(input: CreatePointOpportunityInput!): PointOpportunityNode!
+  createSolicitationCode(input: CreateSolicitationCodeInput!): SolicitationCodeNode!
   createTeam(input: CreateTeamInput!, marathon: GlobalId!): TeamNode!
   createTeams(marathonId: GlobalId!, teams: [BulkTeamInput!]!): [TeamNode!]!
 
@@ -1354,6 +1361,7 @@ type Mutation {
   setMarathonHour(input: SetMarathonHourInput!, uuid: GlobalId!): MarathonHourNode!
   setPerson(input: SetPersonInput!, uuid: GlobalId!): PersonNode!
   setPointOpportunity(input: SetPointOpportunityInput!, uuid: GlobalId!): PointOpportunityNode!
+  setSolicitationCode(id: GlobalId!, input: SetSolicitationCodeInput!): SolicitationCodeNode!
   setTeam(input: SetTeamInput!, uuid: GlobalId!): TeamNode!
   stageNotification(audience: NotificationAudienceInput!, body: NonEmptyString!, title: NonEmptyString!, url: URL): NotificationNode!
   updateFundraisingAssignment(id: GlobalId!, input: UpdateFundraisingAssignmentInput!): FundraisingAssignmentNode!
@@ -2563,6 +2571,10 @@ input SetPointOpportunityInput {
   name: NonEmptyString
   opportunityDate: DateTimeISO
   type: TeamType
+}
+
+input SetSolicitationCodeInput {
+  name: NonEmptyString
 }
 
 input SetTeamInput {

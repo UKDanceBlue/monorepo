@@ -20,7 +20,6 @@ import {
 } from "@ukdanceblue/common";
 import {
   ActionDeniedError,
-  BasicError,
   CompositeError,
   ConcreteResult,
   InvalidArgumentError,
@@ -39,7 +38,6 @@ import {
 } from "ts-results-es";
 
 import { findPersonForLogin } from "#auth/findPersonForLogin.js";
-import { SomePrismaError } from "#error/prisma.js";
 import type { FilterItems } from "#lib/prisma-utils/gqlFilterToPrismaFilter.js";
 import {
   MarathonRepository,
@@ -1358,7 +1356,7 @@ export class PersonRepository {
 
   async getTotalFundraisingAmount(
     param: UniquePersonParam
-  ): Promise<ConcreteResult<Option<number>, SomePrismaError | BasicError>> {
+  ): Promise<ConcreteResult<Option<number>, RepositoryError>> {
     try {
       const {
         _sum: { amount },

@@ -5,9 +5,15 @@ import {
   PrismaClientUnknownRequestError,
   PrismaClientValidationError,
 } from "@prisma/client/runtime/library";
-import { ConcreteError, ErrorCode } from "@ukdanceblue/common/error";
+import {
+  ConcreteError,
+  ErrorCode,
+  NotFoundError,
+} from "@ukdanceblue/common/error";
 import type { Option } from "ts-results-es";
 import { None, Some } from "ts-results-es";
+
+import type { RepositoryError } from "#repositories/shared.js";
 
 type RawPrismaError =
   | PrismaClientKnownRequestError
@@ -91,13 +97,16 @@ export type SomePrismaError =
   | PrismaUnknownRequestError
   | PrismaValidationError;
 
-export function toPrismaError(error: RawPrismaError): Some<SomePrismaError>;
-export function toPrismaError(error: unknown): Option<SomePrismaError>;
-export function toPrismaError(error: unknown): Option<SomePrismaError> {
+export function toPrismaError(error: RawPrismaError): Some<RepositoryError>;
+export function toPrismaError(error: unknown): Option<RepositoryError>;
+export function toPrismaError(error: unknown): Option<RepositoryError> {
   if (error instanceof PrismaClientInitializationError) {
     return Some(new PrismaInitializationError(error));
   }
   if (error instanceof PrismaClientKnownRequestError) {
+    if (error.code === "P2025") {
+      return Some(new NotFoundError({}));
+    }
     return Some(new PrismaKnownRequestError(error));
   }
   if (error instanceof PrismaClientRustPanicError) {

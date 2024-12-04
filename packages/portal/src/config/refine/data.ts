@@ -59,8 +59,18 @@ export const dataProvider: Required<DataProvider> = {
     }
 
     const response = await urqlClient
-      .mutation(gqlOperation, variables ?? meta?.gqlVariables)
+      .mutation(gqlOperation, {
+        input: {
+          ...variables,
+          ...meta?.gqlVariables?.input,
+        },
+        ...meta?.gqlVariables,
+      })
       .toPromise();
+
+    if (response.error) {
+      throw response.error;
+    }
 
     const key = getOperationName(resource, "createOne");
     const data = response.data?.[key];
@@ -103,6 +113,10 @@ export const dataProvider: Required<DataProvider> = {
       })
       .toPromise();
 
+    if (response.error) {
+      throw response.error;
+    }
+
     const key = getOperationName(resource, "getOne");
     const data = response.data?.[key];
 
@@ -144,6 +158,10 @@ export const dataProvider: Required<DataProvider> = {
         ...meta.gqlVariables,
       } satisfies Partial<ListQueryOptions>)
       .toPromise();
+
+    if (response.error) {
+      throw response.error;
+    }
 
     const val = response.data[getOperationName(resource, "getList")];
     let total: number;
@@ -194,7 +212,7 @@ export const dataProvider: Required<DataProvider> = {
     const data = response.data?.[key];
 
     if (response.error) {
-      throw new Error(response.error.message);
+      throw response.error;
     }
 
     return { data };
@@ -220,6 +238,10 @@ export const dataProvider: Required<DataProvider> = {
         input: { id, ...meta.gqlVariables },
       })
       .toPromise();
+
+    if (response.error) {
+      throw response.error;
+    }
 
     const key = getOperationName(resource, "deleteOne");
     const data = response.data?.[key];
@@ -254,7 +276,11 @@ export const dataProvider: Required<DataProvider> = {
       throw new Error("Operation is required.");
     }
 
-    const data = response.data ?? response.error?.message;
+    if (response.error) {
+      throw response.error;
+    }
+
+    const { data } = response;
 
     return { data };
   },

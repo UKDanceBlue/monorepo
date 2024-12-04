@@ -1,6 +1,7 @@
 import { Service } from "@freshgum/typedi";
 import {
   AccessControlAuthorized,
+  CreateSolicitationCodeInput,
   CrudResolver,
   type GlobalId,
   GlobalIdScalar,
@@ -8,12 +9,14 @@ import {
   ListFundraisingEntriesResponse,
   ListSolicitationCodesArgs,
   ListSolicitationCodesResponse,
+  SetSolicitationCodeInput,
   SolicitationCodeNode,
   TeamNode,
   VoidScalar,
 } from "@ukdanceblue/common";
 import { ConcreteResult } from "@ukdanceblue/common/error";
 import { VoidResolver } from "graphql-scalars";
+import { AsyncResult } from "ts-results-es";
 import {
   Arg,
   Args,
@@ -24,7 +27,6 @@ import {
   Root,
 } from "type-graphql";
 
-import { FundraisingEntryRepository } from "#repositories/fundraising/FundraisingRepository.js";
 import { SolicitationCodeRepository } from "#repositories/solicitationCode/SolicitationCodeRepository.js";
 import { teamModelToResource } from "#repositories/team/teamModelToResource.js";
 
@@ -32,11 +34,7 @@ import { globalFundraisingAccessParam } from "./accessParams.js";
 import { FundraisingEntryResolver } from "./FundraisingEntryResolver.js";
 
 @Resolver(() => SolicitationCodeNode)
-@Service([
-  FundraisingEntryRepository,
-  FundraisingEntryResolver,
-  SolicitationCodeRepository,
-])
+@Service([FundraisingEntryResolver, SolicitationCodeRepository])
 export class SolicitationCodeResolver
   implements CrudResolver<SolicitationCodeNode, "solicitationCode">
 {
@@ -78,6 +76,44 @@ export class SolicitationCodeResolver
           })
         ),
         total: codes.length,
+      })
+    ).promise;
+  }
+
+  @AccessControlAuthorized(globalFundraisingAccessParam)
+  @Mutation(() => SolicitationCodeNode)
+  createSolicitationCode(
+    @Arg("input") { prefix, code, name }: CreateSolicitationCodeInput
+  ): Promise<ConcreteResult<SolicitationCodeNode>> {
+    return new AsyncResult(
+      this.solicitationCodeRepository.createSolicitationCode({
+        prefix,
+        code,
+        name,
+      })
+    ).map(({ id: _, uuid, ...code }) =>
+      SolicitationCodeNode.init({
+        id: uuid,
+        ...code,
+      })
+    ).promise;
+  }
+
+  @AccessControlAuthorized(globalFundraisingAccessParam)
+  @Mutation(() => SolicitationCodeNode)
+  setSolicitationCode(
+    @Arg("id", () => GlobalIdScalar) { id }: GlobalId,
+    @Arg("input") { name }: SetSolicitationCodeInput
+  ): Promise<ConcreteResult<SolicitationCodeNode>> {
+    return new AsyncResult(
+      this.solicitationCodeRepository.setSolicitationCode(
+        { uuid: id },
+        { name }
+      )
+    ).map(({ id: _, uuid, ...code }) =>
+      SolicitationCodeNode.init({
+        id: uuid,
+        ...code,
       })
     ).promise;
   }

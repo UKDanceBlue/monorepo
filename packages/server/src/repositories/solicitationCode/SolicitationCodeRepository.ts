@@ -33,6 +33,54 @@ export type SolicitationCodeUniqueParam =
 @Service([prismaToken])
 export class SolicitationCodeRepository {
   constructor(private readonly prisma: PrismaClient) {}
+  async createSolicitationCode({
+    prefix,
+    code,
+    name,
+  }: {
+    prefix: string;
+    code: number;
+    name?: string | null | undefined;
+  }): Promise<Result<SolicitationCode, RepositoryError>> {
+    try {
+      return Ok(
+        await this.prisma.solicitationCode.create({
+          data: {
+            prefix,
+            code,
+            name: name ?? null,
+          },
+        })
+      );
+    } catch (error: unknown) {
+      return handleRepositoryError(error);
+    }
+  }
+
+  async setSolicitationCode(
+    solicitationCodeParam: SolicitationCodeUniqueParam,
+    {
+      name,
+    }: {
+      name?: string | undefined | null;
+    }
+  ): Promise<Result<SolicitationCode, RepositoryError>> {
+    try {
+      return Ok(
+        await this.prisma.solicitationCode.update({
+          where:
+            "code" in solicitationCodeParam
+              ? { prefix_code: solicitationCodeParam }
+              : solicitationCodeParam,
+          data: {
+            name: name ?? null,
+          },
+        })
+      );
+    } catch (error: unknown) {
+      return handleRepositoryError(error);
+    }
+  }
 
   async getSolicitationCodeForEntry(
     entryParam: FundraisingEntryUniqueParam,
@@ -40,7 +88,7 @@ export class SolicitationCodeRepository {
   ): Promise<
     Result<
       SolicitationCode,
-      RepositoryError | ActionDeniedError | InvariantError | NotFoundError
+      RepositoryError | ActionDeniedError | InvariantError
     >
   >;
   async getSolicitationCodeForEntry(
@@ -49,7 +97,7 @@ export class SolicitationCodeRepository {
   ): Promise<
     Result<
       SolicitationCode & { teams: readonly Team[] },
-      RepositoryError | ActionDeniedError | InvariantError | NotFoundError
+      RepositoryError | ActionDeniedError | InvariantError
     >
   >;
   async getSolicitationCodeForEntry(

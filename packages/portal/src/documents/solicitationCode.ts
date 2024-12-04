@@ -37,3 +37,44 @@ export const UnassignTeamFromSolicitationCodeDocument = graphql(/* GraphQL */ `
     removeSolicitationCodeFromTeam(teamId: $teamId)
   }
 `);
+
+export const createSolicitationCodeDocument = graphql(/* GraphQL */ `
+  mutation CreateSolicitationCode($input: CreateSolicitationCodeInput!) {
+    createSolicitationCode(input: $input) {
+      id
+    }
+  }
+`);
+
+export const SetSolicitationCodeFragment = graphql(/* GraphQL */ `
+  fragment SetSolicitationCode on SolicitationCodeNode {
+    id
+    name
+    text
+  }
+`);
+
+export const setSolicitationCodeDocument = graphql(
+  /* GraphQL */ `
+    mutation SetSolicitationCode(
+      $id: GlobalId!
+      $input: SetSolicitationCodeInput!
+    ) {
+      setSolicitationCode(id: $id, input: $input) {
+        ...SetSolicitationCode
+      }
+    }
+  `,
+  [SetSolicitationCodeFragment]
+);
+
+export const solicitationCodeDocument = graphql(
+  /* GraphQL */ `
+    query SolicitationCode($id: GlobalId!) {
+      solicitationCode(id: $id) {
+        ...SetSolicitationCode
+      }
+    }
+  `,
+  [SetSolicitationCodeFragment]
+);

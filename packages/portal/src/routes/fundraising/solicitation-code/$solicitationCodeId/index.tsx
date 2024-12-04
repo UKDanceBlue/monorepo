@@ -1,11 +1,16 @@
 import { MinusCircleOutlined } from "@ant-design/icons";
+import { useForm } from "@refinedev/antd";
+import type { HttpError } from "@refinedev/core";
 import { createFileRoute, useParams } from "@tanstack/react-router";
 import { AccessLevel, CommitteeIdentifier } from "@ukdanceblue/common";
-import { Flex } from "antd";
+import { Button, Flex, Form, Input } from "antd";
 import { useMutation, useQuery } from "urql";
 
 import {
   AssignTeamToSolicitationCodeDocument,
+  setSolicitationCodeDocument,
+  SetSolicitationCodeFragment,
+  solicitationCodeDocument,
   UnassignTeamFromSolicitationCodeDocument,
 } from "#documents/solicitationCode.ts";
 import { TeamSelect } from "#elements/components/team/TeamSelect";
@@ -14,6 +19,7 @@ import {
   FundraisingEntryTableFragment,
 } from "#elements/tables/fundraising/FundraisingEntriesTable";
 import { TeamsTable, TeamsTableFragment } from "#elements/tables/TeamsTable";
+import type { ResultOf, VariablesOf } from "#graphql/index";
 import { graphql } from "#graphql/index";
 import { useAntFeedback, useAskConfirm } from "#hooks/useAntFeedback";
 import { useListQuery } from "#hooks/useListQuery";
@@ -58,6 +64,7 @@ const SolicitationCodeDocument = graphql(
         code
         name
         text
+        ...SetSolicitationCode
         teams {
           ...TeamsTableFragment
         }
@@ -76,7 +83,11 @@ const SolicitationCodeDocument = graphql(
       }
     }
   `,
-  [TeamsTableFragment, FundraisingEntryTableFragment]
+  [
+    TeamsTableFragment,
+    FundraisingEntryTableFragment,
+    SetSolicitationCodeFragment,
+  ]
 );
 
 function RouteComponent() {
@@ -112,6 +123,21 @@ function RouteComponent() {
       isNullFields: [],
     }
   );
+
+  const { formProps } = useForm<
+    ResultOf<typeof solicitationCodeDocument>,
+    HttpError,
+    VariablesOf<typeof setSolicitationCodeDocument>["input"],
+    ResultOf<typeof SetSolicitationCodeFragment>
+  >({
+    resource: "solicitationCode",
+    meta: {
+      gqlMutation: setSolicitationCodeDocument,
+      gqlQuery: solicitationCodeDocument,
+    },
+    action: "edit",
+    id: solicitationCodeId,
+  });
 
   const [result, refresh] = useQuery({
     query: SolicitationCodeDocument,
@@ -159,6 +185,22 @@ function RouteComponent() {
     <>
       <Flex justify="space-between" align="center">
         <h1>Solicitation Code {result.data?.solicitationCode.text}</h1>
+        <Form
+          {...formProps}
+          layout="inline"
+          onFinish={(data) =>
+            formProps.onFinish?.({ ...data, name: data.name || undefined })
+          }
+        >
+          <Form.Item label="Name" name="name">
+            <Input />
+          </Form.Item>
+          <Form.Item>
+            <Button type="primary" htmlType="submit">
+              Save
+            </Button>
+          </Form.Item>
+        </Form>
       </Flex>
       <Flex vertical gap="1rem">
         <div>
