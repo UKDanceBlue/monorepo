@@ -17,6 +17,10 @@ export const StringComparator = {
   STARTS_WITH: "STARTS_WITH",
   ENDS_WITH: "ENDS_WITH",
   IS: "IS",
+  GREATER_THAN: "GREATER_THAN",
+  LESS_THAN: "LESS_THAN",
+  GREATER_THAN_OR_EQUAL_TO: "GREATER_THAN_OR_EQUAL_TO",
+  LESS_THAN_OR_EQUAL_TO: "LESS_THAN_OR_EQUAL_TO",
 } as const;
 export type StringComparator =
   (typeof StringComparator)[keyof typeof StringComparator];

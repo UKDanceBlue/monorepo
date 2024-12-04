@@ -1,7 +1,16 @@
 /* eslint-disable @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-member-access */
 import type { DataProvider } from "@refinedev/core";
 import type { Pagination } from "@refinedev/core";
-import type { AbstractFilteredListQueryArgs } from "@ukdanceblue/common";
+import type {
+  BooleanFilterItemInterface,
+  DateFilterItemInterface,
+  IsNullFilterItemInterface,
+  NumericFilterItemInterface,
+  OneOfFilterItemInterface,
+  PaginationOptions,
+  SortingOptions,
+  StringFilterItemInterface,
+} from "@ukdanceblue/common";
 import { getCrudOperationNames } from "@ukdanceblue/common";
 import { gql } from "@urql/core";
 import camelcase from "camelcase";
@@ -16,6 +25,7 @@ import {
 import pluralize, { singular } from "pluralize";
 
 import { API_BASE_URL, urqlClient } from "../api";
+import { crudFiltersToFilterObject } from "./crudFiltersToFilterObject";
 
 function getOperationName(
   resource: string,
@@ -23,6 +33,19 @@ function getOperationName(
 ) {
   return getCrudOperationNames(resource, pluralize(resource))[operation];
 }
+
+export type FieldTypes = Record<string, "string" | "number" | "date" | "oneOf">;
+
+export interface FilterObject {
+  dateFilters: DateFilterItemInterface<string>[];
+  isNullFilters: IsNullFilterItemInterface<string>[];
+  numericFilters: NumericFilterItemInterface<string>[];
+  oneOfFilters: OneOfFilterItemInterface<string>[];
+  stringFilters: StringFilterItemInterface<string>[];
+  booleanFilters: BooleanFilterItemInterface<string>[];
+}
+
+type ListQueryOptions = PaginationOptions & SortingOptions & FilterObject;
 
 // We alias gql to gqlButDifferentName to avoid the GraphQL plugin giving us an error about the invalid syntax
 const gqlButDifferentName = gql;
@@ -93,37 +116,52 @@ export const dataProvider: Required<DataProvider> = {
       throw new Error("Operation is required.");
     }
 
-    if (filters && filters.length > 0) {
-      throw new Error("Filters are not supported yet.");
-    }
+    const {
+      dateFilters,
+      isNullFilters,
+      numericFilters,
+      oneOfFilters,
+      stringFilters,
+      booleanFilters,
+    } = crudFiltersToFilterObject(
+      filters ?? [],
+      meta.fieldTypes as FieldTypes | undefined
+    );
 
     const response = await urqlClient
       .query(meta.gqlQuery, {
-        sortBy: sorters?.map((sorter) => sorter.field) ?? null,
-        sortDirection: sorters?.map((sorter) => sorter.order) ?? null,
-        page: pagination?.current ?? null,
-        pageSize: pagination?.pageSize ?? null,
-        ...meta?.variables,
-        ...meta?.gqlVariables,
-      } satisfies Partial<
-        AbstractFilteredListQueryArgs<
-          string,
-          string,
-          string,
-          string,
-          string,
-          string
-        >
-      >)
+        sortBy: sorters?.map((sorter) => sorter.field) ?? undefined,
+        sortDirection: sorters?.map((sorter) => sorter.order) ?? undefined,
+        page: pagination?.current ?? undefined,
+        pageSize: pagination?.pageSize ?? undefined,
+        booleanFilters: booleanFilters.length > 0 ? booleanFilters : undefined,
+        dateFilters: dateFilters.length > 0 ? dateFilters : undefined,
+        isNullFilters: isNullFilters.length > 0 ? isNullFilters : undefined,
+        numericFilters: numericFilters.length > 0 ? numericFilters : undefined,
+        oneOfFilters: oneOfFilters.length > 0 ? oneOfFilters : undefined,
+        stringFilters: stringFilters.length > 0 ? stringFilters : undefined,
+        ...meta.variables,
+        ...meta.gqlVariables,
+      } satisfies Partial<ListQueryOptions>)
       .toPromise();
 
     console.log(response);
     const val = response.data[getOperationName(resource, "getList")];
+    let total: number;
+    let data;
     if (Array.isArray(val)) {
-      return { data: val, total: val.length };
+      total = val.length;
+      data = val;
+    } else if ("total" in val) {
+      total = val.total;
+      data = val.data;
     } else {
-      return { data: val.data, total: val.total };
+      throw new Error("Invalid response");
     }
+    return {
+      data,
+      total,
+    };
   },
 
   getMany: async (params) => {

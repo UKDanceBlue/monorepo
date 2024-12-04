@@ -7,11 +7,11 @@ activeConfiguration(key: "TRIVIA_CRACK").data
 ```
 
 ```js
-me.teams.team
+me.teams.team;
 ```
 
 ```js
-me.primaryCommittee
+me.primaryCommittee;
 ```
 
 ```js
@@ -23,11 +23,11 @@ me.primaryTeam(teamType: TeamType).team.members.person
 ```
 
 ```js
-me.fundraisingAssignments.entry
+me.fundraisingAssignments.entry;
 ```
 
 ```js
-loginState.loggedIn
+loginState.loggedIn;
 ```
 
 ```js
@@ -39,7 +39,7 @@ events(dateFilters: [{comparison: GREATER_THAN_OR_EQUAL_TO, field: occurrenceSta
 ```
 
 ```js
-events(dateFilters: [{comparison: GREATER_THAN_OR_EQUAL_TO, field: occurrenceStart, value: DateTimeISO }, { comparison: LESS_THAN_OR_EQUAL_TO, field: occurrenceStart, value: DateTimeISO }], sortDirection: asc, sortBy: "occurrence").data.images
+events(...).data.images
 ```
 
 ```js
@@ -47,11 +47,11 @@ feed(limit: 20).image
 ```
 
 ```js
-currentMarathon.mapImages
+currentMarathon.mapImages;
 ```
 
 ```js
-latestMarathon.hours.mapImages
+latestMarathon.hours.mapImages;
 ```
 
 ```js
@@ -59,7 +59,7 @@ teams(sortBy: ["totalPoints", "name"], sortDirection: [desc, asc], type: TeamTyp
 ```
 
 ```js
-currentMarathon.id
+currentMarathon.id;
 ```
 
 ```js

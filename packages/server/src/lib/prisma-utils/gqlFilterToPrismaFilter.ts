@@ -57,6 +57,30 @@ export function stringFilterToPrisma<T extends string>(
       }
       return { contains: filter.value, mode: "insensitive" };
     }
+    case StringComparator.GREATER_THAN: {
+      if (filter.negate) {
+        return { not: { gt: filter.value }, mode: "insensitive" };
+      }
+      return { gt: filter.value, mode: "insensitive" };
+    }
+    case StringComparator.GREATER_THAN_OR_EQUAL_TO: {
+      if (filter.negate) {
+        return { not: { gte: filter.value }, mode: "insensitive" };
+      }
+      return { gte: filter.value, mode: "insensitive" };
+    }
+    case StringComparator.LESS_THAN: {
+      if (filter.negate) {
+        return { not: { lt: filter.value }, mode: "insensitive" };
+      }
+      return { lt: filter.value, mode: "insensitive" };
+    }
+    case StringComparator.LESS_THAN_OR_EQUAL_TO: {
+      if (filter.negate) {
+        return { not: { lte: filter.value }, mode: "insensitive" };
+      }
+      return { lte: filter.value, mode: "insensitive" };
+    }
     default: {
       filter satisfies never;
       throw new Error(

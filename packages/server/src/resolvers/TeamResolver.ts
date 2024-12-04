@@ -506,7 +506,7 @@ export class TeamResolver implements CrudResolver<TeamNode, "team"> {
     });
   }
 
-  @AccessControlAuthorized(globalFundraisingAccessParam)
+  @AccessControlAuthorized({ accessLevel: AccessLevel.Public })
   @FieldResolver(() => SolicitationCodeNode, { nullable: true })
   async solicitationCode(
     @Root() { id: { id } }: TeamNode
