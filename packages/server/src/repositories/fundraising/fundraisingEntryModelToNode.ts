@@ -8,7 +8,7 @@ import {
 import type { WideFundraisingEntryWithMeta } from "./FundraisingRepository.js";
 
 export function fundraisingEntryModelToNode(
-  entryModel: NonNullable<WideFundraisingEntryWithMeta>
+  entryModel: WideFundraisingEntryWithMeta
 ): Promise<FundraisingEntryNode> {
   return Promise.resolve(
     FundraisingEntryNode.init({
@@ -18,7 +18,7 @@ export function fundraisingEntryModelToNode(
         entryModel.amountOverride?.toDecimalPlaces(2).toNumber() ?? null,
       amountUnassigned:
         entryModel.unassigned?.toDecimalPlaces(2).toNumber() ?? 0,
-      donatedByText: entryModel?.donatedBy,
+      donatedByText: entryModel.donatedBy,
       donatedByOverride: entryModel.donatedByOverride,
       donatedToText: entryModel.donatedTo,
       donatedToOverride: entryModel.donatedToOverride,

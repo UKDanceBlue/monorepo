@@ -29,10 +29,7 @@ import { DeviceResolver } from "#resolvers/DeviceResolver.js";
 import { EventResolver } from "#resolvers/EventResolver.js";
 // import { FeedResolver } from "#resolvers/FeedResolver.js";
 import { FundraisingAssignmentResolver } from "#resolvers/FundraisingAssignmentResolver.js";
-import {
-  FundraisingEntryResolver,
-  SolicitationCodeResolver,
-} from "#resolvers/FundraisingEntryResolver.js";
+import { FundraisingEntryResolver } from "#resolvers/FundraisingEntryResolver.js";
 import { ImageResolver } from "#resolvers/ImageResolver.js";
 import { MarathonHourResolver } from "#resolvers/MarathonHourResolver.js";
 import { MarathonResolver } from "#resolvers/MarathonResolver.js";
@@ -48,6 +45,7 @@ import {
   DailyDepartmentNotificationResolver,
 } from "./DailyDepartmentNotification.js";
 import { FeedResolver } from "./FeedResolver.js";
+import { SolicitationCodeResolver } from "./SolicitationCodeResolver.js";
 
 @Resolver(() => Node)
 @Service([

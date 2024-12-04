@@ -7,10 +7,8 @@ import { DeviceResolver } from "#resolvers/DeviceResolver.js";
 import { EventResolver } from "#resolvers/EventResolver.js";
 import { FeedResolver } from "#resolvers/FeedResolver.js";
 import { FundraisingAssignmentResolver } from "#resolvers/FundraisingAssignmentResolver.js";
-import {
-  FundraisingEntryResolver,
-  SolicitationCodeResolver,
-} from "#resolvers/FundraisingEntryResolver.js";
+import { FundraisingEntryResolver } from "#resolvers/FundraisingEntryResolver.js";
+import { SolicitationCodeResolver } from "#resolvers/SolicitationCodeResolver.js";
 import { ImageResolver } from "#resolvers/ImageResolver.js";
 import { LoginStateResolver } from "#resolvers/LoginState.js";
 import { MarathonHourResolver } from "#resolvers/MarathonHourResolver.js";

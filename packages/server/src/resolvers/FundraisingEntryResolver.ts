@@ -5,8 +5,6 @@ import {
   type GlobalId,
   type MarathonYearString,
   SetFundraisingEntryInput,
-  TeamNode,
-  VoidScalar,
 } from "@ukdanceblue/common";
 import {
   AccessControlAuthorized,
@@ -25,7 +23,6 @@ import {
   ListFundraisingEntriesResponse,
 } from "@ukdanceblue/common";
 import { ConcreteResult } from "@ukdanceblue/common/error";
-import { VoidResolver } from "graphql-scalars";
 import { AsyncResult, Ok, Option } from "ts-results-es";
 import {
   Arg,
@@ -44,12 +41,16 @@ import { dailyDepartmentNotificationModelToResource } from "#repositories/dailyD
 import { fundraisingAssignmentModelToNode } from "#repositories/fundraising/fundraisingAssignmentModelToNode.js";
 import { fundraisingEntryModelToNode } from "#repositories/fundraising/fundraisingEntryModelToNode.js";
 import { FundraisingEntryRepository } from "#repositories/fundraising/FundraisingRepository.js";
-import { teamModelToResource } from "#repositories/team/teamModelToResource.js";
+import { SolicitationCodeRepository } from "#repositories/solicitationCode/SolicitationCodeRepository.js";
 
 import { globalFundraisingAccessParam } from "./accessParams.js";
 
 @Resolver(() => FundraisingEntryNode)
-@Service([DBFundsFundraisingProvider, FundraisingEntryRepository])
+@Service([
+  DBFundsFundraisingProvider,
+  FundraisingEntryRepository,
+  SolicitationCodeRepository,
+])
 export class FundraisingEntryResolver
   implements
     CrudResolver<
@@ -60,7 +61,8 @@ export class FundraisingEntryResolver
 {
   constructor(
     private readonly fundraisingProvider: FundraisingProvider<number>,
-    private readonly fundraisingEntryRepository: FundraisingEntryRepository
+    private readonly fundraisingEntryRepository: FundraisingEntryRepository,
+    private readonly solicitationCodeRepository: SolicitationCodeRepository
   ) {}
 
   @AccessControlAuthorized(globalFundraisingAccessParam)
@@ -163,11 +165,11 @@ export class FundraisingEntryResolver
         return false;
       }
 
-      const fundraisingEntryRepository = Container.get(
-        FundraisingEntryRepository
+      const solicitationCodeRepository = Container.get(
+        SolicitationCodeRepository
       );
       const solicitationCode =
-        await fundraisingEntryRepository.getSolicitationCodeForEntry(
+        await solicitationCodeRepository.getSolicitationCodeForEntry(
           {
             uuid: id,
           },
@@ -288,7 +290,7 @@ export class FundraisingEntryResolver
       return Ok(solicitationCodeOverride);
     }
     const solicitationCode =
-      await this.fundraisingEntryRepository.getSolicitationCodeForEntry({
+      await this.solicitationCodeRepository.getSolicitationCodeForEntry({
         uuid,
       });
     return new AsyncResult(solicitationCode).map(
@@ -298,107 +300,5 @@ export class FundraisingEntryResolver
           id: uuid,
         })
     ).promise;
-  }
-}
-
-@Resolver(() => SolicitationCodeNode)
-@Service([FundraisingEntryRepository, FundraisingEntryResolver])
-export class SolicitationCodeResolver {
-  constructor(
-    private readonly fundraisingEntryRepository: FundraisingEntryRepository,
-    private readonly fundraisingEntryResolver: FundraisingEntryResolver
-  ) {}
-
-  @AccessControlAuthorized(globalFundraisingAccessParam)
-  @Query(() => [SolicitationCodeNode])
-  async solicitationCodes(): Promise<ConcreteResult<SolicitationCodeNode[]>> {
-    const codes =
-      await this.fundraisingEntryRepository.findAllSolicitationCodes();
-    return codes.toAsyncResult().map((codes) =>
-      codes.map(({ uuid, id, ...code }) =>
-        SolicitationCodeNode.init({
-          ...code,
-          id: uuid,
-        })
-      )
-    ).promise;
-  }
-
-  @AccessControlAuthorized(globalFundraisingAccessParam)
-  @Query(() => SolicitationCodeNode)
-  async solicitationCode(
-    @Arg("id", () => GlobalIdScalar) { id }: GlobalId
-  ): Promise<ConcreteResult<SolicitationCodeNode>> {
-    const code =
-      await this.fundraisingEntryRepository.findSolicitationCodeByUnique({
-        uuid: id,
-      });
-    return code.toAsyncResult().map(({ uuid, id, ...code }) =>
-      SolicitationCodeNode.init({
-        ...code,
-        id: uuid,
-      })
-    ).promise;
-  }
-
-  @AccessControlAuthorized(globalFundraisingAccessParam)
-  @FieldResolver(() => ListFundraisingEntriesResponse)
-  async entries(
-    @Root() { id }: SolicitationCodeNode,
-    @Args(() => ListFundraisingEntriesArgs) args: ListFundraisingEntriesArgs
-  ): Promise<ConcreteResult<ListFundraisingEntriesResponse>> {
-    return this.fundraisingEntryResolver.fundraisingEntries(args, id);
-  }
-
-  @AccessControlAuthorized(globalFundraisingAccessParam)
-  @FieldResolver(() => [TeamNode])
-  async teams(
-    @Root() { id: { id } }: SolicitationCodeNode,
-    @Arg("marathonId", () => GlobalIdScalar, { nullable: true })
-    marathonId: GlobalId | null
-  ): Promise<ConcreteResult<TeamNode[]>> {
-    const teams =
-      await this.fundraisingEntryRepository.getTeamsForSolitationCode(
-        {
-          uuid: id,
-        },
-        { marathonParam: marathonId ? { uuid: marathonId.id } : undefined }
-      );
-
-    return teams
-      .toAsyncResult()
-      .map((entries) => entries.map((entry) => teamModelToResource(entry)))
-      .promise;
-  }
-
-  @AccessControlAuthorized(globalFundraisingAccessParam)
-  @Mutation(() => VoidResolver, { name: "assignSolicitationCodeToTeam" })
-  async assignSolicitationCodeToTeam(
-    @Arg("teamId", () => GlobalIdScalar) { id: teamId }: GlobalId,
-    @Arg("solicitationCode", () => GlobalIdScalar)
-    { id: solicitationCodeId }: GlobalId
-  ): Promise<ConcreteResult<typeof VoidScalar>> {
-    const result =
-      await this.fundraisingEntryRepository.assignSolitationCodeToTeam(
-        { uuid: teamId },
-        {
-          uuid: solicitationCodeId,
-        }
-      );
-
-    return result.map(() => VoidScalar);
-  }
-
-  @AccessControlAuthorized(globalFundraisingAccessParam)
-  @Mutation(() => VoidResolver, { name: "removeSolicitationCodeFromTeam" })
-  async removeSolicitationCodeFromTeam(
-    @Arg("teamId", () => GlobalIdScalar) { id: teamId }: GlobalId
-  ): Promise<ConcreteResult<typeof VoidScalar>> {
-    const result =
-      await this.fundraisingEntryRepository.removeSolicitationCodeFromTeam({
-        uuid: teamId,
-      });
-
-    return result.map(() => VoidScalar);
   }
 }

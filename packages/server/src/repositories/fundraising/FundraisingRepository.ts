@@ -3,7 +3,6 @@ import {
   BatchType,
   DailyDepartmentNotification,
   DailyDepartmentNotificationBatch,
-  DBFundsFundraisingEntry,
   DDNDonor,
   DDNDonorLink,
   FundraisingAssignment,
@@ -33,13 +32,13 @@ import { Err, None, Ok, Option, Result, Some } from "ts-results-es";
 
 import type { FilterItems } from "#lib/prisma-utils/gqlFilterToPrismaFilter.js";
 import { prismaToken } from "#lib/typediTokens.js";
-import { UniqueMarathonParam } from "#repositories/marathon/MarathonRepository.js";
 import { UniquePersonParam } from "#repositories/person/PersonRepository.js";
 import {
   handleRepositoryError,
   RepositoryError,
   SimpleUniqueParam,
 } from "#repositories/shared.js";
+import { SolicitationCodeUniqueParam } from "#repositories/solicitationCode/SolicitationCodeRepository.js";
 
 import {
   buildFundraisingEntryOrder,
@@ -93,109 +92,16 @@ export type FundraisingEntryFilters = FilterItems<
   FundraisingEntryStringKey
 >;
 
-const defaultInclude = {
+export const wideFundraisingEntryInclude = {
   solicitationCodeOverride: true,
-  ddn: {
-    include: {
-      batch: true,
-      solicitationCode: true,
-      donors: {
-        include: {
-          donor: true,
-        },
-      },
-    },
-  },
-  dbFundsEntry: {
-    include: {
-      dbFundsTeam: {
-        select: {
-          solicitationCode: true,
-        },
-      },
-    },
-  },
 } satisfies Prisma.FundraisingEntryWithMetaInclude;
 
-export type WideFundraisingEntryWithMeta =
-  | (FundraisingEntryWithMeta & {
-      solicitationCodeOverride: SolicitationCode | null;
-      ddn: DailyDepartmentNotification & {
-        batch: DailyDepartmentNotificationBatch;
-        solicitationCode: SolicitationCode;
-      };
-    })
-  | (FundraisingEntryWithMeta & {
-      solicitationCodeOverride: SolicitationCode | null;
-      dbFundsEntry: DBFundsFundraisingEntry & {
-        dbFundsTeam: { solicitationCode: SolicitationCode };
-      };
-    });
-
-function asWideFundraisingEntryWithMeta(
-  entry: FundraisingEntryWithMeta & {
-    solicitationCodeOverride: SolicitationCode | null;
-    ddn:
-      | (DailyDepartmentNotification & {
-          batch: DailyDepartmentNotificationBatch;
-          solicitationCode: SolicitationCode;
-        })
-      | null;
-    dbFundsEntry:
-      | (DBFundsFundraisingEntry & {
-          dbFundsTeam: { solicitationCode: SolicitationCode };
-        })
-      | null;
-  }
-): Result<WideFundraisingEntryWithMeta, InvariantError> {
-  if (entry.ddn && entry.dbFundsEntry) {
-    return Err(new InvariantError("Fundraising entry has multiple sources"));
-  }
-  const base = {
-    id: entry.id,
-    uuid: entry.uuid,
-    unassigned: entry.unassigned,
-    notes: entry.notes,
-    enteredByPersonId: entry.enteredByPersonId,
-    solicitationCodeOverrideId: entry.solicitationCodeOverrideId,
-    createdAt: entry.createdAt,
-    updatedAt: entry.updatedAt,
-    solicitationCodeOverride: entry.solicitationCodeOverride,
-    amountOverride: entry.amountOverride,
-    batchTypeOverride: entry.batchTypeOverride,
-    donatedByOverride: entry.donatedByOverride,
-    donatedOnOverride: entry.donatedOnOverride,
-    donatedToOverride: entry.donatedToOverride,
-    amount: entry.amount,
-    donatedBy: entry.donatedBy,
-    donatedOn: entry.donatedOn,
-    donatedTo: entry.donatedTo,
-    solicitationCodeText: entry.solicitationCodeText,
-    batchType: entry.batchType,
-  };
-  if (entry.ddn) {
-    return Ok({
-      ...base,
-      ddn: entry.ddn,
-    });
-  }
-  if (entry.dbFundsEntry) {
-    return Ok({
-      ...base,
-      dbFundsEntry: entry.dbFundsEntry,
-    });
-  }
-  return Err(new InvariantError("Fundraising entry has no source"));
-}
+export type WideFundraisingEntryWithMeta = FundraisingEntryWithMeta & {
+  solicitationCodeOverride: SolicitationCode | null;
+};
 
 export type FundraisingEntryUniqueParam = SimpleUniqueParam;
 export type FundraisingAssignmentUniqueParam = SimpleUniqueParam;
-export type SolicitationCodeUniqueParam =
-  | SimpleUniqueParam
-  | {
-      code: number;
-      prefix: string;
-    };
 
 @Service([prismaToken])
 export class FundraisingEntryRepository {
@@ -209,12 +115,12 @@ export class FundraisingEntryRepository {
     try {
       const row = await this.prisma.fundraisingEntryWithMeta.findUnique({
         where: param,
-        include: defaultInclude,
+        include: wideFundraisingEntryInclude,
       });
       if (!row) {
         return Err(new NotFoundError({ what: "FundraisingEntry" }));
       }
-      return asWideFundraisingEntryWithMeta(row);
+      return Ok(row);
     } catch (error: unknown) {
       return handleRepositoryError(error);
     }
@@ -342,14 +248,14 @@ export class FundraisingEntryRepository {
       }
 
       const rows = await this.prisma.fundraisingEntryWithMeta.findMany({
-        include: defaultInclude,
+        include: wideFundraisingEntryInclude,
         where,
         orderBy: [orderBy],
         skip: skip ?? undefined,
         take: take ?? undefined,
       });
 
-      return Result.all(rows.map(asWideFundraisingEntryWithMeta));
+      return Ok(rows);
     } catch (error: unknown) {
       return handleRepositoryError(error);
     }
@@ -422,14 +328,14 @@ export class FundraisingEntryRepository {
       const updatedEntry =
         await this.prisma.fundraisingEntryWithMeta.findUnique({
           where: param,
-          include: defaultInclude,
+          include: wideFundraisingEntryInclude,
         });
 
       if (!updatedEntry) {
         return Err(new NotFoundError({ what: "FundraisingEntry" }));
       }
 
-      return asWideFundraisingEntryWithMeta(updatedEntry);
+      return Ok(updatedEntry);
     } catch (error: unknown) {
       return handleRepositoryError(error);
     }
@@ -556,17 +462,12 @@ export class FundraisingEntryRepository {
         (acc, assignment) => acc.add(assignment.amount),
         new Prisma.Decimal(0)
       );
-      let entryAmount: Decimal;
-      if ("ddn" in entry.value) {
-        entryAmount = entry.value.ddn.combinedAmount;
-      } else if ("dbFundsEntry" in entry.value) {
-        entryAmount = entry.value.dbFundsEntry.amount;
-      } else {
-        entry.value satisfies never;
-        return Err(new InvariantError("Unexpected entry source type"));
-      }
 
-      if (entryAmount.lessThan(totalAssigned.add(amount))) {
+      if (
+        (entry.value.amount ?? new Decimal(0)).lessThan(
+          totalAssigned.add(amount)
+        )
+      ) {
         return Err(
           new ActionDeniedError("Total assigned amount exceeds entry amount")
         );
@@ -769,14 +670,14 @@ export class FundraisingEntryRepository {
         where: assignmentParam,
         select: {
           parentEntryWithMeta: {
-            include: defaultInclude,
+            include: wideFundraisingEntryInclude,
           },
         },
       });
       if (!assignment) {
         return Err(new NotFoundError({ what: "FundraisingAssignment" }));
       }
-      return asWideFundraisingEntryWithMeta(assignment.parentEntryWithMeta!);
+      return Ok(assignment.parentEntryWithMeta!);
     } catch (error: unknown) {
       return handleRepositoryError(error);
     }
@@ -831,299 +732,6 @@ export class FundraisingEntryRepository {
         return Ok(None);
       }
       return Ok(Some(entry.ddn));
-    } catch (error: unknown) {
-      return handleRepositoryError(error);
-    }
-  }
-
-  async getSolicitationCodeForEntry(
-    entryParam: FundraisingEntryUniqueParam,
-    includeTeams?: false
-  ): Promise<
-    Result<
-      SolicitationCode,
-      RepositoryError | ActionDeniedError | InvariantError | NotFoundError
-    >
-  >;
-  async getSolicitationCodeForEntry(
-    entryParam: FundraisingEntryUniqueParam,
-    includeTeams: true
-  ): Promise<
-    Result<
-      SolicitationCode & { teams: readonly Team[] },
-      RepositoryError | ActionDeniedError | InvariantError | NotFoundError
-    >
-  >;
-  async getSolicitationCodeForEntry(
-    entryParam: FundraisingEntryUniqueParam,
-    includeTeams?: boolean
-  ): Promise<
-    Result<
-      SolicitationCode | (SolicitationCode & { teams: readonly Team[] }),
-      RepositoryError | ActionDeniedError | InvariantError | NotFoundError
-    >
-  > {
-    try {
-      const entry = await this.prisma.fundraisingEntryWithMeta.findUnique({
-        where: entryParam,
-        include: {
-          solicitationCodeOverride: includeTeams
-            ? { include: { teams: true } }
-            : true,
-          ddn: {
-            select: {
-              solicitationCode: includeTeams
-                ? { include: { teams: true } }
-                : true,
-            },
-          },
-          dbFundsEntry: {
-            select: {
-              dbFundsTeam: {
-                select: {
-                  solicitationCode: includeTeams
-                    ? { include: { teams: true } }
-                    : true,
-                },
-              },
-            },
-          },
-        },
-      });
-      if (!entry) {
-        return Err(new NotFoundError({ what: "FundraisingEntry" }));
-      }
-
-      const solicitationCode =
-        entry.solicitationCodeOverride ??
-        entry.ddn?.solicitationCode ??
-        entry.dbFundsEntry?.dbFundsTeam.solicitationCode;
-
-      if (!solicitationCode) {
-        return Err(
-          new NotFoundError({
-            what: "SolicitationCode",
-            where: "FundraisingEntry",
-          })
-        );
-      }
-      return Ok(solicitationCode);
-    } catch (error: unknown) {
-      return handleRepositoryError(error);
-    }
-  }
-
-  async getEntriesForSolicitationCode(
-    solicitationCodeParam: SimpleUniqueParam
-  ): Promise<
-    Result<
-      readonly WideFundraisingEntryWithMeta[],
-      InvariantError | RepositoryError
-    >
-  > {
-    try {
-      const entries = await this.prisma.fundraisingEntryWithMeta.findMany({
-        where: {
-          OR: [
-            { solicitationCodeOverride: solicitationCodeParam },
-            {
-              ddn: { solicitationCode: solicitationCodeParam },
-              solicitationCodeOverride: null,
-            },
-            {
-              dbFundsEntry: {
-                dbFundsTeam: { solicitationCode: solicitationCodeParam },
-              },
-              solicitationCodeOverride: null,
-            },
-          ],
-        },
-        include: defaultInclude,
-      });
-      return Result.all(entries.map(asWideFundraisingEntryWithMeta));
-    } catch (error: unknown) {
-      return handleRepositoryError(error);
-    }
-  }
-
-  async getTeamsForSolitationCode(
-    solicitationCodeParam: SimpleUniqueParam,
-    {
-      marathonParam,
-    }: {
-      marathonParam?: UniqueMarathonParam;
-    }
-  ): Promise<
-    Result<readonly Team[], RepositoryError | ActionDeniedError | NotFoundError>
-  > {
-    try {
-      const teams = await this.prisma.team.findMany({
-        where: {
-          solicitationCode: solicitationCodeParam,
-          marathon: marathonParam,
-        },
-      });
-      return Ok(teams);
-    } catch (error: unknown) {
-      return handleRepositoryError(error);
-    }
-  }
-
-  async assignSolitationCodeToTeam(
-    teamParam: SimpleUniqueParam,
-    solicitationCodeParam: SimpleUniqueParam
-  ): Promise<Result<None, RepositoryError | ActionDeniedError>> {
-    try {
-      const team = await this.prisma.team.findUnique({
-        where: teamParam,
-        include: { solicitationCode: true },
-      });
-      if (!team) {
-        return Err(new NotFoundError({ what: "Team" }));
-      }
-      if (team.solicitationCode) {
-        return Err(
-          new ActionDeniedError("Team already has a solicitation code")
-        );
-      }
-
-      await this.prisma.team.update({
-        where: teamParam,
-        data: {
-          solicitationCode: { connect: solicitationCodeParam },
-        },
-      });
-
-      return Ok(None);
-    } catch (error: unknown) {
-      return handleRepositoryError(error);
-    }
-  }
-
-  async removeSolicitationCodeFromTeam(
-    teamParam: SimpleUniqueParam
-  ): Promise<Result<None, RepositoryError | ActionDeniedError>> {
-    try {
-      const team = await this.prisma.team.findUnique({
-        where: teamParam,
-        include: { solicitationCode: true },
-      });
-      if (!team) {
-        return Err(new NotFoundError({ what: "Team" }));
-      }
-      if (!team.solicitationCode) {
-        return Err(
-          new ActionDeniedError("Team does not have a solicitation code")
-        );
-      }
-
-      await this.prisma.team.update({
-        where: teamParam,
-        data: {
-          solicitationCode: { disconnect: true },
-        },
-      });
-
-      return Ok(None);
-    } catch (error: unknown) {
-      return handleRepositoryError(error);
-    }
-  }
-
-  async overrideSolicitationCodeForEntry(
-    entryParam: FundraisingEntryUniqueParam,
-    solicitationCodeParam: SimpleUniqueParam
-  ): Promise<
-    Result<
-      FundraisingEntry,
-      RepositoryError | ActionDeniedError | NotFoundError
-    >
-  > {
-    try {
-      const entry = await this.prisma.fundraisingEntry.findUnique({
-        where: entryParam,
-      });
-      if (!entry) {
-        return Err(new NotFoundError({ what: "FundraisingEntry" }));
-      }
-
-      await this.prisma.fundraisingEntry.update({
-        where: entryParam,
-        data: {
-          solicitationCodeOverride: { connect: solicitationCodeParam },
-        },
-      });
-
-      return Ok(entry);
-    } catch (error: unknown) {
-      return handleRepositoryError(error);
-    }
-  }
-
-  async removeSolicitationCodeOverrideForEntry(
-    entryParam: FundraisingEntryUniqueParam
-  ): Promise<
-    Result<
-      FundraisingEntry,
-      RepositoryError | ActionDeniedError | NotFoundError
-    >
-  > {
-    try {
-      const entry = await this.prisma.fundraisingEntry.findUnique({
-        where: entryParam,
-      });
-      if (!entry) {
-        return Err(new NotFoundError({ what: "FundraisingEntry" }));
-      }
-
-      await this.prisma.fundraisingEntry.update({
-        where: entryParam,
-        data: {
-          solicitationCodeOverride: { disconnect: true },
-        },
-      });
-
-      return Ok(entry);
-    } catch (error: unknown) {
-      return handleRepositoryError(error);
-    }
-  }
-
-  async findAllSolicitationCodes(): Promise<
-    Result<readonly SolicitationCode[], RepositoryError>
-  > {
-    try {
-      return Ok(
-        await this.prisma.solicitationCode.findMany({
-          orderBy: [
-            {
-              prefix: "asc",
-            },
-            {
-              code: "asc",
-            },
-            {
-              name: "asc",
-            },
-          ],
-        })
-      );
-    } catch (error: unknown) {
-      return handleRepositoryError(error);
-    }
-  }
-
-  async findSolicitationCodeByUnique(
-    param: SolicitationCodeUniqueParam
-  ): Promise<Result<SolicitationCode, RepositoryError | NotFoundError>> {
-    try {
-      const code = await this.prisma.solicitationCode.findUnique({
-        where: "code" in param ? { prefix_code: param } : param,
-      });
-      if (!code) {
-        return Err(new NotFoundError({ what: "SolicitationCode" }));
-      }
-      return Ok(code);
     } catch (error: unknown) {
       return handleRepositoryError(error);
     }
