@@ -194,22 +194,27 @@ function RouteComponent() {
     <>
       <Flex justify="space-between" align="center">
         <h1>Solicitation Code {result.data?.solicitationCode.text}</h1>
-        <Form
-          {...formProps}
-          layout="inline"
-          onFinish={(data) =>
-            formProps.onFinish?.({ ...data, name: data.name || undefined })
-          }
-        >
-          <Form.Item label="Name" name="name">
-            <Input />
-          </Form.Item>
-          <Form.Item>
-            <Button type="primary" htmlType="submit">
-              Save
-            </Button>
-          </Form.Item>
-        </Form>
+        <Flex justify="flex-end" align="flex-end" vertical>
+          <Form
+            {...formProps}
+            layout="inline"
+            onFinish={(data) =>
+              formProps.onFinish?.({ ...data, name: data.name || undefined })
+            }
+          >
+            <Form.Item label="Name" name="name" style={{ maxWidth: "35ch" }}>
+              <Input />
+            </Form.Item>
+            <Form.Item>
+              <Button type="primary" htmlType="submit">
+                Save
+              </Button>
+            </Form.Item>
+          </Form>
+          <p style={{ fontSize: "0.8rem", marginTop: "0.5rem" }}>
+            Note that this name will be overridden any time a DDN is uploaded
+          </p>
+        </Flex>
       </Flex>
       <Flex vertical gap="1rem">
         <div>
