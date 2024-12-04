@@ -1,5 +1,11 @@
 import { Edit, useForm, useSelect } from "@refinedev/antd";
-import { useRefreshButton, type HttpError } from "@refinedev/core";
+import { type HttpError, useRefreshButton } from "@refinedev/core";
+import type { SetFundraisingEntryInput } from "@ukdanceblue/common";
+import {
+  BatchType,
+  localDateFromLuxon,
+  stringifyDDNBatchType,
+} from "@ukdanceblue/common";
 import { Form, Input, InputNumber, Select } from "antd";
 import { readFragment, type ResultOf, type VariablesOf } from "gql.tada";
 import { DateTime } from "luxon";
@@ -14,12 +20,6 @@ import {
   SolicitationCodeTextFragment,
 } from "#documents/solicitationCode.ts";
 import { LuxonDatePicker } from "#elements/components/antLuxonComponents.tsx";
-import {
-  BatchType,
-  localDateFromLuxon,
-  SetFundraisingEntryInput,
-  stringifyDDNBatchType,
-} from "@ukdanceblue/common";
 import { FundraisingAssignmentsTable } from "#elements/tables/fundraising/FundraisingEntryAssignmentsTable.tsx";
 
 export function FundraisingEntryEditor({ id }: { id: string }) {
@@ -86,15 +86,12 @@ export function FundraisingEntryEditor({ id }: { id: string }) {
 
   const queryResult = query?.data?.data;
 
-  console.log(formProps);
-
   return (
     <Edit saveButtonProps={saveButtonProps}>
       <Form
         {...formProps}
         layout="horizontal"
         onFinish={(data) => {
-          console.log(data);
           formProps.onFinish?.({
             amountOverride: data.amountOverride ?? undefined,
             donatedByOverride: data.donatedByOverride || undefined,

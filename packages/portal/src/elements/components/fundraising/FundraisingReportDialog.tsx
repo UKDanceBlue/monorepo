@@ -136,21 +136,6 @@ async function createReport(
     range: Interval | DateTime | "custom";
   }
 ) {
-  console.log({
-    report: config.reportType,
-    from:
-      meta.range === "custom"
-        ? config.customDateRange![0].startOf("day").toISO()
-        : Interval.isInterval(meta.range)
-          ? meta.range.start?.startOf("day").toISO()
-          : undefined,
-    to:
-      meta.range === "custom"
-        ? config.customDateRange![1].endOf("day").toISO()
-        : Interval.isInterval(meta.range)
-          ? meta.range.end?.endOf("day").toISO()
-          : undefined,
-  });
   const result = await urql.query(
     fundraisingReportDialogDocument,
     {
@@ -254,7 +239,6 @@ export function FundraisingReportDialog({
         form={form}
         initialValues={defaultValues}
         onFinish={(data) => {
-          console.log(data);
           createReport(urql, data, {
             author: me?.name ?? me?.email ?? "Unknown",
             createdDate: now,

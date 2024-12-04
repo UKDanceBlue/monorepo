@@ -128,6 +128,16 @@ export const dataProvider: Required<DataProvider> = {
       meta.fieldTypes as FieldTypes | undefined
     );
 
+    console.log(filters);
+    console.log(
+      dateFilters,
+      isNullFilters,
+      numericFilters,
+      oneOfFilters,
+      stringFilters,
+      booleanFilters
+    );
+
     const response = await urqlClient
       .query(meta.gqlQuery, {
         sortBy: sorters?.map((sorter) => sorter.field) ?? undefined,
@@ -145,7 +155,6 @@ export const dataProvider: Required<DataProvider> = {
       } satisfies Partial<ListQueryOptions>)
       .toPromise();
 
-    console.log(response);
     const val = response.data[getOperationName(resource, "getList")];
     let total: number;
     let data;
