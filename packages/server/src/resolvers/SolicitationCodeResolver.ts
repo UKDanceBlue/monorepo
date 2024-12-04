@@ -6,6 +6,8 @@ import {
   GlobalIdScalar,
   ListFundraisingEntriesArgs,
   ListFundraisingEntriesResponse,
+  ListSolicitationCodesArgs,
+  ListSolicitationCodesResponse,
   SolicitationCodeNode,
   TeamNode,
   VoidScalar,
@@ -62,16 +64,21 @@ export class SolicitationCodeResolver
 
   @AccessControlAuthorized(globalFundraisingAccessParam)
   @Query(() => [SolicitationCodeNode])
-  async solicitationCodes(): Promise<ConcreteResult<SolicitationCodeNode[]>> {
+  async solicitationCodes(
+    @Args(() => ListSolicitationCodesArgs) _query: ListSolicitationCodesArgs
+  ): Promise<ConcreteResult<ListSolicitationCodesResponse>> {
     const codes =
       await this.solicitationCodeRepository.findAllSolicitationCodes();
     return codes.toAsyncResult().map((codes) =>
-      codes.map(({ uuid, id, ...code }) =>
-        SolicitationCodeNode.init({
-          ...code,
-          id: uuid,
-        })
-      )
+      ListSolicitationCodesResponse.newPaginated({
+        data: codes.map(({ uuid, id, ...code }) =>
+          SolicitationCodeNode.init({
+            ...code,
+            id: uuid,
+          })
+        ),
+        total: codes.length,
+      })
     ).promise;
   }
 

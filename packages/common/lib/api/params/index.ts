@@ -16,3 +16,4 @@ export * from "./LoginState.js";
 export * from "./ReportParams.js";
 export * from "./SinglePointOpportunityResponse.js";
 export * from "./SingleTeamResponse.js";
+export * from "./SolicitationCodeInput.js";
