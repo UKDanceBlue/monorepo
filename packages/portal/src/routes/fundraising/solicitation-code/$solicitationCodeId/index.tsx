@@ -67,6 +67,15 @@ const SolicitationCodeDocument = graphql(
         ...SetSolicitationCode
         teams {
           ...TeamsTableFragment
+          members {
+            id
+            person {
+              id
+              name
+              linkblue
+              email
+            }
+          }
         }
         entries(
           page: $page
@@ -252,6 +261,17 @@ function RouteComponent() {
             form={listQuery}
             refresh={() => refresh({ requestPolicy: "network-only" })}
             loading={result.fetching}
+            potentialAssignees={result.data?.solicitationCode.teams.reduce<
+              { value: string; label: string }[]
+            >((acc, team) => {
+              acc.push(
+                ...team.members.map(({ person }) => ({
+                  value: person.id,
+                  label: person.name ?? person.linkblue ?? person.email,
+                }))
+              );
+              return acc;
+            }, [])}
           />
         </div>
       </Flex>
