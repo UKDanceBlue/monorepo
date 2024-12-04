@@ -68,10 +68,12 @@ const ViewTeamFundraisingDocument = graphql(
 const SolicitationCodesDocument = graphql(/* GraphQL */ `
   query SolicitationCodes {
     solicitationCodes {
-      id
-      prefix
-      code
-      name
+      data {
+        id
+        prefix
+        code
+        name
+      }
     }
   }
 `);
@@ -162,7 +164,7 @@ function ViewTeamFundraising() {
   useQueryStatusWatcher(clearSolicitationCodeState);
 
   const [solCodeSearch, setSolCodeSearch] = useState("");
-  const solCodeOptions = solicitationCodesData?.solicitationCodes.map(
+  const solCodeOptions = solicitationCodesData?.solicitationCodes.data.map(
     ({ code, prefix, name, id }) => ({
       label: `${prefix}${code.toString().padStart(4, "0")} - ${name}`,
       value: id,

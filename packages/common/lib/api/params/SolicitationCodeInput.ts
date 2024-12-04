@@ -16,7 +16,7 @@ export class ListSolicitationCodesArgs extends FilteredListQueryArgs<
   "code",
   "createdAt" | "updatedAt",
   never
->("FundraisingEntryResolver", {
+>("SolicitationCode", {
   all: ["name", "prefix", "code", "createdAt", "updatedAt"],
   string: ["name", "prefix"],
   numeric: ["code"],

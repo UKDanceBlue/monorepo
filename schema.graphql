@@ -1048,6 +1048,19 @@ type ListPointOpportunitiesResponse implements AbstractGraphQLPaginatedResponse 
   total: NonNegativeInt!
 }
 
+type ListSolicitationCodesResponse implements AbstractGraphQLPaginatedResponse {
+  data: [SolicitationCodeNode!]!
+
+  """The current page number (1-indexed)"""
+  page: PositiveInt!
+
+  """The number of items per page"""
+  pageSize: NonNegativeInt!
+
+  """The total number of items"""
+  total: NonNegativeInt!
+}
+
 type ListTeamsResponse implements AbstractGraphQLPaginatedResponse {
   data: [TeamNode!]!
 
@@ -2369,7 +2382,49 @@ type Query {
   report(from: DateTimeISO, report: NonEmptyString!, to: DateTimeISO): Report!
   searchPeopleByName(name: String!): [PersonNode!]!
   solicitationCode(id: GlobalId!): SolicitationCodeNode!
-  solicitationCodes: [SolicitationCodeNode!]!
+  solicitationCodes(
+    """The boolean filters to apply to the query"""
+    booleanFilters: Void
+
+    """The date filters to apply to the query"""
+    dateFilters: [SolicitationCodeKeyedDateFilterItem!]
+
+    """Whether to include deleted items in the results"""
+    includeDeleted: Boolean @deprecated(reason: "Soft-deletion is no longer used in this project, this parameter is ignored")
+
+    """The is-null filters to apply to the query"""
+    isNullFilters: [SolicitationCodeKeyedIsNullFilterItem!]
+
+    """The numeric filters to apply to the query"""
+    numericFilters: [SolicitationCodeKeyedNumericFilterItem!]
+
+    """The one-of filters to apply to the query"""
+    oneOfFilters: [SolicitationCodeKeyedOneOfFilterItem!]
+
+    """The page number to return, defaults to 1"""
+    page: Int
+
+    """The number of items to return per page, defaults to 10"""
+    pageSize: Int
+
+    """
+    Whether to send all results in a single page, defaults to false (should generally be avoided)
+    """
+    sendAll: Boolean = false
+
+    """
+    The fields to sort by, in order of priority. If unspecified, the sort order is undefined
+    """
+    sortBy: [String!]
+
+    """
+    The direction to sort, if not specified will default to ascending, the order of the values in this array should match the order of the values in the sortBy array, if only one value is specified it will be used for all sortBy values, otherwise the lengths must match
+    """
+    sortDirection: [SortDirection!]
+
+    """The string filters to apply to the query"""
+    stringFilters: [SolicitationCodeKeyedStringFilterItem!]
+  ): ListSolicitationCodesResponse!
   team(uuid: GlobalId!): TeamNode!
   teams(
     """The boolean filters to apply to the query"""
@@ -2517,6 +2572,82 @@ input SetTeamInput {
   type: TeamType
 }
 
+enum SolicitationCodeAllKeys {
+  code
+  createdAt
+  name
+  prefix
+  updatedAt
+}
+
+enum SolicitationCodeDateFilterKeys {
+  createdAt
+  updatedAt
+}
+
+input SolicitationCodeKeyedDateFilterItem {
+  """The comparator to use for the filter"""
+  comparison: NumericComparator!
+
+  """The field to filter on"""
+  field: SolicitationCodeDateFilterKeys!
+
+  """
+  Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation.
+  """
+  negate: Boolean = false
+  value: DateTimeISO!
+}
+
+input SolicitationCodeKeyedIsNullFilterItem {
+  """The field to filter on"""
+  field: SolicitationCodeAllKeys!
+
+  """
+  Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation.
+  """
+  negate: Boolean = false
+}
+
+input SolicitationCodeKeyedNumericFilterItem {
+  """The comparator to use for the filter"""
+  comparison: NumericComparator!
+
+  """The field to filter on"""
+  field: SolicitationCodeNumericFilterKeys!
+
+  """
+  Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation.
+  """
+  negate: Boolean = false
+  value: Float!
+}
+
+input SolicitationCodeKeyedOneOfFilterItem {
+  """The field to filter on"""
+  field: Void!
+
+  """
+  Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation.
+  """
+  negate: Boolean = false
+  value: [String!]!
+}
+
+input SolicitationCodeKeyedStringFilterItem {
+  """The comparator to use for the filter"""
+  comparison: StringComparator!
+
+  """The field to filter on"""
+  field: SolicitationCodeStringFilterKeys!
+
+  """
+  Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation.
+  """
+  negate: Boolean = false
+  value: String!
+}
+
 type SolicitationCodeNode implements Node {
   code: NonNegativeInt!
   createdAt: DateTimeISO
@@ -2569,6 +2700,15 @@ type SolicitationCodeNode implements Node {
   teams(marathonId: GlobalId): [TeamNode!]!
   text: String!
   updatedAt: DateTimeISO
+}
+
+enum SolicitationCodeNumericFilterKeys {
+  code
+}
+
+enum SolicitationCodeStringFilterKeys {
+  name
+  prefix
 }
 
 enum SortDirection {

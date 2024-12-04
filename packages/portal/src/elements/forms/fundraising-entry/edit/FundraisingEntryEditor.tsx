@@ -9,16 +9,15 @@ import {
 import { Form, Input, InputNumber, Select } from "antd";
 import { readFragment, type ResultOf, type VariablesOf } from "gql.tada";
 import { DateTime } from "luxon";
+import { useEffect } from "react";
 
 import {
   FundraisingEntryEditorFragment,
   getFundraisingEntryDocument,
   setFundraisingEntryDocument,
 } from "#documents/fundraisingEntry.ts";
-import {
-  solicitationCodesDocument,
-  SolicitationCodeTextFragment,
-} from "#documents/solicitationCode.ts";
+import type { SolicitationCodeTextFragment } from "#documents/solicitationCode.ts";
+import { solicitationCodesDocument } from "#documents/solicitationCode.ts";
 import { LuxonDatePicker } from "#elements/components/antLuxonComponents.tsx";
 import { FundraisingAssignmentsTable } from "#elements/tables/fundraising/FundraisingEntryAssignmentsTable.tsx";
 
@@ -64,27 +63,29 @@ export function FundraisingEntryEditor({ id }: { id: string }) {
   });
 
   const { selectProps } = useSelect<
-    ResultOf<typeof solicitationCodesDocument>["solicitationCodes"][number],
+    ResultOf<
+      typeof solicitationCodesDocument
+    >["solicitationCodes"]["data"][number],
     HttpError,
     ResultOf<typeof SolicitationCodeTextFragment>
   >({
     resource: "solicitationCode",
     meta: {
       gqlQuery: solicitationCodesDocument,
+      gqlVariables: { sendAll: true },
     },
-    queryOptions: {
-      select: ({ data, total }) => {
-        return {
-          data: [...readFragment(SolicitationCodeTextFragment, data)],
-          total,
-        };
-      },
+    pagination: {
+      mode: "off",
     },
     optionLabel: "text",
     optionValue: "id",
   });
 
   const queryResult = query?.data?.data;
+
+  useEffect(() => {
+    console.log(selectProps);
+  }, [selectProps]);
 
   return (
     <Edit saveButtonProps={saveButtonProps}>

@@ -29,7 +29,9 @@ const SolicitationCodeTableDocument = graphql(
   /* GraphQL */ `
     query SolicitationCodeTable($marathonId: GlobalId!) {
       solicitationCodes {
-        ...SolicitationCodeTableFragment
+        data {
+          ...SolicitationCodeTableFragment
+        }
       }
     }
   `,
@@ -70,7 +72,7 @@ export function SolicitationCodeTable() {
 
   const data = readFragment(
     SolicitationCodeTableFragment,
-    result.data?.solicitationCodes ?? []
+    result.data?.solicitationCodes.data ?? []
   );
 
   const mappedData = useMemo(() => {

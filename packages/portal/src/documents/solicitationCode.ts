@@ -11,7 +11,9 @@ export const solicitationCodesDocument = graphql(
   /* GraphQL */ `
     query SolicitationCodes {
       solicitationCodes {
-        ...SolicitationCodeText
+        data {
+          ...SolicitationCodeText
+        }
       }
     }
   `,

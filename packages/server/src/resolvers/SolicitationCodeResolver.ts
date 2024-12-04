@@ -63,7 +63,7 @@ export class SolicitationCodeResolver
   }
 
   @AccessControlAuthorized(globalFundraisingAccessParam)
-  @Query(() => [SolicitationCodeNode])
+  @Query(() => ListSolicitationCodesResponse)
   async solicitationCodes(
     @Args(() => ListSolicitationCodesArgs) _query: ListSolicitationCodesArgs
   ): Promise<ConcreteResult<ListSolicitationCodesResponse>> {
