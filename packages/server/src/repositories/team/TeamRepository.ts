@@ -240,18 +240,53 @@ export class TeamRepository {
     try {
       const {
         _sum: { amount },
-      } = await this.prisma.dBFundsFundraisingEntry.aggregate({
+      } = await this.prisma.fundraisingEntryWithMeta.aggregate({
         _sum: {
           amount: true,
         },
         where: {
-          dbFundsTeam: {
-            solicitationCode: {
-              teams: {
-                some: param,
+          OR: [
+            {
+              AND: [
+                {
+                  solicitationCodeOverride: {
+                    is: null,
+                  },
+                },
+                {
+                  OR: [
+                    {
+                      dbFundsEntry: {
+                        dbFundsTeam: {
+                          solicitationCode: {
+                            teams: {
+                              some: param,
+                            },
+                          },
+                        },
+                      },
+                    },
+                    {
+                      ddn: {
+                        solicitationCode: {
+                          teams: {
+                            some: param,
+                          },
+                        },
+                      },
+                    },
+                  ],
+                },
+              ],
+            },
+            {
+              solicitationCodeOverride: {
+                teams: {
+                  some: param,
+                },
               },
             },
-          },
+          ],
         },
       });
       return Ok(
