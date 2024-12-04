@@ -1,4 +1,4 @@
-import { AutoComplete } from "antd";
+import { Select } from "antd";
 import { useMemo, useRef, useState } from "react";
 import { useQuery } from "urql";
 
@@ -41,9 +41,12 @@ export function MasqueradeSelector() {
   }
 
   return (
-    <AutoComplete
-      variant="borderless"
-      style={{ width: "30ch", display: "inline-block" }}
+    <Select
+      variant="outlined"
+      style={{
+        width: "100%",
+        display: "inline-block",
+      }}
       options={
         data?.searchPeopleByName.map((person) => ({
           value: person.id,
@@ -55,8 +58,11 @@ export function MasqueradeSelector() {
         window.location.reload();
       }}
       onSearch={setSearch}
+      showSearch
       placeholder="Masquerade as..."
-      disabled={fetching}
+      loading={fetching}
+      suffixIcon={null}
+      filterOption={false}
     />
   );
 }

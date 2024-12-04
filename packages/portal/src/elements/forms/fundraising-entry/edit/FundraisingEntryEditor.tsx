@@ -9,7 +9,6 @@ import {
 import { Form, Input, InputNumber, Select } from "antd";
 import { readFragment, type ResultOf, type VariablesOf } from "gql.tada";
 import { DateTime } from "luxon";
-import { useEffect } from "react";
 
 import {
   FundraisingEntryEditorFragment,
@@ -82,10 +81,6 @@ export function FundraisingEntryEditor({ id }: { id: string }) {
   });
 
   const queryResult = query?.data?.data;
-
-  useEffect(() => {
-    console.log(selectProps);
-  }, [selectProps]);
 
   return (
     <Edit saveButtonProps={saveButtonProps}>

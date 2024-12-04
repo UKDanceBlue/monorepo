@@ -8,9 +8,22 @@ import { CreateImagePopup } from "#elements/components/image/CreateImagePopup.js
 import { ImagesTable } from "#elements/tables/ImagesTable.js";
 import { routerAuthCheck } from "#tools/routerAuthCheck.js";
 
-function ListImagesPage() {
+export const Route = createFileRoute("/images/")({
+  component: RouteComponent,
+  beforeLoad({ context }) {
+    routerAuthCheck(Route, context);
+  },
+  staticData: {
+    authorizationRules: [
+      {
+        accessLevel: AccessLevel.CommitteeChairOrCoordinator,
+      },
+    ],
+  },
+});
+
+function RouteComponent() {
   const [createImageOpen, setCreateImageOpen] = useState(false);
-  const { _splat } = Route.useParams();
   const navigate = useNavigate();
 
   return (
@@ -38,21 +51,7 @@ function ListImagesPage() {
           }
         }}
       />
-      <ImagesTable previewedImageId={_splat} />
+      <ImagesTable />
     </>
   );
 }
-
-export const Route = createFileRoute("/images/$")({
-  component: ListImagesPage,
-  beforeLoad({ context }) {
-    routerAuthCheck(Route, context);
-  },
-  staticData: {
-    authorizationRules: [
-      {
-        accessLevel: AccessLevel.CommitteeChairOrCoordinator,
-      },
-    ],
-  },
-});

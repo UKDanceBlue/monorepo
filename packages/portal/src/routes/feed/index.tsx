@@ -1,7 +1,3 @@
-console.log(
-  "This page is associated with media related content. On the explore page we will add the content link and the title! The date stamp will be on there as well. "
-);
-
 import { createFileRoute } from "@tanstack/react-router";
 import {
   AccessLevel,
@@ -81,6 +77,10 @@ function FeedPage() {
   return (
     <Flex vertical gap={16}>
       <Typography.Title level={2}>Feed</Typography.Title>
+      <p>
+        Anything added here will be shown on the app's explore page. This is a
+        great place to share updates and media related to DanceBlue.
+      </p>
       <Form
         labelCol={{ span: 8 }}
         wrapperCol={{ span: 16 }}

@@ -20,11 +20,13 @@ import type { useAppProps } from "antd/es/app/context.js";
 import { StrictMode, useEffect, useState } from "react";
 import { Provider as UrqlProvider } from "urql";
 
+import watermark from "#assets/watermark.svg";
 import { AntConfigProvider, ThemeConfigProvider } from "#config/ant.js";
 import { API_BASE_URL, urqlClient } from "#config/api.js";
 import { MarathonConfigProvider } from "#config/marathon.js";
 import { authProvider } from "#config/refine/authentication.js";
 import { dataProvider } from "#config/refine/data.js";
+import { useRefineResources } from "#config/refine/resources.js";
 import { SpinningRibbon } from "#elements/components/design/RibbonSpinner.js";
 
 import { routeTree } from "./routeTree.gen.js";
@@ -133,6 +135,8 @@ function RouterWrapper() {
 
   const antApp = App.useApp();
 
+  const resources = useRefineResources({ router });
+
   return isServerReachable === false ? (
     <div
       style={{
@@ -157,7 +161,28 @@ function RouterWrapper() {
       />
     </div>
   ) : (
-    <RouterProvider router={router} context={{ antApp }} />
+    <Refine
+      dataProvider={dataProvider}
+      notificationProvider={useNotificationProvider}
+      routerProvider={{
+        back: () => router.history.back,
+        Link,
+        go: () => refineGoFunction,
+        parse: () => refineParseFunction,
+      }}
+      authProvider={authProvider}
+      options={{
+        projectId: "DqkUbD-wpgLRK-UO3SFV",
+        title: {
+          icon: <img src={watermark} alt="DanceBlue Logo" />,
+          text: "DanceBlue Portal",
+        },
+      }}
+      resources={resources}
+    >
+      <RouterProvider router={router} context={{ antApp }} />
+      {import.meta.env.MODE === "development" && <DevtoolsPanel />}
+    </Refine>
   );
 }
 
@@ -169,25 +194,9 @@ export function Main() {
           <AntApp style={{ height: "100%" }}>
             <UrqlProvider value={urqlClient}>
               <DevtoolsProvider>
-                <Refine
-                  dataProvider={dataProvider}
-                  notificationProvider={useNotificationProvider}
-                  routerProvider={{
-                    back: () => router.history.back,
-                    Link,
-                    go: () => refineGoFunction,
-                    parse: () => refineParseFunction,
-                  }}
-                  authProvider={authProvider}
-                  options={{
-                    projectId: "DqkUbD-wpgLRK-UO3SFV",
-                  }}
-                >
-                  <MarathonConfigProvider>
-                    <RouterWrapper />
-                  </MarathonConfigProvider>
-                  {import.meta.env.MODE === "development" && <DevtoolsPanel />}
-                </Refine>
+                <MarathonConfigProvider>
+                  <RouterWrapper />
+                </MarathonConfigProvider>
               </DevtoolsProvider>
             </UrqlProvider>
           </AntApp>

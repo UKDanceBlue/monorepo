@@ -1,4 +1,3 @@
-console.log("Events on calendar. ");
 import { createFileRoute } from "@tanstack/react-router";
 import { AccessLevel, CommitteeRole } from "@ukdanceblue/common";
 
@@ -9,6 +8,7 @@ function EventsCreate() {
   return (
     <div>
       <h1>Create Event</h1>
+      <p>Add an event to the DanceBlue app and website.</p>
       <EventCreator />
     </div>
   );

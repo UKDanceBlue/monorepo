@@ -125,7 +125,9 @@ export function CreateImagePopup({
               <p>
                 If you would like to upload the image rather than provide an
                 external URL, just leave this field blank. You can upload the
-                actual file in the next step.
+                actual file in the next step. Please avoid uploading images that
+                you already have a link for as it costs us storage space and
+                server resources to host images.
               </p>
             </>
           )}

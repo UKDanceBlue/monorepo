@@ -1,6 +1,3 @@
-console.log(
-  "This page shows different possible formats. the very top config is of our tab bar for example."
-);
 import { createFileRoute } from "@tanstack/react-router";
 import { AccessLevel } from "@ukdanceblue/common";
 import { Button, Collapse, Divider, Flex, Form, Input, Space } from "antd";
@@ -21,6 +18,13 @@ function ConfigPage() {
   return (
     <div style={{ maxWidth: "800px", margin: "0 auto" }}>
       <h1>Config</h1>
+
+      <p>
+        These configuration values are used to modify the behavior of the
+        DanceBlue mobile app. Each value can have an assigned start and end
+        date. The most recently set value will always be used as long as it is
+        within its validity period.
+      </p>
 
       <Form
         onFinish={() =>

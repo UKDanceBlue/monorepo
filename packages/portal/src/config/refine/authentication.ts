@@ -6,7 +6,7 @@ import type {
 } from "@refinedev/core";
 
 import { API_BASE_URL, urqlClient } from "#config/api.ts";
-import { refreshLoginState } from "#hooks/useLoginState.ts";
+import { getLoginState, refreshLoginState } from "#hooks/useLoginState.ts";
 
 function openAuthPopup(path: "login" | "logout"): Promise<string> {
   return new Promise((resolve, _reject) => {
@@ -60,10 +60,10 @@ export const authProvider: AuthProvider = {
       };
     }
   },
-  check: async (): Promise<CheckResponse> => {
-    const { loggedIn } = await refreshLoginState(urqlClient);
+  check: (): Promise<CheckResponse> => {
+    const { loggedIn } = getLoginState(urqlClient);
 
-    return { authenticated: loggedIn ?? false };
+    return Promise.resolve({ authenticated: loggedIn ?? false });
   },
   logout: async (): Promise<AuthActionResponse> => {
     try {
