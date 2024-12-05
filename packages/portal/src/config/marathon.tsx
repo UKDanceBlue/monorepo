@@ -1,4 +1,8 @@
-import { AccessLevel, dateTimeFromSomething } from "@ukdanceblue/common";
+import {
+  AccessLevel,
+  Action,
+  dateTimeFromSomething,
+} from "@ukdanceblue/common";
 import { useEffect, useMemo, useState } from "react";
 import { useQuery } from "urql";
 
@@ -49,7 +53,10 @@ export const MarathonConfigProvider = ({
   children: React.ReactNode;
   valueOverride?: Pick<MarathonContextData, "marathon" | "marathons">;
 }) => {
-  const canSeeMarathonList = useAuthorizationRequirement(AccessLevel.Committee);
+  const canSeeMarathonList = useAuthorizationRequirement(
+    Action.List,
+    "MarathonNode"
+  );
 
   const [marathonId, setMarathonId] = useState<string | null>(null);
 

@@ -6,13 +6,10 @@ import { useState } from "react";
 
 import { CreateImagePopup } from "#elements/components/image/CreateImagePopup.js";
 import { ImagesTable } from "#elements/tables/ImagesTable.js";
-import { routerAuthCheck } from "#tools/routerAuthCheck.js";
 
 export const Route = createFileRoute("/images/")({
   component: RouteComponent,
-  beforeLoad({ context }) {
-    routerAuthCheck(Route, context);
-  },
+
   staticData: {
     authorizationRules: [
       {

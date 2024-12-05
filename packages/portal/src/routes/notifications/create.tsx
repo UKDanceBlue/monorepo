@@ -5,7 +5,6 @@ import { createFileRoute } from "@tanstack/react-router";
 import { AccessLevel } from "@ukdanceblue/common";
 
 import { CreateNotificationForm } from "#elements/forms/notification/create/CreateNotificationForm";
-import { routerAuthCheck } from "#tools/routerAuthCheck.js";
 
 function CreateNotificationPage() {
   return (
@@ -18,9 +17,7 @@ function CreateNotificationPage() {
 
 export const Route = createFileRoute("/notifications/create")({
   component: CreateNotificationPage,
-  beforeLoad({ context }) {
-    routerAuthCheck(Route, context);
-  },
+
   staticData: {
     authorizationRules: [
       {

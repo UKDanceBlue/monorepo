@@ -283,9 +283,10 @@ export const committeeNames: Record<CommitteeIdentifier, string> = {
 
 export interface Authorization {
   /** @deprecated */
-  dbRole: DbRole;
+  dbRole?: DbRole;
   effectiveCommitteeRoles: EffectiveCommitteeRole[];
   accessLevel: AccessLevel;
+  authSource: AuthSource;
 }
 
 /**
@@ -297,6 +298,7 @@ export const defaultAuthorization = {
   dbRole: DbRole.None,
   accessLevel: AccessLevel.None,
   effectiveCommitteeRoles: [],
+  authSource: AuthSource.None,
 } satisfies Authorization;
 
 // Registering the enum types with TypeGraphQL

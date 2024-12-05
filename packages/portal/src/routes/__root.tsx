@@ -12,7 +12,6 @@ import { themeConfigContext } from "#config/antThemeConfig.ts";
 import { Sider } from "#elements/components/sider/index.tsx";
 import { ConfigModal } from "#elements/singletons/NavigationMenu.tsx";
 import { refreshLoginState, useLoginState } from "#hooks/useLoginState.js";
-import { routerAuthCheck } from "#tools/routerAuthCheck.js";
 
 const TanStackRouterDevtools =
   process.env.NODE_ENV === "production"
@@ -135,7 +134,6 @@ export const Route = createRootRouteWithContext<RouterContext>()({
   component: RootComponent,
   beforeLoad: async ({ context }) => {
     await refreshLoginState(context.urqlClient);
-    routerAuthCheck(Route, context);
   },
   staticData: {
     authorizationRules: null,

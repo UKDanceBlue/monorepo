@@ -40,6 +40,7 @@
   },
   "dependencies": {
     "@ant-design/icons": "^5.5.1",
+    "@casl/ability": "^6.7.2",
     "@refinedev/antd": "^5.44.0",
     "@refinedev/core": "^4.56.0",
     "@refinedev/devtools": "^1.2.10",

@@ -8,7 +8,6 @@ import {
 } from "#elements/viewers/event/EventViewer.js";
 import { graphql } from "#graphql/index.js";
 import { useQueryStatusWatcher } from "#hooks/useQueryStatusWatcher.js";
-import { routerAuthCheck } from "#tools/routerAuthCheck.js";
 
 const viewEventPageDocument = graphql(
   /* GraphQL */ `
@@ -46,7 +45,6 @@ export const Route = createFileRoute("/events/$eventId/")({
   component: ViewEvent,
   async beforeLoad({ context, params: { eventId } }) {
     await context.urqlClient.query(viewEventPageDocument, { uuid: eventId });
-    routerAuthCheck(Route, context);
   },
   staticData: {
     authorizationRules: [

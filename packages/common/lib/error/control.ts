@@ -1,8 +1,6 @@
 import type { GraphQLResolveInfo } from "graphql";
 import type { Path } from "graphql/jsutils/Path.js";
 
-import type { AuthorizationRule } from "../authorization/accessControl.js";
-import { prettyPrintAuthorizationRule } from "../authorization/accessControl.js";
 import { ConcreteError } from "./error.js";
 import * as ErrorCode from "./errorCode.js";
 
@@ -27,12 +25,9 @@ export abstract class ControlError extends ConcreteError {
 export class AuthorizationRuleFailedError extends ControlError {
   readonly message = "Unauthorized";
 
-  constructor(protected readonly requiredAuthorization: AuthorizationRule[]) {
-    super();
-  }
-
+  // eslint-disable-next-line @typescript-eslint/class-literal-property-style
   get detailedMessage() {
-    return `Unauthorized: ${this.requiredAuthorization.map(prettyPrintAuthorizationRule).join(", ")}`;
+    return `You do not have access to this resource`;
   }
 
   get tag(): ErrorCode.AuthorizationRuleFailed {

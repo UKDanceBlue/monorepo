@@ -9410,6 +9410,7 @@ __metadata:
   resolution: "@ukdanceblue/portal@workspace:packages/portal"
   dependencies:
     "@ant-design/icons": "npm:^5.5.1"
+    "@casl/ability": "npm:^6.7.2"
     "@refinedev/antd": "npm:^5.44.0"
     "@refinedev/cli": "npm:^2.16.40"
     "@refinedev/core": "npm:^4.56.0"

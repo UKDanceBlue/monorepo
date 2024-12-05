@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { AccessLevel, CommitteeIdentifier } from "@ukdanceblue/common";
+import { AccessLevel, Action, CommitteeIdentifier } from "@ukdanceblue/common";
 import { Flex } from "antd";
 import { useQuery } from "urql";
 
@@ -8,19 +8,13 @@ import { PointEntryCreator } from "#elements/forms/point-entry/create/PointEntry
 import { PointEntryTable } from "#elements/tables/point-entry/PointEntryTable.js";
 import { useAuthorizationRequirement } from "#hooks/useLoginState.js";
 import { useQueryStatusWatcher } from "#hooks/useQueryStatusWatcher.js";
-import { routerAuthCheck } from "#tools/routerAuthCheck.js";
 
 function ViewTeamPoints() {
   const { teamId: teamUuid } = Route.useParams();
 
   const canAddPoints = useAuthorizationRequirement(
-    {
-      committeeIdentifier: CommitteeIdentifier.viceCommittee,
-      accessLevel: AccessLevel.CommitteeChairOrCoordinator,
-    },
-    {
-      accessLevel: AccessLevel.Admin,
-    }
+    Action.Create,
+    "PointEntryNode"
   );
 
   const [{ fetching, data, error }, refetch] = useQuery({
@@ -58,9 +52,7 @@ function ViewTeamPoints() {
 
 export const Route = createFileRoute("/teams/$teamId/_layout/points")({
   component: ViewTeamPoints,
-  beforeLoad({ context }) {
-    routerAuthCheck(Route, context);
-  },
+
   staticData: {
     authorizationRules: [
       {

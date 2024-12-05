@@ -6,7 +6,6 @@ import {
 } from "@ukdanceblue/common";
 
 import { DDNUploadForm } from "#elements/forms/ddn/DDNUploadForm";
-import { routerAuthCheck } from "#tools/routerAuthCheck";
 
 function DDNSpreadsheetUploader() {
   return (
@@ -34,8 +33,5 @@ export const Route = createFileRoute("/fundraising/ddn/upload")({
         accessLevel: AccessLevel.Admin,
       },
     ],
-  },
-  beforeLoad({ context }) {
-    routerAuthCheck(Route, context);
   },
 });

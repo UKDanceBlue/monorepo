@@ -6,7 +6,6 @@ import { EventEditor } from "#elements/forms/event/edit/EventEditor.js";
 import { EventEditorFragment } from "#elements/forms/event/edit/EventEditorGQL.ts";
 import { graphql } from "#graphql/index.js";
 import { useQueryStatusWatcher } from "#hooks/useQueryStatusWatcher.js";
-import { routerAuthCheck } from "#tools/routerAuthCheck.js";
 
 const viewEventPageDocument = graphql(
   /* GraphQL */ `
@@ -44,7 +43,6 @@ export const Route = createFileRoute("/events/$eventId/edit")({
   component: EditEvent,
   async beforeLoad({ context, params: { eventId } }) {
     await context.urqlClient.query(viewEventPageDocument, { uuid: eventId });
-    routerAuthCheck(Route, context);
   },
   staticData: {
     authorizationRules: [

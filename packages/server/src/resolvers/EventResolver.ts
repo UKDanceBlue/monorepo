@@ -3,8 +3,7 @@ import type { Prisma } from "@prisma/client";
 import type { CrudResolver, GlobalId } from "@ukdanceblue/common";
 import {
   AccessControlAuthorized,
-  AccessLevel,
-  CommitteeRole,
+  Action,
   EventNode,
   GlobalIdScalar,
   ImageNode,
@@ -30,6 +29,7 @@ import {
   Root,
 } from "type-graphql";
 
+import type { GraphQLContext } from "#auth/context.js";
 import { FileManager } from "#files/FileManager.js";
 import { auditLogger } from "#logging/auditLogging.js";
 import {
@@ -40,8 +40,6 @@ import { EventRepository } from "#repositories/event/EventRepository.js";
 import { EventImagesRepository } from "#repositories/event/images/EventImagesRepository.js";
 import { imageModelToResource } from "#repositories/image/imageModelToResource.js";
 
-import type { GraphQLContext } from "./context.js";
-
 @Service([EventRepository, EventImagesRepository, FileManager])
 @Resolver(() => EventNode)
 export class EventResolver implements CrudResolver<EventNode, "event"> {
@@ -51,9 +49,7 @@ export class EventResolver implements CrudResolver<EventNode, "event"> {
     private readonly fileManager: FileManager
   ) {}
 
-  @AccessControlAuthorized({
-    accessLevel: AccessLevel.Public,
-  })
+  @AccessControlAuthorized(Action.Get)
   @Query(() => EventNode, {
     name: "event",
     description: "Get an event by UUID",
@@ -73,9 +69,7 @@ export class EventResolver implements CrudResolver<EventNode, "event"> {
     );
   }
 
-  @AccessControlAuthorized({
-    accessLevel: AccessLevel.Public,
-  })
+  @AccessControlAuthorized(Action.List)
   @Query(() => ListEventsResponse, {
     name: "events",
     description: "List events",
@@ -108,14 +102,7 @@ export class EventResolver implements CrudResolver<EventNode, "event"> {
     });
   }
 
-  @AccessControlAuthorized(
-    {
-      accessLevel: AccessLevel.Admin,
-    },
-    {
-      authRules: [{ minCommitteeRole: CommitteeRole.Chair }],
-    }
-  )
+  @AccessControlAuthorized(Action.Create)
   @Mutation(() => EventNode, {
     name: "createEvent",
     description: "Create a new event",
@@ -147,14 +134,7 @@ export class EventResolver implements CrudResolver<EventNode, "event"> {
     );
   }
 
-  @AccessControlAuthorized(
-    {
-      accessLevel: AccessLevel.Admin,
-    },
-    {
-      authRules: [{ minCommitteeRole: CommitteeRole.Chair }],
-    }
-  )
+  @AccessControlAuthorized(Action.Delete)
   @Mutation(() => EventNode, {
     name: "deleteEvent",
     description: "Delete an event by UUID",
@@ -176,14 +156,7 @@ export class EventResolver implements CrudResolver<EventNode, "event"> {
     );
   }
 
-  @AccessControlAuthorized(
-    {
-      accessLevel: AccessLevel.Admin,
-    },
-    {
-      authRules: [{ minCommitteeRole: CommitteeRole.Chair }],
-    }
-  )
+  @AccessControlAuthorized(Action.Update)
   @Mutation(() => EventNode, {
     name: "setEvent",
     description: "Update an event by UUID",
@@ -249,14 +222,7 @@ export class EventResolver implements CrudResolver<EventNode, "event"> {
     );
   }
 
-  @AccessControlAuthorized(
-    {
-      accessLevel: AccessLevel.Admin,
-    },
-    {
-      authRules: [{ minCommitteeRole: CommitteeRole.Chair }],
-    }
-  )
+  @AccessControlAuthorized(Action.Update, "EventNode")
   @Mutation(() => VoidResolver, {
     name: "removeImageFromEvent",
     description: "Remove an image from an event",
@@ -277,14 +243,7 @@ export class EventResolver implements CrudResolver<EventNode, "event"> {
     auditLogger.secure("Event image removed", { eventUuid, imageUuid });
   }
 
-  @AccessControlAuthorized(
-    {
-      accessLevel: AccessLevel.Admin,
-    },
-    {
-      authRules: [{ minCommitteeRole: CommitteeRole.Chair }],
-    }
-  )
+  @AccessControlAuthorized(Action.Update, "EventNode")
   @Mutation(() => ImageNode, {
     name: "addExistingImageToEvent",
     description: "Add an existing image to an event",

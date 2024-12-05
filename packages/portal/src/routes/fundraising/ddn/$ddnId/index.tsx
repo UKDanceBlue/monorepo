@@ -11,7 +11,6 @@ import { useQuery } from "urql";
 import { SpinningRibbon } from "#elements/components/design/RibbonSpinner";
 import { graphql, readFragment } from "#graphql/index";
 import { useQueryStatusWatcher } from "#hooks/useQueryStatusWatcher";
-import { routerAuthCheck } from "#tools/routerAuthCheck";
 
 export const Route = createFileRoute("/fundraising/ddn/$ddnId/")({
   component: RouteComponent,
@@ -25,9 +24,6 @@ export const Route = createFileRoute("/fundraising/ddn/$ddnId/")({
         accessLevel: AccessLevel.Admin,
       },
     ],
-  },
-  beforeLoad({ context }) {
-    routerAuthCheck(Route, context);
   },
 });
 

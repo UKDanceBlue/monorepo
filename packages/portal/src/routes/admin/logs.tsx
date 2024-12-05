@@ -5,7 +5,6 @@ import { useQuery } from "urql";
 import { LogViewer } from "#elements/viewers/admin/LogViewer.js";
 import { graphql } from "#graphql/index.js";
 import { useQueryStatusWatcher } from "#hooks/useQueryStatusWatcher.js";
-import { routerAuthCheck } from "#tools/routerAuthCheck.js";
 
 const logsPageDocument = graphql(/* GraphQL */ `
   query LogsPage {
@@ -31,7 +30,6 @@ export const Route = createFileRoute("/admin/logs")({
   component: LogsPage,
   async beforeLoad({ context }) {
     await context.urqlClient.query(logsPageDocument, {});
-    routerAuthCheck(Route, context);
   },
   staticData: {
     authorizationRules: [

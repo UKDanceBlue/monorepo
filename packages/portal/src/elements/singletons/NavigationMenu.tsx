@@ -1,6 +1,6 @@
 import "./NavigationMenu.css";
 
-import { AccessLevel } from "@ukdanceblue/common";
+import { AccessLevel, Action } from "@ukdanceblue/common";
 import { Button, Modal, Select } from "antd";
 import { useContext } from "react";
 
@@ -17,7 +17,7 @@ export const ConfigModal = ({
   open: boolean;
   onClose: () => void;
 }) => {
-  const canMasquerade = useAuthorizationRequirement(AccessLevel.SuperAdmin);
+  const canMasquerade = useAuthorizationRequirement(Action.Manage, "all");
 
   const { setMarathon, marathon, loading, marathons } =
     useContext(marathonContext);

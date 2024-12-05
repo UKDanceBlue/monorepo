@@ -24,15 +24,12 @@ import { graphql } from "#graphql/index";
 import { useAntFeedback, useAskConfirm } from "#hooks/useAntFeedback";
 import { useListQuery } from "#hooks/useListQuery";
 import { useQueryStatusWatcher } from "#hooks/useQueryStatusWatcher";
-import { routerAuthCheck } from "#tools/routerAuthCheck";
 
 export const Route = createFileRoute(
   "/fundraising/solicitation-code/$solicitationCodeId/"
 )({
   component: RouteComponent,
-  beforeLoad({ context }) {
-    routerAuthCheck(Route, context);
-  },
+
   staticData: {
     authorizationRules: [
       {

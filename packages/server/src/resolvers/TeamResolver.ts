@@ -1,18 +1,16 @@
 import { Service } from "@freshgum/typedi";
 import type { CrudResolver, GlobalId } from "@ukdanceblue/common";
 import {
+  Action,
   CommitteeIdentifier,
   ListFundraisingEntriesArgs,
   ListFundraisingEntriesResponse,
   MarathonNode,
-  MembershipPositionType,
 } from "@ukdanceblue/common";
 import {
   AccessControlAuthorized,
-  AccessLevel,
   AuthSource,
   BulkTeamInput,
-  CommitteeRole,
   GlobalIdScalar,
   LegacyError,
   LegacyErrorCode,
@@ -24,15 +22,11 @@ import {
 } from "@ukdanceblue/common";
 import {
   CreateTeamInput,
-  DbFundsTeamInfo,
   ListTeamsArgs,
   ListTeamsResponse,
   SetTeamInput,
 } from "@ukdanceblue/common";
-import {
-  ConcreteResult,
-  FormattedConcreteError,
-} from "@ukdanceblue/common/error";
+import { ConcreteResult } from "@ukdanceblue/common/error";
 import { AsyncResult, None, Ok, Option, Some } from "ts-results-es";
 import {
   Arg,
@@ -47,7 +41,7 @@ import {
   Root,
 } from "type-graphql";
 
-import { DBFundsRepository } from "#repositories/fundraising/DBFundsRepository.js";
+import type { GraphQLContext } from "#auth/context.js";
 import {
   fundraisingEntryModelToNode,
   solicitationCodeModelToNode,
@@ -58,22 +52,16 @@ import { membershipModelToResource } from "#repositories/membership/membershipMo
 import { pointEntryModelToResource } from "#repositories/pointEntry/pointEntryModelToResource.js";
 import { teamModelToResource } from "#repositories/team/teamModelToResource.js";
 import { TeamRepository } from "#repositories/team/TeamRepository.js";
-import * as Context from "#resolvers/context.js";
-
-import { globalFundraisingAccessParam } from "./accessParams.js";
 
 @Resolver(() => TeamNode)
-@Service([TeamRepository, FundraisingEntryRepository, DBFundsRepository])
+@Service([TeamRepository, FundraisingEntryRepository])
 export class TeamResolver implements CrudResolver<TeamNode, "team"> {
   constructor(
     private teamRepository: TeamRepository,
-    private fundraisingEntryRepository: FundraisingEntryRepository,
-    private dbFundsRepository: DBFundsRepository
+    private fundraisingEntryRepository: FundraisingEntryRepository
   ) {}
 
-  @AccessControlAuthorized({
-    accessLevel: AccessLevel.Public,
-  })
+  @AccessControlAuthorized(Action.Get)
   @Query(() => TeamNode, { name: "team" })
   async team(
     @Arg("uuid", () => GlobalIdScalar) { id }: GlobalId
@@ -87,11 +75,11 @@ export class TeamResolver implements CrudResolver<TeamNode, "team"> {
     return Ok(Some(teamModelToResource(row)));
   }
 
-  @AccessControlAuthorized({ accessLevel: AccessLevel.Public })
+  @AccessControlAuthorized(Action.List)
   @Query(() => ListTeamsResponse, { name: "teams" })
   async teams(
     @Args(() => ListTeamsArgs) query: ListTeamsArgs,
-    @Ctx() ctx: Context.GraphQLContext
+    @Ctx() ctx: GraphQLContext
   ): Promise<ListTeamsResponse> {
     const marathonFilter = query.marathonId?.map(({ id: marathonId }) => ({
       uuid: marathonId,
@@ -110,14 +98,14 @@ export class TeamResolver implements CrudResolver<TeamNode, "team"> {
             ? (query.page - 1) * query.actualPageSize
             : null,
         take: query.actualPageSize,
-        onlyDemo: ctx.userData.authSource === AuthSource.Demo,
+        onlyDemo: ctx.authSource === AuthSource.Demo,
         legacyStatus: query.legacyStatus,
         marathon: marathonFilter,
         type: query.type,
       }),
       this.teamRepository.countTeams({
         filters: query.filters,
-        onlyDemo: ctx.userData.authSource === AuthSource.Demo,
+        onlyDemo: ctx.authSource === AuthSource.Demo,
         legacyStatus: query.legacyStatus,
         marathon: marathonFilter,
         type: query.type,
@@ -141,23 +129,7 @@ export class TeamResolver implements CrudResolver<TeamNode, "team"> {
     });
   }
 
-  @AccessControlAuthorized(
-    {
-      accessLevel: AccessLevel.Admin,
-    },
-    {
-      authRules: [
-        {
-          committeeIdentifier: CommitteeIdentifier.dancerRelationsCommittee,
-          minCommitteeRole: CommitteeRole.Coordinator,
-        },
-        {
-          committeeIdentifier: CommitteeIdentifier.fundraisingCommittee,
-          minCommitteeRole: CommitteeRole.Coordinator,
-        },
-      ],
-    }
-  )
+  @AccessControlAuthorized(Action.Create)
   @Mutation(() => TeamNode, { name: "createTeam" })
   async createTeam(
     @Arg("input") input: CreateTeamInput,
@@ -175,23 +147,7 @@ export class TeamResolver implements CrudResolver<TeamNode, "team"> {
     return teamModelToResource(row);
   }
 
-  @AccessControlAuthorized(
-    {
-      accessLevel: AccessLevel.Admin,
-    },
-    {
-      authRules: [
-        {
-          committeeIdentifier: CommitteeIdentifier.dancerRelationsCommittee,
-          minCommitteeRole: CommitteeRole.Coordinator,
-        },
-        {
-          committeeIdentifier: CommitteeIdentifier.fundraisingCommittee,
-          minCommitteeRole: CommitteeRole.Coordinator,
-        },
-      ],
-    }
-  )
+  @AccessControlAuthorized(Action.Update)
   @Mutation(() => TeamNode, { name: "setTeam" })
   async setTeam(
     @Arg("uuid", () => GlobalIdScalar) { id }: GlobalId,
@@ -215,23 +171,7 @@ export class TeamResolver implements CrudResolver<TeamNode, "team"> {
     return teamModelToResource(row);
   }
 
-  @AccessControlAuthorized(
-    {
-      accessLevel: AccessLevel.Admin,
-    },
-    {
-      authRules: [
-        {
-          committeeIdentifier: CommitteeIdentifier.dancerRelationsCommittee,
-          minCommitteeRole: CommitteeRole.Chair,
-        },
-        {
-          committeeIdentifier: CommitteeIdentifier.fundraisingCommittee,
-          minCommitteeRole: CommitteeRole.Chair,
-        },
-      ],
-    }
-  )
+  @AccessControlAuthorized(Action.Create)
   @Mutation(() => [TeamNode], { name: "createTeams" })
   async createTeams(
     @Arg("teams", () => [BulkTeamInput]) teams: BulkTeamInput[],
@@ -244,19 +184,7 @@ export class TeamResolver implements CrudResolver<TeamNode, "team"> {
     return rows.map((rows) => rows.map((row) => teamModelToResource(row)));
   }
 
-  @AccessControlAuthorized(
-    {
-      accessLevel: AccessLevel.Admin,
-    },
-    {
-      authRules: [
-        {
-          committeeIdentifier: CommitteeIdentifier.dancerRelationsCommittee,
-          minCommitteeRole: CommitteeRole.Coordinator,
-        },
-      ],
-    }
-  )
+  @AccessControlAuthorized(Action.Delete)
   @Mutation(() => TeamNode, { name: "deleteTeam" })
   async deleteTeam(
     @Arg("uuid", () => GlobalIdScalar) { id }: GlobalId
@@ -270,18 +198,7 @@ export class TeamResolver implements CrudResolver<TeamNode, "team"> {
     return teamModelToResource(row);
   }
 
-  @AccessControlAuthorized(
-    { accessLevel: AccessLevel.Committee },
-    {
-      rootMatch: [
-        {
-          root: "id",
-          extractor: ({ teamMemberships }) =>
-            teamMemberships.map(({ teamId }) => teamId),
-        },
-      ],
-    }
-  )
+  @AccessControlAuthorized(Action.List, "PersonNode")
   @FieldResolver(() => [MembershipNode])
   async members(@Root() { id: { id } }: TeamNode): Promise<MembershipNode[]> {
     const memberships = await this.teamRepository.findMembersOfTeam({
@@ -291,31 +208,7 @@ export class TeamResolver implements CrudResolver<TeamNode, "team"> {
     return memberships.map((row) => membershipModelToResource(row));
   }
 
-  @AccessControlAuthorized({ accessLevel: AccessLevel.Committee })
-  @FieldResolver(() => [MembershipNode], {
-    deprecationReason: "Just query the members field and filter by role",
-  })
-  async captains(@Root() { id: { id } }: TeamNode): Promise<MembershipNode[]> {
-    const memberships = await this.teamRepository.findMembersOfTeam(
-      { uuid: id },
-      { captainsOnly: true }
-    );
-
-    return memberships.map((row) => membershipModelToResource(row));
-  }
-
-  @AccessControlAuthorized(
-    { accessLevel: AccessLevel.Committee },
-    {
-      rootMatch: [
-        {
-          root: "id",
-          extractor: ({ teamMemberships }) =>
-            teamMemberships.map(({ teamId }) => teamId),
-        },
-      ],
-    }
-  )
+  @AccessControlAuthorized(Action.List)
   @FieldResolver(() => [PointEntryNode])
   async pointEntries(
     @Root() { id: { id } }: TeamNode
@@ -327,15 +220,7 @@ export class TeamResolver implements CrudResolver<TeamNode, "team"> {
     return rows.map((row) => pointEntryModelToResource(row));
   }
 
-  @AccessControlAuthorized(globalFundraisingAccessParam, {
-    rootMatch: [
-      {
-        root: "id",
-        extractor: ({ teamMemberships }) =>
-          teamMemberships.map(({ teamId }) => teamId),
-      },
-    ],
-  })
+  @AccessControlAuthorized(Action.Get, "TeamNode", "fundraisingTotal")
   @FieldResolver(() => Float, { nullable: true })
   async fundraisingTotalAmount(
     @Root() { id: { id } }: TeamNode
@@ -345,7 +230,7 @@ export class TeamResolver implements CrudResolver<TeamNode, "team"> {
     });
   }
 
-  @AccessControlAuthorized({ accessLevel: AccessLevel.Public })
+  @AccessControlAuthorized(Action.Get, "TeamNode")
   @FieldResolver(() => Int)
   async totalPoints(@Root() { id: { id } }: TeamNode): Promise<number> {
     const result = await this.teamRepository.getTotalTeamPoints({
@@ -355,7 +240,7 @@ export class TeamResolver implements CrudResolver<TeamNode, "team"> {
     return result._sum.points ?? 0;
   }
 
-  @AccessControlAuthorized({ accessLevel: AccessLevel.Public })
+  @AccessControlAuthorized(Action.Get, "TeamNode")
   @FieldResolver(() => MarathonNode)
   async marathon(@Root() { id: { id } }: TeamNode): Promise<MarathonNode> {
     const result = await this.teamRepository.getMarathon({ uuid: id });
@@ -365,37 +250,6 @@ export class TeamResolver implements CrudResolver<TeamNode, "team"> {
     }
 
     return marathonModelToResource(result);
-  }
-
-  @AccessControlAuthorized(globalFundraisingAccessParam, {
-    rootMatch: [
-      {
-        root: "id",
-        extractor: ({ teamMemberships }) =>
-          teamMemberships
-            .filter(
-              ({ position }) => position === MembershipPositionType.Captain
-            )
-            .map(({ teamId }) => teamId),
-      },
-    ],
-  })
-  @FieldResolver(() => DbFundsTeamInfo, { nullable: true })
-  async dbFundsTeam(
-    @Root() { id: { id } }: TeamNode
-  ): Promise<ConcreteResult<Option<DbFundsTeamInfo>>> {
-    const result = await this.dbFundsRepository.getDbFundsTeamForTeam({
-      uuid: id,
-    });
-
-    return result.map((row) =>
-      row.map((row) => {
-        const teamInfoInstance = new DbFundsTeamInfo();
-        teamInfoInstance.dbNum = row.solicitationCode.code;
-        teamInfoInstance.name = row.name;
-        return teamInfoInstance;
-      })
-    );
   }
 
   @FieldResolver(() => CommitteeIdentifier, { nullable: true })
@@ -409,19 +263,7 @@ export class TeamResolver implements CrudResolver<TeamNode, "team"> {
     return result ?? null;
   }
 
-  @AccessControlAuthorized(globalFundraisingAccessParam, {
-    rootMatch: [
-      {
-        root: "id",
-        extractor: ({ teamMemberships }) =>
-          teamMemberships
-            .filter(
-              ({ position }) => position === MembershipPositionType.Captain
-            )
-            .map(({ teamId }) => teamId),
-      },
-    ],
-  })
+  @AccessControlAuthorized(Action.Get, "TeamNode", "fundraisingEntries")
   @FieldResolver(() => ListFundraisingEntriesResponse)
   async fundraisingEntries(
     @Root() { id: { id } }: TeamNode,
@@ -474,39 +316,7 @@ export class TeamResolver implements CrudResolver<TeamNode, "team"> {
     );
   }
 
-  @AccessControlAuthorized(globalFundraisingAccessParam)
-  @Query(() => [DbFundsTeamInfo], { name: "dbFundsTeams" })
-  async dbFundsTeams(
-    @Arg("search") search: string
-  ): Promise<DbFundsTeamInfo[]> {
-    const searchParam: {
-      byDbNum?: number;
-      byName?: string;
-    } = {};
-    const searchAsNum = Number.parseInt(search, 10);
-    if (Number.isInteger(searchAsNum)) {
-      searchParam.byDbNum = searchAsNum;
-    } else {
-      searchParam.byName = search;
-    }
-    const rows = await this.dbFundsRepository.listDbFundsTeams({
-      ...searchParam,
-      onlyActive: true,
-    });
-
-    if (rows.isErr()) {
-      throw new FormattedConcreteError(rows);
-    }
-
-    return rows.value.map((row) => {
-      const teamInfoInstance = new DbFundsTeamInfo();
-      teamInfoInstance.dbNum = row.solicitationCode.code;
-      teamInfoInstance.name = row.name;
-      return teamInfoInstance;
-    });
-  }
-
-  @AccessControlAuthorized({ accessLevel: AccessLevel.Public })
+  @AccessControlAuthorized(Action.Get, "TeamNode", "solicitationCode")
   @FieldResolver(() => SolicitationCodeNode, { nullable: true })
   async solicitationCode(
     @Root() { id: { id } }: TeamNode

@@ -6,7 +6,6 @@ import { useState } from "react";
 
 import { CreateImagePopup } from "#elements/components/image/CreateImagePopup.js";
 import { ImagesTable } from "#elements/tables/ImagesTable.js";
-import { routerAuthCheck } from "#tools/routerAuthCheck.js";
 
 function ListImagesPage() {
   const [createImageOpen, setCreateImageOpen] = useState(false);
@@ -45,9 +44,7 @@ function ListImagesPage() {
 
 export const Route = createFileRoute("/images/$")({
   component: ListImagesPage,
-  beforeLoad({ context }) {
-    routerAuthCheck(Route, context);
-  },
+
   staticData: {
     authorizationRules: [
       {

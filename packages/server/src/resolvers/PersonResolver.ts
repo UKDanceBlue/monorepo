@@ -1,16 +1,12 @@
-import { Container, Service } from "@freshgum/typedi";
+import { Service } from "@freshgum/typedi";
 import type { CrudResolver, GlobalId } from "@ukdanceblue/common";
 import {
   AccessControlAuthorized,
   AccessLevel,
-  checkParam,
+  Action,
   CommitteeMembershipNode,
-  CustomQueryAccessControl,
   FundraisingAssignmentNode,
-  FundraisingEntryNode,
   GlobalIdScalar,
-  ListFundraisingEntriesArgs,
-  ListFundraisingEntriesResponse,
   MembershipNode,
   MembershipPositionType,
   PersonNode,
@@ -29,7 +25,6 @@ import {
   ConcreteError,
   ConcreteResult,
   extractNotFound,
-  FormattedConcreteError,
   NotFoundError,
 } from "@ukdanceblue/common/error";
 import {
@@ -53,9 +48,9 @@ import {
   Root,
 } from "type-graphql";
 
+import type { GraphQLContext } from "#auth/context.js";
 import { auditLogger } from "#logging/auditLogging.js";
 import { fundraisingAssignmentModelToNode } from "#repositories/fundraising/fundraisingAssignmentModelToNode.js";
-import { fundraisingEntryModelToNode } from "#repositories/fundraising/fundraisingEntryModelToNode.js";
 import { FundraisingEntryRepository } from "#repositories/fundraising/FundraisingRepository.js";
 import {
   committeeMembershipModelToResource,
@@ -64,9 +59,6 @@ import {
 import { MembershipRepository } from "#repositories/membership/MembershipRepository.js";
 import { personModelToResource } from "#repositories/person/personModelToResource.js";
 import { PersonRepository } from "#repositories/person/PersonRepository.js";
-import type { GraphQLContext } from "#resolvers/context.js";
-
-import { globalFundraisingAccessParam } from "./accessParams.js";
 
 @Resolver(() => PersonNode)
 @Service([PersonRepository, MembershipRepository, FundraisingEntryRepository])
@@ -79,7 +71,7 @@ export class PersonResolver
     private readonly fundraisingEntryRepository: FundraisingEntryRepository
   ) {}
 
-  @AccessControlAuthorized({ accessLevel: AccessLevel.Committee })
+  @AccessControlAuthorized(Action.Get)
   @Query(() => PersonNode, { name: "person" })
   async person(
     @Arg("uuid", () => GlobalIdScalar) { id }: GlobalId
@@ -92,7 +84,7 @@ export class PersonResolver
       .promise;
   }
 
-  @AccessControlAuthorized({ accessLevel: AccessLevel.Committee })
+  @AccessControlAuthorized(Action.Get)
   @Query(() => PersonNode, { name: "personByLinkBlue", nullable: true })
   async getByLinkBlueId(
     @Arg("linkBlueId") linkBlueId: string
@@ -112,7 +104,7 @@ export class PersonResolver
     ).promise;
   }
 
-  @AccessControlAuthorized({ accessLevel: AccessLevel.Committee })
+  @AccessControlAuthorized(Action.List)
   @Query(() => ListPeopleResponse, { name: "people" })
   async people(
     @Args(() => ListPeopleArgs) args: ListPeopleArgs
@@ -165,7 +157,7 @@ export class PersonResolver
     return ctx.authenticatedUser;
   }
 
-  @AccessControlAuthorized({ accessLevel: AccessLevel.Committee })
+  @AccessControlAuthorized(Action.List)
   @Query(() => [PersonNode], { name: "searchPeopleByName" })
   async searchByName(
     @Arg("name") name: string
@@ -182,13 +174,11 @@ export class PersonResolver
     ).promise;
   }
 
-  @AccessControlAuthorized({
-    accessLevel: AccessLevel.CommitteeChairOrCoordinator,
-  })
+  @AccessControlAuthorized(Action.Create)
   @Mutation(() => PersonNode, { name: "createPerson" })
   async createPerson(
     @Arg("input") input: CreatePersonInput,
-    @Ctx() { authorization: { accessLevel } }: GraphQLContext
+    @Ctx() { accessLevel }: GraphQLContext
   ): Promise<ConcreteResult<PersonNode>> {
     if (
       (input.memberOf ?? []).some(
@@ -230,14 +220,12 @@ export class PersonResolver
       .promise;
   }
 
-  @AccessControlAuthorized({
-    accessLevel: AccessLevel.CommitteeChairOrCoordinator,
-  })
+  @AccessControlAuthorized(Action.Modify)
   @Mutation(() => PersonNode, { name: "setPerson" })
   async setPerson(
     @Arg("uuid", () => GlobalIdScalar) { id }: GlobalId,
     @Arg("input") input: SetPersonInput,
-    @Ctx() { authorization: { accessLevel } }: GraphQLContext
+    @Ctx() { accessLevel }: GraphQLContext
   ): Promise<ConcreteResult<PersonNode>> {
     if (
       (input.memberOf ?? []).some(
@@ -282,7 +270,7 @@ export class PersonResolver
       .promise;
   }
 
-  @AccessControlAuthorized({ accessLevel: AccessLevel.SuperAdmin })
+  @AccessControlAuthorized(Action.Create)
   @Mutation(() => [PersonNode], { name: "bulkLoadPeople" })
   async bulkLoad(
     @Arg("people", () => [BulkPersonInput]) people: BulkPersonInput[],
@@ -303,9 +291,7 @@ export class PersonResolver
     ).promise;
   }
 
-  @AccessControlAuthorized({
-    accessLevel: AccessLevel.CommitteeChairOrCoordinator,
-  })
+  @AccessControlAuthorized(Action.Update, "TeamNode")
   @Mutation(() => MembershipNode, { name: "addPersonToTeam" })
   async assignPersonToTeam(
     @Arg("personUuid", () => GlobalIdScalar) personUuid: GlobalId,
@@ -328,9 +314,7 @@ export class PersonResolver
     ).map(membershipModelToResource).promise;
   }
 
-  @AccessControlAuthorized({
-    accessLevel: AccessLevel.CommitteeChairOrCoordinator,
-  })
+  @AccessControlAuthorized(Action.Update, "TeamNode")
   @Mutation(() => MembershipNode, { name: "removePersonFromTeam" })
   async unassignPersonFromTeam(
     @Arg("personUuid", () => GlobalIdScalar) personUuid: GlobalId,
@@ -348,9 +332,7 @@ export class PersonResolver
     ).map(membershipModelToResource).promise;
   }
 
-  @AccessControlAuthorized({
-    accessLevel: AccessLevel.CommitteeChairOrCoordinator,
-  })
+  @AccessControlAuthorized(Action.Delete)
   @Mutation(() => PersonNode, { name: "deletePerson" })
   async deletePerson(
     @Arg("uuid", () => GlobalIdScalar) { id }: GlobalId
@@ -370,17 +352,7 @@ export class PersonResolver
       }).promise;
   }
 
-  @AccessControlAuthorized(
-    { accessLevel: AccessLevel.Committee },
-    {
-      rootMatch: [
-        {
-          root: "id",
-          extractor: ({ userData }) => userData.userId,
-        },
-      ],
-    }
-  )
+  @AccessControlAuthorized(Action.Get, "PersonNode")
   @FieldResolver(() => [CommitteeMembershipNode])
   async committees(
     @Root() { id: { id } }: PersonNode
@@ -399,17 +371,7 @@ export class PersonResolver
     ).promise;
   }
 
-  @AccessControlAuthorized(
-    { accessLevel: AccessLevel.Committee },
-    {
-      rootMatch: [
-        {
-          root: "id",
-          extractor: ({ userData }) => userData.userId,
-        },
-      ],
-    }
-  )
+  @AccessControlAuthorized(Action.Get, "PersonNode")
   @FieldResolver(() => [MembershipNode])
   async teams(
     @Root() { id: { id } }: PersonNode
@@ -425,17 +387,7 @@ export class PersonResolver
     ).map((models) => models.map(membershipModelToResource)).promise;
   }
 
-  @AccessControlAuthorized(
-    { accessLevel: AccessLevel.Committee },
-    {
-      rootMatch: [
-        {
-          root: "id",
-          extractor: ({ userData }) => userData.userId,
-        },
-      ],
-    }
-  )
+  @AccessControlAuthorized(Action.Get, "PersonNode")
   @FieldResolver(() => [MembershipNode])
   async moraleTeams(
     @Root() { id: { id } }: PersonNode
@@ -451,17 +403,7 @@ export class PersonResolver
     ).map((models) => models.map(membershipModelToResource)).promise;
   }
 
-  @AccessControlAuthorized(
-    { accessLevel: AccessLevel.Committee },
-    {
-      rootMatch: [
-        {
-          root: "id",
-          extractor: ({ userData }) => userData.userId,
-        },
-      ],
-    }
-  )
+  @AccessControlAuthorized(Action.Get, "PersonNode")
   @FieldResolver(() => CommitteeMembershipNode, { nullable: true })
   async primaryCommittee(
     @Root() { id: { id } }: PersonNode
@@ -477,17 +419,7 @@ export class PersonResolver
     );
   }
 
-  @AccessControlAuthorized(
-    { accessLevel: AccessLevel.Committee },
-    {
-      rootMatch: [
-        {
-          root: "id",
-          extractor: ({ userData }) => userData.userId,
-        },
-      ],
-    }
-  )
+  @AccessControlAuthorized(Action.Get, "PersonNode")
   @FieldResolver(() => MembershipNode, { nullable: true })
   async primaryTeam(
     @Arg("teamType", () => TeamType) teamType: TeamType,
@@ -503,126 +435,7 @@ export class PersonResolver
     return model.map((option) => option.map(membershipModelToResource));
   }
 
-  @CustomQueryAccessControl<FundraisingEntryNode>(
-    async ({ id: { id: rootPersonId } }, context): Promise<boolean> => {
-      // We can't grant blanket access as otherwise people would see who else was assigned to an entry
-      // You can view all assignments for an entry if you are:
-      // 1. A fundraising coordinator or chair
-      const globalFundraisingAccess = checkParam(
-        globalFundraisingAccessParam,
-        context.authorization,
-        {},
-        {},
-        context
-      );
-      if (globalFundraisingAccess.isErr()) {
-        return false;
-      }
-      if (globalFundraisingAccess.value) {
-        return true;
-      }
-      const {
-        teamMemberships,
-        userData: { userId },
-      } = context;
-
-      if (userId == null) {
-        return false;
-      }
-      // 2. The user themselves
-      if (rootPersonId === userId) {
-        return true;
-      }
-
-      // 3. The captain of the team the user is on
-      const captainOf = teamMemberships.filter(
-        (membership) => membership.position === MembershipPositionType.Captain
-      );
-      if (captainOf.length === 0) {
-        return false;
-      }
-
-      const rootPersonMembership = await Container.get(
-        PersonRepository
-      ).findMembershipsOfPerson({
-        uuid: rootPersonId,
-      });
-      if (rootPersonMembership.isErr()) {
-        return false;
-      }
-
-      return captainOf.some((captain) =>
-        rootPersonMembership.value.some(
-          (membership) => membership.team.uuid === captain.teamId
-        )
-      );
-    }
-  )
-  @FieldResolver(() => ListFundraisingEntriesResponse, { nullable: true })
-  async assignedDonationEntries(
-    @Root() { id: { id } }: PersonNode,
-    @Args(() => ListFundraisingEntriesArgs) args: ListFundraisingEntriesArgs
-  ): Promise<ListFundraisingEntriesResponse> {
-    const entries = await this.fundraisingEntryRepository.listEntries(
-      {
-        filters: args.filters,
-        order:
-          args.sortBy?.map((key, i) => [
-            key,
-            args.sortDirection?.[i] ?? SortDirection.desc,
-          ]) ?? [],
-        skip:
-          args.page != null && args.actualPageSize != null
-            ? (args.page - 1) * args.actualPageSize
-            : null,
-        take: args.actualPageSize,
-      },
-      {
-        // EXTREMELY IMPORTANT FOR SECURITY
-        onlyAssignedToPerson: { uuid: id },
-      }
-    );
-    const count = await this.fundraisingEntryRepository.countEntries(
-      {
-        filters: args.filters,
-      },
-      {
-        onlyAssignedToPerson: { uuid: id },
-      }
-    );
-
-    if (entries.isErr()) {
-      throw new FormattedConcreteError(entries);
-    }
-    if (count.isErr()) {
-      throw new FormattedConcreteError(count);
-    }
-
-    return ListFundraisingEntriesResponse.newPaginated({
-      data: await Promise.all(
-        entries.value.map((model) => fundraisingEntryModelToNode(model))
-      ),
-      total: count.value,
-      page: args.page,
-      pageSize: args.actualPageSize,
-    });
-  }
-
-  @AccessControlAuthorized(
-    // We can't grant blanket access as otherwise people would see who else was assigned to an entry
-    // You can view all assignments for an entry if you are:
-    // 1. A fundraising coordinator or chair
-    globalFundraisingAccessParam,
-    // 2. The person themselves
-    {
-      rootMatch: [
-        {
-          root: "id",
-          extractor: ({ userData }) => userData.userId,
-        },
-      ],
-    }
-  )
+  @AccessControlAuthorized(Action.List, "FundraisingAssignmentNode")
   @FieldResolver(() => Float, { nullable: true })
   async fundraisingTotalAmount(
     @Root() { id: { id } }: PersonNode
@@ -635,14 +448,7 @@ export class PersonResolver
   // This is the only way normal dancers or committee members can access fundraising info
   // as it will only grant them the individual assignment they are associated with plus
   // shallow access to the entry itself
-  @AccessControlAuthorized<FundraisingAssignmentNode>({
-    rootMatch: [
-      {
-        root: "id",
-        extractor: ({ userData }) => userData.userId,
-      },
-    ],
-  })
+  @AccessControlAuthorized(Action.List, "FundraisingAssignmentNode")
   @FieldResolver(() => [FundraisingAssignmentNode])
   async fundraisingAssignments(
     @Root() { id: { id } }: PersonNode

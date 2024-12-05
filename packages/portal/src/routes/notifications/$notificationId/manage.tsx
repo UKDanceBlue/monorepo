@@ -6,7 +6,6 @@ import { SingleNotificationFragment } from "#documents/notification.ts";
 import { ManageNotificationForm } from "#elements/forms/notification/manage/ManageNotificationForm.js";
 import { graphql } from "#graphql/index.js";
 import { useQueryStatusWatcher } from "#hooks/useQueryStatusWatcher.js";
-import { routerAuthCheck } from "#tools/routerAuthCheck.js";
 
 const notificationManagerDocument = graphql(
   /* GraphQL */ `
@@ -102,7 +101,6 @@ export const Route = createFileRoute("/notifications/$notificationId/manage")({
     await context.urqlClient.query(notificationManagerDocument, {
       uuid: notificationId,
     });
-    routerAuthCheck(Route, context);
   },
   staticData: {
     authorizationRules: [

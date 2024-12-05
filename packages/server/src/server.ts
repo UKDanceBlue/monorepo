@@ -21,9 +21,9 @@ import type {
 } from "express";
 import express from "express";
 
+import type { GraphQLContext } from "#auth/context.js";
 import { applicationPortToken, loggingLevelToken } from "#lib/typediTokens.js";
 import { logger } from "#logging/logger.js";
-import type { GraphQLContext } from "#resolvers/context.js";
 
 const applicationPort = Container.get(applicationPortToken);
 const loggingLevel = Container.get(loggingLevelToken);
@@ -162,7 +162,7 @@ export async function startServer(
   const { default: uploadRouter } = await import(
     "./routes/api/upload/index.js"
   );
-  const { graphqlContextFunction } = await import("./resolvers/context.js");
+  const { authenticate } = await import("./lib/auth/context.js");
 
   app.use(cookieParser());
 
@@ -174,7 +174,7 @@ export async function startServer(
     express.json(),
 
     expressMiddleware<GraphQLContext>(apolloServer, {
-      context: graphqlContextFunction,
+      context: authenticate,
     })
   );
   const apiRouter = express.Router();

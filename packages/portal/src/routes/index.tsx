@@ -9,7 +9,6 @@ import {
 import { graphql } from "#graphql/index.js";
 import { useLoginState } from "#hooks/useLoginState.js";
 import { useQueryStatusWatcher } from "#hooks/useQueryStatusWatcher.js";
-import { routerAuthCheck } from "#tools/routerAuthCheck.js";
 
 const ViewMePageDocument = graphql(
   /* GraphQL */ `
@@ -24,9 +23,7 @@ const ViewMePageDocument = graphql(
 
 export const Route = createFileRoute("/")({
   component: HomePage,
-  beforeLoad({ context }) {
-    routerAuthCheck(Route, context);
-  },
+
   staticData: {
     authorizationRules: null,
   },

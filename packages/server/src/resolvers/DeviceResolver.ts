@@ -2,7 +2,7 @@ import { Service } from "@freshgum/typedi";
 import type { CrudResolver, GlobalId } from "@ukdanceblue/common";
 import {
   AccessControlAuthorized,
-  AccessLevel,
+  Action,
   DeviceNode,
   GetDeviceByUuidResponse,
   GlobalIdScalar,
@@ -71,7 +71,7 @@ export class DeviceResolver
     return resp;
   }
 
-  @AccessControlAuthorized({ accessLevel: AccessLevel.Admin })
+  @AccessControlAuthorized(Action.List)
   @Query(() => ListDevicesResponse, {
     name: "devices",
     description: "List all devices",
@@ -138,7 +138,7 @@ export class DeviceResolver
     });
   }
 
-  @AccessControlAuthorized({ accessLevel: AccessLevel.Admin })
+  @AccessControlAuthorized(Action.Delete)
   @Mutation(() => DeviceNode, {
     name: "deleteDevice",
     description: "Delete a device by it's UUID",

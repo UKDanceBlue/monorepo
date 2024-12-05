@@ -2,7 +2,6 @@ import { createFileRoute } from "@tanstack/react-router";
 import { AccessLevel, CommitteeRole } from "@ukdanceblue/common";
 
 import { EventCreator } from "#elements/forms/event/create/EventCreator.js";
-import { routerAuthCheck } from "#tools/routerAuthCheck.js";
 
 function EventsCreate() {
   return (
@@ -16,9 +15,7 @@ function EventsCreate() {
 
 export const Route = createFileRoute("/events/create")({
   component: EventsCreate,
-  beforeLoad({ context }) {
-    routerAuthCheck(Route, context);
-  },
+
   staticData: {
     authorizationRules: [
       {

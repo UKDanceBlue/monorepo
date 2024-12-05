@@ -2,9 +2,7 @@ import { Service } from "@freshgum/typedi";
 import type { CrudResolver, GlobalId } from "@ukdanceblue/common";
 import {
   AccessControlAuthorized,
-  AccessLevel,
-  CommitteeIdentifier,
-  CommitteeRole,
+  Action,
   GlobalIdScalar,
   LegacyError,
   LegacyErrorCode,
@@ -48,9 +46,7 @@ export class PointEntryResolver
     private readonly personRepository: PersonRepository
   ) {}
 
-  @AccessControlAuthorized({
-    accessLevel: AccessLevel.Committee,
-  })
+  @AccessControlAuthorized(Action.Get)
   @Query(() => PointEntryNode, { name: "pointEntry" })
   async pointEntry(
     @Arg("uuid", () => GlobalIdScalar) { id }: GlobalId
@@ -66,9 +62,7 @@ export class PointEntryResolver
     return pointEntryModelToResource(model);
   }
 
-  @AccessControlAuthorized({
-    accessLevel: AccessLevel.Committee,
-  })
+  @AccessControlAuthorized(Action.List)
   @Query(() => ListPointEntriesResponse, { name: "pointEntries" })
   async pointEntries(
     @Args(() => ListPointEntriesArgs) query: ListPointEntriesArgs
@@ -100,14 +94,7 @@ export class PointEntryResolver
     });
   }
 
-  @AccessControlAuthorized({
-    authRules: [
-      {
-        committeeIdentifier: CommitteeIdentifier.viceCommittee,
-        minCommitteeRole: CommitteeRole.Coordinator,
-      },
-    ],
-  })
+  @AccessControlAuthorized(Action.Create)
   @Mutation(() => PointEntryNode, { name: "createPointEntry" })
   async createPointEntry(
     @Arg("input") input: CreatePointEntryInput
@@ -127,14 +114,7 @@ export class PointEntryResolver
     return pointEntryModelToResource(model);
   }
 
-  @AccessControlAuthorized({
-    authRules: [
-      {
-        committeeIdentifier: CommitteeIdentifier.viceCommittee,
-        minCommitteeRole: CommitteeRole.Coordinator,
-      },
-    ],
-  })
+  @AccessControlAuthorized(Action.Delete)
   @Mutation(() => PointEntryNode, { name: "deletePointEntry" })
   async deletePointEntry(
     @Arg("uuid", () => GlobalIdScalar) { id }: GlobalId

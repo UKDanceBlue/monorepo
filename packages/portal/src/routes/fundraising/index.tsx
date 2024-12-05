@@ -13,7 +13,6 @@ import {
 import { graphql } from "#graphql/index";
 import { useListQuery } from "#hooks/useListQuery";
 import { useQueryStatusWatcher } from "#hooks/useQueryStatusWatcher";
-import { routerAuthCheck } from "#tools/routerAuthCheck";
 
 const ViewTeamFundraisingDocument = graphql(
   /* GraphQL */ `
@@ -56,9 +55,6 @@ export const Route = createFileRoute("/fundraising/")({
         committeeIdentifier: CommitteeIdentifier.fundraisingCommittee,
       },
     ],
-  },
-  beforeLoad({ context }) {
-    routerAuthCheck(Route, context);
   },
 });
 

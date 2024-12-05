@@ -10,7 +10,6 @@ import {
 import { graphql } from "#graphql/index.js";
 import { useLoginState } from "#hooks/useLoginState.js";
 import { useQueryStatusWatcher } from "#hooks/useQueryStatusWatcher.js";
-import { routerAuthCheck } from "#tools/routerAuthCheck.js";
 
 const viewPersonPageDocument = graphql(
   /* GraphQL */ `
@@ -52,7 +51,6 @@ export const Route = createFileRoute("/people/$personId/")({
   component: ViewPersonPage,
   async beforeLoad({ context, params: { personId } }) {
     await context.urqlClient.query(viewPersonPageDocument, { uuid: personId });
-    routerAuthCheck(Route, context);
   },
   staticData: {
     authorizationRules: [

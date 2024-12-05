@@ -6,6 +6,7 @@ import {
 import { Link, useNavigate } from "@tanstack/react-router";
 import {
   AccessLevel,
+  Action,
   CommitteeIdentifier,
   CommitteeRole,
   MembershipPositionType,
@@ -16,7 +17,7 @@ import { useMutation } from "urql";
 
 import { PersonSearch } from "#elements/components/person/PersonSearch.js";
 import type { FragmentOf } from "#graphql/index.js";
-import { graphql,readFragment } from "#graphql/index.js";
+import { graphql, readFragment } from "#graphql/index.js";
 import { useAuthorizationRequirement } from "#hooks/useLoginState.js";
 import { useQueryStatusWatcher } from "#hooks/useQueryStatusWatcher.js";
 
@@ -56,29 +57,14 @@ export function TeamViewer({
 }) {
   const teamData = readFragment(TeamViewerFragment, teamFragment) ?? undefined;
 
-  const canEditTeams = useAuthorizationRequirement(
-    {
-      accessLevel: AccessLevel.Admin,
-    },
-    {
-      committeeIdentifier: CommitteeIdentifier.dancerRelationsCommittee,
-      minCommitteeRole: CommitteeRole.Coordinator,
-    }
-  );
+  const canEditTeams = useAuthorizationRequirement(Action.Update, "TeamNode");
 
   const canEditMemberships = useAuthorizationRequirement(
-    {
-      accessLevel: AccessLevel.Admin,
-    },
-    {
-      accessLevel: AccessLevel.CommitteeChairOrCoordinator,
-      committeeIdentifier: CommitteeIdentifier.viceCommittee,
-    }
+    Action.Update,
+    "MembershipNode"
   );
 
-  const canViewPeople = useAuthorizationRequirement({
-    accessLevel: AccessLevel.Committee,
-  });
+  const canViewPeople = useAuthorizationRequirement(Action.Get, "PersonNode");
 
   const [personToAssignToTeam, setPersonToAssignToTeam] = useState<{
     uuid: string;

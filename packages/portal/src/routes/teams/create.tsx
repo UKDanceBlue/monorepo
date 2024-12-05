@@ -6,7 +6,6 @@ import { AccessLevel, CommitteeIdentifier } from "@ukdanceblue/common";
 
 import { useMarathon } from "#config/marathonContext.js";
 import { TeamCreator } from "#elements/forms/team/create/TeamCreator.js";
-import { routerAuthCheck } from "#tools/routerAuthCheck.js";
 
 function CreateTeamPage() {
   const selectedMarathon = useMarathon();
@@ -20,9 +19,7 @@ function CreateTeamPage() {
 
 export const Route = createFileRoute("/teams/create")({
   component: CreateTeamPage,
-  beforeLoad({ context }) {
-    routerAuthCheck(Route, context);
-  },
+
   staticData: {
     authorizationRules: [
       {

@@ -1,19 +1,25 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
 import { Container } from "@freshgum/typedi";
-import type { AccessControlParam } from "@ukdanceblue/common";
-import { AccessLevel, checkParam } from "@ukdanceblue/common";
+import type { AccessControlParam, Action } from "@ukdanceblue/common";
+import { AccessLevel, parseGlobalId } from "@ukdanceblue/common";
 import {
   ConcreteError,
   FormattedConcreteError,
   toBasicError,
 } from "@ukdanceblue/common/error";
-import type { GraphQLResolveInfo } from "graphql";
+import {
+  GraphQLList,
+  GraphQLObjectType,
+  type GraphQLResolveInfo,
+} from "graphql";
 import { Err, Option, Result } from "ts-results-es";
 import type { ArgsDictionary, MiddlewareFn } from "type-graphql";
 import { buildSchema } from "type-graphql";
 import { fileURLToPath } from "url";
 
+import type { GraphQLContext } from "#lib/auth/context.js";
 import { logger } from "#logging/logger.js";
-import type { GraphQLContext } from "#resolvers/context.js";
 
 import { resolversList } from "./resolversList.js";
 
@@ -80,43 +86,105 @@ for (const service of resolversList) {
 export default await buildSchema({
   resolvers: resolversList,
   emitSchemaFile: schemaPath,
-  authChecker<RootType extends object>(
+  authChecker(
     resolverData: {
-      root: RootType;
+      root: Record<string, unknown>;
       args: ArgsDictionary;
       context: GraphQLContext;
       info: GraphQLResolveInfo;
     },
-    params: AccessControlParam<RootType>[]
+    params: AccessControlParam[]
   ): boolean {
-    const { context, args, root } = resolverData;
-    const { authorization } = context;
+    const {
+      context,
+      info: { parentType, returnType, fieldName },
+      root,
+    } = resolverData;
+    const { accessLevel, ability } = context;
 
-    if (authorization.accessLevel === AccessLevel.SuperAdmin) {
+    if (accessLevel === AccessLevel.SuperAdmin) {
       return true;
     }
 
-    let ok = false;
+    if (params.length === 0) {
+      return true;
+    } else if (params.length === 1) {
+      const [rule] = params as [AccessControlParam];
 
-    for (const rule of params) {
-      const result = checkParam<RootType>(
-        rule,
-        authorization,
-        root,
-        args,
-        context
+      if (rule.length !== 1 && typeof rule[1] !== "string") {
+        return ability.can(...rule);
+      }
+
+      let action: Action;
+      let subject: string | undefined = undefined;
+      let field: string | undefined = undefined;
+      let childOfType: string | undefined = undefined;
+      let childOfId: string | undefined = undefined;
+
+      if (rule.length === 1) {
+        [action] = rule;
+      } else {
+        [action, , field] = rule;
+        subject = rule[1] as string;
+      }
+
+      if (
+        parentType.name !== "Query" &&
+        parentType.name !== "Mutation" &&
+        parentType.name !== "Subscription"
+      ) {
+        if (!field) {
+          field = fieldName;
+        }
+        childOfType = parentType.name;
+        if ("id" in root) {
+          if (typeof root.id === "string") {
+            childOfId = root.id;
+          } else {
+            const parentId = parseGlobalId(String(root.id));
+            if (parentId.isOk()) {
+              childOfId = parentId.value.id;
+            } else {
+              throw new Error("Cannot determine parent ID for query");
+            }
+          }
+        } else {
+          throw new Error("Cannot determine parent ID for query");
+        }
+      }
+
+      if (subject === "all") {
+        return ability.can(action as typeof Action.Read, "all", field);
+      }
+
+      if (!subject) {
+        if (returnType instanceof GraphQLObjectType) {
+          subject = returnType.name;
+        } else if (returnType instanceof GraphQLList) {
+          if (returnType.ofType instanceof GraphQLObjectType) {
+            subject = returnType.ofType.name;
+          }
+        }
+      }
+      if (!subject) {
+        throw new Error("Cannot determine subject type for query");
+      }
+
+      return ability.can(
+        action as typeof Action.Read,
+        {
+          kind: subject as "FundraisingAssignmentNode",
+          id: (root as any).id,
+          childOfId,
+          childOfType: childOfType as "FundraisingAssignmentNode",
+          ownedByUserIds: [],
+          withinTeamIds: [],
+        },
+        field
       );
-      if (result.isErr()) {
-        throw new Error(result.error.detailedMessage);
-      }
-
-      ok = result.value;
-      if (ok) {
-        break;
-      }
+    } else {
+      throw new Error("Invalid access control rule");
     }
-
-    return ok;
   },
   globalMiddlewares: [errorHandlingMiddleware],
   container: {

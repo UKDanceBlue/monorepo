@@ -9,7 +9,6 @@ import { NotificationDeliveriesTable } from "#elements/tables/notification/Notif
 import { NotificationViewer } from "#elements/viewers/notification/NotificationViewer.js";
 import { graphql } from "#graphql/index.js";
 import { useQueryStatusWatcher } from "#hooks/useQueryStatusWatcher.js";
-import { routerAuthCheck } from "#tools/routerAuthCheck.js";
 
 const notificationViewerDocument = graphql(
   /* GraphQL */ `
@@ -61,7 +60,6 @@ export const Route = createFileRoute("/notifications/$notificationId/")({
     await context.urqlClient.query(notificationViewerDocument, {
       uuid: notificationId,
     });
-    routerAuthCheck(Route, context);
   },
   staticData: {
     authorizationRules: [

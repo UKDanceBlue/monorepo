@@ -13,7 +13,6 @@ import {
   MarathonViewerFragment,
 } from "#elements/viewers/marathon/MarathonViewer.js";
 import { graphql } from "#graphql/index.js";
-import { routerAuthCheck } from "#tools/routerAuthCheck.js";
 
 const marathonOverviewPageDocument = graphql(
   /* GraphQL */ `
@@ -67,9 +66,7 @@ function MarathonOverviewPage() {
 
 export const Route = createFileRoute("/marathon/")({
   component: MarathonOverviewPage,
-  beforeLoad({ context }) {
-    routerAuthCheck(Route, context);
-  },
+
   staticData: {
     authorizationRules: [
       {

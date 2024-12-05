@@ -6,7 +6,6 @@ import { PersonEditorFragment, TeamNameFragment } from "#documents/person.ts";
 import { PersonEditor } from "#elements/forms/person/edit/PersonEditor.js";
 import { graphql } from "#graphql/index.js";
 import { useQueryStatusWatcher } from "#hooks/useQueryStatusWatcher.js";
-import { routerAuthCheck } from "#tools/routerAuthCheck.js";
 
 const viewPersonPageDocument = graphql(
   /* GraphQL */ `
@@ -53,7 +52,6 @@ export const Route = createFileRoute("/people/$personId/edit")({
   component: EditPersonPage,
   async beforeLoad({ context, params: { personId } }) {
     await context.urqlClient.query(viewPersonPageDocument, { uuid: personId });
-    routerAuthCheck(Route, context);
   },
   staticData: {
     authorizationRules: [

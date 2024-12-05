@@ -13,7 +13,6 @@ import type { TanAntChildInputProps } from "#elements/components/form/TanAntForm
 import { TanAntFormItem } from "#elements/components/form/TanAntFormItem.js";
 import { graphql } from "#graphql/index.js";
 import { useQueryStatusWatcher } from "#hooks/useQueryStatusWatcher.js";
-import { routerAuthCheck } from "#tools/routerAuthCheck.js";
 
 const editMarathonHourDataDocument = graphql(/* GraphQL */ `
   query EditMarathonHourData($marathonHourUuid: GlobalId!) {
@@ -219,7 +218,6 @@ export const Route = createFileRoute("/marathon/$marathonId/hours/$hourId/")({
     context.urqlClient.query(editMarathonHourDataDocument, {
       marathonHourUuid: hourId,
     });
-    routerAuthCheck(Route, context);
   },
   staticData: {
     authorizationRules: [

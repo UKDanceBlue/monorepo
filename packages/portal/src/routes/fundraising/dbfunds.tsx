@@ -9,7 +9,6 @@ import { utils, writeFile } from "xlsx";
 
 import { useMarathon } from "#config/marathonContext.js";
 import { graphql } from "#graphql/index.js";
-import { routerAuthCheck } from "#tools/routerAuthCheck.js";
 
 interface FundraisingTeam {
   name: string;
@@ -78,7 +77,7 @@ function DbFundsViewer() {
   }, [marathonYear, selectedId, teamData.data]);
 
   return (
-    (<Flex vertical>
+    <Flex vertical>
       <Flex vertical gap="small">
         <Typography.Title level={2}>Fundraising Teams</Typography.Title>
         <Flex gap="small">
@@ -221,15 +220,13 @@ function DbFundsViewer() {
           }}
         />
       </Flex>
-    </Flex>)
+    </Flex>
   );
 }
 
 export const Route = createFileRoute("/fundraising/dbfunds")({
   component: DbFundsViewer,
-  beforeLoad({ context }) {
-    routerAuthCheck(Route, context);
-  },
+
   staticData: {
     authorizationRules: [
       {

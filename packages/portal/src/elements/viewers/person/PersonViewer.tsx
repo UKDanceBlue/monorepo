@@ -7,6 +7,8 @@ import type {
 } from "@ukdanceblue/common";
 import {
   AccessLevel,
+  Action,
+  AuthSource,
   committeeNames,
   MembershipPositionType,
   roleToAccessLevel,
@@ -15,7 +17,7 @@ import {
 import { Button, Card, Descriptions, Empty, Flex, Typography } from "antd";
 
 import type { FragmentOf } from "#graphql/index.js";
-import { graphql,readFragment } from "#graphql/index.js";
+import { graphql, readFragment } from "#graphql/index.js";
 import { useAuthorizationRequirement } from "#hooks/useLoginState.js";
 
 import { usePersonDeletePopup } from "../../components/person/PersonDeletePopup";
@@ -72,7 +74,8 @@ export function PersonViewer({
   });
 
   const canEditPerson = useAuthorizationRequirement(
-    AccessLevel.CommitteeChairOrCoordinator
+    Action.Update,
+    "PersonNode"
   );
 
   if (!personData) {
@@ -141,10 +144,10 @@ export function PersonViewer({
               {
                 label: "Access Level",
                 children: stringifyAccessLevel(
-                  roleToAccessLevel({
-                    dbRole: personData.dbRole,
-                    effectiveCommitteeRoles: committees,
-                  })
+                  roleToAccessLevel(
+                    committees,
+                    authorization?.authSource ?? AuthSource.None
+                  )
                 ),
               },
               ...committees.map((committee) => ({

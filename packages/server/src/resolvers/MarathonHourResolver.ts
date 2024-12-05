@@ -1,10 +1,8 @@
 import { Service } from "@freshgum/typedi";
-import { CommitteeRole } from "@prisma/client";
 import type { CrudResolver, GlobalId } from "@ukdanceblue/common";
 import {
   AccessControlAuthorized,
-  AccessLevel,
-  CommitteeIdentifier,
+  Action,
   GlobalIdScalar,
   ImageNode,
   LegacyError,
@@ -40,9 +38,7 @@ export class MarathonHourResolver
     private readonly marathonHourRepository: MarathonHourRepository
   ) {}
 
-  @AccessControlAuthorized({
-    accessLevel: AccessLevel.Public,
-  })
+  @AccessControlAuthorized(Action.Get)
   @Query(() => MarathonHourNode)
   async marathonHour(@Arg("uuid", () => GlobalIdScalar) { id }: GlobalId) {
     const marathonHour =
@@ -55,9 +51,7 @@ export class MarathonHourResolver
     return marathonHourModelToResource(marathonHour);
   }
 
-  @AccessControlAuthorized({
-    accessLevel: AccessLevel.Public,
-  })
+  @AccessControlAuthorized(Action.ReadActive)
   @Query(() => MarathonHourNode, { nullable: true })
   async currentMarathonHour() {
     const marathonHour =
@@ -69,9 +63,7 @@ export class MarathonHourResolver
   }
 
   // TODO: Double check that this access is correct
-  @AccessControlAuthorized({
-    accessLevel: AccessLevel.Committee,
-  })
+  @AccessControlAuthorized(Action.List)
   @Query(() => ListMarathonHoursResponse)
   async marathonHours(@Args() args: ListMarathonHoursArgs) {
     const marathons = await this.marathonHourRepository.listMarathonHours(args);
@@ -85,27 +77,12 @@ export class MarathonHourResolver
     });
   }
 
-  @AccessControlAuthorized({
-    accessLevel: AccessLevel.Public,
-  })
   @FieldResolver(() => [ImageNode])
   async mapImages(@Root() { id: { id } }: MarathonHourNode) {
     return this.marathonHourRepository.getMaps({ uuid: id });
   }
 
-  @AccessControlAuthorized(
-    {
-      accessLevel: AccessLevel.Admin,
-    },
-    {
-      authRules: [
-        {
-          minCommitteeRole: CommitteeRole.Coordinator,
-          committeeIdentifier: CommitteeIdentifier.programmingCommittee,
-        },
-      ],
-    }
-  )
+  @AccessControlAuthorized(Action.Create)
   @Mutation(() => MarathonHourNode)
   async createMarathonHour(
     @Arg("input") input: CreateMarathonHourInput,
@@ -118,19 +95,7 @@ export class MarathonHourResolver
     return marathonHourModelToResource(marathonHour);
   }
 
-  @AccessControlAuthorized(
-    {
-      accessLevel: AccessLevel.Admin,
-    },
-    {
-      authRules: [
-        {
-          minCommitteeRole: CommitteeRole.Coordinator,
-          committeeIdentifier: CommitteeIdentifier.programmingCommittee,
-        },
-      ],
-    }
-  )
+  @AccessControlAuthorized(Action.Update)
   @Mutation(() => MarathonHourNode)
   async setMarathonHour(
     @Arg("uuid", () => GlobalIdScalar) { id }: GlobalId,
@@ -146,19 +111,7 @@ export class MarathonHourResolver
     return marathonHourModelToResource(marathonHour);
   }
 
-  @AccessControlAuthorized(
-    {
-      accessLevel: AccessLevel.Admin,
-    },
-    {
-      authRules: [
-        {
-          minCommitteeRole: CommitteeRole.Coordinator,
-          committeeIdentifier: CommitteeIdentifier.programmingCommittee,
-        },
-      ],
-    }
-  )
+  @AccessControlAuthorized(Action.Delete)
   @Mutation(() => MarathonHourNode)
   async deleteMarathonHour(
     @Arg("uuid", () => GlobalIdScalar) { id }: GlobalId
@@ -172,19 +125,7 @@ export class MarathonHourResolver
     return marathonHourModelToResource(marathonHour);
   }
 
-  @AccessControlAuthorized(
-    {
-      accessLevel: AccessLevel.Admin,
-    },
-    {
-      authRules: [
-        {
-          minCommitteeRole: CommitteeRole.Coordinator,
-          committeeIdentifier: CommitteeIdentifier.programmingCommittee,
-        },
-      ],
-    }
-  )
+  @AccessControlAuthorized(Action.Update)
   @Mutation(() => MarathonHourNode)
   async addMap(
     @Arg("uuid", () => GlobalIdScalar) { id }: GlobalId,
@@ -200,19 +141,7 @@ export class MarathonHourResolver
     return marathonHourModelToResource(marathonHour);
   }
 
-  @AccessControlAuthorized(
-    {
-      accessLevel: AccessLevel.Admin,
-    },
-    {
-      authRules: [
-        {
-          minCommitteeRole: CommitteeRole.Coordinator,
-          committeeIdentifier: CommitteeIdentifier.programmingCommittee,
-        },
-      ],
-    }
-  )
+  @AccessControlAuthorized(Action.Update)
   @Mutation(() => VoidResolver)
   async removeMap(
     @Arg("uuid", () => GlobalIdScalar) { id }: GlobalId,

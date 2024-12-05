@@ -21,7 +21,6 @@ import { useClient, useQuery } from "urql";
 import { graphql } from "#graphql/index.js";
 import { useImagePicker } from "#hooks/useImagePicker.js";
 import { useQueryStatusWatcher } from "#hooks/useQueryStatusWatcher.js";
-import { routerAuthCheck } from "#tools/routerAuthCheck.js";
 
 const feedPageDocument = graphql(/* GraphQL */ `
   query FeedPage {
@@ -222,7 +221,6 @@ export const Route = createFileRoute("/feed/")({
   component: FeedPage,
   async beforeLoad({ context }) {
     await context.urqlClient.query(feedPageDocument, {});
-    routerAuthCheck(Route, context);
   },
   staticData: {
     authorizationRules: [

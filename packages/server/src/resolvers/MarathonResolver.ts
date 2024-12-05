@@ -2,7 +2,7 @@ import { Service } from "@freshgum/typedi";
 import type { CrudResolver, GlobalId } from "@ukdanceblue/common";
 import {
   AccessControlAuthorized,
-  AccessLevel,
+  Action,
   CommitteeIdentifier,
   GlobalIdScalar,
   MarathonHourNode,
@@ -49,9 +49,7 @@ export class MarathonResolver
     private readonly committeeRepository: CommitteeRepository
   ) {}
 
-  @AccessControlAuthorized({
-    accessLevel: AccessLevel.None,
-  })
+  @AccessControlAuthorized(Action.Get)
   @Query(() => MarathonNode)
   async marathon(@Arg("uuid", () => GlobalIdScalar) { id }: GlobalId) {
     const marathon = await this.marathonRepository.findMarathonByUnique({
@@ -60,9 +58,7 @@ export class MarathonResolver
     return marathon.map(marathonModelToResource);
   }
 
-  @AccessControlAuthorized({
-    accessLevel: AccessLevel.Committee,
-  })
+  @AccessControlAuthorized(Action.Get)
   @Query(() => MarathonNode)
   async marathonForYear(@Arg("year") year: string) {
     const marathon = await this.marathonRepository.findMarathonByUnique({
@@ -71,9 +67,7 @@ export class MarathonResolver
     return marathon.map(marathonModelToResource);
   }
 
-  @AccessControlAuthorized({
-    accessLevel: AccessLevel.Committee,
-  })
+  @AccessControlAuthorized(Action.List)
   @Query(() => ListMarathonsResponse)
   async marathons(@Args() args: ListMarathonsArgs) {
     const marathons = await this.marathonRepository.listMarathons({
@@ -100,9 +94,7 @@ export class MarathonResolver
     });
   }
 
-  @AccessControlAuthorized({
-    accessLevel: AccessLevel.None,
-  })
+  @AccessControlAuthorized(Action.ReadActive)
   @Query(() => MarathonNode, {
     nullable: true,
     description:
@@ -113,9 +105,7 @@ export class MarathonResolver
     return marathon.map((m) => m.map(marathonModelToResource));
   }
 
-  @AccessControlAuthorized({
-    accessLevel: AccessLevel.None,
-  })
+  @AccessControlAuthorized(Action.Get)
   @Query(() => MarathonNode, {
     nullable: true,
     description:
@@ -126,9 +116,7 @@ export class MarathonResolver
     return marathon.map((m) => m.map(marathonModelToResource));
   }
 
-  @AccessControlAuthorized({
-    accessLevel: AccessLevel.SuperAdmin,
-  })
+  @AccessControlAuthorized(Action.Create)
   @Mutation(() => MarathonNode)
   async createMarathon(@Arg("input") input: CreateMarathonInput) {
     return new AsyncResult(
@@ -141,9 +129,7 @@ export class MarathonResolver
     }).promise;
   }
 
-  @AccessControlAuthorized({
-    accessLevel: AccessLevel.SuperAdmin,
-  })
+  @AccessControlAuthorized(Action.Update)
   @Mutation(() => MarathonNode)
   async setMarathon(
     @Arg("uuid", () => GlobalIdScalar) { id }: GlobalId,
@@ -156,15 +142,14 @@ export class MarathonResolver
     return marathon.map(marathonModelToResource);
   }
 
-  @AccessControlAuthorized({
-    accessLevel: AccessLevel.SuperAdmin,
-  })
+  @AccessControlAuthorized(Action.Delete)
   @Mutation(() => MarathonNode)
   async deleteMarathon(@Arg("uuid", () => GlobalIdScalar) { id }: GlobalId) {
     const marathon = await this.marathonRepository.deleteMarathon({ uuid: id });
     return marathon.map(marathonModelToResource);
   }
 
+  @AccessControlAuthorized(Action.List)
   @FieldResolver(() => [MarathonHourNode])
   async hours(@Root() { id: { id } }: MarathonNode) {
     const rows = await this.marathonRepository.getMarathonHours({
@@ -184,9 +169,6 @@ export class MarathonResolver
   }
 
   // Committees
-  @AccessControlAuthorized({
-    accessLevel: AccessLevel.Public,
-  })
   @FieldResolver(() => TeamNode)
   async communityDevelopmentCommitteeTeam(marathon: MarathonNode) {
     return this.#committeeTeam(
@@ -195,9 +177,6 @@ export class MarathonResolver
     );
   }
 
-  @AccessControlAuthorized({
-    accessLevel: AccessLevel.Public,
-  })
   @FieldResolver(() => TeamNode)
   async programmingCommitteeTeam(marathon: MarathonNode) {
     return this.#committeeTeam(
@@ -206,9 +185,6 @@ export class MarathonResolver
     );
   }
 
-  @AccessControlAuthorized({
-    accessLevel: AccessLevel.Public,
-  })
   @FieldResolver(() => TeamNode)
   async fundraisingCommitteeTeam(marathon: MarathonNode) {
     return this.#committeeTeam(
@@ -217,9 +193,6 @@ export class MarathonResolver
     );
   }
 
-  @AccessControlAuthorized({
-    accessLevel: AccessLevel.Public,
-  })
   @FieldResolver(() => TeamNode)
   async dancerRelationsCommitteeTeam(marathon: MarathonNode) {
     return this.#committeeTeam(
@@ -228,9 +201,6 @@ export class MarathonResolver
     );
   }
 
-  @AccessControlAuthorized({
-    accessLevel: AccessLevel.Public,
-  })
   @FieldResolver(() => TeamNode)
   async familyRelationsCommitteeTeam(marathon: MarathonNode) {
     return this.#committeeTeam(
@@ -239,17 +209,11 @@ export class MarathonResolver
     );
   }
 
-  @AccessControlAuthorized({
-    accessLevel: AccessLevel.Public,
-  })
   @FieldResolver(() => TeamNode)
   async techCommitteeTeam(marathon: MarathonNode) {
     return this.#committeeTeam(CommitteeIdentifier.techCommittee, marathon);
   }
 
-  @AccessControlAuthorized({
-    accessLevel: AccessLevel.Public,
-  })
   @FieldResolver(() => TeamNode)
   async operationsCommitteeTeam(marathon: MarathonNode) {
     return this.#committeeTeam(
@@ -258,9 +222,6 @@ export class MarathonResolver
     );
   }
 
-  @AccessControlAuthorized({
-    accessLevel: AccessLevel.Public,
-  })
   @FieldResolver(() => TeamNode)
   async marketingCommitteeTeam(marathon: MarathonNode) {
     return this.#committeeTeam(
@@ -269,9 +230,6 @@ export class MarathonResolver
     );
   }
 
-  @AccessControlAuthorized({
-    accessLevel: AccessLevel.Public,
-  })
   @FieldResolver(() => TeamNode)
   async corporateCommitteeTeam(marathon: MarathonNode) {
     return this.#committeeTeam(
@@ -280,9 +238,6 @@ export class MarathonResolver
     );
   }
 
-  @AccessControlAuthorized({
-    accessLevel: AccessLevel.Public,
-  })
   @FieldResolver(() => TeamNode)
   async miniMarathonsCommitteeTeam(marathon: MarathonNode) {
     return this.#committeeTeam(
@@ -291,17 +246,11 @@ export class MarathonResolver
     );
   }
 
-  @AccessControlAuthorized({
-    accessLevel: AccessLevel.Public,
-  })
   @FieldResolver(() => TeamNode)
   async viceCommitteeTeam(marathon: MarathonNode) {
     return this.#committeeTeam(CommitteeIdentifier.viceCommittee, marathon);
   }
 
-  @AccessControlAuthorized({
-    accessLevel: AccessLevel.Public,
-  })
   @FieldResolver(() => TeamNode)
   async overallCommitteeTeam(marathon: MarathonNode) {
     return this.#committeeTeam(CommitteeIdentifier.overallCommittee, marathon);

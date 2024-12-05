@@ -13,7 +13,7 @@ import {
   Link,
   RouterProvider,
 } from "@tanstack/react-router";
-import type { AuthorizationRule } from "@ukdanceblue/common";
+import type { AccessControlParam } from "@ukdanceblue/common";
 import { App, Empty, Spin } from "antd";
 import { App as AntApp } from "antd";
 import type { useAppProps } from "antd/es/app/context.js";
@@ -25,8 +25,9 @@ import { AntConfigProvider, ThemeConfigProvider } from "#config/ant.js";
 import { API_BASE_URL, urqlClient } from "#config/api.js";
 import { MarathonConfigProvider } from "#config/marathon.js";
 import { authProvider } from "#config/refine/authentication.js";
+import { accessControlProvider } from "#config/refine/authorization.js";
 import { dataProvider } from "#config/refine/data.js";
-import { useRefineResources } from "#config/refine/resources.js";
+import { refineResources } from "#config/refine/resources.js";
 import { SpinningRibbon } from "#elements/components/design/RibbonSpinner.js";
 
 import { routeTree } from "./routeTree.gen.js";
@@ -97,7 +98,7 @@ declare module "@tanstack/react-router" {
     router: typeof router;
   }
   interface StaticDataRouteOption {
-    authorizationRules: AuthorizationRule[] | null;
+    authorizationRules: unknown;
   }
 }
 
@@ -134,8 +135,6 @@ function RouterWrapper() {
   }, [isServerReachable]);
 
   const antApp = App.useApp();
-
-  const resources = useRefineResources({ router });
 
   return isServerReachable === false ? (
     <div
@@ -178,7 +177,8 @@ function RouterWrapper() {
           text: "DanceBlue Portal",
         },
       }}
-      resources={resources}
+      accessControlProvider={accessControlProvider}
+      resources={refineResources}
     >
       <RouterProvider router={router} context={{ antApp }} />
       {import.meta.env.MODE === "development" && <DevtoolsPanel />}

@@ -2,7 +2,7 @@ import { Service } from "@freshgum/typedi";
 import type { CrudResolver, GlobalId } from "@ukdanceblue/common";
 import {
   AccessControlAuthorized,
-  AccessLevel,
+  Action,
   GlobalIdScalar,
   LegacyError,
   LegacyErrorCode,
@@ -62,9 +62,7 @@ export class NotificationResolver
     private readonly notificationScheduler: NotificationScheduler
   ) {}
 
-  @AccessControlAuthorized({
-    accessLevel: AccessLevel.CommitteeChairOrCoordinator,
-  })
+  @AccessControlAuthorized(Action.Get)
   @Query(() => NotificationNode, { name: "notification" })
   async notification(
     @Arg("uuid", () => GlobalIdScalar) { id }: GlobalId
@@ -76,9 +74,7 @@ export class NotificationResolver
       .map((row) => notificationModelToResource(row)).promise;
   }
 
-  @AccessControlAuthorized({
-    accessLevel: AccessLevel.CommitteeChairOrCoordinator,
-  })
+  @AccessControlAuthorized(Action.List)
   @Query(() => ListNotificationsResponse, { name: "notifications" })
   async notifications(
     @Args(() => ListNotificationsArgs) query: ListNotificationsArgs
@@ -107,9 +103,7 @@ export class NotificationResolver
     });
   }
 
-  @AccessControlAuthorized({
-    accessLevel: AccessLevel.CommitteeChairOrCoordinator,
-  })
+  @AccessControlAuthorized(Action.List, "NotificationDeliveryNode")
   @Query(() => ListNotificationDeliveriesResponse, {
     name: "notificationDeliveries",
   })
@@ -151,9 +145,7 @@ export class NotificationResolver
     });
   }
 
-  @AccessControlAuthorized({
-    accessLevel: AccessLevel.CommitteeChairOrCoordinator,
-  })
+  @AccessControlAuthorized(Action.Create)
   @Mutation(() => NotificationNode, { name: "stageNotification" })
   async stage(
     @Args(() => StageNotificationArgs) args: StageNotificationArgs
@@ -188,9 +180,7 @@ export class NotificationResolver
     return result.map((result) => notificationModelToResource(result));
   }
 
-  @AccessControlAuthorized({
-    accessLevel: AccessLevel.CommitteeChairOrCoordinator,
-  })
+  @AccessControlAuthorized(Action.Deploy, "NotificationNode")
   @Mutation(() => VoidResolver, {
     name: "sendNotification",
     description: "Send a notification immediately.",
@@ -216,9 +206,7 @@ export class NotificationResolver
       }).promise;
   }
 
-  @AccessControlAuthorized({
-    accessLevel: AccessLevel.CommitteeChairOrCoordinator,
-  })
+  @AccessControlAuthorized(Action.Deploy, "NotificationNode")
   @Mutation(() => NotificationNode, {
     name: "scheduleNotification",
   })
@@ -244,9 +232,7 @@ export class NotificationResolver
       .map(notificationModelToResource).promise;
   }
 
-  @AccessControlAuthorized({
-    accessLevel: AccessLevel.CommitteeChairOrCoordinator,
-  })
+  @AccessControlAuthorized(Action.Update, "NotificationNode")
   @Mutation(() => NotificationNode, {
     name: "acknowledgeDeliveryIssue",
   })
@@ -276,9 +262,7 @@ export class NotificationResolver
       .map(notificationModelToResource).promise;
   }
 
-  @AccessControlAuthorized({
-    accessLevel: AccessLevel.CommitteeChairOrCoordinator,
-  })
+  @AccessControlAuthorized(Action.Deploy, "NotificationNode")
   @Mutation(() => NotificationNode, {
     name: "abortScheduledNotification",
   })
@@ -306,9 +290,7 @@ export class NotificationResolver
       .map((notification) => notificationModelToResource(notification)).promise;
   }
 
-  @AccessControlAuthorized({
-    accessLevel: AccessLevel.CommitteeChairOrCoordinator,
-  })
+  @AccessControlAuthorized(Action.Delete, "NotificationNode")
   @Mutation(() => NotificationNode, { name: "deleteNotification" })
   async deleteNotification(
     @Arg("uuid", () => GlobalIdScalar) { id }: GlobalId,
@@ -349,9 +331,7 @@ export class NotificationResolver
       .map(notificationModelToResource).promise;
   }
 
-  @AccessControlAuthorized({
-    accessLevel: AccessLevel.CommitteeChairOrCoordinator,
-  })
+  @AccessControlAuthorized(Action.Get)
   @FieldResolver(() => Int, { name: "deliveryCount" })
   async deliveryCount(
     @Root() { id: { id } }: NotificationNode
@@ -361,9 +341,7 @@ export class NotificationResolver
     });
   }
 
-  @AccessControlAuthorized({
-    accessLevel: AccessLevel.CommitteeChairOrCoordinator,
-  })
+  @AccessControlAuthorized(Action.Get)
   @FieldResolver(() => NotificationDeliveryIssueCount, {
     name: "deliveryIssueCount",
   })

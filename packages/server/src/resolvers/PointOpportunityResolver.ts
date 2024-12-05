@@ -1,10 +1,8 @@
 import { Service } from "@freshgum/typedi";
-import { CommitteeRole } from "@prisma/client";
 import type { CrudResolver, GlobalId } from "@ukdanceblue/common";
 import {
   AccessControlAuthorized,
-  AccessLevel,
-  CommitteeIdentifier,
+  Action,
   EventNode,
   GlobalIdScalar,
   LegacyError,
@@ -46,9 +44,7 @@ export class PointOpportunityResolver
     private readonly pointOpportunityRepository: PointOpportunityRepository
   ) {}
 
-  @AccessControlAuthorized({
-    accessLevel: AccessLevel.Committee,
-  })
+  @AccessControlAuthorized(Action.Get)
   @Query(() => PointOpportunityNode, { name: "pointOpportunity" })
   async pointOpportunity(
     @Arg("uuid", () => GlobalIdScalar) { id }: GlobalId
@@ -68,9 +64,7 @@ export class PointOpportunityResolver
     return pointOpportunityModelToResource(row);
   }
 
-  @AccessControlAuthorized({
-    accessLevel: AccessLevel.Committee,
-  })
+  @AccessControlAuthorized(Action.List)
   @Query(() => ListPointOpportunitiesResponse, { name: "pointOpportunities" })
   async pointOpportunities(
     @Args(() => ListPointOpportunitiesArgs) query: ListPointOpportunitiesArgs
@@ -102,14 +96,7 @@ export class PointOpportunityResolver
     });
   }
 
-  @AccessControlAuthorized({
-    authRules: [
-      {
-        committeeIdentifier: CommitteeIdentifier.viceCommittee,
-        minCommitteeRole: CommitteeRole.Coordinator,
-      },
-    ],
-  })
+  @AccessControlAuthorized(Action.Create)
   @Mutation(() => PointOpportunityNode, {
     name: "createPointOpportunity",
   })
@@ -127,14 +114,7 @@ export class PointOpportunityResolver
     return pointOpportunityModelToResource(row);
   }
 
-  @AccessControlAuthorized({
-    authRules: [
-      {
-        committeeIdentifier: CommitteeIdentifier.viceCommittee,
-        minCommitteeRole: CommitteeRole.Coordinator,
-      },
-    ],
-  })
+  @AccessControlAuthorized(Action.Update)
   @Mutation(() => PointOpportunityNode, {
     name: "setPointOpportunity",
   })
@@ -162,14 +142,7 @@ export class PointOpportunityResolver
     return pointOpportunityModelToResource(row);
   }
 
-  @AccessControlAuthorized({
-    authRules: [
-      {
-        committeeIdentifier: CommitteeIdentifier.viceCommittee,
-        minCommitteeRole: CommitteeRole.Coordinator,
-      },
-    ],
-  })
+  @AccessControlAuthorized(Action.Delete)
   @Mutation(() => PointOpportunityNode, {
     name: "deletePointOpportunity",
   })

@@ -7,7 +7,6 @@ import { useQuery } from "urql";
 import { teamPageDocument } from "#documents/team.js";
 import { TeamViewer } from "#elements/viewers/team/TeamViewer.js";
 import { useQueryStatusWatcher } from "#hooks/useQueryStatusWatcher.js";
-import { routerAuthCheck } from "#tools/routerAuthCheck.js";
 
 function ViewTeamPage() {
   const { teamId: teamUuid } = Route.useParams();
@@ -40,7 +39,6 @@ export const Route = createFileRoute("/teams/$teamId/_layout")({
     await context.urqlClient.query(teamPageDocument, {
       teamUuid: teamId,
     });
-    routerAuthCheck(Route, context);
   },
   staticData: {
     authorizationRules: [

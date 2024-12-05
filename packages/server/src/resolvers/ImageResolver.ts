@@ -4,7 +4,7 @@ import { Service } from "@freshgum/typedi";
 import type { CrudResolver, GlobalId } from "@ukdanceblue/common";
 import {
   AccessControlAuthorized,
-  AccessLevel,
+  Action,
   GlobalIdScalar,
   ImageNode,
   LegacyError,
@@ -27,7 +27,7 @@ import { logger } from "#logging/standardLogging.js";
 import { imageModelToResource } from "#repositories/image/imageModelToResource.js";
 import { ImageRepository } from "#repositories/image/ImageRepository.js";
 
-import type { GraphQLContext } from "./context.js";
+import type { GraphQLContext } from "../lib/auth/context.js";
 
 @Resolver(() => ImageNode)
 @Service([ImageRepository, FileManager])
@@ -56,9 +56,7 @@ export class ImageResolver implements CrudResolver<ImageNode, "image"> {
     );
   }
 
-  @AccessControlAuthorized({
-    accessLevel: AccessLevel.Committee,
-  })
+  @AccessControlAuthorized(Action.List)
   @Query(() => ListImagesResponse, { name: "images" })
   async images(
     @Args(() => ListImagesArgs) args: ListImagesArgs,
@@ -93,9 +91,7 @@ export class ImageResolver implements CrudResolver<ImageNode, "image"> {
     });
   }
 
-  @AccessControlAuthorized({
-    accessLevel: AccessLevel.CommitteeChairOrCoordinator,
-  })
+  @AccessControlAuthorized(Action.Create)
   @Mutation(() => ImageNode, { name: "createImage" })
   async createImage(
     @Arg("input") input: CreateImageInput,
@@ -138,9 +134,7 @@ export class ImageResolver implements CrudResolver<ImageNode, "image"> {
     return imageModelToResource(result, null, this.fileManager, serverUrl);
   }
 
-  @AccessControlAuthorized({
-    accessLevel: AccessLevel.CommitteeChairOrCoordinator,
-  })
+  @AccessControlAuthorized(Action.Update)
   @Mutation(() => ImageNode, { name: "setImageAltText" })
   async setImageAltText(
     @Arg("uuid", () => GlobalIdScalar) { id }: GlobalId,
@@ -170,9 +164,7 @@ export class ImageResolver implements CrudResolver<ImageNode, "image"> {
     );
   }
 
-  @AccessControlAuthorized({
-    accessLevel: AccessLevel.CommitteeChairOrCoordinator,
-  })
+  @AccessControlAuthorized(Action.Update)
   @Mutation(() => ImageNode, { name: "setImageUrl" })
   async setImageUrl(
     @Arg("uuid", () => GlobalIdScalar) { id }: GlobalId,
@@ -221,9 +213,7 @@ export class ImageResolver implements CrudResolver<ImageNode, "image"> {
     );
   }
 
-  @AccessControlAuthorized({
-    accessLevel: AccessLevel.CommitteeChairOrCoordinator,
-  })
+  @AccessControlAuthorized(Action.Delete)
   @Mutation(() => ImageNode, { name: "deleteImage" })
   async deleteImage(
     @Arg("uuid", () => GlobalIdScalar) { id }: GlobalId,

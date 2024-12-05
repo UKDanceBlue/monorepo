@@ -6,7 +6,6 @@ import {
 } from "@ukdanceblue/common";
 
 import { BulkTeamCreator } from "#elements/forms/team/create/BulkTeamCreator.js";
-import { routerAuthCheck } from "#tools/routerAuthCheck.js";
 
 function BulkCreateTeamPage() {
   return (
@@ -19,9 +18,7 @@ function BulkCreateTeamPage() {
 
 export const Route = createFileRoute("/teams/bulk")({
   component: BulkCreateTeamPage,
-  beforeLoad({ context }) {
-    routerAuthCheck(Route, context);
-  },
+
   staticData: {
     authorizationRules: [
       {

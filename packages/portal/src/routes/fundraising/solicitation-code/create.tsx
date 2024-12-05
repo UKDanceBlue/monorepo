@@ -7,13 +7,10 @@ import { Button, Flex, Form, Input, InputNumber } from "antd";
 
 import { createSolicitationCodeDocument } from "#documents/solicitationCode.ts";
 import type { ResultOf, VariablesOf } from "#graphql/index";
-import { routerAuthCheck } from "#tools/routerAuthCheck.tsx";
 
 export const Route = createFileRoute("/fundraising/solicitation-code/create")({
   component: RouteComponent,
-  beforeLoad({ context }) {
-    routerAuthCheck(Route, context);
-  },
+
   staticData: {
     authorizationRules: [
       {

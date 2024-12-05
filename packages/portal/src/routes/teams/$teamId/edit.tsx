@@ -6,7 +6,6 @@ import { TeamEditorFragment } from "#documents/team.ts";
 import { TeamEditor } from "#elements/forms/team/edit/TeamEditor.js";
 import { graphql } from "#graphql/index.js";
 import { useQueryStatusWatcher } from "#hooks/useQueryStatusWatcher.js";
-import { routerAuthCheck } from "#tools/routerAuthCheck.js";
 
 const viewTeamPageDocument = graphql(
   /* GraphQL */ `
@@ -45,7 +44,6 @@ export const Route = createFileRoute("/teams/$teamId/edit")({
   component: EditTeamPage,
   async beforeLoad({ context, params: { teamId } }) {
     await context.urqlClient.query(viewTeamPageDocument, { uuid: teamId });
-    routerAuthCheck(Route, context);
   },
   staticData: {
     authorizationRules: [

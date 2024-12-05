@@ -7,7 +7,6 @@ import {
   MarathonViewerFragment,
 } from "#elements/viewers/marathon/MarathonViewer.js";
 import { graphql } from "#graphql/index.js";
-import { routerAuthCheck } from "#tools/routerAuthCheck.js";
 
 const marathonPageDocument = graphql(
   /* GraphQL */ `
@@ -41,7 +40,6 @@ export const Route = createFileRoute("/marathon/$marathonId/")({
     context.urqlClient.query(marathonPageDocument, {
       marathonUuid: marathonId,
     });
-    routerAuthCheck(Route, context);
   },
   staticData: {
     authorizationRules: [

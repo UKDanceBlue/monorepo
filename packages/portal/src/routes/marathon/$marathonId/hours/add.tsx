@@ -13,7 +13,6 @@ import type { TanAntChildInputProps } from "#elements/components/form/TanAntForm
 import { TanAntFormItem } from "#elements/components/form/TanAntFormItem.js";
 import { graphql } from "#graphql/index.js";
 import { useQueryStatusWatcher } from "#hooks/useQueryStatusWatcher.js";
-import { routerAuthCheck } from "#tools/routerAuthCheck.js";
 
 function AddMarathonHourPage() {
   const [{ fetching, error }, addMarathonHour] = useMutation(
@@ -184,9 +183,7 @@ function AddMarathonHourPage() {
 
 export const Route = createFileRoute("/marathon/$marathonId/hours/add")({
   component: AddMarathonHourPage,
-  beforeLoad({ context }) {
-    routerAuthCheck(Route, context);
-  },
+
   staticData: {
     authorizationRules: [
       {

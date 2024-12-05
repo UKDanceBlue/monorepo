@@ -1,110 +1,28 @@
-import type { Result } from "ts-results-es";
-import { Err, Ok } from "ts-results-es";
-import type { ArgsDictionary } from "type-graphql";
-import { Authorized } from "type-graphql";
-import type { Primitive } from "utility-types";
-
-import { parseGlobalId } from "../api/scalars/GlobalId.js";
-import type { InvalidArgumentError } from "../error/direct.js";
-import { InvariantError } from "../error/direct.js";
+import type {
+  ExtractSubjectType,
+  InferSubjects,
+  MongoAbility,
+} from "@casl/ability";
 import {
-  type Authorization,
-  type CommitteeIdentifier,
-  type CommitteeRole,
-  type GlobalId,
-  type MembershipPositionType,
+  AbilityBuilder,
+  createAliasResolver,
+  createMongoAbility,
+} from "@casl/ability";
+import validator from "validator";
+
+import {
+  parseGlobalId,
   type PersonNode,
-  type TeamType,
-  type UserData,
-} from "../index.js";
-import type { AccessLevel } from "./structures.js";
+  type ResourceClasses,
+} from "../api/resources/index.js";
+import { MembershipPositionType } from "../api/resources/Membership.js";
+import type { TeamType } from "../api/resources/Team.js";
+import type { Authorization } from "./structures.js";
 import {
-  committeeNames,
-  compareCommitteeRole,
-  stringifyAccessLevel,
+  AccessLevel,
+  CommitteeIdentifier,
+  CommitteeRole,
 } from "./structures.js";
-
-export interface AuthorizationRule {
-  /**
-   * The minimum access level required to access this resource
-   */
-  accessLevel?: AccessLevel;
-  // /**
-  //  * Exact committee role, cannot be used with minCommitteeRole
-  //  */
-  // committeeRole?: CommitteeRole;
-  /**
-   * Minimum committee role, cannot be used with committeeRole
-   */
-  minCommitteeRole?: CommitteeRole;
-  /**
-   * The committee's identifier, currently these are not normalized in an enum or the database
-   * so just go off what's used elsewhere in the codebase
-   *
-   * Cannot be used with committeeIdentifiers
-   */
-  committeeIdentifier?: CommitteeIdentifier;
-  /**
-   * Same as committeeIdentifier, but allows any of the listed identifiers
-   *
-   * Cannot be used with committeeIdentifier
-   */
-  committeeIdentifiers?: readonly CommitteeIdentifier[];
-}
-
-export function prettyPrintAuthorizationRule(rule: AuthorizationRule): string {
-  const parts: string[] = [];
-  if (rule.accessLevel != null) {
-    parts.push(
-      `have an access level of at least ${stringifyAccessLevel(rule.accessLevel)}`
-    );
-  }
-  if (rule.minCommitteeRole != null) {
-    parts.push(`have a committee role of at least ${rule.minCommitteeRole}`);
-  }
-  if (rule.committeeIdentifier != null) {
-    parts.push(`be a member of ${committeeNames[rule.committeeIdentifier]}`);
-  }
-  if (rule.committeeIdentifiers != null) {
-    parts.push(
-      `be a member of one of the following committees: ${rule.committeeIdentifiers
-        .map((id) => committeeNames[id])
-        .join(", ")}`
-    );
-  }
-  return parts.join(" and ");
-}
-
-export interface AccessControlContext {
-  authenticatedUser: PersonNode | null;
-  teamMemberships: SimpleTeamMembership[];
-  userData: UserData;
-  authorization: Authorization;
-}
-
-/**
- * An AccessControlParam accepts a user if:
- *
- * 1. The user's access level is greater than or equal to the access level specified (AccessLevel.None by default)
- * 2. The user's role matches one of the specified authorization rules
- * 3. The resolver arguments match ALL of the specified argument matchers
- * 4. The root object matches ALL of the specified root matchers
- * 5. The custom authorization rule returns true
- */
-export interface AccessControlParam<RootType = never> {
-  authRules?:
-    | readonly AuthorizationRule[]
-    | ((root: RootType) => readonly AuthorizationRule[]);
-  accessLevel?: AccessLevel;
-  argumentMatch?: {
-    argument: string | ((args: ArgsDictionary) => Primitive | Primitive[]);
-    extractor: (param: AccessControlContext) => Primitive | Primitive[];
-  }[];
-  rootMatch?: {
-    root: string | ((root: RootType) => Primitive | Primitive[]);
-    extractor: (param: AccessControlContext) => Primitive | Primitive[];
-  }[];
-}
 
 export interface SimpleTeamMembership {
   teamType: TeamType;
@@ -112,191 +30,264 @@ export interface SimpleTeamMembership {
   position: MembershipPositionType;
 }
 
-export interface AuthorizationContext {
+type HasWithinTeamIds = "FundraisingAssignmentNode" | "PersonNode";
+
+type HasOwnedByUserIds = "FundraisingEntryNode" | "FundraisingAssignmentNode";
+
+type ResourceSubject = {
+  [resource in keyof typeof ResourceClasses]: {
+    kind: resource;
+    id?: string;
+    childOfType?: Subject;
+    childOfId?: string;
+  } & (resource extends HasWithinTeamIds
+    ? { withinTeamIds: string[] }
+    : { withinTeamIds?: never }) &
+    (resource extends HasOwnedByUserIds
+      ? { ownedByUserIds: string[] }
+      : { ownedByUserIds?: never });
+} & {
+  AuditNode: {
+    kind: "AuditNode";
+  };
+};
+
+type SubjectValue = ResourceSubject[keyof ResourceSubject];
+type Subject = InferSubjects<SubjectValue, true>;
+
+export const Action = {
+  Create: "create",
+  Get: "get",
+  List: "list",
+  Read: "read",
+  ReadActive: "readActive",
+  Update: "update",
+  Delete: "delete",
+  Deploy: "deploy",
+  Modify: "modify",
+  Manage: "manage",
+} as const;
+export type Action = (typeof Action)[keyof typeof Action];
+
+const resolveAction = createAliasResolver({
+  [Action.Modify]: [Action.Read, Action.Update, Action.Delete],
+  [Action.Read]: [Action.Get, Action.List, Action.ReadActive],
+});
+
+export type AppAbility = MongoAbility<
+  | [
+      (
+        | typeof Action.Create
+        | typeof Action.Get
+        | typeof Action.List
+        | typeof Action.Read
+        | typeof Action.Update
+        | typeof Action.Delete
+        | typeof Action.Modify
+        | typeof Action.Manage
+      ),
+      Subject | "all",
+    ]
+  | [
+      typeof Action.ReadActive,
+      "FeedNode" | "ConfigurationNode" | "MarathonNode" | "MarathonHourNode",
+    ]
+  | [typeof Action.Deploy, "NotificationNode" | "all"]
+>;
+
+export interface AuthorizationContext extends Authorization {
   authenticatedUser: PersonNode | null;
   teamMemberships: SimpleTeamMembership[];
-  userData: UserData;
-  authorization: Authorization;
 }
 
-export function checkAuthorization(
-  {
-    accessLevel,
-    committeeIdentifier,
-    committeeIdentifiers,
-    // committeeRole,
-    minCommitteeRole,
-  }: AuthorizationRule,
-  authorization: Authorization
-) {
-  if (committeeIdentifier != null && committeeIdentifiers != null) {
-    throw new TypeError(
-      `Cannot specify both committeeIdentifier and committeeIdentifiers.`
-    );
+export function getAuthorizationFor({
+  accessLevel,
+  userId,
+  teamMemberships,
+  effectiveCommitteeRoles,
+}: Pick<
+  AuthorizationContext,
+  "accessLevel" | "teamMemberships" | "effectiveCommitteeRoles"
+> & {
+  userId: string | null;
+}): AppAbility {
+  const {
+    can: allow,
+    cannot: forbid,
+    build,
+  } = new AbilityBuilder<AppAbility>(createMongoAbility);
+
+  function doBuild() {
+    return build({
+      resolveAction,
+      detectSubjectType(subject) {
+        return ((subject as { __typename?: Subject }).__typename ??
+          subject.kind) as ExtractSubjectType<Subject>;
+      },
+    });
   }
 
-  let matches = true;
-
-  // Access Level
-  if (accessLevel != null) {
-    matches &&= authorization.accessLevel >= accessLevel;
+  if (accessLevel === AccessLevel.None) {
+    return doBuild();
+  }
+  if (accessLevel === AccessLevel.SuperAdmin) {
+    allow(Action.Manage, "all");
+    return doBuild();
   }
 
-  if (minCommitteeRole != null) {
-    if (authorization.effectiveCommitteeRoles.length === 0) {
-      matches = false;
-    } else {
-      matches &&= authorization.effectiveCommitteeRoles.some(
-        (committee) =>
-          compareCommitteeRole(committee.role, minCommitteeRole) >= 0
-      );
-    }
+  allow(Action.Get, "DeviceNode");
+  allow(Action.ReadActive, [
+    "FeedNode",
+    "ConfigurationNode",
+    "MarathonNode",
+    "MarathonHourNode",
+  ]);
+  allow(Action.Read, ["CommitteeNode", "EventNode", "ImageNode", "TeamNode"]);
+
+  forbid(Action.Read, "TeamNode", [
+    "fundraisingTotal",
+    "solicitationCode",
+    "fundraisingEntries",
+  ]);
+  forbid(Action.Read, "NotificationNode", [
+    "deliveryIssue",
+    "deliveryIssueAcknowledgedAt",
+  ]);
+  forbid(Action.Read, "NotificationDeliveryNode", [
+    "receiptCheckedAt",
+    "chunkUuid",
+    "deliveryError",
+  ]);
+
+  if (accessLevel >= AccessLevel.Committee) {
+    allow(Action.Read, ["SolicitationCodeNode", "MembershipNode"]);
   }
 
-  // Committee identifier(s)
-  if (committeeIdentifier != null) {
-    matches &&= authorization.effectiveCommitteeRoles.some(
-      (committee) => committee.identifier === committeeIdentifier
-    );
-  }
-  if (committeeIdentifiers != null) {
-    matches &&= authorization.effectiveCommitteeRoles.some((committee) =>
-      committeeIdentifiers.includes(committee.identifier)
-    );
-  }
-
-  return matches;
-}
-
-export function checkParam<RootType extends object = never>(
-  rule: AccessControlParam<RootType>,
-  authorization: Authorization,
-  root: RootType,
-  args: ArgsDictionary,
-  context: AccessControlContext
-): Result<boolean, InvariantError | InvalidArgumentError> {
-  if (rule.accessLevel != null) {
-    if (rule.accessLevel > authorization.accessLevel) {
-      return Ok(false);
-    }
+  if (accessLevel >= AccessLevel.CommitteeChairOrCoordinator) {
+    allow(Action.Manage, [
+      "CommitteeNode",
+      "EventNode",
+      "FeedNode",
+      "ImageNode",
+      "MembershipNode",
+      "PersonNode",
+    ]);
+    allow(Action.Read, "NotificationDeliveryNode");
+    allow([Action.Modify, Action.Create], "NotificationNode");
+    allow(Action.Read, "NotificationNode", [
+      "deliveryIssue",
+      "deliveryIssueAcknowledgedAt",
+    ]);
+    allow(Action.Read, "NotificationDeliveryNode", [
+      "receiptCheckedAt",
+      "chunkUuid",
+      "deliveryError",
+    ]);
   }
 
-  if (rule.authRules != null) {
-    const authRules =
-      typeof rule.authRules === "function"
-        ? rule.authRules(root)
-        : rule.authRules;
-    if (authRules.length === 0) {
-      return Err(
-        new InvariantError("Resource has no allowed authorization rules.")
-      );
-    }
-    let matches = false;
-    for (const authRule of authRules) {
-      matches = checkAuthorization(authRule, authorization);
-      if (matches) {
+  if (accessLevel >= AccessLevel.Admin) {
+    allow(Action.Manage, [
+      "ConfigurationNode",
+      "MarathonNode",
+      "MarathonHourNode",
+      "FundraisingAssignmentNode",
+      "FundraisingEntryNode",
+    ]);
+    allow(Action.Deploy, "NotificationNode");
+  }
+
+  for (const { identifier, role } of effectiveCommitteeRoles) {
+    switch (identifier) {
+      case CommitteeIdentifier.viceCommittee: {
+        allow(role === CommitteeRole.Member ? Action.Modify : Action.Manage, [
+          "PersonNode",
+        ]);
+        allow(Action.Read, "TeamNode", "fundraisingTotal");
+        // fallthrough
+      }
+      case CommitteeIdentifier.communityDevelopmentCommittee:
+      case CommitteeIdentifier.techCommittee:
+      case CommitteeIdentifier.marketingCommittee: {
+        if (role !== CommitteeRole.Member) {
+          allow(Action.Deploy, "NotificationNode");
+        }
+        break;
+      }
+      case CommitteeIdentifier.dancerRelationsCommittee: {
+        allow(Action.Manage, ["PointOpportunityNode", "PointEntryNode"]);
+        break;
+      }
+      case CommitteeIdentifier.fundraisingCommittee: {
+        allow(Action.Manage, [
+          "FundraisingEntryNode",
+          "DailyDepartmentNotificationNode",
+          "SolicitationCodeNode",
+          "FundraisingAssignmentNode",
+        ]);
         break;
       }
     }
-    if (!matches) {
-      return Ok(false);
-    }
   }
 
-  if (rule.argumentMatch != null) {
-    for (const match of rule.argumentMatch) {
-      let argValue: Primitive | Primitive[];
-      if (match.argument === "id") {
-        // I think this code might be wrong, but I'm not 100% sure either way and don't have time to investigate
-        const parseReult = parseGlobalId(args.id as string).map(
-          ({ id: id }) => args[id] as Primitive | Primitive[]
-        );
-        if (parseReult.isErr()) {
-          return parseReult;
-        }
-        argValue = parseReult.value;
-      } else if (typeof match.argument === "string") {
-        argValue = args[match.argument] as Primitive | Primitive[];
-      } else {
-        argValue = match.argument(args);
-      }
-      if (argValue == null) {
-        return Err(
-          new InvariantError(
-            "FieldMatchAuthorized argument is null or undefined."
-          )
-        );
-      }
-      const expectedValue = match.extractor(context);
+  const parsedUserId = userId
+    ? validator.isUUID(userId)
+      ? userId
+      : parseGlobalId(userId).unwrap().id
+    : null;
 
-      if (Array.isArray(expectedValue)) {
-        if (Array.isArray(argValue)) {
-          if (argValue.some((v) => expectedValue.includes(v))) {
-            return Ok(false);
-          }
-        } else if (expectedValue.includes(argValue)) {
-          return Ok(false);
-        }
-      } else if (argValue !== expectedValue) {
-        if (Array.isArray(argValue)) {
-          if (argValue.includes(expectedValue)) {
-            return Ok(false);
-          }
-        }
-      }
-    }
+  if (parsedUserId) {
+    allow(Action.Read, "PersonNode", {
+      id: {
+        $eq: parsedUserId,
+      },
+    });
+    allow(Action.Read, "FundraisingAssignmentNode", {
+      ownedByUserIds: [parsedUserId],
+    });
   }
 
-  if (rule.rootMatch != null) {
-    let shouldContinue = false;
-    for (const match of rule.rootMatch) {
-      let rootValue: Primitive | Primitive[];
-      if (match.root === "id") {
-        rootValue = (root as { id: GlobalId }).id.id;
-      } else if (typeof match.root === "string") {
-        rootValue = (root as Record<string, Primitive | Primitive[]>)[
-          match.root
-        ];
-      } else {
-        rootValue = match.root(root);
-      }
-      if (rootValue == null) {
-        return Err(
-          new InvariantError("FieldMatchAuthorized root is null or undefined.")
-        );
-      }
-      const expectedValue = match.extractor(context);
-
-      if (Array.isArray(expectedValue)) {
-        if (Array.isArray(rootValue)) {
-          if (!rootValue.some((v) => expectedValue.includes(v))) {
-            shouldContinue = true;
-            break;
-          }
-        } else if (!expectedValue.includes(rootValue)) {
-          shouldContinue = true;
-          break;
-        }
-      } else if (Array.isArray(rootValue)) {
-        if (!rootValue.includes(expectedValue)) {
-          shouldContinue = true;
-          break;
-        }
-      } else if (rootValue !== expectedValue) {
-        shouldContinue = true;
-        break;
-      }
-    }
-    if (shouldContinue) {
-      return Ok(false);
-    }
+  const authTeamMemberships = teamMemberships.map(
+    (membership) => membership.teamId
+  );
+  if (authTeamMemberships.length > 0) {
+    allow(Action.Read, "TeamNode", {
+      id: { $in: authTeamMemberships },
+    });
+    allow(Action.Read, "MembershipNode", {
+      childOfType: "TeamNode",
+      childOfId: { $in: authTeamMemberships },
+    });
+    allow(Action.List, "PersonNode", {
+      childOfType: "TeamNode",
+      childOfId: { $in: authTeamMemberships },
+    });
+    allow(Action.Read, "TeamNode", ["fundraisingTotal", "solicitationCode"], {
+      id: { $in: authTeamMemberships },
+    });
   }
 
-  return Ok(true);
-}
+  allow(Action.Read, "TeamNode", ["child"]);
 
-export function AccessControlAuthorized<RootType extends object>(
-  ...roles: readonly AccessControlParam<RootType>[]
-): PropertyDecorator & MethodDecorator & ClassDecorator {
-  return Authorized<AccessControlParam>(...roles);
+  const authTeamCaptaincies = teamMemberships
+    .filter(
+      (membership) => membership.position === MembershipPositionType.Captain
+    )
+    .map((membership) => membership.teamId);
+  if (authTeamCaptaincies.length > 0) {
+    allow(Action.Read, "PersonNode", {
+      withinTeamIds: { $in: authTeamCaptaincies },
+    });
+    allow([Action.Modify, Action.Create], "FundraisingAssignmentNode", {
+      withinTeamIds: { $in: authTeamCaptaincies },
+    });
+    allow(Action.Read, "FundraisingEntryNode", {
+      childOfType: "TeamNode",
+      childOfId: { $in: authTeamCaptaincies },
+    });
+    allow(Action.Read, "TeamNode", "fundraisingEntries", {
+      id: { $in: authTeamMemberships },
+    });
+  }
+
+  return doBuild();
 }
