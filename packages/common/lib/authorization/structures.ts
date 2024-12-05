@@ -282,6 +282,7 @@ export const committeeNames: Record<CommitteeIdentifier, string> = {
 };
 
 export interface Authorization {
+  /** @deprecated */
   dbRole: DbRole;
   effectiveCommitteeRoles: EffectiveCommitteeRole[];
   accessLevel: AccessLevel;

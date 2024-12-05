@@ -44,7 +44,6 @@ import { FundraisingEntryRepository } from "#repositories/fundraising/Fundraisin
 import { SolicitationCodeRepository } from "#repositories/solicitationCode/SolicitationCodeRepository.js";
 
 import { globalFundraisingAccessParam } from "./accessParams.js";
-
 @Resolver(() => FundraisingEntryNode)
 @Service([
   DBFundsFundraisingProvider,
