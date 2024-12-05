@@ -1788,6 +1788,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@casl/ability@npm:^6.7.2":
+  version: 6.7.2
+  resolution: "@casl/ability@npm:6.7.2"
+  dependencies:
+    "@ucast/mongo2js": "npm:^1.3.0"
+  checksum: 10/48087a45c507d8d57bbc16e3b5c3e458fc2314306462b1adbf4b11cf51495dba31311fdf6c2527a57b98a66a9566039b34a7e19b94546ac320b91f1c7764be1d
+  languageName: node
+  linkType: hard
+
 "@colors/colors@npm:1.5.0":
   version: 1.5.0
   resolution: "@colors/colors@npm:1.5.0"
@@ -9167,10 +9176,47 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@ucast/core@npm:^1.0.0, @ucast/core@npm:^1.4.1, @ucast/core@npm:^1.6.1":
+  version: 1.10.2
+  resolution: "@ucast/core@npm:1.10.2"
+  checksum: 10/35c91961b534df03518ade09bf920856355bfadf0a59a8606d91ac4e22a24c2bd470964b2c54764a31e8eacecd4a2768ba8426b6a96c2474c6df305ee9b3f9a1
+  languageName: node
+  linkType: hard
+
+"@ucast/js@npm:^3.0.0":
+  version: 3.0.4
+  resolution: "@ucast/js@npm:3.0.4"
+  dependencies:
+    "@ucast/core": "npm:^1.0.0"
+  checksum: 10/8a8a5ebe45b29e1885f00a05b293b47c54cbbe506080720c505425cd52bc3e311d16a49069ae8d0f797faa34d439ad066591a7abfebf56e89702c9ad7e57a96a
+  languageName: node
+  linkType: hard
+
+"@ucast/mongo2js@npm:^1.3.0":
+  version: 1.3.4
+  resolution: "@ucast/mongo2js@npm:1.3.4"
+  dependencies:
+    "@ucast/core": "npm:^1.6.1"
+    "@ucast/js": "npm:^3.0.0"
+    "@ucast/mongo": "npm:^2.4.0"
+  checksum: 10/5c8428d75babaf7059fd39dd7d9df55e4b187f306fafe674edd630e32abd9ba76dca79c32865e4ccdf53661e7c2c4cc3d98bc3815420a2c668f41aa87880e47b
+  languageName: node
+  linkType: hard
+
+"@ucast/mongo@npm:^2.4.0":
+  version: 2.4.3
+  resolution: "@ucast/mongo@npm:2.4.3"
+  dependencies:
+    "@ucast/core": "npm:^1.4.1"
+  checksum: 10/5bcac2a06df97dda33deab3cfe1d57effd4ac49f27a846de29d6e583ca04f379f63d0def4737ec2c023dd9bbfded8ef2dfa285ed1575b8a320b1c2807c2d6200
+  languageName: node
+  linkType: hard
+
 "@ukdanceblue/common@workspace:^, @ukdanceblue/common@workspace:packages/common":
   version: 0.0.0-use.local
   resolution: "@ukdanceblue/common@workspace:packages/common"
   dependencies:
+    "@casl/ability": "npm:^6.7.2"
     "@graphql-typed-document-node/core": "npm:^3.2.0"
     "@types/luxon": "npm:^3.4.2"
     "@types/react": "npm:~18.3.12"
@@ -9436,6 +9482,7 @@ __metadata:
   dependencies:
     "@apollo/server": "npm:^4.11.2"
     "@azure/msal-node": "npm:^2.16.1"
+    "@casl/ability": "npm:^6.7.2"
     "@faker-js/faker": "npm:^9.2.0"
     "@freshgum/typedi": "npm:^0.7.2"
     "@prisma/client": "npm:^5.22.0"

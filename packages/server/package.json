@@ -42,6 +42,7 @@
   "dependencies": {
     "@apollo/server": "^4.11.2",
     "@azure/msal-node": "^2.16.1",
+    "@casl/ability": "^6.7.2",
     "@faker-js/faker": "^9.2.0",
     "@freshgum/typedi": "^0.7.2",
     "@prisma/client": "^5.22.0",

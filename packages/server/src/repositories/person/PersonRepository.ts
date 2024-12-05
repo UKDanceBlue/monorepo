@@ -122,20 +122,12 @@ export class PersonRepository {
       linkblue?: string | undefined | null;
       name?: string | undefined | null;
       dbRole?: DbRole | undefined | null;
-    },
-    memberOf?: (string | number)[],
-    captainOf?: (string | number)[]
+    }
   ): Promise<
     Result<Awaited<ReturnType<typeof findPersonForLogin>>, RepositoryError>
   > {
     try {
-      const row = await findPersonForLogin(
-        this.prisma,
-        authIds,
-        userInfo,
-        memberOf,
-        captainOf
-      );
+      const row = await findPersonForLogin(this.prisma, authIds, userInfo);
       return Ok(row);
     } catch (error) {
       return handleRepositoryError(error);
@@ -297,23 +289,38 @@ export class PersonRepository {
             committeeRole ?? CommitteeRole.Member
           );
           if (team.correspondingCommittee.parentCommittee) {
-            addRole(
-              team.correspondingCommittee.parentCommittee.identifier,
-              CommitteeRole.Member
-            );
-            if (team.correspondingCommittee.parentCommittee.parentCommittee) {
-              addRole(
-                team.correspondingCommittee.parentCommittee.parentCommittee
-                  .identifier,
-                CommitteeRole.Member
-              );
+            switch (team.correspondingCommittee.parentCommittee.identifier) {
+              case CommitteeIdentifier.viceCommittee: {
+                addRole(
+                  CommitteeIdentifier.viceCommittee,
+                  committeeRole ?? CommitteeRole.Member
+                );
+                // fallthrough
+              }
+              case CommitteeIdentifier.overallCommittee: {
+                addRole(
+                  CommitteeIdentifier.overallCommittee,
+                  CommitteeRole.Member
+                );
+                break;
+              }
+              default: {
+                return Err(
+                  new InvariantError(
+                    `Unexpected parent committee ${team.correspondingCommittee.parentCommittee.identifier}`
+                  )
+                );
+              }
             }
           }
 
           if (
-            committeeRole === CommitteeRole.Chair &&
-            team.correspondingCommittee.identifier ===
-              CommitteeIdentifier.overallCommittee
+            (committeeRole === CommitteeRole.Chair ||
+              committeeRole === CommitteeRole.Coordinator) &&
+            (team.correspondingCommittee.identifier ===
+              CommitteeIdentifier.overallCommittee ||
+              team.correspondingCommittee.identifier ===
+                CommitteeIdentifier.viceCommittee)
           ) {
             for (const child of team.correspondingCommittee.childCommittees) {
               addRole(child.identifier, committeeRole);

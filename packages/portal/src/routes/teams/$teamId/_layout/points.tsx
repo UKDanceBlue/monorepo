@@ -64,7 +64,7 @@ export const Route = createFileRoute("/teams/$teamId/_layout/points")({
   staticData: {
     authorizationRules: [
       {
-        accessLevel: AccessLevel.UKY,
+        accessLevel: AccessLevel.Committee,
       },
     ],
   },
