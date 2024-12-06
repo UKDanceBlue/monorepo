@@ -13,7 +13,9 @@ import {
   roleToAccessLevel,
 } from "@ukdanceblue/common";
 import { useMemo } from "react";
-import type { Client, OperationResult } from "urql";
+import type { Result } from "ts-results-es";
+import { Err, Ok } from "ts-results-es";
+import type { Client, CombinedError, OperationResult } from "urql";
 import { useQuery } from "urql";
 
 import type { ResultOf, VariablesOf } from "#graphql/index.js";
@@ -122,22 +124,28 @@ function parseLoginState(
   }
 }
 
-export function getLoginState(client: Client): PortalAuthData {
+export function getLoginState(
+  client: Client
+): Result<PortalAuthData, CombinedError> {
   const loginState = client.readQuery(loginStateDocument, {});
 
-  return parseLoginState(loginState);
+  return loginState?.error
+    ? Err(loginState.error)
+    : Ok(parseLoginState(loginState));
 }
 
 export async function refreshLoginState(
   client: Client
-): Promise<PortalAuthData> {
+): Promise<Result<PortalAuthData, CombinedError>> {
   const loginState = await client.query(
     loginStateDocument,
     {},
     { requestPolicy: "cache-and-network" }
   );
 
-  return parseLoginState(loginState);
+  return loginState.error
+    ? Err(loginState.error)
+    : Ok(parseLoginState(loginState));
 }
 
 export function useLoginState(): PortalAuthData {

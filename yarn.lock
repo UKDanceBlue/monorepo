@@ -9450,6 +9450,7 @@ __metadata:
     react-to-print: "npm:^3.0.2"
     reflect-metadata: "npm:^0.2.2"
     thumbhash: "npm:^0.1.1"
+    ts-results-es: "npm:^4.2.0"
     type-graphql: "npm:^2.0.0-rc.2"
     typedi: "npm:^0.10.0"
     typescript: "npm:^5.6.3"

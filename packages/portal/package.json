@@ -69,6 +69,7 @@
     "react-to-print": "^3.0.2",
     "reflect-metadata": "^0.2.2",
     "thumbhash": "^0.1.1",
+    "ts-results-es": "^4.2.0",
     "type-graphql": "^2.0.0-rc.2",
     "typedi": "^0.10.0",
     "urql": "^4.2.1",
