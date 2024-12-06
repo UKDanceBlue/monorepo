@@ -1,4 +1,5 @@
 import type {
+  AbilityOptionsOf,
   ExtractSubjectType,
   InferSubjects,
   MongoAbility,
@@ -30,74 +31,98 @@ export interface SimpleTeamMembership {
   position: MembershipPositionType;
 }
 
-type HasWithinTeamIds = "FundraisingAssignmentNode" | "PersonNode";
-
-type HasOwnedByUserIds = "FundraisingEntryNode" | "FundraisingAssignmentNode";
+const NEVER = {} as never;
+const extraFieldsByResource = {
+  PersonNode: {
+    [".fundraisingAssignments"]: NEVER,
+    [".members"]: NEVER,
+  },
+  TeamNode: {
+    [".fundraisingAssignments"]: NEVER,
+    [".memberships"]: NEVER,
+    [".solicitationCode"]: NEVER,
+  },
+  FundraisingAssignmentNode: {
+    [".withinTeamIds"]: NEVER,
+  },
+  NotificationNode: {
+    [".deliveryIssue"]: NEVER,
+    [".deliveryIssueAcknowledgedAt"]: NEVER,
+  },
+  NotificationDeliveryNode: {
+    [".receiptCheckedAt"]: NEVER,
+    [".chunkUuid"]: NEVER,
+    [".deliveryError"]: NEVER,
+  },
+  FundraisingEntryNode: {},
+  CommitteeNode: {},
+  ConfigurationNode: {},
+  DailyDepartmentNotificationNode: {},
+  DailyDepartmentNotificationBatchNode: {},
+  ImageNode: {},
+  MarathonNode: {},
+  MarathonHourNode: {},
+  PointEntryNode: {},
+  PointOpportunityNode: {},
+  SolicitationCodeNode: {},
+  DeviceNode: {},
+  EventNode: {},
+  FeedNode: {},
+  MembershipNode: {},
+};
 
 type ResourceSubject = {
   [resource in keyof typeof ResourceClasses]: {
     kind: resource;
     id?: string;
-    childOfType?: Subject;
-    childOfId?: string;
-  } & (resource extends HasWithinTeamIds
-    ? { withinTeamIds: string[] }
-    : { withinTeamIds?: never }) &
-    (resource extends HasOwnedByUserIds
-      ? { ownedByUserIds: string[] }
-      : { ownedByUserIds?: never });
-} & {
-  AuditNode: {
-    kind: "AuditNode";
-  };
+
+    // When allowing access to a resource, passing in no fields will allow access to all fields,
+    // so by passing in this $ field, we can change that behavior to default to no fields.
+    ["."]?: never;
+  } & Partial<(typeof extraFieldsByResource)[resource]>;
 };
 
 type SubjectValue = ResourceSubject[keyof ResourceSubject];
-type Subject = InferSubjects<SubjectValue, true>;
+type Subject = InferSubjects<SubjectValue | "all", true>;
 
-export const Action = {
-  Create: "create",
-  Get: "get",
-  List: "list",
-  Read: "read",
-  ReadActive: "readActive",
-  Update: "update",
-  Delete: "delete",
-  Deploy: "deploy",
-  Modify: "modify",
-  Manage: "manage",
-} as const;
-export type Action = (typeof Action)[keyof typeof Action];
+export type Action =
+  | "create"
+  | "get"
+  | "list"
+  | "read"
+  | "update"
+  | "delete"
+  | "modify"
+  | "manage"
+  | "readActive"
+  | "deploy";
 
 const resolveAction = createAliasResolver({
-  [Action.Modify]: [Action.Read, Action.Update, Action.Delete],
-  [Action.Read]: [Action.Get, Action.List, Action.ReadActive],
+  ["modify"]: ["read", "update", "delete"],
+  ["read"]: ["get", "list", "readActive"],
 });
 
-export type AppAbility = MongoAbility<
-  | [
-      (
-        | typeof Action.Create
-        | typeof Action.Get
-        | typeof Action.List
-        | typeof Action.Read
-        | typeof Action.Update
-        | typeof Action.Delete
-        | typeof Action.Modify
-        | typeof Action.Manage
-      ),
-      Subject | "all",
-    ]
-  | [
-      typeof Action.ReadActive,
-      "FeedNode" | "ConfigurationNode" | "MarathonNode" | "MarathonHourNode",
-    ]
-  | [typeof Action.Deploy, "NotificationNode" | "all"]
->;
+export type AppAbility = MongoAbility<[Action, Subject]>;
 
 export interface AuthorizationContext extends Authorization {
   authenticatedUser: PersonNode | null;
   teamMemberships: SimpleTeamMembership[];
+}
+
+export const caslOptions: AbilityOptionsOf<AppAbility> = {
+  resolveAction,
+  detectSubjectType(subject) {
+    return ((subject as { __typename?: Subject }).__typename ??
+      subject.kind) as ExtractSubjectType<Subject>;
+  },
+};
+
+export interface CaslParam
+  extends Pick<
+    AuthorizationContext,
+    "accessLevel" | "teamMemberships" | "effectiveCommitteeRoles"
+  > {
+  userId: string | null;
 }
 
 export function getAuthorizationFor({
@@ -105,125 +130,116 @@ export function getAuthorizationFor({
   userId,
   teamMemberships,
   effectiveCommitteeRoles,
-}: Pick<
-  AuthorizationContext,
-  "accessLevel" | "teamMemberships" | "effectiveCommitteeRoles"
-> & {
-  userId: string | null;
-}): AppAbility {
+}: CaslParam): AppAbility {
   const {
     can: allow,
-    cannot: forbid,
+    // cannot: forbid,
     build,
   } = new AbilityBuilder<AppAbility>(createMongoAbility);
 
   function doBuild() {
-    return build({
-      resolveAction,
-      detectSubjectType(subject) {
-        return ((subject as { __typename?: Subject }).__typename ??
-          subject.kind) as ExtractSubjectType<Subject>;
-      },
-    });
+    return build(caslOptions);
   }
 
   if (accessLevel === AccessLevel.None) {
     return doBuild();
   }
   if (accessLevel === AccessLevel.SuperAdmin) {
-    allow(Action.Manage, "all");
+    allow("manage", "all");
     return doBuild();
   }
 
-  allow(Action.Get, "DeviceNode");
-  allow(Action.ReadActive, [
-    "FeedNode",
-    "ConfigurationNode",
-    "MarathonNode",
-    "MarathonHourNode",
-  ]);
-  allow(Action.Read, ["CommitteeNode", "EventNode", "ImageNode", "TeamNode"]);
-
-  forbid(Action.Read, "TeamNode", [
-    "fundraisingTotal",
-    "solicitationCode",
-    "fundraisingEntries",
-  ]);
-  forbid(Action.Read, "NotificationNode", [
-    "deliveryIssue",
-    "deliveryIssueAcknowledgedAt",
-  ]);
-  forbid(Action.Read, "NotificationDeliveryNode", [
-    "receiptCheckedAt",
-    "chunkUuid",
-    "deliveryError",
-  ]);
+  allow("get", "DeviceNode", ".");
+  allow(
+    "readActive",
+    ["FeedNode", "ConfigurationNode", "MarathonNode", "MarathonHourNode"],
+    "."
+  );
+  allow("read", ["CommitteeNode", "EventNode", "ImageNode", "TeamNode"], ".");
 
   if (accessLevel >= AccessLevel.Committee) {
-    allow(Action.Read, ["SolicitationCodeNode", "MembershipNode"]);
+    allow("read", ["SolicitationCodeNode"], ".");
   }
 
   if (accessLevel >= AccessLevel.CommitteeChairOrCoordinator) {
-    allow(Action.Manage, [
-      "CommitteeNode",
-      "EventNode",
-      "FeedNode",
-      "ImageNode",
-      "MembershipNode",
-      "PersonNode",
+    allow(
+      "manage",
+      ["CommitteeNode", "EventNode", "FeedNode", "ImageNode", "MembershipNode"],
+      "."
+    );
+    allow("manage", "PersonNode", [".memberships"]);
+    allow("read", "NotificationDeliveryNode", ".");
+    allow(["modify", "create"], "NotificationNode", ".");
+    allow("read", "NotificationNode", [
+      ".deliveryIssue",
+      ".deliveryIssueAcknowledgedAt",
     ]);
-    allow(Action.Read, "NotificationDeliveryNode");
-    allow([Action.Modify, Action.Create], "NotificationNode");
-    allow(Action.Read, "NotificationNode", [
-      "deliveryIssue",
-      "deliveryIssueAcknowledgedAt",
-    ]);
-    allow(Action.Read, "NotificationDeliveryNode", [
-      "receiptCheckedAt",
-      "chunkUuid",
-      "deliveryError",
+    allow("read", "NotificationDeliveryNode", [
+      ".receiptCheckedAt",
+      ".chunkUuid",
+      ".deliveryError",
     ]);
   }
 
   if (accessLevel >= AccessLevel.Admin) {
-    allow(Action.Manage, [
-      "ConfigurationNode",
-      "MarathonNode",
-      "MarathonHourNode",
-      "FundraisingAssignmentNode",
-      "FundraisingEntryNode",
-    ]);
-    allow(Action.Deploy, "NotificationNode");
+    allow(
+      "manage",
+      [
+        "ConfigurationNode",
+        "MarathonNode",
+        "MarathonHourNode",
+        "FundraisingAssignmentNode",
+        "FundraisingEntryNode",
+      ],
+      "."
+    );
+    allow("deploy", "NotificationNode", ".");
   }
 
   for (const { identifier, role } of effectiveCommitteeRoles) {
     switch (identifier) {
       case CommitteeIdentifier.viceCommittee: {
-        allow(role === CommitteeRole.Member ? Action.Modify : Action.Manage, [
+        allow(
+          role === CommitteeRole.Member ? "read" : "manage",
           "PersonNode",
-        ]);
-        allow(Action.Read, "TeamNode", "fundraisingTotal");
+          ".memberships"
+        );
+        allow(
+          role === CommitteeRole.Member ? "read" : "manage",
+          "TeamNode",
+          ".members"
+        );
         // fallthrough
       }
       case CommitteeIdentifier.communityDevelopmentCommittee:
       case CommitteeIdentifier.techCommittee:
       case CommitteeIdentifier.marketingCommittee: {
         if (role !== CommitteeRole.Member) {
-          allow(Action.Deploy, "NotificationNode");
+          allow("deploy", "NotificationNode", ".");
         }
         break;
       }
       case CommitteeIdentifier.dancerRelationsCommittee: {
-        allow(Action.Manage, ["PointOpportunityNode", "PointEntryNode"]);
+        allow("manage", ["PointOpportunityNode", "PointEntryNode"], ".");
+        allow("manage", "TeamNode", ".members");
         break;
       }
       case CommitteeIdentifier.fundraisingCommittee: {
-        allow(Action.Manage, [
-          "FundraisingEntryNode",
-          "DailyDepartmentNotificationNode",
-          "SolicitationCodeNode",
-          "FundraisingAssignmentNode",
+        allow(
+          "manage",
+          [
+            "FundraisingEntryNode",
+            "DailyDepartmentNotificationNode",
+            "SolicitationCodeNode",
+            "FundraisingAssignmentNode",
+          ],
+          "."
+        );
+        allow("manage", "TeamNode", [
+          ".fundraisingAssignments",
+          ".solicitationCode",
         ]);
+        allow("read", "TeamNode", ".fundraisingTotal");
         break;
       }
     }
@@ -236,37 +252,22 @@ export function getAuthorizationFor({
     : null;
 
   if (parsedUserId) {
-    allow(Action.Read, "PersonNode", {
+    allow("read", "PersonNode", [".memberships", ".fundraisingAssignments"], {
       id: {
         $eq: parsedUserId,
       },
-    });
-    allow(Action.Read, "FundraisingAssignmentNode", {
-      ownedByUserIds: [parsedUserId],
     });
   }
 
   const authTeamMemberships = teamMemberships.map(
     (membership) => membership.teamId
   );
+
   if (authTeamMemberships.length > 0) {
-    allow(Action.Read, "TeamNode", {
-      id: { $in: authTeamMemberships },
-    });
-    allow(Action.Read, "MembershipNode", {
-      childOfType: "TeamNode",
-      childOfId: { $in: authTeamMemberships },
-    });
-    allow(Action.List, "PersonNode", {
-      childOfType: "TeamNode",
-      childOfId: { $in: authTeamMemberships },
-    });
-    allow(Action.Read, "TeamNode", ["fundraisingTotal", "solicitationCode"], {
+    allow("read", "TeamNode", ".members", {
       id: { $in: authTeamMemberships },
     });
   }
-
-  allow(Action.Read, "TeamNode", ["child"]);
 
   const authTeamCaptaincies = teamMemberships
     .filter(
@@ -274,19 +275,20 @@ export function getAuthorizationFor({
     )
     .map((membership) => membership.teamId);
   if (authTeamCaptaincies.length > 0) {
-    allow(Action.Read, "PersonNode", {
-      withinTeamIds: { $in: authTeamCaptaincies },
-    });
-    allow([Action.Modify, Action.Create], "FundraisingAssignmentNode", {
-      withinTeamIds: { $in: authTeamCaptaincies },
-    });
-    allow(Action.Read, "FundraisingEntryNode", {
-      childOfType: "TeamNode",
-      childOfId: { $in: authTeamCaptaincies },
-    });
-    allow(Action.Read, "TeamNode", "fundraisingEntries", {
-      id: { $in: authTeamMemberships },
-    });
+    // allow("read", "PersonNode", {
+    //   withinTeamIds: { $in: authTeamCaptaincies },
+    // });
+    // allow(["modify", "create"], "FundraisingAssignmentNode", {
+    //   withinTeamIds: { $in: authTeamCaptaincies },
+    // });
+    // allow("read", "FundraisingEntryNode", {
+    //   childOfType: "TeamNode",
+    //   childOfId: { $in: authTeamCaptaincies },
+    // });
+    // allow("read", "TeamNode", "fundraisingEntries", {
+    //   id: { $in: authTeamMemberships },
+    // });
+    allow(["modify", "create"], "TeamNode", ".fundraisingAssignments");
   }
 
   return doBuild();

@@ -213,7 +213,12 @@ export const authenticate: ContextFunction<
   return {
     ...authorizationContext,
     serverUrl: getHostUrl(req),
-    ability: getAuthorizationFor(authorizationContext),
+    ability: getAuthorizationFor({
+      accessLevel: authorizationContext.accessLevel,
+      effectiveCommitteeRoles: authorizationContext.effectiveCommitteeRoles,
+      teamMemberships: authorizationContext.teamMemberships,
+      userId: userContext?.authenticatedUser?.id.id ?? null,
+    }),
   };
 };
 

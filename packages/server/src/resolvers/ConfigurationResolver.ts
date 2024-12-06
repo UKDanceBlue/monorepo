@@ -2,7 +2,6 @@ import { Service } from "@freshgum/typedi";
 import type { CrudResolver, GlobalId } from "@ukdanceblue/common";
 import {
   AccessControlAuthorized,
-  Action,
   ConfigurationNode,
   dateTimeFromSomething,
   GlobalIdScalar,
@@ -64,7 +63,7 @@ export class ConfigurationResolver
     return Ok(resp);
   }
 
-  @AccessControlAuthorized(Action.Get)
+  @AccessControlAuthorized("get")
   @Query(() => ConfigurationNode, {
     name: "configuration",
     description: "Get a particular configuration entry by UUID",
@@ -88,7 +87,7 @@ export class ConfigurationResolver
     return Ok(configurationModelToResource(row));
   }
 
-  @AccessControlAuthorized(Action.List)
+  @AccessControlAuthorized("list", "ConfigurationNode")
   @Query(() => [ConfigurationNode], {
     name: "allConfigurations",
     description: "Get all configurations, irrespective of time",
@@ -101,7 +100,7 @@ export class ConfigurationResolver
     return Ok(rows.map(configurationModelToResource));
   }
 
-  @AccessControlAuthorized(Action.Create)
+  @AccessControlAuthorized("create")
   @Mutation(() => ConfigurationNode, {
     name: "createConfiguration",
     description:
@@ -122,7 +121,7 @@ export class ConfigurationResolver
     return Ok(configurationModelToResource(row));
   }
 
-  @AccessControlAuthorized(Action.Create)
+  @AccessControlAuthorized("create")
   @Mutation(() => [ConfigurationNode], {
     name: "createConfigurations",
     description:
@@ -148,7 +147,7 @@ export class ConfigurationResolver
     return Ok(rows.map(configurationModelToResource));
   }
 
-  @AccessControlAuthorized(Action.Delete)
+  @AccessControlAuthorized("delete")
   @Mutation(() => ConfigurationNode, {
     name: "deleteConfiguration",
     description: "Delete a configuration by UUID",
@@ -172,7 +171,7 @@ export class ConfigurationResolver
     return Ok(configurationModelToResource(row));
   }
 
-  @AccessControlAuthorized(Action.Read, "AuditNode")
+  @AccessControlAuthorized("read", "all")
   @Query(() => String, {
     name: "auditLog",
     description: "Get the audit log file from the server",

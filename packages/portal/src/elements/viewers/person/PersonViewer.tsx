@@ -7,7 +7,6 @@ import type {
 } from "@ukdanceblue/common";
 import {
   AccessLevel,
-  Action,
   AuthSource,
   committeeNames,
   MembershipPositionType,
@@ -73,10 +72,7 @@ export function PersonViewer({
     },
   });
 
-  const canEditPerson = useAuthorizationRequirement(
-    Action.Update,
-    "PersonNode"
-  );
+  const canEditPerson = useAuthorizationRequirement("update", "PersonNode");
 
   if (!personData) {
     return (

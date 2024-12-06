@@ -32,7 +32,7 @@
     "bs": "yarn run build && yarn run start",
     "build": "tsc",
     "check": "tsc --noEmit",
-    "dev": "tsc --watch & node --enable-source-maps --watch --watch-path=./dist ./dist/src/index.js",
+    "dev": "tsc --watch & node --enable-source-maps --watch ./dist/src/index.js",
     "lint": "eslint .",
     "migrate-and-start": "yarn dlx prisma migrate deploy && yarn run start",
     "start": "node --enable-source-maps ./dist/src/index.js",

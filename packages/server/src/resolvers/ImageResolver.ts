@@ -4,7 +4,6 @@ import { Service } from "@freshgum/typedi";
 import type { CrudResolver, GlobalId } from "@ukdanceblue/common";
 import {
   AccessControlAuthorized,
-  Action,
   GlobalIdScalar,
   ImageNode,
   LegacyError,
@@ -56,7 +55,7 @@ export class ImageResolver implements CrudResolver<ImageNode, "image"> {
     );
   }
 
-  @AccessControlAuthorized(Action.List)
+  @AccessControlAuthorized("list", "ImageNode")
   @Query(() => ListImagesResponse, { name: "images" })
   async images(
     @Args(() => ListImagesArgs) args: ListImagesArgs,
@@ -91,7 +90,7 @@ export class ImageResolver implements CrudResolver<ImageNode, "image"> {
     });
   }
 
-  @AccessControlAuthorized(Action.Create)
+  @AccessControlAuthorized("create")
   @Mutation(() => ImageNode, { name: "createImage" })
   async createImage(
     @Arg("input") input: CreateImageInput,
@@ -134,7 +133,7 @@ export class ImageResolver implements CrudResolver<ImageNode, "image"> {
     return imageModelToResource(result, null, this.fileManager, serverUrl);
   }
 
-  @AccessControlAuthorized(Action.Update)
+  @AccessControlAuthorized("update")
   @Mutation(() => ImageNode, { name: "setImageAltText" })
   async setImageAltText(
     @Arg("uuid", () => GlobalIdScalar) { id }: GlobalId,
@@ -164,7 +163,7 @@ export class ImageResolver implements CrudResolver<ImageNode, "image"> {
     );
   }
 
-  @AccessControlAuthorized(Action.Update)
+  @AccessControlAuthorized("update")
   @Mutation(() => ImageNode, { name: "setImageUrl" })
   async setImageUrl(
     @Arg("uuid", () => GlobalIdScalar) { id }: GlobalId,
@@ -213,7 +212,7 @@ export class ImageResolver implements CrudResolver<ImageNode, "image"> {
     );
   }
 
-  @AccessControlAuthorized(Action.Delete)
+  @AccessControlAuthorized("delete")
   @Mutation(() => ImageNode, { name: "deleteImage" })
   async deleteImage(
     @Arg("uuid", () => GlobalIdScalar) { id }: GlobalId,

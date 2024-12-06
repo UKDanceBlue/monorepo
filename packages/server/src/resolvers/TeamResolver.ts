@@ -1,7 +1,6 @@
 import { Service } from "@freshgum/typedi";
 import type { CrudResolver, GlobalId } from "@ukdanceblue/common";
 import {
-  Action,
   CommitteeIdentifier,
   ListFundraisingEntriesArgs,
   ListFundraisingEntriesResponse,
@@ -61,7 +60,7 @@ export class TeamResolver implements CrudResolver<TeamNode, "team"> {
     private fundraisingEntryRepository: FundraisingEntryRepository
   ) {}
 
-  @AccessControlAuthorized(Action.Get)
+  @AccessControlAuthorized("get")
   @Query(() => TeamNode, { name: "team" })
   async team(
     @Arg("uuid", () => GlobalIdScalar) { id }: GlobalId
@@ -75,7 +74,7 @@ export class TeamResolver implements CrudResolver<TeamNode, "team"> {
     return Ok(Some(teamModelToResource(row)));
   }
 
-  @AccessControlAuthorized(Action.List)
+  @AccessControlAuthorized("list", "TeamNode")
   @Query(() => ListTeamsResponse, { name: "teams" })
   async teams(
     @Args(() => ListTeamsArgs) query: ListTeamsArgs,
@@ -129,7 +128,7 @@ export class TeamResolver implements CrudResolver<TeamNode, "team"> {
     });
   }
 
-  @AccessControlAuthorized(Action.Create)
+  @AccessControlAuthorized("create")
   @Mutation(() => TeamNode, { name: "createTeam" })
   async createTeam(
     @Arg("input") input: CreateTeamInput,
@@ -147,7 +146,7 @@ export class TeamResolver implements CrudResolver<TeamNode, "team"> {
     return teamModelToResource(row);
   }
 
-  @AccessControlAuthorized(Action.Update)
+  @AccessControlAuthorized("update")
   @Mutation(() => TeamNode, { name: "setTeam" })
   async setTeam(
     @Arg("uuid", () => GlobalIdScalar) { id }: GlobalId,
@@ -171,7 +170,7 @@ export class TeamResolver implements CrudResolver<TeamNode, "team"> {
     return teamModelToResource(row);
   }
 
-  @AccessControlAuthorized(Action.Create)
+  @AccessControlAuthorized("create")
   @Mutation(() => [TeamNode], { name: "createTeams" })
   async createTeams(
     @Arg("teams", () => [BulkTeamInput]) teams: BulkTeamInput[],
@@ -184,7 +183,7 @@ export class TeamResolver implements CrudResolver<TeamNode, "team"> {
     return rows.map((rows) => rows.map((row) => teamModelToResource(row)));
   }
 
-  @AccessControlAuthorized(Action.Delete)
+  @AccessControlAuthorized("delete")
   @Mutation(() => TeamNode, { name: "deleteTeam" })
   async deleteTeam(
     @Arg("uuid", () => GlobalIdScalar) { id }: GlobalId
@@ -198,7 +197,7 @@ export class TeamResolver implements CrudResolver<TeamNode, "team"> {
     return teamModelToResource(row);
   }
 
-  @AccessControlAuthorized(Action.List, "PersonNode")
+  @AccessControlAuthorized("list", "TeamNode", ".members")
   @FieldResolver(() => [MembershipNode])
   async members(@Root() { id: { id } }: TeamNode): Promise<MembershipNode[]> {
     const memberships = await this.teamRepository.findMembersOfTeam({
@@ -208,7 +207,7 @@ export class TeamResolver implements CrudResolver<TeamNode, "team"> {
     return memberships.map((row) => membershipModelToResource(row));
   }
 
-  @AccessControlAuthorized(Action.List)
+  @AccessControlAuthorized("list", "PointEntryNode")
   @FieldResolver(() => [PointEntryNode])
   async pointEntries(
     @Root() { id: { id } }: TeamNode
@@ -220,7 +219,7 @@ export class TeamResolver implements CrudResolver<TeamNode, "team"> {
     return rows.map((row) => pointEntryModelToResource(row));
   }
 
-  @AccessControlAuthorized(Action.Get, "TeamNode", "fundraisingTotal")
+  @AccessControlAuthorized("get", "TeamNode", "fundraisingTotal")
   @FieldResolver(() => Float, { nullable: true })
   async fundraisingTotalAmount(
     @Root() { id: { id } }: TeamNode
@@ -230,7 +229,7 @@ export class TeamResolver implements CrudResolver<TeamNode, "team"> {
     });
   }
 
-  @AccessControlAuthorized(Action.Get, "TeamNode")
+  @AccessControlAuthorized("get", "TeamNode")
   @FieldResolver(() => Int)
   async totalPoints(@Root() { id: { id } }: TeamNode): Promise<number> {
     const result = await this.teamRepository.getTotalTeamPoints({
@@ -240,7 +239,7 @@ export class TeamResolver implements CrudResolver<TeamNode, "team"> {
     return result._sum.points ?? 0;
   }
 
-  @AccessControlAuthorized(Action.Get, "TeamNode")
+  @AccessControlAuthorized("get", "TeamNode")
   @FieldResolver(() => MarathonNode)
   async marathon(@Root() { id: { id } }: TeamNode): Promise<MarathonNode> {
     const result = await this.teamRepository.getMarathon({ uuid: id });
@@ -263,7 +262,7 @@ export class TeamResolver implements CrudResolver<TeamNode, "team"> {
     return result ?? null;
   }
 
-  @AccessControlAuthorized(Action.Get, "TeamNode", "fundraisingEntries")
+  @AccessControlAuthorized("get", "TeamNode", ".fundraisingEntries")
   @FieldResolver(() => ListFundraisingEntriesResponse)
   async fundraisingEntries(
     @Root() { id: { id } }: TeamNode,
@@ -316,7 +315,7 @@ export class TeamResolver implements CrudResolver<TeamNode, "team"> {
     );
   }
 
-  @AccessControlAuthorized(Action.Get, "TeamNode", "solicitationCode")
+  @AccessControlAuthorized("get", "TeamNode", ".solicitationCode")
   @FieldResolver(() => SolicitationCodeNode, { nullable: true })
   async solicitationCode(
     @Root() { id: { id } }: TeamNode

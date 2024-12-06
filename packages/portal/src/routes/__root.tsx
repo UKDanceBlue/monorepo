@@ -10,7 +10,7 @@ import type { Client as UrqlClient } from "urql";
 import watermark from "#assets/watermark.svg";
 import { themeConfigContext } from "#config/antThemeConfig.ts";
 import { Sider } from "#elements/components/sider/index.tsx";
-import { ConfigModal } from "#elements/singletons/NavigationMenu.tsx";
+import { ConfigModal } from "#elements/singletons/ConfigModal.tsx";
 import { refreshLoginState, useLoginState } from "#hooks/useLoginState.js";
 
 const TanStackRouterDevtools =

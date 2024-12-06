@@ -1,12 +1,6 @@
 import { PlusOutlined, UploadOutlined } from "@ant-design/icons";
 import { createFileRoute, Link } from "@tanstack/react-router";
-import {
-  AccessLevel,
-  Action,
-  CommitteeIdentifier,
-  CommitteeRole,
-  SortDirection,
-} from "@ukdanceblue/common";
+import { AccessLevel, SortDirection } from "@ukdanceblue/common";
 import { Button, Flex } from "antd";
 import { useQuery } from "urql";
 
@@ -83,7 +77,7 @@ export function ListTeamsPage() {
     <>
       <Flex justify="space-between" align="center">
         <h1>Teams</h1>
-        {useAuthorizationRequirement(Action.Create, "TeamNode") && (
+        {useAuthorizationRequirement("create", "TeamNode") && (
           <div style={{ display: "flex", gap: 16 }}>
             <Link from="/teams" to="create">
               <Button icon={<PlusOutlined />} size="large">

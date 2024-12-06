@@ -1,6 +1,5 @@
 import { Service } from "@freshgum/typedi";
 import {
-  Action,
   CrudResolver,
   type GlobalId,
   type MarathonYearString,
@@ -60,7 +59,7 @@ export class FundraisingEntryResolver
     private readonly solicitationCodeRepository: SolicitationCodeRepository
   ) {}
 
-  @AccessControlAuthorized(Action.Get)
+  @AccessControlAuthorized("get")
   @Query(() => FundraisingEntryNode)
   async fundraisingEntry(
     @Arg("id", () => GlobalIdScalar) { id }: GlobalId
@@ -71,7 +70,7 @@ export class FundraisingEntryResolver
     return entry.toAsyncResult().map(fundraisingEntryModelToNode).promise;
   }
 
-  @AccessControlAuthorized(Action.List)
+  @AccessControlAuthorized("list", "FundraisingEntryNode")
   @Query(() => ListFundraisingEntriesResponse)
   async fundraisingEntries(
     @Args(() => ListFundraisingEntriesArgs) args: ListFundraisingEntriesArgs,
@@ -179,7 +178,7 @@ export class FundraisingEntryResolver
   //     );
   //   }
   // )
-  @AccessControlAuthorized(Action.List, "FundraisingAssignmentNode")
+  @AccessControlAuthorized("list", "FundraisingAssignmentNode")
   @FieldResolver(() => [FundraisingAssignmentNode])
   async assignments(
     @Root() { id: { id } }: FundraisingEntryNode
@@ -203,7 +202,7 @@ export class FundraisingEntryResolver
   // @AccessControlAuthorized(globalFundraisingAccessParam, {
   //   accessLevel: AccessLevel.Admin,
   // })
-  @AccessControlAuthorized(Action.Modify)
+  @AccessControlAuthorized("modify")
   @Mutation(() => FundraisingEntryNode, { name: "setFundraisingEntry" })
   async setFundraisingEntry(
     @Arg("id", () => GlobalIdScalar) { id }: GlobalId,
@@ -229,7 +228,7 @@ export class FundraisingEntryResolver
     return entry.toAsyncResult().map(fundraisingEntryModelToNode).promise;
   }
 
-  @AccessControlAuthorized(Action.List, "FundraisingEntryNode")
+  @AccessControlAuthorized("list", "FundraisingEntryNode")
   @Query(() => String)
   async rawFundraisingTotals(
     @Arg("marathonYear", () => String) marathonYear: MarathonYearString
@@ -238,7 +237,7 @@ export class FundraisingEntryResolver
     return result.map((data) => JSON.stringify(data));
   }
 
-  @AccessControlAuthorized(Action.List, "FundraisingEntryNode")
+  @AccessControlAuthorized("list", "FundraisingEntryNode")
   @Query(() => String)
   async rawFundraisingEntries(
     @Arg("marathonYear", () => String) marathonYear: MarathonYearString,

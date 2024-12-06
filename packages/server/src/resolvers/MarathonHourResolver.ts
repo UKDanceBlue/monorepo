@@ -2,7 +2,6 @@ import { Service } from "@freshgum/typedi";
 import type { CrudResolver, GlobalId } from "@ukdanceblue/common";
 import {
   AccessControlAuthorized,
-  Action,
   GlobalIdScalar,
   ImageNode,
   LegacyError,
@@ -38,7 +37,7 @@ export class MarathonHourResolver
     private readonly marathonHourRepository: MarathonHourRepository
   ) {}
 
-  @AccessControlAuthorized(Action.Get)
+  @AccessControlAuthorized("get")
   @Query(() => MarathonHourNode)
   async marathonHour(@Arg("uuid", () => GlobalIdScalar) { id }: GlobalId) {
     const marathonHour =
@@ -51,7 +50,7 @@ export class MarathonHourResolver
     return marathonHourModelToResource(marathonHour);
   }
 
-  @AccessControlAuthorized(Action.ReadActive)
+  @AccessControlAuthorized("readActive")
   @Query(() => MarathonHourNode, { nullable: true })
   async currentMarathonHour() {
     const marathonHour =
@@ -63,7 +62,7 @@ export class MarathonHourResolver
   }
 
   // TODO: Double check that this access is correct
-  @AccessControlAuthorized(Action.List)
+  @AccessControlAuthorized("list", "MarathonHourNode")
   @Query(() => ListMarathonHoursResponse)
   async marathonHours(@Args() args: ListMarathonHoursArgs) {
     const marathons = await this.marathonHourRepository.listMarathonHours(args);
@@ -82,7 +81,7 @@ export class MarathonHourResolver
     return this.marathonHourRepository.getMaps({ uuid: id });
   }
 
-  @AccessControlAuthorized(Action.Create)
+  @AccessControlAuthorized("create")
   @Mutation(() => MarathonHourNode)
   async createMarathonHour(
     @Arg("input") input: CreateMarathonHourInput,
@@ -95,7 +94,7 @@ export class MarathonHourResolver
     return marathonHourModelToResource(marathonHour);
   }
 
-  @AccessControlAuthorized(Action.Update)
+  @AccessControlAuthorized("update")
   @Mutation(() => MarathonHourNode)
   async setMarathonHour(
     @Arg("uuid", () => GlobalIdScalar) { id }: GlobalId,
@@ -111,7 +110,7 @@ export class MarathonHourResolver
     return marathonHourModelToResource(marathonHour);
   }
 
-  @AccessControlAuthorized(Action.Delete)
+  @AccessControlAuthorized("delete")
   @Mutation(() => MarathonHourNode)
   async deleteMarathonHour(
     @Arg("uuid", () => GlobalIdScalar) { id }: GlobalId
@@ -125,7 +124,7 @@ export class MarathonHourResolver
     return marathonHourModelToResource(marathonHour);
   }
 
-  @AccessControlAuthorized(Action.Update)
+  @AccessControlAuthorized("update")
   @Mutation(() => MarathonHourNode)
   async addMap(
     @Arg("uuid", () => GlobalIdScalar) { id }: GlobalId,
@@ -141,7 +140,7 @@ export class MarathonHourResolver
     return marathonHourModelToResource(marathonHour);
   }
 
-  @AccessControlAuthorized(Action.Update)
+  @AccessControlAuthorized("update")
   @Mutation(() => VoidResolver)
   async removeMap(
     @Arg("uuid", () => GlobalIdScalar) { id }: GlobalId,

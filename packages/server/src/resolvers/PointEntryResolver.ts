@@ -2,7 +2,6 @@ import { Service } from "@freshgum/typedi";
 import type { CrudResolver, GlobalId } from "@ukdanceblue/common";
 import {
   AccessControlAuthorized,
-  Action,
   GlobalIdScalar,
   LegacyError,
   LegacyErrorCode,
@@ -46,7 +45,7 @@ export class PointEntryResolver
     private readonly personRepository: PersonRepository
   ) {}
 
-  @AccessControlAuthorized(Action.Get)
+  @AccessControlAuthorized("get")
   @Query(() => PointEntryNode, { name: "pointEntry" })
   async pointEntry(
     @Arg("uuid", () => GlobalIdScalar) { id }: GlobalId
@@ -62,7 +61,7 @@ export class PointEntryResolver
     return pointEntryModelToResource(model);
   }
 
-  @AccessControlAuthorized(Action.List)
+  @AccessControlAuthorized("list", "PointEntryNode")
   @Query(() => ListPointEntriesResponse, { name: "pointEntries" })
   async pointEntries(
     @Args(() => ListPointEntriesArgs) query: ListPointEntriesArgs
@@ -94,7 +93,7 @@ export class PointEntryResolver
     });
   }
 
-  @AccessControlAuthorized(Action.Create)
+  @AccessControlAuthorized("create")
   @Mutation(() => PointEntryNode, { name: "createPointEntry" })
   async createPointEntry(
     @Arg("input") input: CreatePointEntryInput
@@ -114,7 +113,7 @@ export class PointEntryResolver
     return pointEntryModelToResource(model);
   }
 
-  @AccessControlAuthorized(Action.Delete)
+  @AccessControlAuthorized("delete")
   @Mutation(() => PointEntryNode, { name: "deletePointEntry" })
   async deletePointEntry(
     @Arg("uuid", () => GlobalIdScalar) { id }: GlobalId

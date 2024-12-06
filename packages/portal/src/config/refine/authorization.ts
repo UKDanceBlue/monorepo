@@ -1,32 +1,34 @@
 import type { AccessControlProvider } from "@refinedev/core";
 import { Action } from "@ukdanceblue/common";
 
-import { useAuthorizationRequirement } from "#hooks/useLoginState.ts";
+import { urqlClient } from "#config/api.ts";
+import { getLoginState } from "#hooks/useLoginState.ts";
 
 export const accessControlProvider: AccessControlProvider = {
   can: ({ action, params }) => {
+    const { ability } = getLoginState(urqlClient);
+
     return Promise.resolve({
-      // @ts-expect-error TODO: Fix this
-      can: useAuthorizationRequirement([
+      can: ability.can(
         action === "create"
-          ? Action.Create
+          ? "create"
           : action === "edit"
-            ? Action.Update
+            ? "update"
             : action === "show"
-              ? Action.Read
+              ? "read"
               : action === "list"
-                ? Action.Read
-                : Action.Manage,
-        params?.resource?.meta?.nodeName
+                ? "read"
+                : "manage",
+        params?.resource?.meta?.modelName
           ? {
               id: params.id ? String(params.id) : undefined,
               kind: params.resource.meta
-                .nodeName as "FundraisingAssignmentNode",
+                .modelName as "FundraisingAssignmentNode",
               ownedByUserIds: [],
               withinTeamIds: [],
             }
-          : "all",
-      ]),
+          : "all"
+      ),
     });
   },
   options: {

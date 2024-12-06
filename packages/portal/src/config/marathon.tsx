@@ -1,8 +1,4 @@
-import {
-  AccessLevel,
-  Action,
-  dateTimeFromSomething,
-} from "@ukdanceblue/common";
+import { dateTimeFromSomething } from "@ukdanceblue/common";
 import { useEffect, useMemo, useState } from "react";
 import { useQuery } from "urql";
 
@@ -54,7 +50,7 @@ export const MarathonConfigProvider = ({
   valueOverride?: Pick<MarathonContextData, "marathon" | "marathons">;
 }) => {
   const canSeeMarathonList = useAuthorizationRequirement(
-    Action.List,
+    "list",
     "MarathonNode"
   );
 

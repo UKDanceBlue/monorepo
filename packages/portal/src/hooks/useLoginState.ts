@@ -1,4 +1,4 @@
-import { PureAbility } from "@casl/ability";
+import { createMongoAbility } from "@casl/ability";
 import type { PackRule } from "@casl/ability/extra";
 import { unpackRules } from "@casl/ability/extra";
 import type {
@@ -6,7 +6,7 @@ import type {
   AppAbility,
   Authorization,
 } from "@ukdanceblue/common";
-import { AccessLevel } from "@ukdanceblue/common";
+import { AccessLevel, caslOptions } from "@ukdanceblue/common";
 import {
   defaultAuthorization,
   getAuthorizationFor,
@@ -97,12 +97,13 @@ function parseLoginState(
         ),
         authSource: result.data.loginState.authSource,
       },
-      ability: new PureAbility(
+      ability: createMongoAbility(
         unpackRules(
           result.data.loginState.abilityRules as PackRule<
             AppAbility["rules"][number]
           >[]
-        )
+        ),
+        caslOptions
       ),
       me: result.data.me,
     };
@@ -142,7 +143,6 @@ export async function refreshLoginState(
 export function useLoginState(): PortalAuthData {
   const [result] = useQuery({
     query: loginStateDocument,
-    requestPolicy: "cache-only",
   });
 
   return useMemo(() => parseLoginState(result), [result]);

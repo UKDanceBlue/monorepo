@@ -1,5 +1,5 @@
 import type { Authorization } from "@ukdanceblue/common";
-import { AccessLevel, Action, CommitteeRole } from "@ukdanceblue/common";
+import { CommitteeRole } from "@ukdanceblue/common";
 import {
   App,
   AutoComplete,
@@ -42,7 +42,7 @@ export function PersonEditor({
   const selectedMarathon = useMarathon();
 
   // TODO: Make auth actually check for privallege escalation
-  const isAdmin = useAuthorizationRequirement(Action.Manage, "all");
+  const isAdmin = useAuthorizationRequirement("manage", "all");
 
   const { message } = App.useApp();
 

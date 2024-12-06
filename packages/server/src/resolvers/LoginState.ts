@@ -1,6 +1,6 @@
 import { packRules } from "@casl/ability/extra";
 import { Service } from "@freshgum/typedi";
-import { DbRole } from "@ukdanceblue/common";
+import { AuthSource, DbRole } from "@ukdanceblue/common";
 import { LoginState } from "@ukdanceblue/common";
 import { Ctx, Query, Resolver } from "type-graphql";
 
@@ -12,7 +12,7 @@ export class LoginStateResolver {
   @Query(() => LoginState)
   loginState(@Ctx() ctx: GraphQLContext): LoginState {
     return {
-      loggedIn: ctx.dbRole !== DbRole.None,
+      loggedIn: ctx.authSource !== AuthSource.None,
       effectiveCommitteeRoles: ctx.effectiveCommitteeRoles,
       accessLevel: ctx.accessLevel,
       dbRole: ctx.dbRole ?? DbRole.None,

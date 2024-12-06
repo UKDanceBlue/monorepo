@@ -1,6 +1,9 @@
 import { CommitteeNode } from "./Committee.js";
 import { ConfigurationNode } from "./Configuration.js";
-import { DailyDepartmentNotificationNode } from "./DailyDepartmentNotification.js";
+import {
+  DailyDepartmentNotificationBatchNode,
+  DailyDepartmentNotificationNode,
+} from "./DailyDepartmentNotification.js";
 import { DeviceNode } from "./Device.js";
 import { EventNode } from "./Event.js";
 import { FeedNode } from "./Feed.js";
@@ -56,6 +59,7 @@ export const ResourceClasses = {
   CommitteeNode,
   ConfigurationNode,
   DailyDepartmentNotificationNode,
+  DailyDepartmentNotificationBatchNode,
   DeviceNode,
   EventNode,
   FeedNode,

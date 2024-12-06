@@ -262,11 +262,11 @@ export const Sider: React.FC<
       theme={{
         components: {
           Menu: {
-            colorItemBg: "transparent",
-            colorItemText: "#fff",
-            colorItemTextSelected: "#fff",
-            colorItemBgSelected: "transparent",
-            colorItemTextHover: "#fff",
+            itemBg: "transparent",
+            itemColor: "#fff",
+            itemSelectedColor: "#fff",
+            itemSelectedBg: "transparent",
+            itemHoverColor: "#fff",
           },
         },
       }}

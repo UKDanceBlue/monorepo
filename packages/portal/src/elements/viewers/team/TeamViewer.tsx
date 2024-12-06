@@ -4,13 +4,7 @@ import {
   MinusCircleTwoTone,
 } from "@ant-design/icons";
 import { Link, useNavigate } from "@tanstack/react-router";
-import {
-  AccessLevel,
-  Action,
-  CommitteeIdentifier,
-  CommitteeRole,
-  MembershipPositionType,
-} from "@ukdanceblue/common";
+import { MembershipPositionType } from "@ukdanceblue/common";
 import { Button, Descriptions, Empty, Flex } from "antd";
 import { useState } from "react";
 import { useMutation } from "urql";
@@ -57,14 +51,14 @@ export function TeamViewer({
 }) {
   const teamData = readFragment(TeamViewerFragment, teamFragment) ?? undefined;
 
-  const canEditTeams = useAuthorizationRequirement(Action.Update, "TeamNode");
+  const canEditTeams = useAuthorizationRequirement("update", "TeamNode");
 
   const canEditMemberships = useAuthorizationRequirement(
-    Action.Update,
+    "update",
     "MembershipNode"
   );
 
-  const canViewPeople = useAuthorizationRequirement(Action.Get, "PersonNode");
+  const canViewPeople = useAuthorizationRequirement("get", "PersonNode");
 
   const [personToAssignToTeam, setPersonToAssignToTeam] = useState<{
     uuid: string;

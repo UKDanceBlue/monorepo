@@ -2,7 +2,6 @@ import { Service } from "@freshgum/typedi";
 import { BatchType, PrismaClient } from "@prisma/client";
 import {
   AccessControlAuthorized,
-  Action,
   Report,
   ReportArgs,
   stringifyDDNBatchType,
@@ -25,7 +24,7 @@ import { prismaToken } from "#lib/typediTokens.js";
 export class ReportResolver {
   constructor(private readonly prisma: PrismaClient) {}
 
-  @AccessControlAuthorized(Action.List, "FundraisingEntryNode")
+  @AccessControlAuthorized("list", "FundraisingEntryNode")
   @Query(() => Report, {
     name: "report",
     description:

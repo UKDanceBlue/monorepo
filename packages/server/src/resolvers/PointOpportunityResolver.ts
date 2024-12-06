@@ -2,7 +2,6 @@ import { Service } from "@freshgum/typedi";
 import type { CrudResolver, GlobalId } from "@ukdanceblue/common";
 import {
   AccessControlAuthorized,
-  Action,
   EventNode,
   GlobalIdScalar,
   LegacyError,
@@ -44,7 +43,7 @@ export class PointOpportunityResolver
     private readonly pointOpportunityRepository: PointOpportunityRepository
   ) {}
 
-  @AccessControlAuthorized(Action.Get)
+  @AccessControlAuthorized("get")
   @Query(() => PointOpportunityNode, { name: "pointOpportunity" })
   async pointOpportunity(
     @Arg("uuid", () => GlobalIdScalar) { id }: GlobalId
@@ -64,7 +63,7 @@ export class PointOpportunityResolver
     return pointOpportunityModelToResource(row);
   }
 
-  @AccessControlAuthorized(Action.List)
+  @AccessControlAuthorized("list", "PointOpportunityNode")
   @Query(() => ListPointOpportunitiesResponse, { name: "pointOpportunities" })
   async pointOpportunities(
     @Args(() => ListPointOpportunitiesArgs) query: ListPointOpportunitiesArgs
@@ -96,7 +95,7 @@ export class PointOpportunityResolver
     });
   }
 
-  @AccessControlAuthorized(Action.Create)
+  @AccessControlAuthorized("create")
   @Mutation(() => PointOpportunityNode, {
     name: "createPointOpportunity",
   })
@@ -114,7 +113,7 @@ export class PointOpportunityResolver
     return pointOpportunityModelToResource(row);
   }
 
-  @AccessControlAuthorized(Action.Update)
+  @AccessControlAuthorized("update")
   @Mutation(() => PointOpportunityNode, {
     name: "setPointOpportunity",
   })
@@ -142,7 +141,7 @@ export class PointOpportunityResolver
     return pointOpportunityModelToResource(row);
   }
 
-  @AccessControlAuthorized(Action.Delete)
+  @AccessControlAuthorized("delete")
   @Mutation(() => PointOpportunityNode, {
     name: "deletePointOpportunity",
   })

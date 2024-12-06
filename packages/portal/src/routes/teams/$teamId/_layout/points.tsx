@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { AccessLevel, Action, CommitteeIdentifier } from "@ukdanceblue/common";
+import { AccessLevel, Action } from "@ukdanceblue/common";
 import { Flex } from "antd";
 import { useQuery } from "urql";
 
@@ -12,10 +12,7 @@ import { useQueryStatusWatcher } from "#hooks/useQueryStatusWatcher.js";
 function ViewTeamPoints() {
   const { teamId: teamUuid } = Route.useParams();
 
-  const canAddPoints = useAuthorizationRequirement(
-    Action.Create,
-    "PointEntryNode"
-  );
+  const canAddPoints = useAuthorizationRequirement("create", "PointEntryNode");
 
   const [{ fetching, data, error }, refetch] = useQuery({
     query: teamPageDocument,

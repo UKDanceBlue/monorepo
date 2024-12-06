@@ -219,7 +219,3 @@ export const syncDbFundsPast = new Cron(
 syncDbFunds.options.startAt =
   await jobStateRepository.getNextJobDate(syncDbFunds);
 syncDbFunds.resume();
-// eslint-disable-next-line unicorn/prefer-top-level-await
-syncDbFunds.trigger().catch((error: unknown) => {
-  console.error("Failed to trigger syncDbFunds", error);
-});

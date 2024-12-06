@@ -13,7 +13,6 @@ import {
   Link,
   RouterProvider,
 } from "@tanstack/react-router";
-import type { AccessControlParam } from "@ukdanceblue/common";
 import { App, Empty, Spin } from "antd";
 import { App as AntApp } from "antd";
 import type { useAppProps } from "antd/es/app/context.js";
@@ -31,6 +30,9 @@ import { refineResources } from "#config/refine/resources.js";
 import { SpinningRibbon } from "#elements/components/design/RibbonSpinner.js";
 
 import { routeTree } from "./routeTree.gen.js";
+
+// @ts-expect-error Avoid an annoying log message from a library
+window.process = { env: {} };
 
 init({
   dsn: "https://f149f5546299b507f5e7b9b4aeafc2f4@o4507762130681856.ingest.us.sentry.io/4508071881932800",

@@ -10,5 +10,5 @@ export type AccessControlParam<AllowShortForm = true> =
 export function AccessControlAuthorized(
   ...check: AccessControlParam
 ): PropertyDecorator & MethodDecorator & ClassDecorator {
-  return Authorized<AccessControlParam>(check);
+  return Authorized<AccessControlParam>([check]);
 }

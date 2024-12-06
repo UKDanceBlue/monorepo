@@ -26,14 +26,14 @@ export class NotificationNode extends TimestampedResource implements Node {
   url?: URL | undefined | null;
 
   @Field(() => String, { nullable: true })
-  @AccessControlAuthorized("get", "NotificationNode", "deliveryIssue")
+  @AccessControlAuthorized("get", "NotificationNode", ".deliveryIssue")
   deliveryIssue?: string | undefined | null;
 
   @Field(() => DateTimeISOResolver, { nullable: true })
   @AccessControlAuthorized(
     "get",
     "NotificationNode",
-    "deliveryIssueAcknowledgedAt"
+    ".deliveryIssueAcknowledgedAt"
   )
   deliveryIssueAcknowledgedAt?: Date | undefined | null;
   get deliveryIssueAcknowledgedAtDateTime(): DateTime | null {
@@ -107,7 +107,7 @@ export class NotificationDeliveryNode
   @AccessControlAuthorized(
     "get",
     "NotificationDeliveryNode",
-    "receiptCheckedAt"
+    ".receiptCheckedAt"
   )
   receiptCheckedAt?: Date | undefined | null;
 
@@ -116,7 +116,7 @@ export class NotificationDeliveryNode
     description:
       "A unique identifier corresponding the group of notifications this was sent to Expo with.",
   })
-  @AccessControlAuthorized("get", "NotificationDeliveryNode", "chunkUuid")
+  @AccessControlAuthorized("get", "NotificationDeliveryNode", ".chunkUuid")
   chunkUuid?: string | undefined | null;
 
   @Field(() => String, {
@@ -124,7 +124,7 @@ export class NotificationDeliveryNode
     description:
       "Any error message returned by Expo when sending the notification.",
   })
-  @AccessControlAuthorized("get", "NotificationDeliveryNode", "deliveryError")
+  @AccessControlAuthorized("get", "NotificationDeliveryNode", ".deliveryError")
   deliveryError?: string | undefined | null;
 
   public getUniqueId(): string {

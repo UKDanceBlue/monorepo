@@ -1,10 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import {
-  AccessLevel,
-  Action,
-  CommitteeIdentifier,
-  CommitteeRole,
-} from "@ukdanceblue/common";
+import { AccessLevel, Action } from "@ukdanceblue/common";
 import { AutoComplete, Button, Card, Flex, Form, Space } from "antd";
 import { useState } from "react";
 import { useMutation, useQuery } from "urql";
@@ -102,7 +97,7 @@ function ViewTeamFundraising() {
     useState(false);
 
   const canSetSolicitationCode = useAuthorizationRequirement(
-    Action.Update,
+    "update",
     "SolicitationCodeNode"
   );
 

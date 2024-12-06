@@ -3,7 +3,6 @@ import type { Prisma } from "@prisma/client";
 import type { CrudResolver, GlobalId } from "@ukdanceblue/common";
 import {
   AccessControlAuthorized,
-  Action,
   EventNode,
   GlobalIdScalar,
   ImageNode,
@@ -49,7 +48,7 @@ export class EventResolver implements CrudResolver<EventNode, "event"> {
     private readonly fileManager: FileManager
   ) {}
 
-  @AccessControlAuthorized(Action.Get)
+  @AccessControlAuthorized("get")
   @Query(() => EventNode, {
     name: "event",
     description: "Get an event by UUID",
@@ -69,7 +68,7 @@ export class EventResolver implements CrudResolver<EventNode, "event"> {
     );
   }
 
-  @AccessControlAuthorized(Action.List)
+  @AccessControlAuthorized("list", "EventNode")
   @Query(() => ListEventsResponse, {
     name: "events",
     description: "List events",
@@ -102,7 +101,7 @@ export class EventResolver implements CrudResolver<EventNode, "event"> {
     });
   }
 
-  @AccessControlAuthorized(Action.Create)
+  @AccessControlAuthorized("create")
   @Mutation(() => EventNode, {
     name: "createEvent",
     description: "Create a new event",
@@ -134,7 +133,7 @@ export class EventResolver implements CrudResolver<EventNode, "event"> {
     );
   }
 
-  @AccessControlAuthorized(Action.Delete)
+  @AccessControlAuthorized("delete")
   @Mutation(() => EventNode, {
     name: "deleteEvent",
     description: "Delete an event by UUID",
@@ -148,7 +147,6 @@ export class EventResolver implements CrudResolver<EventNode, "event"> {
       throw new LegacyError(LegacyErrorCode.NotFound, "Event not found");
     }
 
-    auditLogger.secure("Event deleted", { uuid: id });
 
     return eventModelToResource(
       row,
@@ -156,7 +154,7 @@ export class EventResolver implements CrudResolver<EventNode, "event"> {
     );
   }
 
-  @AccessControlAuthorized(Action.Update)
+  @AccessControlAuthorized("update")
   @Mutation(() => EventNode, {
     name: "setEvent",
     description: "Update an event by UUID",
@@ -222,7 +220,7 @@ export class EventResolver implements CrudResolver<EventNode, "event"> {
     );
   }
 
-  @AccessControlAuthorized(Action.Update, "EventNode")
+  @AccessControlAuthorized("update", "EventNode")
   @Mutation(() => VoidResolver, {
     name: "removeImageFromEvent",
     description: "Remove an image from an event",
@@ -243,7 +241,7 @@ export class EventResolver implements CrudResolver<EventNode, "event"> {
     auditLogger.secure("Event image removed", { eventUuid, imageUuid });
   }
 
-  @AccessControlAuthorized(Action.Update, "EventNode")
+  @AccessControlAuthorized("update", "EventNode")
   @Mutation(() => ImageNode, {
     name: "addExistingImageToEvent",
     description: "Add an existing image to an event",

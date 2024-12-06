@@ -2,7 +2,6 @@ import { Service } from "@freshgum/typedi";
 import type { GlobalId } from "@ukdanceblue/common";
 import {
   AccessControlAuthorized,
-  Action,
   CrudResolver,
   FundraisingAssignmentNode,
   FundraisingEntryNode,
@@ -87,7 +86,7 @@ export class FundraisingAssignmentResolver
   //     );
   //   }
   // )
-  @AccessControlAuthorized(Action.Get)
+  @AccessControlAuthorized("get")
   @Query(() => FundraisingAssignmentNode)
   async fundraisingAssignment(
     @Arg("id", () => GlobalIdScalar) { id }: GlobalId
@@ -148,7 +147,7 @@ export class FundraisingAssignmentResolver
   //     return false;
   //   }
   // )
-  @AccessControlAuthorized(Action.Create)
+  @AccessControlAuthorized("create")
   @Mutation(() => FundraisingAssignmentNode)
   async assignEntryToPerson(
     @Arg("entryId", () => GlobalIdScalar) { id: entryId }: GlobalId,
@@ -210,7 +209,7 @@ export class FundraisingAssignmentResolver
   //     return false;
   //   }
   // )
-  @AccessControlAuthorized(Action.Update)
+  @AccessControlAuthorized("update")
   @Mutation(() => FundraisingAssignmentNode)
   async updateFundraisingAssignment(
     @Arg("id", () => GlobalIdScalar) { id }: GlobalId,
@@ -269,7 +268,7 @@ export class FundraisingAssignmentResolver
   //     return false;
   //   }
   // )
-  @AccessControlAuthorized(Action.Delete)
+  @AccessControlAuthorized("delete")
   @Mutation(() => FundraisingAssignmentNode)
   async deleteFundraisingAssignment(
     @Arg("id", () => GlobalIdScalar) { id }: GlobalId
@@ -331,7 +330,7 @@ export class FundraisingAssignmentResolver
   //     );
   //   }
   // )
-  @AccessControlAuthorized(Action.Get)
+  @AccessControlAuthorized("get")
   @FieldResolver(() => PersonNode, {
     nullable: true,
     description:
@@ -397,7 +396,7 @@ export class FundraisingAssignmentResolver
   //     );
   //   }
   // )
-  @AccessControlAuthorized(Action.Get)
+  @AccessControlAuthorized("get")
   @FieldResolver(() => FundraisingEntryNode)
   async entry(
     @Root() { id: { id } }: FundraisingAssignmentNode

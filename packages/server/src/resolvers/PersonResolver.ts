@@ -3,7 +3,6 @@ import type { CrudResolver, GlobalId } from "@ukdanceblue/common";
 import {
   AccessControlAuthorized,
   AccessLevel,
-  Action,
   CommitteeMembershipNode,
   FundraisingAssignmentNode,
   GlobalIdScalar,
@@ -71,7 +70,7 @@ export class PersonResolver
     private readonly fundraisingEntryRepository: FundraisingEntryRepository
   ) {}
 
-  @AccessControlAuthorized(Action.Get)
+  @AccessControlAuthorized("get")
   @Query(() => PersonNode, { name: "person" })
   async person(
     @Arg("uuid", () => GlobalIdScalar) { id }: GlobalId
@@ -84,7 +83,7 @@ export class PersonResolver
       .promise;
   }
 
-  @AccessControlAuthorized(Action.Get)
+  @AccessControlAuthorized("get")
   @Query(() => PersonNode, { name: "personByLinkBlue", nullable: true })
   async getByLinkBlueId(
     @Arg("linkBlueId") linkBlueId: string
@@ -104,7 +103,7 @@ export class PersonResolver
     ).promise;
   }
 
-  @AccessControlAuthorized(Action.List)
+  @AccessControlAuthorized("list", "PersonNode")
   @Query(() => ListPeopleResponse, { name: "people" })
   async people(
     @Args(() => ListPeopleArgs) args: ListPeopleArgs
@@ -157,7 +156,7 @@ export class PersonResolver
     return ctx.authenticatedUser;
   }
 
-  @AccessControlAuthorized(Action.List)
+  @AccessControlAuthorized("list", "PersonNode")
   @Query(() => [PersonNode], { name: "searchPeopleByName" })
   async searchByName(
     @Arg("name") name: string
@@ -174,7 +173,7 @@ export class PersonResolver
     ).promise;
   }
 
-  @AccessControlAuthorized(Action.Create)
+  @AccessControlAuthorized("create")
   @Mutation(() => PersonNode, { name: "createPerson" })
   async createPerson(
     @Arg("input") input: CreatePersonInput,
@@ -220,7 +219,7 @@ export class PersonResolver
       .promise;
   }
 
-  @AccessControlAuthorized(Action.Modify)
+  @AccessControlAuthorized("modify")
   @Mutation(() => PersonNode, { name: "setPerson" })
   async setPerson(
     @Arg("uuid", () => GlobalIdScalar) { id }: GlobalId,
@@ -270,7 +269,7 @@ export class PersonResolver
       .promise;
   }
 
-  @AccessControlAuthorized(Action.Create)
+  @AccessControlAuthorized("create")
   @Mutation(() => [PersonNode], { name: "bulkLoadPeople" })
   async bulkLoad(
     @Arg("people", () => [BulkPersonInput]) people: BulkPersonInput[],
@@ -291,7 +290,7 @@ export class PersonResolver
     ).promise;
   }
 
-  @AccessControlAuthorized(Action.Update, "TeamNode")
+  @AccessControlAuthorized("update", "TeamNode", ".members")
   @Mutation(() => MembershipNode, { name: "addPersonToTeam" })
   async assignPersonToTeam(
     @Arg("personUuid", () => GlobalIdScalar) personUuid: GlobalId,
@@ -314,7 +313,7 @@ export class PersonResolver
     ).map(membershipModelToResource).promise;
   }
 
-  @AccessControlAuthorized(Action.Update, "TeamNode")
+  @AccessControlAuthorized("update", "TeamNode", ".members")
   @Mutation(() => MembershipNode, { name: "removePersonFromTeam" })
   async unassignPersonFromTeam(
     @Arg("personUuid", () => GlobalIdScalar) personUuid: GlobalId,
@@ -332,7 +331,7 @@ export class PersonResolver
     ).map(membershipModelToResource).promise;
   }
 
-  @AccessControlAuthorized(Action.Delete)
+  @AccessControlAuthorized("delete")
   @Mutation(() => PersonNode, { name: "deletePerson" })
   async deletePerson(
     @Arg("uuid", () => GlobalIdScalar) { id }: GlobalId
@@ -352,7 +351,7 @@ export class PersonResolver
       }).promise;
   }
 
-  @AccessControlAuthorized(Action.Get, "PersonNode")
+  @AccessControlAuthorized("get", "PersonNode", ".memberships")
   @FieldResolver(() => [CommitteeMembershipNode])
   async committees(
     @Root() { id: { id } }: PersonNode
@@ -371,7 +370,7 @@ export class PersonResolver
     ).promise;
   }
 
-  @AccessControlAuthorized(Action.Get, "PersonNode")
+  @AccessControlAuthorized("get", "PersonNode", ".memberships")
   @FieldResolver(() => [MembershipNode])
   async teams(
     @Root() { id: { id } }: PersonNode
@@ -387,7 +386,7 @@ export class PersonResolver
     ).map((models) => models.map(membershipModelToResource)).promise;
   }
 
-  @AccessControlAuthorized(Action.Get, "PersonNode")
+  @AccessControlAuthorized("get", "PersonNode", ".memberships")
   @FieldResolver(() => [MembershipNode])
   async moraleTeams(
     @Root() { id: { id } }: PersonNode
@@ -403,7 +402,7 @@ export class PersonResolver
     ).map((models) => models.map(membershipModelToResource)).promise;
   }
 
-  @AccessControlAuthorized(Action.Get, "PersonNode")
+  @AccessControlAuthorized("get", "PersonNode", ".memberships")
   @FieldResolver(() => CommitteeMembershipNode, { nullable: true })
   async primaryCommittee(
     @Root() { id: { id } }: PersonNode
@@ -419,7 +418,7 @@ export class PersonResolver
     );
   }
 
-  @AccessControlAuthorized(Action.Get, "PersonNode")
+  @AccessControlAuthorized("get", "PersonNode", ".memberships")
   @FieldResolver(() => MembershipNode, { nullable: true })
   async primaryTeam(
     @Arg("teamType", () => TeamType) teamType: TeamType,
@@ -435,7 +434,7 @@ export class PersonResolver
     return model.map((option) => option.map(membershipModelToResource));
   }
 
-  @AccessControlAuthorized(Action.List, "FundraisingAssignmentNode")
+  @AccessControlAuthorized("list", "PersonNode", ".fundraisingAssignments")
   @FieldResolver(() => Float, { nullable: true })
   async fundraisingTotalAmount(
     @Root() { id: { id } }: PersonNode
@@ -448,7 +447,7 @@ export class PersonResolver
   // This is the only way normal dancers or committee members can access fundraising info
   // as it will only grant them the individual assignment they are associated with plus
   // shallow access to the entry itself
-  @AccessControlAuthorized(Action.List, "FundraisingAssignmentNode")
+  @AccessControlAuthorized("list", "PersonNode", ".fundraisingAssignments")
   @FieldResolver(() => [FundraisingAssignmentNode])
   async fundraisingAssignments(
     @Root() { id: { id } }: PersonNode

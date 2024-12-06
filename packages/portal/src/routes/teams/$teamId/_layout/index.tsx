@@ -5,10 +5,7 @@ import { Button, Flex } from "antd";
 import { useAuthorizationRequirement } from "#hooks/useLoginState.js";
 
 function ViewTeamPage() {
-  const canSeePoints = useAuthorizationRequirement(
-    Action.Read,
-    "PointEntryNode"
-  );
+  const canSeePoints = useAuthorizationRequirement("read", "PointEntryNode");
 
   return (
     <Flex justify="space-evenly" align="center">

@@ -1,8 +1,6 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
 import { Container } from "@freshgum/typedi";
 import type { AccessControlParam, Action } from "@ukdanceblue/common";
-import { AccessLevel, parseGlobalId } from "@ukdanceblue/common";
+import { AccessLevel, isGlobalId } from "@ukdanceblue/common";
 import {
   ConcreteError,
   FormattedConcreteError,
@@ -83,6 +81,16 @@ for (const service of resolversList) {
   }
 }
 
+function pathToString(path: GraphQLResolveInfo["path"]): string {
+  let current: GraphQLResolveInfo["path"] | undefined = path;
+  let result = "";
+  while (current) {
+    result = `${current.key}.${result}`;
+    current = current.prev;
+  }
+  return result;
+}
+
 export default await buildSchema({
   resolvers: resolversList,
   emitSchemaFile: schemaPath,
@@ -97,8 +105,8 @@ export default await buildSchema({
   ): boolean {
     const {
       context,
-      info: { parentType, returnType, fieldName },
       root,
+      info: { parentType, returnType, variableValues, path },
     } = resolverData;
     const { accessLevel, ability } = context;
 
@@ -118,43 +126,53 @@ export default await buildSchema({
       let action: Action;
       let subject: string | undefined = undefined;
       let field: string | undefined = undefined;
-      let childOfType: string | undefined = undefined;
-      let childOfId: string | undefined = undefined;
 
       if (rule.length === 1) {
         [action] = rule;
       } else {
         [action, , field] = rule;
         subject = rule[1] as string;
+        if (!field) {
+          field = ".";
+        }
       }
 
+      let id: string | undefined = undefined;
       if (
-        parentType.name !== "Query" &&
-        parentType.name !== "Mutation" &&
-        parentType.name !== "Subscription"
+        parentType.name === "Query" ||
+        parentType.name === "Mutation" ||
+        parentType.name === "Subscription"
       ) {
-        if (!field) {
-          field = fieldName;
-        }
-        childOfType = parentType.name;
-        if ("id" in root) {
-          if (typeof root.id === "string") {
-            childOfId = root.id;
+        if ("id" in variableValues) {
+          if (typeof variableValues.id === "string") {
+            id = variableValues.id;
+          } else if (isGlobalId(variableValues.id)) {
+            id = variableValues.id.id;
           } else {
-            const parentId = parseGlobalId(String(root.id));
-            if (parentId.isOk()) {
-              childOfId = parentId.value.id;
-            } else {
-              throw new Error("Cannot determine parent ID for query");
-            }
+            throw new Error("Cannot determine ID for query");
           }
         } else {
-          throw new Error("Cannot determine parent ID for query");
+          const possibleIds = Object.values(variableValues).filter((value) =>
+            isGlobalId(value)
+          );
+          if (possibleIds.length === 1) {
+            id = possibleIds[0]!.id;
+          } else if (possibleIds.length > 1) {
+            throw new Error("Cannot determine ID for query");
+          }
+        }
+      } else if ("id" in root) {
+        if (typeof root.id === "string") {
+          id = root.id;
+        } else if (isGlobalId(root.id)) {
+          id = root.id.id;
+        } else {
+          throw new Error("Cannot determine ID for query");
         }
       }
 
       if (subject === "all") {
-        return ability.can(action as typeof Action.Read, "all", field);
+        return ability.can(action, "all", field);
       }
 
       if (!subject) {
@@ -167,22 +185,30 @@ export default await buildSchema({
         }
       }
       if (!subject) {
-        throw new Error("Cannot determine subject type for query");
+        throw new Error(
+          `Cannot determine subject type for query ${pathToString(path)}`
+        );
       }
 
-      return ability.can(
-        action as typeof Action.Read,
+      const ok = ability.can(
+        action,
         {
-          kind: subject as "FundraisingAssignmentNode",
-          id: (root as any).id,
-          childOfId,
-          childOfType: childOfType as "FundraisingAssignmentNode",
-          ownedByUserIds: [],
-          withinTeamIds: [],
+          kind: subject as never,
+          id,
         },
         field
       );
+      logger.debug("Checking access control", {
+        rule: ability.rulesFor(action, subject as never, field),
+        ok,
+        id,
+        action,
+        subject,
+        field,
+      });
+      return ok;
     } else {
+      logger.error("Invalid access control rule", { params });
       throw new Error("Invalid access control rule");
     }
   },

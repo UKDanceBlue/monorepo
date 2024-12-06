@@ -7,7 +7,7 @@ import { PeopleTable } from "#elements/tables/PeopleTable.js";
 import { useAuthorizationRequirement } from "#hooks/useLoginState.js";
 
 function ListPeoplePage() {
-  const canCreate = useAuthorizationRequirement(Action.Create, "PersonNode");
+  const canCreate = useAuthorizationRequirement("create", "PersonNode");
 
   return (
     <>
