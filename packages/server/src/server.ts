@@ -22,7 +22,11 @@ import type {
 import express from "express";
 
 import type { GraphQLContext } from "#auth/context.js";
-import { applicationPortToken, loggingLevelToken } from "#lib/typediTokens.js";
+import {
+  applicationPortToken,
+  isDevelopmentToken,
+  loggingLevelToken,
+} from "#lib/typediTokens.js";
 import { logger } from "#logging/logger.js";
 
 const applicationPort = Container.get(applicationPortToken);
@@ -108,6 +112,9 @@ export async function createServer() {
   app.use(
     cors({
       credentials: true,
+      origin: Container.get(isDevelopmentToken)
+        ? [/^https:\/\/(\w+\.)?danceblue\.org$/, /^http:\/\/localhost:\d+$/]
+        : /^https:\/\/(\w+\.)?danceblue\.org$/,
     })
   );
 
@@ -168,8 +175,6 @@ export async function startServer(
 
   app.use(
     "/graphql",
-
-    cors(),
 
     express.json(),
 
