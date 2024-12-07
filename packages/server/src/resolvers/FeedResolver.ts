@@ -57,7 +57,7 @@ export class FeedResolver {
   }
 
   @Query(() => [FeedItem], { description: "Get the active feed" })
-  @AccessControlAuthorized("readActive")
+  @AccessControlAuthorized("readActive", "FeedNode")
   async feed(
     @Arg("limit", () => Int, { defaultValue: 10, nullable: true })
     limit: number

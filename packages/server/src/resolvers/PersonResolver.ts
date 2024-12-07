@@ -103,7 +103,7 @@ export class PersonResolver
     ).promise;
   }
 
-  @AccessControlAuthorized("list", "PersonNode")
+  @AccessControlAuthorized("list")
   @Query(() => ListPeopleResponse, { name: "people" })
   async people(
     @Args(() => ListPeopleArgs) args: ListPeopleArgs
@@ -156,7 +156,7 @@ export class PersonResolver
     return ctx.authenticatedUser;
   }
 
-  @AccessControlAuthorized("list", "PersonNode")
+  @AccessControlAuthorized("list")
   @Query(() => [PersonNode], { name: "searchPeopleByName" })
   async searchByName(
     @Arg("name") name: string

@@ -8,6 +8,7 @@ import {
 } from "@ukdanceblue/common/error";
 import {
   GraphQLList,
+  GraphQLNonNull,
   GraphQLObjectType,
   type GraphQLResolveInfo,
 } from "graphql";
@@ -177,12 +178,33 @@ export default await buildSchema({
       }
 
       if (!subject) {
-        if (returnType instanceof GraphQLObjectType) {
-          subject = returnType.name;
-        } else if (returnType instanceof GraphQLList) {
-          if (returnType.ofType instanceof GraphQLObjectType) {
-            subject = returnType.ofType.name;
+        let rt = returnType;
+        if (rt instanceof GraphQLNonNull) {
+          rt = rt.ofType;
+        }
+        if (rt instanceof GraphQLObjectType) {
+          if (
+            rt
+              .getInterfaces()
+              .some(({ name }) => name === "AbstractGraphQLPaginatedResponse")
+          ) {
+            const { data } = rt.getFields();
+            if (data) {
+              rt = data.type;
+            }
           }
+        }
+        if (rt instanceof GraphQLNonNull) {
+          rt = rt.ofType;
+        }
+        if (rt instanceof GraphQLList) {
+          rt = rt.ofType;
+        }
+        if (rt instanceof GraphQLNonNull) {
+          rt = rt.ofType;
+        }
+        if (rt instanceof GraphQLObjectType) {
+          subject = rt.name;
         }
       }
       if (!subject) {
