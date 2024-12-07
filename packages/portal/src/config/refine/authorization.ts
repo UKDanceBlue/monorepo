@@ -1,31 +1,31 @@
 import type { AccessControlProvider } from "@refinedev/core";
-import { Action } from "@ukdanceblue/common";
+import type { Action } from "@ukdanceblue/common";
 
 import { urqlClient } from "#config/api.ts";
 import { getLoginState } from "#hooks/useLoginState.ts";
 
 export const accessControlProvider: AccessControlProvider = {
   can: ({ action, params }) => {
-    const { ability } = getLoginState(urqlClient);
+    const loginState = getLoginState(urqlClient);
+
+    if (loginState.isErr()) {
+      return Promise.resolve({ can: false });
+    }
 
     return Promise.resolve({
-      can: ability.can(
-        action === "create"
+      can: loginState.value.ability.can(
+        action === "clone"
           ? "create"
           : action === "edit"
             ? "update"
             : action === "show"
-              ? "read"
-              : action === "list"
-                ? "read"
-                : "manage",
+              ? "get"
+              : (action as Action),
         params?.resource?.meta?.modelName
           ? {
               id: params.id ? String(params.id) : undefined,
               kind: params.resource.meta
                 .modelName as "FundraisingAssignmentNode",
-              ownedByUserIds: [],
-              withinTeamIds: [],
             }
           : "all"
       ),

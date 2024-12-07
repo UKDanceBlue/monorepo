@@ -1,5 +1,4 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { AccessLevel, Action } from "@ukdanceblue/common";
 import { Button, Flex } from "antd";
 
 import { useAuthorizationRequirement } from "#hooks/useLoginState.js";
@@ -34,11 +33,4 @@ function ViewTeamPage() {
 
 export const Route = createFileRoute("/teams/$teamId/_layout/")({
   component: ViewTeamPage,
-  staticData: {
-    authorizationRules: [
-      {
-        accessLevel: AccessLevel.UKY,
-      },
-    ],
-  },
 });

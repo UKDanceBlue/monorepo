@@ -35,12 +35,13 @@ const NEVER = {} as never;
 const extraFieldsByResource = {
   PersonNode: {
     [".fundraisingAssignments"]: NEVER,
-    [".members"]: NEVER,
+    [".memberships"]: NEVER,
   },
   TeamNode: {
     [".fundraisingAssignments"]: NEVER,
-    [".memberships"]: NEVER,
+    [".members"]: NEVER,
     [".solicitationCode"]: NEVER,
+    [".fundraisingTotal"]: NEVER,
   },
   FundraisingAssignmentNode: {
     [".withinTeamIds"]: NEVER,
@@ -83,7 +84,7 @@ type ResourceSubject = {
 };
 
 type SubjectValue = ResourceSubject[keyof ResourceSubject];
-type Subject = InferSubjects<SubjectValue | "all", true>;
+export type Subject = InferSubjects<SubjectValue | "all", true>;
 
 export type Action =
   | "create"
@@ -167,14 +168,16 @@ export function getAuthorizationFor({
       ["CommitteeNode", "EventNode", "FeedNode", "ImageNode", "MembershipNode"],
       "."
     );
-    allow("manage", "PersonNode", [".memberships"]);
+    allow("manage", "PersonNode", [".", ".memberships"]);
     allow("read", "NotificationDeliveryNode", ".");
     allow(["modify", "create"], "NotificationNode", ".");
     allow("read", "NotificationNode", [
+      ".",
       ".deliveryIssue",
       ".deliveryIssueAcknowledgedAt",
     ]);
     allow("read", "NotificationDeliveryNode", [
+      ".",
       ".receiptCheckedAt",
       ".chunkUuid",
       ".deliveryError",
@@ -199,16 +202,14 @@ export function getAuthorizationFor({
   for (const { identifier, role } of effectiveCommitteeRoles) {
     switch (identifier) {
       case CommitteeIdentifier.viceCommittee: {
-        allow(
-          role === CommitteeRole.Member ? "read" : "manage",
-          "PersonNode",
-          ".memberships"
-        );
-        allow(
-          role === CommitteeRole.Member ? "read" : "manage",
-          "TeamNode",
-          ".members"
-        );
+        allow(role === CommitteeRole.Member ? "read" : "manage", "PersonNode", [
+          ".",
+          ".memberships",
+        ]);
+        allow(role === CommitteeRole.Member ? "read" : "manage", "TeamNode", [
+          ".",
+          ".members",
+        ]);
         // fallthrough
       }
       case CommitteeIdentifier.communityDevelopmentCommittee:
@@ -252,11 +253,16 @@ export function getAuthorizationFor({
     : null;
 
   if (parsedUserId) {
-    allow("read", "PersonNode", [".memberships", ".fundraisingAssignments"], {
-      id: {
-        $eq: parsedUserId,
-      },
-    });
+    allow(
+      "read",
+      "PersonNode",
+      [".", ".memberships", ".fundraisingAssignments"],
+      {
+        id: {
+          $eq: parsedUserId,
+        },
+      }
+    );
   }
 
   const authTeamMemberships = teamMemberships.map(
@@ -264,7 +270,7 @@ export function getAuthorizationFor({
   );
 
   if (authTeamMemberships.length > 0) {
-    allow("read", "TeamNode", ".members", {
+    allow("read", "TeamNode", [".", ".members", ".fundraisingTotal"], {
       id: { $in: authTeamMemberships },
     });
   }
@@ -275,20 +281,12 @@ export function getAuthorizationFor({
     )
     .map((membership) => membership.teamId);
   if (authTeamCaptaincies.length > 0) {
-    // allow("read", "PersonNode", {
-    //   withinTeamIds: { $in: authTeamCaptaincies },
-    // });
-    // allow(["modify", "create"], "FundraisingAssignmentNode", {
-    //   withinTeamIds: { $in: authTeamCaptaincies },
-    // });
-    // allow("read", "FundraisingEntryNode", {
-    //   childOfType: "TeamNode",
-    //   childOfId: { $in: authTeamCaptaincies },
-    // });
-    // allow("read", "TeamNode", "fundraisingEntries", {
-    //   id: { $in: authTeamMemberships },
-    // });
-    allow(["modify", "create"], "TeamNode", ".fundraisingAssignments");
+    allow(["modify", "create"], "TeamNode", ".fundraisingAssignments", {
+      id: { $in: authTeamCaptaincies },
+    });
+    allow("read", "TeamNode", ".solicitationCode", {
+      id: { $in: authTeamCaptaincies },
+    });
   }
 
   return doBuild();

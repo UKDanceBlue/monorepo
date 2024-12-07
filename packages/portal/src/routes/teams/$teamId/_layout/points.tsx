@@ -1,5 +1,4 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { AccessLevel, Action } from "@ukdanceblue/common";
 import { Flex } from "antd";
 import { useQuery } from "urql";
 
@@ -49,12 +48,4 @@ function ViewTeamPoints() {
 
 export const Route = createFileRoute("/teams/$teamId/_layout/points")({
   component: ViewTeamPoints,
-
-  staticData: {
-    authorizationRules: [
-      {
-        accessLevel: AccessLevel.Committee,
-      },
-    ],
-  },
 });

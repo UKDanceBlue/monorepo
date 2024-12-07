@@ -1,5 +1,4 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { AccessLevel, CommitteeIdentifier } from "@ukdanceblue/common";
 import { useQuery } from "urql";
 
 import { TeamEditorFragment } from "#documents/team.ts";
@@ -44,16 +43,5 @@ export const Route = createFileRoute("/teams/$teamId/edit")({
   component: EditTeamPage,
   async beforeLoad({ context, params: { teamId } }) {
     await context.urqlClient.query(viewTeamPageDocument, { uuid: teamId });
-  },
-  staticData: {
-    authorizationRules: [
-      {
-        accessLevel: AccessLevel.CommitteeChairOrCoordinator,
-        committeeIdentifier: CommitteeIdentifier.viceCommittee,
-      },
-      {
-        accessLevel: AccessLevel.Admin,
-      },
-    ],
   },
 });

@@ -132,9 +132,10 @@ export default await buildSchema({
       } else {
         [action, , field] = rule;
         subject = rule[1] as string;
-        if (!field) {
-          field = ".";
-        }
+      }
+
+      if (!field) {
+        field = ".";
       }
 
       let id: string | undefined = undefined;
@@ -198,9 +199,9 @@ export default await buildSchema({
         },
         field
       );
-      logger.debug("Checking access control", {
-        rule: ability.rulesFor(action, subject as never, field),
-        ok,
+      logger.trace("Checking access control", {
+        rule: ability.relevantRuleFor(action, subject as never, field),
+        authorized: ok,
         id,
         action,
         subject,

@@ -1,5 +1,4 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { AccessLevel } from "@ukdanceblue/common";
 import { Button, Collapse, Divider, Flex, Form, Input, Space } from "antd";
 import { useState } from "react";
 
@@ -125,12 +124,4 @@ function ConfigPage() {
 
 export const Route = createFileRoute("/config/")({
   component: ConfigPage,
-
-  staticData: {
-    authorizationRules: [
-      {
-        accessLevel: AccessLevel.Admin,
-      },
-    ],
-  },
 });

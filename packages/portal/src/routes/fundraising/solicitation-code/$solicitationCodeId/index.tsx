@@ -2,7 +2,6 @@ import { MinusCircleOutlined } from "@ant-design/icons";
 import { useForm } from "@refinedev/antd";
 import type { HttpError } from "@refinedev/core";
 import { createFileRoute, useParams } from "@tanstack/react-router";
-import { AccessLevel, CommitteeIdentifier } from "@ukdanceblue/common";
 import { Button, Flex, Form, Input } from "antd";
 import { useMutation, useQuery } from "urql";
 
@@ -29,18 +28,6 @@ export const Route = createFileRoute(
   "/fundraising/solicitation-code/$solicitationCodeId/"
 )({
   component: RouteComponent,
-
-  staticData: {
-    authorizationRules: [
-      {
-        accessLevel: AccessLevel.Admin,
-      },
-      {
-        accessLevel: AccessLevel.CommitteeChairOrCoordinator,
-        committeeIdentifier: CommitteeIdentifier.fundraisingCommittee,
-      },
-    ],
-  },
 });
 
 const SolicitationCodeDocument = graphql(

@@ -1,6 +1,5 @@
 import { SendOutlined } from "@ant-design/icons";
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { AccessLevel } from "@ukdanceblue/common";
 import { Button, Flex, Typography } from "antd";
 import { useQuery } from "urql";
 
@@ -60,12 +59,5 @@ export const Route = createFileRoute("/notifications/$notificationId/")({
     await context.urqlClient.query(notificationViewerDocument, {
       uuid: notificationId,
     });
-  },
-  staticData: {
-    authorizationRules: [
-      {
-        accessLevel: AccessLevel.CommitteeChairOrCoordinator,
-      },
-    ],
   },
 });

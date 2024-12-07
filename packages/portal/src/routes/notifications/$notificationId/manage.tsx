@@ -1,5 +1,4 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { AccessLevel } from "@ukdanceblue/common";
 import { useQuery } from "urql";
 
 import { SingleNotificationFragment } from "#documents/notification.ts";
@@ -101,12 +100,5 @@ export const Route = createFileRoute("/notifications/$notificationId/manage")({
     await context.urqlClient.query(notificationManagerDocument, {
       uuid: notificationId,
     });
-  },
-  staticData: {
-    authorizationRules: [
-      {
-        accessLevel: AccessLevel.CommitteeChairOrCoordinator,
-      },
-    ],
   },
 });

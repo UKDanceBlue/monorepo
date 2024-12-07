@@ -1,6 +1,5 @@
 import { PlusOutlined } from "@ant-design/icons";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { AccessLevel } from "@ukdanceblue/common";
 import { Button, Flex, Typography } from "antd";
 import { useState } from "react";
 
@@ -9,14 +8,6 @@ import { ImagesTable } from "#elements/tables/ImagesTable.js";
 
 export const Route = createFileRoute("/images/")({
   component: RouteComponent,
-
-  staticData: {
-    authorizationRules: [
-      {
-        accessLevel: AccessLevel.CommitteeChairOrCoordinator,
-      },
-    ],
-  },
 });
 
 function RouteComponent() {

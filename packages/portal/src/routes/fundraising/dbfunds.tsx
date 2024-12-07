@@ -1,6 +1,5 @@
 import { DownloadOutlined } from "@ant-design/icons";
 import { createFileRoute } from "@tanstack/react-router";
-import { AccessLevel, CommitteeIdentifier } from "@ukdanceblue/common";
 import { Button, Flex, Table, Typography } from "antd";
 import { DateTime } from "luxon";
 import { useMemo, useState } from "react";
@@ -226,16 +225,4 @@ function DbFundsViewer() {
 
 export const Route = createFileRoute("/fundraising/dbfunds")({
   component: DbFundsViewer,
-
-  staticData: {
-    authorizationRules: [
-      {
-        accessLevel: AccessLevel.Admin,
-      },
-      {
-        accessLevel: AccessLevel.CommitteeChairOrCoordinator,
-        committeeIdentifier: CommitteeIdentifier.fundraisingCommittee,
-      },
-    ],
-  },
 });

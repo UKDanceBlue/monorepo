@@ -1,7 +1,6 @@
 import { useForm } from "@tanstack/react-form";
 import { createFileRoute } from "@tanstack/react-router";
 import { useNavigate } from "@tanstack/react-router";
-import { AccessLevel, CommitteeIdentifier } from "@ukdanceblue/common";
 import { Editable, useEditor } from "@wysimark/react";
 import { Button, Input } from "antd";
 import type { DateTime } from "luxon";
@@ -183,16 +182,4 @@ function AddMarathonHourPage() {
 
 export const Route = createFileRoute("/marathon/$marathonId/hours/add")({
   component: AddMarathonHourPage,
-
-  staticData: {
-    authorizationRules: [
-      {
-        accessLevel: AccessLevel.CommitteeChairOrCoordinator,
-        committeeIdentifier: CommitteeIdentifier.programmingCommittee,
-      },
-      {
-        accessLevel: AccessLevel.Admin,
-      },
-    ],
-  },
 });

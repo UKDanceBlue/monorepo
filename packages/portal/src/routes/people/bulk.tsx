@@ -3,7 +3,6 @@ console.log(
 );
 
 import { createFileRoute } from "@tanstack/react-router";
-import { AccessLevel } from "@ukdanceblue/common";
 
 import { BulkPersonCreator } from "#elements/forms/person/create/BulkPersonCreator.js";
 
@@ -18,12 +17,4 @@ function BulkCreatePersonPage() {
 
 export const Route = createFileRoute("/people/bulk")({
   component: BulkCreatePersonPage,
-
-  staticData: {
-    authorizationRules: [
-      {
-        accessLevel: AccessLevel.SuperAdmin,
-      },
-    ],
-  },
 });

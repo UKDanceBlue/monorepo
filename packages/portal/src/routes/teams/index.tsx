@@ -1,6 +1,6 @@
 import { PlusOutlined, UploadOutlined } from "@ant-design/icons";
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { AccessLevel, SortDirection } from "@ukdanceblue/common";
+import { SortDirection } from "@ukdanceblue/common";
 import { Button, Flex } from "antd";
 import { useQuery } from "urql";
 
@@ -105,12 +105,4 @@ export function ListTeamsPage() {
 
 export const Route = createFileRoute("/teams/")({
   component: ListTeamsPage,
-
-  staticData: {
-    authorizationRules: [
-      {
-        accessLevel: AccessLevel.Committee,
-      },
-    ],
-  },
 });

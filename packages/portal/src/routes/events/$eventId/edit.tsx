@@ -1,5 +1,4 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { AccessLevel, CommitteeRole } from "@ukdanceblue/common";
 import { useQuery } from "urql";
 
 import { EventEditor } from "#elements/forms/event/edit/EventEditor.js";
@@ -43,15 +42,5 @@ export const Route = createFileRoute("/events/$eventId/edit")({
   component: EditEvent,
   async beforeLoad({ context, params: { eventId } }) {
     await context.urqlClient.query(viewEventPageDocument, { uuid: eventId });
-  },
-  staticData: {
-    authorizationRules: [
-      {
-        accessLevel: AccessLevel.Admin,
-      },
-      {
-        minCommitteeRole: CommitteeRole.Chair,
-      },
-    ],
   },
 });

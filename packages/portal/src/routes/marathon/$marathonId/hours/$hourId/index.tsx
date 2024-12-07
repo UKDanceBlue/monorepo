@@ -1,7 +1,7 @@
 import { useForm } from "@tanstack/react-form";
 import { createFileRoute } from "@tanstack/react-router";
 import { useNavigate } from "@tanstack/react-router";
-import { AccessLevel, dateTimeFromSomething } from "@ukdanceblue/common";
+import { dateTimeFromSomething } from "@ukdanceblue/common";
 import { Editable, useEditor } from "@wysimark/react";
 import { Button, Input } from "antd";
 import type { DateTime } from "luxon";
@@ -218,12 +218,5 @@ export const Route = createFileRoute("/marathon/$marathonId/hours/$hourId/")({
     context.urqlClient.query(editMarathonHourDataDocument, {
       marathonHourUuid: hourId,
     });
-  },
-  staticData: {
-    authorizationRules: [
-      {
-        accessLevel: AccessLevel.CommitteeChairOrCoordinator,
-      },
-    ],
   },
 });

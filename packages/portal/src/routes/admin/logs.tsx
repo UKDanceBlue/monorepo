@@ -1,5 +1,4 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { AccessLevel } from "@ukdanceblue/common";
 import { useQuery } from "urql";
 
 import { LogViewer } from "#elements/viewers/admin/LogViewer.js";
@@ -30,12 +29,5 @@ export const Route = createFileRoute("/admin/logs")({
   component: LogsPage,
   async beforeLoad({ context }) {
     await context.urqlClient.query(logsPageDocument, {});
-  },
-  staticData: {
-    authorizationRules: [
-      {
-        accessLevel: AccessLevel.SuperAdmin,
-      },
-    ],
   },
 });

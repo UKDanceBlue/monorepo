@@ -1,5 +1,4 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { AccessLevel } from "@ukdanceblue/common";
 import { useQuery } from "urql";
 
 import {
@@ -45,12 +44,5 @@ export const Route = createFileRoute("/events/$eventId/")({
   component: ViewEvent,
   async beforeLoad({ context, params: { eventId } }) {
     await context.urqlClient.query(viewEventPageDocument, { uuid: eventId });
-  },
-  staticData: {
-    authorizationRules: [
-      {
-        accessLevel: AccessLevel.CommitteeChairOrCoordinator,
-      },
-    ],
   },
 });

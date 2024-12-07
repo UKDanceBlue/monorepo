@@ -1,10 +1,5 @@
 import { createFileRoute, useParams } from "@tanstack/react-router";
-import {
-  AccessLevel,
-  CommitteeIdentifier,
-  CommitteeRole,
-  stringifyDDNBatchType,
-} from "@ukdanceblue/common";
+import { stringifyDDNBatchType } from "@ukdanceblue/common";
 import { Descriptions } from "antd";
 import { useQuery } from "urql";
 
@@ -14,17 +9,6 @@ import { useQueryStatusWatcher } from "#hooks/useQueryStatusWatcher";
 
 export const Route = createFileRoute("/fundraising/ddn/$ddnId/")({
   component: RouteComponent,
-  staticData: {
-    authorizationRules: [
-      {
-        minCommitteeRole: CommitteeRole.Coordinator,
-        committeeIdentifiers: [CommitteeIdentifier.fundraisingCommittee],
-      },
-      {
-        accessLevel: AccessLevel.Admin,
-      },
-    ],
-  },
 });
 
 const ViewDdnFragment = graphql(/* GraphQL */ `

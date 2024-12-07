@@ -1,6 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useParams } from "@tanstack/react-router";
-import { AccessLevel } from "@ukdanceblue/common";
 import { useQuery } from "urql";
 
 import {
@@ -51,12 +50,5 @@ export const Route = createFileRoute("/people/$personId/")({
   component: ViewPersonPage,
   async beforeLoad({ context, params: { personId } }) {
     await context.urqlClient.query(viewPersonPageDocument, { uuid: personId });
-  },
-  staticData: {
-    authorizationRules: [
-      {
-        accessLevel: AccessLevel.Committee,
-      },
-    ],
   },
 });

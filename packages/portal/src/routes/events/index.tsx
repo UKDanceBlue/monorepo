@@ -1,6 +1,5 @@
 import { PlusOutlined } from "@ant-design/icons";
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { AccessLevel } from "@ukdanceblue/common";
 import { Button, Flex, Typography } from "antd";
 
 import { EventsTable } from "#elements/tables/EventsTable.js";
@@ -23,12 +22,4 @@ function Events() {
 
 export const Route = createFileRoute("/events/")({
   component: Events,
-
-  staticData: {
-    authorizationRules: [
-      {
-        accessLevel: AccessLevel.CommitteeChairOrCoordinator,
-      },
-    ],
-  },
 });

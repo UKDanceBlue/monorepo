@@ -1,5 +1,4 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { AccessLevel } from "@ukdanceblue/common";
 import { useQuery } from "urql";
 
 import {
@@ -40,12 +39,5 @@ export const Route = createFileRoute("/marathon/$marathonId/")({
     context.urqlClient.query(marathonPageDocument, {
       marathonUuid: marathonId,
     });
-  },
-  staticData: {
-    authorizationRules: [
-      {
-        accessLevel: AccessLevel.CommitteeChairOrCoordinator,
-      },
-    ],
   },
 });

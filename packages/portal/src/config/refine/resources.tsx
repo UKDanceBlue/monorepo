@@ -10,7 +10,7 @@ import {
   TeamOutlined,
   UserOutlined,
 } from "@ant-design/icons";
-import type { ResourceProps } from "@refinedev/core";
+import type { Action, ResourceProps } from "@refinedev/core";
 
 export const refineResources: ResourceProps[] = [
   {
@@ -38,11 +38,18 @@ export const refineResources: ResourceProps[] = [
     list: "/teams",
   },
   {
-    name: "fundraising",
+    name: "fundraising-group",
     meta: {
       icon: <DollarCircleOutlined />,
       label: "Fundraising",
+    },
+  },
+  {
+    name: "fundraising",
+    meta: {
+      label: "Fundraising",
       nodeName: "FundraisingEntryNode",
+      parent: "fundraising-group",
     },
     create: "/fundraising/create",
     edit: "/fundraising/:id/edit",
@@ -54,7 +61,7 @@ export const refineResources: ResourceProps[] = [
     identifier: "solicitation-code",
     meta: {
       label: "Solicitation Codes",
-      parent: "fundraising",
+      parent: "fundraising-group",
       nodeName: "SolicitationCodeNode",
     },
     create: "/fundraising/solicitation-code/create",
@@ -66,7 +73,7 @@ export const refineResources: ResourceProps[] = [
     name: "ddn",
     meta: {
       label: "Uploaded DDNs",
-      parent: "fundraising",
+      parent: "fundraising-group",
       nodeName: "DailyDepartmentNotificationNode",
     },
     create: "/fundraising/ddn/create",
@@ -78,7 +85,7 @@ export const refineResources: ResourceProps[] = [
     name: "dbfunds",
     meta: {
       label: "DB Funds (Legacy)",
-      parent: "fundraising",
+      parent: "fundraising-group",
       modelName: "FundraisingEntryNode",
     },
     create: "/fundraising/dbfunds/create",
@@ -170,25 +177,54 @@ export const refineResources: ResourceProps[] = [
     show: "/admin/logs/:id",
     list: "/admin/logs",
   },
-];
+] as const;
 
-export function useRefineResources() {
-  // const { authorization } = useLoginState();
+// An array of objects containing pre-split paths for refine resources as well as the index of the resource in refineResources
+const resourceUrlIndex = refineResources.map((resource, index) => {
+  const listUrl = resource.list?.toString().split("/").filter(Boolean);
+  const createUrl = resource.create?.toString().split("/").filter(Boolean);
+  const editUrl = resource.edit?.toString().split("/").filter(Boolean);
+  const showUrl = resource.show?.toString().split("/").filter(Boolean);
+  return {
+    listUrl,
+    createUrl,
+    editUrl,
+    showUrl,
+    index,
+  };
+});
 
-  // for (const resource of refineResources) {
-  //   const route = router.routesByPath[
-  //     String(resource.list) as keyof FileRoutesByFullPath
-  //   ] as (typeof router)["routesByPath"]["/"] | undefined;
-  //   if (!route) {
-  //     continue;
-  //   }
-
-  //   const { authorizationRules } = route.options.staticData;
-  //   resource.meta = {
-  //     ...resource.meta,
-  //     hide: !shouldShowMenuItem(authorizationRules, authorization),
-  //   };
-  // }
-
-  return refineResources;
+function check(url: string[] | undefined, urlParts: string[]) {
+  return url?.every(
+    (part, i) =>
+      part === urlParts[i] ||
+      (part.startsWith(":") && urlParts[i]?.startsWith("$"))
+  );
 }
+
+/**
+ * Accepts a url in the form /path/$param/path and returns the resource and action
+ */
+export const findResourceAction = (
+  url: string
+): { resource?: ResourceProps; action?: Action } => {
+  const urlParts = url.split("/").filter(Boolean);
+  for (const {
+    listUrl,
+    createUrl,
+    editUrl,
+    showUrl,
+    index,
+  } of resourceUrlIndex) {
+    if (check(editUrl, urlParts)) {
+      return { resource: refineResources[index], action: "edit" };
+    } else if (check(showUrl, urlParts)) {
+      return { resource: refineResources[index], action: "show" };
+    } else if (check(createUrl, urlParts)) {
+      return { resource: refineResources[index], action: "create" };
+    } else if (check(listUrl, urlParts)) {
+      return { resource: refineResources[index], action: "list" };
+    }
+  }
+  return {};
+};

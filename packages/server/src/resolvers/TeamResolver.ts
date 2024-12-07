@@ -219,7 +219,7 @@ export class TeamResolver implements CrudResolver<TeamNode, "team"> {
     return rows.map((row) => pointEntryModelToResource(row));
   }
 
-  @AccessControlAuthorized("get", "TeamNode", "fundraisingTotal")
+  @AccessControlAuthorized("get", "TeamNode", ".fundraisingTotal")
   @FieldResolver(() => Float, { nullable: true })
   async fundraisingTotalAmount(
     @Root() { id: { id } }: TeamNode

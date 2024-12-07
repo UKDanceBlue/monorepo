@@ -1,5 +1,4 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { AccessLevel } from "@ukdanceblue/common";
 
 import { PersonCreator } from "#elements/forms/person/create/PersonCreator.js";
 
@@ -14,12 +13,4 @@ function CreatePersonPage() {
 
 export const Route = createFileRoute("/people/create")({
   component: CreatePersonPage,
-
-  staticData: {
-    authorizationRules: [
-      {
-        accessLevel: AccessLevel.Admin,
-      },
-    ],
-  },
 });

@@ -1,6 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { Outlet } from "@tanstack/react-router";
-import { AccessLevel } from "@ukdanceblue/common";
 import { Flex } from "antd";
 import { useQuery } from "urql";
 
@@ -39,12 +38,5 @@ export const Route = createFileRoute("/teams/$teamId/_layout")({
     await context.urqlClient.query(teamPageDocument, {
       teamUuid: teamId,
     });
-  },
-  staticData: {
-    authorizationRules: [
-      {
-        accessLevel: AccessLevel.UKY,
-      },
-    ],
   },
 });

@@ -1,6 +1,5 @@
 import { PlusOutlined } from "@ant-design/icons";
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { AccessLevel } from "@ukdanceblue/common";
 import { Button, Empty, Flex } from "antd";
 import { useQuery } from "urql";
 
@@ -66,12 +65,4 @@ function MarathonOverviewPage() {
 
 export const Route = createFileRoute("/marathon/")({
   component: MarathonOverviewPage,
-
-  staticData: {
-    authorizationRules: [
-      {
-        accessLevel: AccessLevel.Committee,
-      },
-    ],
-  },
 });

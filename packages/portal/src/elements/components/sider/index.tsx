@@ -245,6 +245,12 @@ export const Sider: React.FC<
 
     return (
       <Layout.Sider
+        style={{
+          overflow: "auto",
+          height: "100vh",
+          position: "fixed",
+          left: 0,
+        }}
         collapsible
         collapsed={collapsed}
         onCollapse={(collapsed: boolean): void => setCollapsed(collapsed)}

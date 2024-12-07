@@ -1,6 +1,5 @@
 import { PlusOutlined, UploadOutlined } from "@ant-design/icons";
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { AccessLevel, Action } from "@ukdanceblue/common";
 import { Button, Flex, Typography } from "antd";
 
 import { PeopleTable } from "#elements/tables/PeopleTable.js";
@@ -37,12 +36,4 @@ function ListPeoplePage() {
 
 export const Route = createFileRoute("/people/")({
   component: ListPeoplePage,
-
-  staticData: {
-    authorizationRules: [
-      {
-        accessLevel: AccessLevel.CommitteeChairOrCoordinator,
-      },
-    ],
-  },
 });

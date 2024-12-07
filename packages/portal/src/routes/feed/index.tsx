@@ -1,9 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import {
-  AccessLevel,
-  CommitteeRole,
-  dateTimeFromSomething,
-} from "@ukdanceblue/common";
+import { dateTimeFromSomething } from "@ukdanceblue/common";
 import {
   Button,
   Card,
@@ -221,15 +217,5 @@ export const Route = createFileRoute("/feed/")({
   component: FeedPage,
   async beforeLoad({ context }) {
     await context.urqlClient.query(feedPageDocument, {});
-  },
-  staticData: {
-    authorizationRules: [
-      {
-        accessLevel: AccessLevel.Admin,
-      },
-      {
-        minCommitteeRole: CommitteeRole.Chair,
-      },
-    ],
   },
 });

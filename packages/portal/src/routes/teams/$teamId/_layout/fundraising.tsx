@@ -1,5 +1,4 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { AccessLevel, Action } from "@ukdanceblue/common";
 import { AutoComplete, Button, Card, Flex, Form, Space } from "antd";
 import { useState } from "react";
 import { useMutation, useQuery } from "urql";
@@ -286,12 +285,4 @@ function ViewTeamFundraising() {
 
 export const Route = createFileRoute("/teams/$teamId/_layout/fundraising")({
   component: ViewTeamFundraising,
-
-  staticData: {
-    authorizationRules: [
-      {
-        accessLevel: AccessLevel.UKY,
-      },
-    ],
-  },
 });

@@ -7,7 +7,6 @@ import type {
 } from "@ukdanceblue/common";
 import {
   AccessLevel,
-  AuthSource,
   committeeNames,
   MembershipPositionType,
   roleToAccessLevel,
@@ -137,15 +136,30 @@ export function PersonViewer({
                 label: "Email",
                 children: personData.email,
               },
-              {
-                label: "Access Level",
-                children: stringifyAccessLevel(
-                  roleToAccessLevel(
-                    committees,
-                    authorization?.authSource ?? AuthSource.None
-                  )
-                ),
-              },
+              ...(authorization
+                ? [
+                    {
+                      label: "Access Level",
+                      children: (
+                        <span
+                          title={authorization.effectiveCommitteeRoles
+                            .map(
+                              (role) =>
+                                `${committeeNames[role.identifier]}: ${role.role}`
+                            )
+                            .join("\n")}
+                        >
+                          {stringifyAccessLevel(
+                            roleToAccessLevel(
+                              committees,
+                              authorization.authSource
+                            )
+                          )}
+                        </span>
+                      ),
+                    },
+                  ]
+                : []),
               ...committees.map((committee) => ({
                 label: `${committeeNames[committee.identifier]} (${committee.year})`,
                 children: committee.role,

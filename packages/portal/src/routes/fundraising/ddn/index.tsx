@@ -1,27 +1,12 @@
 import { UploadOutlined } from "@ant-design/icons";
 import { createFileRoute, Link } from "@tanstack/react-router";
-import {
-  AccessLevel,
-  CommitteeIdentifier,
-  CommitteeRole,
-} from "@ukdanceblue/common";
+import {} from "@ukdanceblue/common";
 import { Button, Flex } from "antd";
 
 import { DDNTable } from "#elements/tables/fundraising/DDNTable";
 
 export const Route = createFileRoute("/fundraising/ddn/")({
   component: RouteComponent,
-  staticData: {
-    authorizationRules: [
-      {
-        minCommitteeRole: CommitteeRole.Coordinator,
-        committeeIdentifiers: [CommitteeIdentifier.fundraisingCommittee],
-      },
-      {
-        accessLevel: AccessLevel.Admin,
-      },
-    ],
-  },
 });
 
 function RouteComponent() {

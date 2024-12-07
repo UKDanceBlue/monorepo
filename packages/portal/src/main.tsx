@@ -2,15 +2,11 @@ import "normalize.css";
 import "./root.css";
 
 import { WarningOutlined } from "@ant-design/icons";
-import { useNotificationProvider } from "@refinedev/antd";
-import type { GoConfig, ParseFunction } from "@refinedev/core";
-import { Refine } from "@refinedev/core";
 import { DevtoolsPanel, DevtoolsProvider } from "@refinedev/devtools";
 import { browserTracingIntegration, init } from "@sentry/react";
 import {
   createRouter,
   ErrorComponent,
-  Link,
   RouterProvider,
 } from "@tanstack/react-router";
 import { App, Empty, Spin } from "antd";
@@ -19,14 +15,9 @@ import type { useAppProps } from "antd/es/app/context.js";
 import { StrictMode, useEffect, useState } from "react";
 import { Provider as UrqlProvider } from "urql";
 
-import watermark from "#assets/watermark.svg";
 import { AntConfigProvider, ThemeConfigProvider } from "#config/ant.js";
 import { API_BASE_URL, urqlClient } from "#config/api.js";
 import { MarathonConfigProvider } from "#config/marathon.js";
-import { authProvider } from "#config/refine/authentication.js";
-import { accessControlProvider } from "#config/refine/authorization.js";
-import { dataProvider } from "#config/refine/data.js";
-import { refineResources } from "#config/refine/resources.js";
 import { SpinningRibbon } from "#elements/components/design/RibbonSpinner.js";
 
 import { routeTree } from "./routeTree.gen.js";
@@ -99,12 +90,26 @@ declare module "@tanstack/react-router" {
   interface Register {
     router: typeof router;
   }
-  interface StaticDataRouteOption {
-    authorizationRules: unknown;
-  }
+  // interface StaticDataRouteOption {}
 }
 
-function RouterWrapper() {
+function Context({ children }: { children: React.ReactNode }) {
+  return (
+    <ThemeConfigProvider>
+      <AntConfigProvider>
+        <AntApp style={{ height: "100%" }}>
+          <UrqlProvider value={urqlClient}>
+            <DevtoolsProvider>
+              <MarathonConfigProvider>{children}</MarathonConfigProvider>
+            </DevtoolsProvider>
+          </UrqlProvider>
+        </AntApp>
+      </AntConfigProvider>
+    </ThemeConfigProvider>
+  );
+}
+
+function RouterComponent() {
   const [isServerReachable, setIsServerReachable] = useState<
     boolean | undefined
   >(undefined);
@@ -162,85 +167,17 @@ function RouterWrapper() {
       />
     </div>
   ) : (
-    <Refine
-      dataProvider={dataProvider}
-      notificationProvider={useNotificationProvider}
-      routerProvider={{
-        back: () => router.history.back,
-        Link,
-        go: () => refineGoFunction,
-        parse: () => refineParseFunction,
-      }}
-      authProvider={authProvider}
-      options={{
-        projectId: "DqkUbD-wpgLRK-UO3SFV",
-        title: {
-          icon: <img src={watermark} alt="DanceBlue Logo" />,
-          text: "DanceBlue Portal",
-        },
-      }}
-      accessControlProvider={accessControlProvider}
-      resources={refineResources}
-    >
-      <RouterProvider router={router} context={{ antApp }} />
+    <>
+      <RouterProvider router={router} context={{ antApp }} Wrap={Context} />
       {import.meta.env.MODE === "development" && <DevtoolsPanel />}
-    </Refine>
+    </>
   );
 }
 
 export function Main() {
   return (
     <StrictMode>
-      <ThemeConfigProvider>
-        <AntConfigProvider>
-          <AntApp style={{ height: "100%" }}>
-            <UrqlProvider value={urqlClient}>
-              <DevtoolsProvider>
-                <MarathonConfigProvider>
-                  <RouterWrapper />
-                </MarathonConfigProvider>
-              </DevtoolsProvider>
-            </UrqlProvider>
-          </AntApp>
-        </AntConfigProvider>
-      </ThemeConfigProvider>
+      <RouterComponent />
     </StrictMode>
   );
-}
-
-function refineGoFunction({ hash, options, query, to, type }: GoConfig) {
-  router
-    .navigate({
-      to,
-      search: options?.keepQuery ? router.state.location.search : query,
-      hash: options?.keepHash ? router.state.location.hash : hash,
-      replace: type === "replace",
-    })
-    .catch(console.error);
-}
-
-function refineParseFunction(): ReturnType<ParseFunction> {
-  const matchesByLength = router.state.matches.toSorted(
-    ({ fullPath: fullPathA }, { fullPath: fullPathB }) =>
-      String(fullPathB).length - String(fullPathA).length
-  );
-  const longestMatch = matchesByLength[0];
-
-  let id: string | undefined;
-  if (longestMatch) {
-    const idParams = Object.keys(longestMatch.params as object).filter((key) =>
-      key.toLowerCase().endsWith("id")
-    );
-    if (idParams.length === 1) {
-      id = (longestMatch.params as Record<string, string | undefined>)[
-        idParams[0]!
-      ];
-    }
-  }
-
-  return {
-    pathname: router.state.location.pathname,
-    params: longestMatch?.params,
-    id,
-  };
 }
