@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-unsafe-function-type */
-import { getMetadataStorage, SymbolKeysNotSupportedError } from "type-graphql";
+import * as TypeGraphql from "type-graphql";
 
 import type { AppAbility } from "./accessControl.js";
 
@@ -49,13 +49,18 @@ const authSummary: Record<
 export function AccessControlAuthorized(
   ...check: AccessControlParam
 ): PropertyDecorator & MethodDecorator & ClassDecorator {
+  // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+  if (!TypeGraphql.getMetadataStorage) {
+    return () => undefined;
+  }
+
   return (
     target: Function | object,
     propertyKey?: string | symbol,
     _descriptor?: TypedPropertyDescriptor<any>
   ) => {
     if (propertyKey == null) {
-      getMetadataStorage().collectAuthorizedResolverMetadata({
+      TypeGraphql.getMetadataStorage().collectAuthorizedResolverMetadata({
         target: target as Function,
         roles: [check],
       });
@@ -63,7 +68,7 @@ export function AccessControlAuthorized(
     }
 
     if (typeof propertyKey === "symbol") {
-      throw new SymbolKeysNotSupportedError();
+      throw new TypeGraphql.SymbolKeysNotSupportedError();
     }
 
     authSummary[target.constructor.name] = {
@@ -79,7 +84,7 @@ export function AccessControlAuthorized(
       },
     };
 
-    getMetadataStorage().collectAuthorizedFieldMetadata({
+    TypeGraphql.getMetadataStorage().collectAuthorizedFieldMetadata({
       target: target.constructor,
       fieldName: propertyKey,
       roles: [check],
