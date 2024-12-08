@@ -42,8 +42,8 @@ const createFeedItemDocument = graphql(/* GraphQL */ `
 `);
 
 const deleteFeedItemDocument = graphql(/* GraphQL */ `
-  mutation DeleteFeedItem($uuid: GlobalId!) {
-    deleteFeedItem(feedItemUuid: $uuid)
+  mutation DeleteFeedItem($id: GlobalId!) {
+    deleteFeedItem(feedItemUuid: $id)
   }
 `);
 
@@ -187,7 +187,7 @@ function FeedPage() {
                   onClick={async () => {
                     await client
                       .mutation(deleteFeedItemDocument, {
-                        uuid: feedItem.id,
+                        id: feedItem.id,
                       })
                       .toPromise();
                     setTimeout(

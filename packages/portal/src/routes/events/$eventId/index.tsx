@@ -10,8 +10,8 @@ import { useQueryStatusWatcher } from "#hooks/useQueryStatusWatcher.js";
 
 const viewEventPageDocument = graphql(
   /* GraphQL */ `
-    query ViewEventPage($uuid: GlobalId!) {
-      event(uuid: $uuid) {
+    query ViewEventPage($id: GlobalId!) {
+      event(id: $id) {
         ...EventViewerFragment
       }
     }
@@ -24,7 +24,7 @@ export function ViewEvent() {
 
   const [{ data, fetching, error }] = useQuery({
     query: viewEventPageDocument,
-    variables: { uuid: eventId },
+    variables: { id: eventId },
   });
 
   useQueryStatusWatcher({
@@ -35,7 +35,7 @@ export function ViewEvent() {
 
   return (
     <div>
-      <EventViewer eventFragment={data?.event} />
+      <EventViewer id={eventId} />
     </div>
   );
 }
@@ -43,6 +43,6 @@ export function ViewEvent() {
 export const Route = createFileRoute("/events/$eventId/")({
   component: ViewEvent,
   async beforeLoad({ context, params: { eventId } }) {
-    await context.urqlClient.query(viewEventPageDocument, { uuid: eventId });
+    await context.urqlClient.query(viewEventPageDocument, { id: eventId });
   },
 });

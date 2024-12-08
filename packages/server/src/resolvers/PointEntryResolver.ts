@@ -48,7 +48,7 @@ export class PointEntryResolver
   @AccessControlAuthorized("get")
   @Query(() => PointEntryNode, { name: "pointEntry" })
   async pointEntry(
-    @Arg("uuid", () => GlobalIdScalar) { id }: GlobalId
+    @Arg("id", () => GlobalIdScalar) { id }: GlobalId
   ): Promise<PointEntryNode> {
     const model = await this.pointEntryRepository.findPointEntryByUnique({
       uuid: id,
@@ -116,7 +116,7 @@ export class PointEntryResolver
   @AccessControlAuthorized("delete")
   @Mutation(() => PointEntryNode, { name: "deletePointEntry" })
   async deletePointEntry(
-    @Arg("uuid", () => GlobalIdScalar) { id }: GlobalId
+    @Arg("id", () => GlobalIdScalar) { id }: GlobalId
   ): Promise<ConcreteResult<PointEntryNode>> {
     const row = await this.pointEntryRepository.deletePointEntry({ uuid: id });
 

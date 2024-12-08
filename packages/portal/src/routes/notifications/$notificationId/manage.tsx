@@ -8,8 +8,8 @@ import { useQueryStatusWatcher } from "#hooks/useQueryStatusWatcher.js";
 
 const notificationManagerDocument = graphql(
   /* GraphQL */ `
-    query NotificationManager($uuid: GlobalId!) {
-      notification(uuid: $uuid) {
+    query NotificationManager($id: GlobalId!) {
+      notification(id: $id) {
         ...SingleNotificationFragment
       }
     }
@@ -22,7 +22,7 @@ function ManageNotificationPage() {
 
   const [{ data, fetching, error }, refetchNotification] = useQuery({
     query: notificationManagerDocument,
-    variables: { uuid: notificationId },
+    variables: { id: notificationId },
   });
 
   useQueryStatusWatcher({
@@ -98,7 +98,7 @@ export const Route = createFileRoute("/notifications/$notificationId/manage")({
   component: ManageNotificationPage,
   async beforeLoad({ context, params: { notificationId } }) {
     await context.urqlClient.query(notificationManagerDocument, {
-      uuid: notificationId,
+      id: notificationId,
     });
   },
 });

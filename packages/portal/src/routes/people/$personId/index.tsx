@@ -12,8 +12,8 @@ import { useQueryStatusWatcher } from "#hooks/useQueryStatusWatcher.js";
 
 const viewPersonPageDocument = graphql(
   /* GraphQL */ `
-    query ViewPersonPage($uuid: GlobalId!) {
-      person(uuid: $uuid) {
+    query ViewPersonPage($id: GlobalId!) {
+      person(id: $id) {
         ...PersonViewerFragment
       }
     }
@@ -27,7 +27,7 @@ function ViewPersonPage() {
 
   const [{ data, fetching, error }] = useQuery({
     query: viewPersonPageDocument,
-    variables: { uuid: personId },
+    variables: { id: personId },
   });
 
   useQueryStatusWatcher({
@@ -49,6 +49,6 @@ function ViewPersonPage() {
 export const Route = createFileRoute("/people/$personId/")({
   component: ViewPersonPage,
   async beforeLoad({ context, params: { personId } }) {
-    await context.urqlClient.query(viewPersonPageDocument, { uuid: personId });
+    await context.urqlClient.query(viewPersonPageDocument, { id: personId });
   },
 });

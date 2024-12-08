@@ -84,6 +84,7 @@ const router = createRouter({
     antApp: {} as useAppProps,
   },
   defaultPreload: false,
+  Wrap: Context,
 });
 
 declare module "@tanstack/react-router" {
@@ -168,7 +169,7 @@ function RouterComponent() {
     </div>
   ) : (
     <>
-      <RouterProvider router={router} context={{ antApp }} Wrap={Context} />
+      <RouterProvider router={router} context={{ antApp }} />
       {import.meta.env.MODE === "development" && <DevtoolsPanel />}
     </>
   );

@@ -46,7 +46,7 @@ export class PointOpportunityResolver
   @AccessControlAuthorized("get")
   @Query(() => PointOpportunityNode, { name: "pointOpportunity" })
   async pointOpportunity(
-    @Arg("uuid", () => GlobalIdScalar) { id }: GlobalId
+    @Arg("id", () => GlobalIdScalar) { id }: GlobalId
   ): Promise<PointOpportunityNode> {
     const row =
       await this.pointOpportunityRepository.findPointOpportunityByUnique({
@@ -118,7 +118,7 @@ export class PointOpportunityResolver
     name: "setPointOpportunity",
   })
   async setPointOpportunity(
-    @Arg("uuid", () => GlobalIdScalar) { id }: GlobalId,
+    @Arg("id", () => GlobalIdScalar) { id }: GlobalId,
     @Arg("input") input: SetPointOpportunityInput
   ): Promise<PointOpportunityNode> {
     const row = await this.pointOpportunityRepository.updatePointOpportunity(
@@ -146,7 +146,7 @@ export class PointOpportunityResolver
     name: "deletePointOpportunity",
   })
   async deletePointOpportunity(
-    @Arg("uuid", () => GlobalIdScalar) { id }: GlobalId
+    @Arg("id", () => GlobalIdScalar) { id }: GlobalId
   ): Promise<PointOpportunityNode> {
     const row = await this.pointOpportunityRepository.deletePointOpportunity({
       uuid: id,

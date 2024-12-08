@@ -10,7 +10,7 @@ import { graphql } from "#graphql/index.js";
 const marathonPageDocument = graphql(
   /* GraphQL */ `
     query MarathonPage($marathonUuid: GlobalId!) {
-      marathon(uuid: $marathonUuid) {
+      marathon(id: $marathonUuid) {
         ...MarathonViewerFragment
       }
     }

@@ -73,7 +73,7 @@ export class PersonResolver
   @AccessControlAuthorized("get")
   @Query(() => PersonNode, { name: "person" })
   async person(
-    @Arg("uuid", () => GlobalIdScalar) { id }: GlobalId
+    @Arg("id", () => GlobalIdScalar) { id }: GlobalId
   ): Promise<ConcreteResult<PersonNode>> {
     return new AsyncResult(
       await this.personRepository.findPersonByUnique({ uuid: id })
@@ -222,7 +222,7 @@ export class PersonResolver
   @AccessControlAuthorized("modify")
   @Mutation(() => PersonNode, { name: "setPerson" })
   async setPerson(
-    @Arg("uuid", () => GlobalIdScalar) { id }: GlobalId,
+    @Arg("id", () => GlobalIdScalar) { id }: GlobalId,
     @Arg("input") input: SetPersonInput,
     @Ctx() { accessLevel }: GraphQLContext
   ): Promise<ConcreteResult<PersonNode>> {
@@ -334,7 +334,7 @@ export class PersonResolver
   @AccessControlAuthorized("delete")
   @Mutation(() => PersonNode, { name: "deletePerson" })
   async deletePerson(
-    @Arg("uuid", () => GlobalIdScalar) { id }: GlobalId
+    @Arg("id", () => GlobalIdScalar) { id }: GlobalId
   ): Promise<ConcreteResult<PersonNode>> {
     return new AsyncResult(this.personRepository.deletePerson({ uuid: id }))
       .andThen((row) => personModelToResource(row, this.personRepository))

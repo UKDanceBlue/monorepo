@@ -38,7 +38,7 @@ export class ImageResolver implements CrudResolver<ImageNode, "image"> {
 
   @Query(() => ImageNode, { name: "image" })
   async image(
-    @Arg("uuid", () => GlobalIdScalar) { id }: GlobalId,
+    @Arg("id", () => GlobalIdScalar) { id }: GlobalId,
     @Ctx() { serverUrl }: GraphQLContext
   ): Promise<ImageNode> {
     const result = await this.imageRepository.findImageByUnique({ uuid: id });
@@ -136,7 +136,7 @@ export class ImageResolver implements CrudResolver<ImageNode, "image"> {
   @AccessControlAuthorized("update")
   @Mutation(() => ImageNode, { name: "setImageAltText" })
   async setImageAltText(
-    @Arg("uuid", () => GlobalIdScalar) { id }: GlobalId,
+    @Arg("id", () => GlobalIdScalar) { id }: GlobalId,
     @Arg("alt") alt: string,
     @Ctx() { serverUrl }: GraphQLContext
   ): Promise<ImageNode> {
@@ -166,7 +166,7 @@ export class ImageResolver implements CrudResolver<ImageNode, "image"> {
   @AccessControlAuthorized("update")
   @Mutation(() => ImageNode, { name: "setImageUrl" })
   async setImageUrl(
-    @Arg("uuid", () => GlobalIdScalar) { id }: GlobalId,
+    @Arg("id", () => GlobalIdScalar) { id }: GlobalId,
     @Arg("url", () => URLResolver) url: URL,
     @Ctx() { serverUrl }: GraphQLContext
   ): Promise<ImageNode> {
@@ -215,7 +215,7 @@ export class ImageResolver implements CrudResolver<ImageNode, "image"> {
   @AccessControlAuthorized("delete")
   @Mutation(() => ImageNode, { name: "deleteImage" })
   async deleteImage(
-    @Arg("uuid", () => GlobalIdScalar) { id }: GlobalId,
+    @Arg("id", () => GlobalIdScalar) { id }: GlobalId,
     @Ctx() { serverUrl }: GraphQLContext
   ): Promise<ImageNode> {
     const result = await this.imageRepository.deleteImage({ uuid: id });

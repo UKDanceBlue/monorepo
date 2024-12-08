@@ -40,7 +40,7 @@ export const getBBNEvents = new Cron(
             imageUrls: event.imagePath
               ? [
                   new URL(
-                    `https://se-images.campuslabs.com/clink/images/${event.imagePath}?preset=med-w`
+                    `https://se-images.campuslabs.com/clink/images/${event.imagePath}?preset=large-w`
                   ),
                 ]
               : [],

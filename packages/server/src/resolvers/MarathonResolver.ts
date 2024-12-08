@@ -107,7 +107,7 @@ export class MarathonResolver
 
   @AccessControlAuthorized("get")
   @Query(() => MarathonNode)
-  async marathon(@Arg("uuid", () => GlobalIdScalar) { id }: GlobalId) {
+  async marathon(@Arg("id", () => GlobalIdScalar) { id }: GlobalId) {
     const marathon = await this.marathonRepository.findMarathonByUnique({
       uuid: id,
     });
@@ -188,7 +188,7 @@ export class MarathonResolver
   @AccessControlAuthorized("update")
   @Mutation(() => MarathonNode)
   async setMarathon(
-    @Arg("uuid", () => GlobalIdScalar) { id }: GlobalId,
+    @Arg("id", () => GlobalIdScalar) { id }: GlobalId,
     @Arg("input") input: SetMarathonInput
   ) {
     const marathon = await this.marathonRepository.updateMarathon(
@@ -200,7 +200,7 @@ export class MarathonResolver
 
   @AccessControlAuthorized("delete")
   @Mutation(() => MarathonNode)
-  async deleteMarathon(@Arg("uuid", () => GlobalIdScalar) { id }: GlobalId) {
+  async deleteMarathon(@Arg("id", () => GlobalIdScalar) { id }: GlobalId) {
     const marathon = await this.marathonRepository.deleteMarathon({ uuid: id });
     return marathon.map(marathonModelToResource);
   }

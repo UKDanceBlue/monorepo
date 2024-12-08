@@ -11,8 +11,8 @@ import { useQueryStatusWatcher } from "#hooks/useQueryStatusWatcher.js";
 
 const notificationViewerDocument = graphql(
   /* GraphQL */ `
-    query NotificationViewer($uuid: GlobalId!) {
-      notification(uuid: $uuid) {
+    query NotificationViewer($id: GlobalId!) {
+      notification(id: $id) {
         ...SingleNotificationFragment
       }
     }
@@ -25,7 +25,7 @@ function ViewNotificationPage() {
 
   const [{ data, fetching, error }, refetch] = useQuery({
     query: notificationViewerDocument,
-    variables: { uuid: notificationId },
+    variables: { id: notificationId },
   });
 
   useQueryStatusWatcher({
@@ -57,7 +57,7 @@ export const Route = createFileRoute("/notifications/$notificationId/")({
   component: ViewNotificationPage,
   async beforeLoad({ context, params: { notificationId } }) {
     await context.urqlClient.query(notificationViewerDocument, {
-      uuid: notificationId,
+      id: notificationId,
     });
   },
 });

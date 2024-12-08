@@ -1263,12 +1263,12 @@ enum MembershipPositionType {
 }
 
 type Mutation {
-  abortScheduledNotification(uuid: GlobalId!): NotificationNode!
-  acknowledgeDeliveryIssue(uuid: GlobalId!): NotificationNode!
+  abortScheduledNotification(id: GlobalId!): NotificationNode!
+  acknowledgeDeliveryIssue(id: GlobalId!): NotificationNode!
 
   """Add an existing image to an event"""
   addExistingImageToEvent(eventId: GlobalId!, imageId: GlobalId!): ImageNode!
-  addMap(imageUuid: GlobalId!, uuid: GlobalId!): MarathonHourNode!
+  addMap(id: GlobalId!, imageUuid: GlobalId!): MarathonHourNode!
   addPersonToTeam(personUuid: GlobalId!, position: MembershipPositionType! = Member, teamUuid: GlobalId!): MembershipNode!
   assignEntryToPerson(entryId: GlobalId!, input: AssignEntryToPersonInput!, personId: GlobalId!): FundraisingAssignmentNode!
   assignSolicitationCodeToTeam(solicitationCode: GlobalId!, teamId: GlobalId!): Void!
@@ -1305,33 +1305,33 @@ type Mutation {
   createTeams(marathonId: GlobalId!, teams: [BulkTeamInput!]!): [TeamNode!]!
 
   """Delete a configuration by UUID"""
-  deleteConfiguration(uuid: GlobalId!): ConfigurationNode!
+  deleteConfiguration(id: GlobalId!): ConfigurationNode!
   deleteDailyDepartmentNotification(id: GlobalId!): DailyDepartmentNotificationNode!
   deleteDailyDepartmentNotificationBatch(id: GlobalId!): DailyDepartmentNotificationBatchNode!
 
   """Delete a device by it's UUID"""
-  deleteDevice(uuid: GlobalId!): DeviceNode!
+  deleteDevice(id: GlobalId!): DeviceNode!
 
   """Delete an event by UUID"""
-  deleteEvent(uuid: GlobalId!): EventNode!
+  deleteEvent(id: GlobalId!): EventNode!
 
   """Delete a feed item"""
   deleteFeedItem(feedItemUuid: GlobalId!): Boolean!
   deleteFundraisingAssignment(id: GlobalId!): FundraisingAssignmentNode!
-  deleteImage(uuid: GlobalId!): ImageNode!
-  deleteMarathon(uuid: GlobalId!): MarathonNode!
-  deleteMarathonHour(uuid: GlobalId!): MarathonHourNode!
+  deleteImage(id: GlobalId!): ImageNode!
+  deleteMarathon(id: GlobalId!): MarathonNode!
+  deleteMarathonHour(id: GlobalId!): MarathonHourNode!
   deleteNotification(
     """
     If true, the notification will be deleted even if it has already been sent, which will also delete the delivery records.
     """
     force: Boolean
-    uuid: GlobalId!
+    id: GlobalId!
   ): NotificationNode!
-  deletePerson(uuid: GlobalId!): PersonNode!
-  deletePointEntry(uuid: GlobalId!): PointEntryNode!
-  deletePointOpportunity(uuid: GlobalId!): PointOpportunityNode!
-  deleteTeam(uuid: GlobalId!): TeamNode!
+  deletePerson(id: GlobalId!): PersonNode!
+  deletePointEntry(id: GlobalId!): PointEntryNode!
+  deletePointOpportunity(id: GlobalId!): PointOpportunityNode!
+  deleteTeam(id: GlobalId!): TeamNode!
 
   """Register a new device, or update an existing one"""
   registerDevice(input: RegisterDeviceInput!): RegisterDeviceResponse!
@@ -1341,29 +1341,29 @@ type Mutation {
 
   """Remove an image from a feed item"""
   removeImageFromFeedItem(feedItemUuid: GlobalId!): FeedNode!
-  removeMap(imageUuid: GlobalId!, uuid: GlobalId!): Void!
+  removeMap(id: GlobalId!, imageUuid: GlobalId!): Void!
   removePersonFromTeam(personUuid: GlobalId!, teamUuid: GlobalId!): MembershipNode!
   removeSolicitationCodeFromTeam(teamId: GlobalId!): Void!
-  scheduleNotification(sendAt: DateTimeISO!, uuid: GlobalId!): NotificationNode!
+  scheduleNotification(id: GlobalId!, sendAt: DateTimeISO!): NotificationNode!
 
   """Send a notification immediately."""
-  sendNotification(uuid: GlobalId!): Void!
+  sendNotification(id: GlobalId!): Void!
   setDailyDepartmentNotification(id: GlobalId!, input: DailyDepartmentNotificationInput!): DailyDepartmentNotificationNode!
 
   """Update an event by UUID"""
-  setEvent(input: SetEventInput!, uuid: GlobalId!): EventNode!
+  setEvent(id: GlobalId!, input: SetEventInput!): EventNode!
 
   """Set the content of a feed item"""
   setFeedItem(feedItemUuid: GlobalId!, input: SetFeedInput!): FeedNode!
   setFundraisingEntry(id: GlobalId!, input: SetFundraisingEntryInput!): FundraisingEntryNode!
-  setImageAltText(alt: String!, uuid: GlobalId!): ImageNode!
-  setImageUrl(url: URL!, uuid: GlobalId!): ImageNode!
-  setMarathon(input: SetMarathonInput!, uuid: GlobalId!): MarathonNode!
-  setMarathonHour(input: SetMarathonHourInput!, uuid: GlobalId!): MarathonHourNode!
-  setPerson(input: SetPersonInput!, uuid: GlobalId!): PersonNode!
-  setPointOpportunity(input: SetPointOpportunityInput!, uuid: GlobalId!): PointOpportunityNode!
+  setImageAltText(alt: String!, id: GlobalId!): ImageNode!
+  setImageUrl(id: GlobalId!, url: URL!): ImageNode!
+  setMarathon(id: GlobalId!, input: SetMarathonInput!): MarathonNode!
+  setMarathonHour(id: GlobalId!, input: SetMarathonHourInput!): MarathonHourNode!
+  setPerson(id: GlobalId!, input: SetPersonInput!): PersonNode!
+  setPointOpportunity(id: GlobalId!, input: SetPointOpportunityInput!): PointOpportunityNode!
   setSolicitationCode(id: GlobalId!, input: SetSolicitationCodeInput!): SolicitationCodeNode!
-  setTeam(input: SetTeamInput!, uuid: GlobalId!): TeamNode!
+  setTeam(id: GlobalId!, input: SetTeamInput!): TeamNode!
   stageNotification(audience: NotificationAudienceInput!, body: NonEmptyString!, title: NonEmptyString!, url: URL): NotificationNode!
   updateFundraisingAssignment(id: GlobalId!, input: UpdateFundraisingAssignmentInput!): FundraisingAssignmentNode!
 }
@@ -1879,7 +1879,7 @@ type Query {
   ): ListDevicesResponse!
 
   """Get an event by UUID"""
-  event(uuid: GlobalId!): EventNode!
+  event(id: GlobalId!): EventNode!
 
   """List events"""
   events(
@@ -1976,7 +1976,7 @@ type Query {
     stringFilters: [FundraisingEntryResolverKeyedStringFilterItem!]
   ): ListFundraisingEntriesResponse!
   fundraisingEntry(id: GlobalId!): FundraisingEntryNode!
-  image(uuid: GlobalId!): ImageNode!
+  image(id: GlobalId!): ImageNode!
   images(
     """The boolean filters to apply to the query"""
     booleanFilters: Void
@@ -2026,9 +2026,9 @@ type Query {
   """
   latestMarathon: MarathonNode
   loginState: LoginState!
-  marathon(uuid: GlobalId!): MarathonNode!
+  marathon(id: GlobalId!): MarathonNode!
   marathonForYear(year: String!): MarathonNode!
-  marathonHour(uuid: GlobalId!): MarathonHourNode!
+  marathonHour(id: GlobalId!): MarathonHourNode!
   marathonHours(
     """The boolean filters to apply to the query"""
     booleanFilters: Void
@@ -2117,7 +2117,7 @@ type Query {
   ): ListMarathonsResponse!
   me: PersonNode
   node(id: GlobalId!): Node!
-  notification(uuid: GlobalId!): NotificationNode!
+  notification(id: GlobalId!): NotificationNode!
   notificationDeliveries(
     """The boolean filters to apply to the query"""
     booleanFilters: Void
@@ -2248,7 +2248,7 @@ type Query {
     """The string filters to apply to the query"""
     stringFilters: [PersonResolverKeyedStringFilterItem!]
   ): ListPeopleResponse!
-  person(uuid: GlobalId!): PersonNode!
+  person(id: GlobalId!): PersonNode!
   personByLinkBlue(linkBlueId: String!): PersonNode
   pointEntries(
     """The boolean filters to apply to the query"""
@@ -2293,7 +2293,7 @@ type Query {
     """The string filters to apply to the query"""
     stringFilters: Void
   ): ListPointEntriesResponse!
-  pointEntry(uuid: GlobalId!): PointEntryNode!
+  pointEntry(id: GlobalId!): PointEntryNode!
   pointOpportunities(
     """The boolean filters to apply to the query"""
     booleanFilters: Void
@@ -2337,7 +2337,7 @@ type Query {
     """The string filters to apply to the query"""
     stringFilters: [PointOpportunityResolverKeyedStringFilterItem!]
   ): ListPointOpportunitiesResponse!
-  pointOpportunity(uuid: GlobalId!): PointOpportunityNode!
+  pointOpportunity(id: GlobalId!): PointOpportunityNode!
   rawFundraisingEntries(identifier: Int!, marathonYear: String!): String!
   rawFundraisingTotals(marathonYear: String!): String!
 
@@ -2390,7 +2390,7 @@ type Query {
     """The string filters to apply to the query"""
     stringFilters: [SolicitationCodeKeyedStringFilterItem!]
   ): ListSolicitationCodesResponse!
-  team(uuid: GlobalId!): TeamNode!
+  team(id: GlobalId!): TeamNode!
   teams(
     """The boolean filters to apply to the query"""
     booleanFilters: Void

@@ -33,7 +33,7 @@ const allMarathonsDocument = graphql(/* GraphQL */ `
 
 const selectedMarathonDocument = graphql(/* GraphQL */ `
   query SelectedMarathon($marathonId: GlobalId!) {
-    marathon(uuid: $marathonId) {
+    marathon(id: $marathonId) {
       id
       year
       startDate

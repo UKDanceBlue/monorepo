@@ -143,7 +143,7 @@ export class DeviceResolver
     description: "Delete a device by it's UUID",
   })
   async deleteDevice(
-    @Arg("uuid", () => GlobalIdScalar) { id }: GlobalId
+    @Arg("id", () => GlobalIdScalar) { id }: GlobalId
   ): Promise<DeviceNode> {
     const row = await this.deviceRepository.deleteDevice({ uuid: id });
 

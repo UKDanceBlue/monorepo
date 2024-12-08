@@ -16,7 +16,7 @@ import { useQueryStatusWatcher } from "#hooks/useQueryStatusWatcher.js";
 
 const editMarathonHourDataDocument = graphql(/* GraphQL */ `
   query EditMarathonHourData($marathonHourUuid: GlobalId!) {
-    marathonHour(uuid: $marathonHourUuid) {
+    marathonHour(id: $marathonHourUuid) {
       details
       durationInfo
       shownStartingAt
@@ -26,8 +26,8 @@ const editMarathonHourDataDocument = graphql(/* GraphQL */ `
 `);
 
 const editMarathonHourDocument = graphql(/* GraphQL */ `
-  mutation EditMarathonHour($input: SetMarathonHourInput!, $uuid: GlobalId!) {
-    setMarathonHour(input: $input, uuid: $uuid) {
+  mutation EditMarathonHour($input: SetMarathonHourInput!, $id: GlobalId!) {
+    setMarathonHour(input: $input, id: $id) {
       id
     }
   }
@@ -90,7 +90,7 @@ function EditMarathonHourPage() {
           shownStartingAt,
           title: values.title,
         },
-        uuid: hourId,
+        id: hourId,
       });
 
       if (data) {

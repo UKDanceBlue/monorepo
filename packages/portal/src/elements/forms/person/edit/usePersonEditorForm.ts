@@ -104,7 +104,7 @@ export function usePersonEditorForm(
       }
 
       const { data } = await setPerson({
-        uuid: personData.id,
+        id: personData.id,
         input: {
           name: values.name || null,
 

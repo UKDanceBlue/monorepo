@@ -7,7 +7,7 @@ import { PointEntryCreatorFragment } from "./pointEntry";
 export const teamPageDocument = graphql(
   /* GraphQL */ `
     query ViewTeamPage($teamUuid: GlobalId!) {
-      team(uuid: $teamUuid) {
+      team(id: $teamUuid) {
         ...PointEntryCreatorFragment
         ...TeamViewerFragment
         pointEntries {
@@ -41,8 +41,8 @@ export const TeamEditorFragment = graphql(/* GraphQL */ `
 `);
 
 export const teamEditorDocument = graphql(/* GraphQL */ `
-  mutation TeamEditor($uuid: GlobalId!, $input: SetTeamInput!) {
-    setTeam(uuid: $uuid, input: $input) {
+  mutation TeamEditor($id: GlobalId!, $input: SetTeamInput!) {
+    setTeam(id: $id, input: $input) {
       id
     }
   }

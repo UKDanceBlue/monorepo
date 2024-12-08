@@ -8,8 +8,8 @@ import { useQueryStatusWatcher } from "#hooks/useQueryStatusWatcher.js";
 
 const viewPersonPageDocument = graphql(
   /* GraphQL */ `
-    query EditPersonPage($uuid: GlobalId!) {
-      person(uuid: $uuid) {
+    query EditPersonPage($id: GlobalId!) {
+      person(id: $id) {
         ...PersonEditorFragment
       }
       teams(sendAll: true, sortBy: ["name"], sortDirection: [asc]) {
@@ -27,7 +27,7 @@ export function EditPersonPage() {
 
   const [{ data, fetching, error }, refetchPerson] = useQuery({
     query: viewPersonPageDocument,
-    variables: { uuid: personId },
+    variables: { id: personId },
   });
 
   useQueryStatusWatcher({
@@ -50,6 +50,6 @@ export function EditPersonPage() {
 export const Route = createFileRoute("/people/$personId/edit")({
   component: EditPersonPage,
   async beforeLoad({ context, params: { personId } }) {
-    await context.urqlClient.query(viewPersonPageDocument, { uuid: personId });
+    await context.urqlClient.query(viewPersonPageDocument, { id: personId });
   },
 });

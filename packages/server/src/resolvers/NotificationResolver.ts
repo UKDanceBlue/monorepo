@@ -64,7 +64,7 @@ export class NotificationResolver
   @AccessControlAuthorized("get")
   @Query(() => NotificationNode, { name: "notification" })
   async notification(
-    @Arg("uuid", () => GlobalIdScalar) { id }: GlobalId
+    @Arg("id", () => GlobalIdScalar) { id }: GlobalId
   ): Promise<ConcreteResult<NotificationNode>> {
     return this.notificationRepository
       .findNotificationByUnique({
@@ -185,7 +185,7 @@ export class NotificationResolver
     description: "Send a notification immediately.",
   })
   async send(
-    @Arg("uuid", () => GlobalIdScalar) { id }: GlobalId
+    @Arg("id", () => GlobalIdScalar) { id }: GlobalId
   ): Promise<ConcreteResult<void>> {
     return this.notificationRepository
       .findNotificationByUnique({ uuid: id })
@@ -210,7 +210,7 @@ export class NotificationResolver
     name: "scheduleNotification",
   })
   async schedule(
-    @Arg("uuid", () => GlobalIdScalar) { id }: GlobalId,
+    @Arg("id", () => GlobalIdScalar) { id }: GlobalId,
     @Arg("sendAt") sendAt: Date
   ): Promise<ConcreteResult<NotificationNode>> {
     this.notificationScheduler.ensureNotificationScheduler();
@@ -236,7 +236,7 @@ export class NotificationResolver
     name: "acknowledgeDeliveryIssue",
   })
   async acknowledgeDeliveryIssue(
-    @Arg("uuid", () => GlobalIdScalar) { id }: GlobalId
+    @Arg("id", () => GlobalIdScalar) { id }: GlobalId
   ): Promise<ConcreteResult<NotificationNode>> {
     const notification =
       await this.notificationRepository.findNotificationByUnique({ uuid: id })
@@ -266,7 +266,7 @@ export class NotificationResolver
     name: "abortScheduledNotification",
   })
   async abortScheduled(
-    @Arg("uuid", () => GlobalIdScalar) { id }: GlobalId
+    @Arg("id", () => GlobalIdScalar) { id }: GlobalId
   ): Promise<ConcreteResult<NotificationNode>> {
     return this.notificationRepository
       .findNotificationByUnique({ uuid: id })
@@ -292,7 +292,7 @@ export class NotificationResolver
   @AccessControlAuthorized("delete", "NotificationNode")
   @Mutation(() => NotificationNode, { name: "deleteNotification" })
   async deleteNotification(
-    @Arg("uuid", () => GlobalIdScalar) { id }: GlobalId,
+    @Arg("id", () => GlobalIdScalar) { id }: GlobalId,
     @Arg("force", {
       nullable: true,
       description:

@@ -39,7 +39,7 @@ export class MarathonHourResolver
 
   @AccessControlAuthorized("get")
   @Query(() => MarathonHourNode)
-  async marathonHour(@Arg("uuid", () => GlobalIdScalar) { id }: GlobalId) {
+  async marathonHour(@Arg("id", () => GlobalIdScalar) { id }: GlobalId) {
     const marathonHour =
       await this.marathonHourRepository.findMarathonHourByUnique({
         uuid: id,
@@ -97,7 +97,7 @@ export class MarathonHourResolver
   @AccessControlAuthorized("update")
   @Mutation(() => MarathonHourNode)
   async setMarathonHour(
-    @Arg("uuid", () => GlobalIdScalar) { id }: GlobalId,
+    @Arg("id", () => GlobalIdScalar) { id }: GlobalId,
     @Arg("input") input: SetMarathonHourInput
   ) {
     const marathonHour = await this.marathonHourRepository.updateMarathonHour(
@@ -112,9 +112,7 @@ export class MarathonHourResolver
 
   @AccessControlAuthorized("delete")
   @Mutation(() => MarathonHourNode)
-  async deleteMarathonHour(
-    @Arg("uuid", () => GlobalIdScalar) { id }: GlobalId
-  ) {
+  async deleteMarathonHour(@Arg("id", () => GlobalIdScalar) { id }: GlobalId) {
     const marathonHour = await this.marathonHourRepository.deleteMarathonHour({
       uuid: id,
     });
@@ -127,7 +125,7 @@ export class MarathonHourResolver
   @AccessControlAuthorized("update")
   @Mutation(() => MarathonHourNode)
   async addMap(
-    @Arg("uuid", () => GlobalIdScalar) { id }: GlobalId,
+    @Arg("id", () => GlobalIdScalar) { id }: GlobalId,
     @Arg("imageUuid", () => GlobalIdScalar) imageUuid: GlobalId
   ) {
     const marathonHour = await this.marathonHourRepository.addMap(
@@ -143,7 +141,7 @@ export class MarathonHourResolver
   @AccessControlAuthorized("update")
   @Mutation(() => VoidResolver)
   async removeMap(
-    @Arg("uuid", () => GlobalIdScalar) { id }: GlobalId,
+    @Arg("id", () => GlobalIdScalar) { id }: GlobalId,
     @Arg("imageUuid", () => GlobalIdScalar) imageUuid: GlobalId
   ) {
     const marathonHour = await this.marathonHourRepository.removeMap(

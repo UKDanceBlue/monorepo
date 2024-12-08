@@ -153,7 +153,7 @@ export class ConfigurationResolver
     description: "Delete a configuration by UUID",
   })
   async deleteConfiguration(
-    @Arg("uuid", () => GlobalIdScalar) { id }: GlobalId
+    @Arg("id", () => GlobalIdScalar) { id }: GlobalId
   ): Promise<ConcreteResult<ConfigurationNode>> {
     const row = await this.configurationRepository.deleteConfiguration(id);
 

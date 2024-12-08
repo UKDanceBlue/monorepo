@@ -30,8 +30,8 @@ export const PersonEditorFragment = graphql(/* GraphQL */ `
 `);
 
 export const personEditorDocument = graphql(/* GraphQL */ `
-  mutation PersonEditor($uuid: GlobalId!, $input: SetPersonInput!) {
-    setPerson(uuid: $uuid, input: $input) {
+  mutation PersonEditor($id: GlobalId!, $input: SetPersonInput!) {
+    setPerson(id: $id, input: $input) {
       id
     }
   }

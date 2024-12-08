@@ -63,7 +63,7 @@ export class TeamResolver implements CrudResolver<TeamNode, "team"> {
   @AccessControlAuthorized("get")
   @Query(() => TeamNode, { name: "team" })
   async team(
-    @Arg("uuid", () => GlobalIdScalar) { id }: GlobalId
+    @Arg("id", () => GlobalIdScalar) { id }: GlobalId
   ): Promise<ConcreteResult<Option<TeamNode>>> {
     const row = await this.teamRepository.findTeamByUnique({ uuid: id });
 
@@ -149,7 +149,7 @@ export class TeamResolver implements CrudResolver<TeamNode, "team"> {
   @AccessControlAuthorized("update")
   @Mutation(() => TeamNode, { name: "setTeam" })
   async setTeam(
-    @Arg("uuid", () => GlobalIdScalar) { id }: GlobalId,
+    @Arg("id", () => GlobalIdScalar) { id }: GlobalId,
     @Arg("input") input: SetTeamInput
   ): Promise<TeamNode> {
     const row = await this.teamRepository.updateTeam(
@@ -186,7 +186,7 @@ export class TeamResolver implements CrudResolver<TeamNode, "team"> {
   @AccessControlAuthorized("delete")
   @Mutation(() => TeamNode, { name: "deleteTeam" })
   async deleteTeam(
-    @Arg("uuid", () => GlobalIdScalar) { id }: GlobalId
+    @Arg("id", () => GlobalIdScalar) { id }: GlobalId
   ): Promise<TeamNode> {
     const row = await this.teamRepository.deleteTeam({ uuid: id });
 

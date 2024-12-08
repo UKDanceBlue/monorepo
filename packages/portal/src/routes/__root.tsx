@@ -1,22 +1,15 @@
 import { MoonOutlined, SettingOutlined, SunOutlined } from "@ant-design/icons";
 import { AuthPage, useNotificationProvider } from "@refinedev/antd";
-import type {
-  Action,
-  GoConfig,
-  IResourceItem,
-  ParseFunction,
-} from "@refinedev/core";
 import { Refine, useLogin } from "@refinedev/core";
 import {
   createRootRouteWithContext,
   Link,
   Outlet,
   useRouter,
-  useRouterState,
 } from "@tanstack/react-router";
 import { Button, ConfigProvider, Layout, Menu, notification } from "antd";
 import type { useAppProps } from "antd/es/app/context.js";
-import { lazy, Suspense, useContext, useState } from "react";
+import { lazy, Suspense, useContext, useMemo, useState } from "react";
 import type { Client as UrqlClient } from "urql";
 
 import watermark from "#assets/watermark.svg";
@@ -24,10 +17,8 @@ import { themeConfigContext } from "#config/antThemeConfig.ts";
 import { authProvider } from "#config/refine/authentication.ts";
 import { accessControlProvider } from "#config/refine/authorization.ts";
 import { dataProvider } from "#config/refine/data.ts";
-import {
-  findResourceAction,
-  refineResources,
-} from "#config/refine/resources.tsx";
+import { refineResources } from "#config/refine/resources.tsx";
+import { refineRouterProvider } from "#config/refine/router.ts";
 import { SessionStorageKeys } from "#config/storage.tsx";
 import { Sider } from "#elements/components/sider/index.tsx";
 import { ConfigModal } from "#elements/singletons/ConfigModal.tsx";
@@ -169,18 +160,11 @@ function RootComponent() {
 }
 
 function RootWithRefine() {
-  const router = useRouter();
-
   return (
     <Refine
       dataProvider={dataProvider}
       notificationProvider={useNotificationProvider}
-      routerProvider={{
-        back: () => router.history.back,
-        Link,
-        go: useRefineGoFunction,
-        parse: useRefineParseFunction,
-      }}
+      routerProvider={refineRouterProvider}
       authProvider={authProvider}
       options={{
         projectId: "DqkUbD-wpgLRK-UO3SFV",
@@ -209,53 +193,3 @@ export const Route = createRootRouteWithContext<RouterContext>()({
     authorizationRules: null,
   },
 });
-
-function useRefineGoFunction() {
-  const router = useRouter();
-  return ({ hash, options, query, to, type }: GoConfig) => {
-    router
-      .navigate({
-        to,
-        search: options?.keepQuery ? router.state.location.search : query,
-        hash: options?.keepHash ? router.state.location.hash : hash,
-        replace: type === "replace",
-      })
-      .catch(console.error);
-  };
-}
-
-function useRefineParseFunction(): ParseFunction {
-  const state = useRouterState();
-  return () => {
-    const matchesByLength = state.matches.toSorted(
-      ({ fullPath: fullPathA }, { fullPath: fullPathB }) =>
-        String(fullPathB).length - String(fullPathA).length
-    );
-    const longestMatch = matchesByLength[0];
-
-    let action: Action | undefined;
-    let resource: IResourceItem | undefined;
-    let id: string | undefined;
-    if (longestMatch) {
-      const idParams = Object.keys(longestMatch.params as object).filter(
-        (key) => key.toLowerCase().endsWith("id")
-      );
-      if (idParams.length === 1) {
-        id = (longestMatch.params as Record<string, string | undefined>)[
-          idParams[0]!
-        ];
-      }
-      ({ action, resource } = findResourceAction(
-        String(longestMatch.fullPath)
-      ));
-    }
-
-    return {
-      pathname: state.location.pathname,
-      params: longestMatch?.params,
-      id,
-      action,
-      resource,
-    };
-  };
-}

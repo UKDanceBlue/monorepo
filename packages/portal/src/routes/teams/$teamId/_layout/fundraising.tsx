@@ -25,7 +25,7 @@ const ViewTeamFundraisingDocument = graphql(
       $stringFilters: [FundraisingEntryResolverKeyedStringFilterItem!]
       $numericFilters: [FundraisingEntryResolverKeyedNumericFilterItem!]
     ) {
-      team(uuid: $teamUuid) {
+      team(id: $teamUuid) {
         fundraisingTotalAmount
         solicitationCode {
           id

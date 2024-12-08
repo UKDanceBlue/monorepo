@@ -6,8 +6,8 @@ import { useMutation } from "urql";
 import { graphql } from "#graphql/index.js";
 
 const deletePointEntryDocument = graphql(/* GraphQL */ `
-  mutation DeletePointEntry($uuid: GlobalId!) {
-    deletePointEntry(uuid: $uuid) {
+  mutation DeletePointEntry($id: GlobalId!) {
+    deletePointEntry(id: $id) {
       id
     }
   }
@@ -51,7 +51,7 @@ export const usePointEntryDeletePopup = ({
         open={open}
         onOk={() => {
           if (uuid) {
-            deletePointEntry({ uuid })
+            deletePointEntry({ id: uuid })
               .then((value) => {
                 if (value.data?.deletePointEntry.id) {
                   showInfoMessage({

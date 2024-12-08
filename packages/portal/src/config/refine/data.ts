@@ -92,19 +92,35 @@ export const dataProvider: Required<DataProvider> = {
     const { meta, id, resource } = params;
     const gqlOperation = meta?.gqlQuery ?? meta?.gqlMutation;
 
-    if (!gqlOperation) {
-      throw new Error("Operation is required.");
-    }
-
-    const query = isMutation(gqlOperation)
-      ? gqlButDifferentName`
-          query Get${camelcase(singular(resource), { pascalCase: true })}($id: GlobalID!) {
+    let query;
+    if (gqlOperation) {
+      query = isMutation(gqlOperation)
+        ? gqlButDifferentName`
+          query Get${camelcase(singular(resource), { pascalCase: true })}($id: GlobalId!) {
             ${getOperationName(resource, "getOne")}(id: $id) {
               ${getOperationFields(gqlOperation)}
             }
           }
         `
-      : gqlOperation;
+        : gqlOperation;
+    } else if (meta?.gqlFragment) {
+      const fragmentDefinition = (meta.gqlFragment as DocumentNode)
+        .definitions[0];
+      if (fragmentDefinition?.kind === Kind.FRAGMENT_DEFINITION) {
+        query = gqlButDifferentName`
+        query Get${camelcase(singular(resource), { pascalCase: true })}($id: GlobalId!) {
+          ${getOperationName(resource, "getOne")}(id: $id) {
+            ...${fragmentDefinition.name.value}
+          }
+        }
+        ${meta.gqlFragment as DocumentNode}
+      `;
+      }
+    }
+
+    if (!query) {
+      throw new Error("Operation is required.");
+    }
 
     const response = await urqlClient
       .query(query, {

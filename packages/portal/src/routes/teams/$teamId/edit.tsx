@@ -8,8 +8,8 @@ import { useQueryStatusWatcher } from "#hooks/useQueryStatusWatcher.js";
 
 const viewTeamPageDocument = graphql(
   /* GraphQL */ `
-    query EditTeamPage($uuid: GlobalId!) {
-      team(uuid: $uuid) {
+    query EditTeamPage($id: GlobalId!) {
+      team(id: $id) {
         ...TeamEditorFragment
       }
     }
@@ -22,7 +22,7 @@ function EditTeamPage() {
 
   const [{ data, fetching, error }, refetchTeam] = useQuery({
     query: viewTeamPageDocument,
-    variables: { uuid: teamId },
+    variables: { id: teamId },
   });
 
   useQueryStatusWatcher({
@@ -42,6 +42,6 @@ function EditTeamPage() {
 export const Route = createFileRoute("/teams/$teamId/edit")({
   component: EditTeamPage,
   async beforeLoad({ context, params: { teamId } }) {
-    await context.urqlClient.query(viewTeamPageDocument, { uuid: teamId });
+    await context.urqlClient.query(viewTeamPageDocument, { id: teamId });
   },
 });

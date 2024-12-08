@@ -6,8 +6,8 @@ import { useMutation } from "urql";
 import { graphql } from "#graphql/index.js";
 
 const deleteTeamDocument = graphql(/* GraphQL */ `
-  mutation DeleteTeam($uuid: GlobalId!) {
-    deleteTeam(uuid: $uuid) {
+  mutation DeleteTeam($id: GlobalId!) {
+    deleteTeam(id: $id) {
       id
     }
   }
@@ -46,7 +46,7 @@ export const useTeamDeletePopup = ({
         title="Delete Team"
         open={open}
         onOk={() =>
-          deleteTeam({ uuid }).then((value) => {
+          deleteTeam({ id: uuid }).then((value) => {
             if (value.data?.deleteTeam.id) {
               showInfoMessage({
                 message: "Team successfully deleted",

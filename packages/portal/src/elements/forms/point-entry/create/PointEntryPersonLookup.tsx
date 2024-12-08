@@ -43,7 +43,7 @@ export function PointEntryPersonLookup({
   const [selectedPersonQuery, updateSelectedPerson] = useQuery({
     query: getPersonByUuidDocument,
     pause: true,
-    variables: { uuid: personFromUuid ?? "" },
+    variables: { id: personFromUuid ?? "" },
   });
   useQueryStatusWatcher({
     fetching: selectedPersonQuery.fetching,
@@ -53,7 +53,7 @@ export function PointEntryPersonLookup({
 
   useEffect(() => {
     if (personFromUuid) {
-      updateSelectedPerson({ uuid: personFromUuid });
+      updateSelectedPerson({ id: personFromUuid });
     }
   }, [personFromUuid, updateSelectedPerson]);
 

@@ -54,7 +54,7 @@ export class EventResolver implements CrudResolver<EventNode, "event"> {
     description: "Get an event by UUID",
   })
   async event(
-    @Arg("uuid", () => GlobalIdScalar) { id }: GlobalId
+    @Arg("id", () => GlobalIdScalar) { id }: GlobalId
   ): Promise<EventNode> {
     const row = await this.eventRepository.findEventByUnique({ uuid: id });
 
@@ -139,14 +139,13 @@ export class EventResolver implements CrudResolver<EventNode, "event"> {
     description: "Delete an event by UUID",
   })
   async deleteEvent(
-    @Arg("uuid", () => GlobalIdScalar) { id }: GlobalId
+    @Arg("id", () => GlobalIdScalar) { id }: GlobalId
   ): Promise<EventNode> {
     const row = await this.eventRepository.deleteEvent({ uuid: id });
 
     if (row == null) {
       throw new LegacyError(LegacyErrorCode.NotFound, "Event not found");
     }
-
 
     return eventModelToResource(
       row,
@@ -160,7 +159,7 @@ export class EventResolver implements CrudResolver<EventNode, "event"> {
     description: "Update an event by UUID",
   })
   async setEvent(
-    @Arg("uuid", () => GlobalIdScalar) { id }: GlobalId,
+    @Arg("id", () => GlobalIdScalar) { id }: GlobalId,
     @Arg("input") input: SetEventInput
   ): Promise<EventNode> {
     const row = await this.eventRepository.updateEvent(

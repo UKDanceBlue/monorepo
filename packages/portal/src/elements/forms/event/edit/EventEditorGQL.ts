@@ -25,10 +25,21 @@ export const EventEditorFragment = graphql(/* GraphQL */ `
   }
 `);
 
-export const eventEditorDocument = graphql(
+export const eventEditorQueryDocument = graphql(
   /* GraphQL */ `
-    mutation SaveEvent($uuid: GlobalId!, $input: SetEventInput!) {
-      setEvent(uuid: $uuid, input: $input) {
+    query GetEvent($id: GlobalId!) {
+      event(id: $id) {
+        ...EventEditorFragment
+      }
+    }
+  `,
+  [EventEditorFragment]
+);
+
+export const eventEditorMutationDocument = graphql(
+  /* GraphQL */ `
+    mutation SetEvent($id: GlobalId!, $input: SetEventInput!) {
+      setEvent(id: $id, input: $input) {
         ...EventEditorFragment
       }
     }

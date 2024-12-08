@@ -6,8 +6,8 @@ import { useMutation } from "urql";
 import { graphql } from "#graphql/index.js";
 
 const deleteEventDocument = graphql(/* GraphQL */ `
-  mutation DeleteEvent($uuid: GlobalId!) {
-    deleteEvent(uuid: $uuid) {
+  mutation DeleteEvent($id: GlobalId!) {
+    deleteEvent(id: $id) {
       id
     }
   }
@@ -46,7 +46,7 @@ export const useEventDeletePopup = ({
         title="Delete Event"
         open={open}
         onOk={() =>
-          deleteEvent({ uuid }).then((value) => {
+          deleteEvent({ id: uuid }).then((value) => {
             if (value.data?.deleteEvent.id) {
               showInfoMessage({
                 message: "Event successfully deleted",
