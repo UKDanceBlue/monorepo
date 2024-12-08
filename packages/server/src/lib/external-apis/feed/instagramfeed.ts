@@ -29,15 +29,15 @@ const feedSchema = z.object({
       timestamp: z.string().transform((iso) => DateTime.fromISO(iso)),
     })
   ),
-  paging: z.object({
-    cursors: z.object({
-      before: z.string(),
+  // paging: z.object({
+  //   cursors: z.object({
+  //     before: z.string(),
 
-      after: z.string(),
-    }),
-    next: z.string().url().optional(),
-    previous: z.string().url().optional(),
-  }),
+  //     after: z.string(),
+  //   }),
+  //   next: z.string().url().optional(),
+  //   previous: z.string().url().optional(),
+  // }),
 });
 
 export type InstagramFeedItem = z.TypeOf<typeof feedSchema>["data"][number];
