@@ -5,6 +5,7 @@ import { Image } from "expo-image";
 import { openURL } from "expo-linking";
 import { Box, Button, HStack, Text, View } from "native-base";
 import { useEffect, useState } from "react";
+import React from "react";
 import { PixelRatio, useWindowDimensions } from "react-native";
 
 import AudioPlayer from "@/common/components/AudioPlayer";

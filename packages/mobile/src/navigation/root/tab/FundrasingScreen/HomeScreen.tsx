@@ -2,6 +2,7 @@ import { FontAwesome, FontAwesome5 } from "@expo/vector-icons";
 import { openURL } from "expo-linking";
 import { openBrowserAsync } from "expo-web-browser";
 import { Box, Button, HStack, Text, VStack } from "native-base";
+import React from "react";
 import { PixelRatio, StatusBar, useWindowDimensions } from "react-native";
 import { TouchableOpacity } from "react-native-gesture-handler";
 

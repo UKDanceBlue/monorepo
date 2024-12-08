@@ -5,6 +5,7 @@ import { setBadgeCountAsync } from "expo-notifications";
 import { DateTime } from "luxon";
 import { Button, SectionList, Text, useTheme, View } from "native-base";
 import { useEffect, useMemo } from "react";
+import React from "react";
 import { RefreshControl } from "react-native";
 
 import JumbotronGeometric from "@/common/components/JumbotronGeometric";

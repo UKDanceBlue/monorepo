@@ -6,6 +6,7 @@ import {
 import { debugStringify } from "@ukdanceblue/common";
 import { openURL } from "expo-linking";
 import type { ReactNode } from "react";
+import React from "react";
 import { Button, SafeAreaView, ScrollView, Text, View } from "react-native";
 
 import { universalCatch } from "../logging";

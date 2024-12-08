@@ -8,6 +8,7 @@ import type {
   TabNavigationState,
 } from "@react-navigation/native";
 import { Box, useTheme, View, VStack, ZStack } from "native-base";
+import React from "react";
 import { Text, TouchableOpacity, useWindowDimensions } from "react-native";
 
 import { useColorModeValue, useThemeColors } from "@/common/customHooks";

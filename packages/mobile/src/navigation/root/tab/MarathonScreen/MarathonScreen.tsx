@@ -1,6 +1,7 @@
 import { dateTimeFromSomething } from "@ukdanceblue/common";
 import { Button, Modal, Text, View } from "native-base";
 import { useEffect, useMemo, useState } from "react";
+import React from "react";
 import {
   ActivityIndicator,
   TextInput,

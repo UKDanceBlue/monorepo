@@ -1,6 +1,7 @@
 import { AuthSource } from "@ukdanceblue/common";
 import { Button, Center, Image, Text, View, ZStack } from "native-base";
 import { useEffect, useState } from "react";
+import React from "react";
 import type { ImageSourcePropType } from "react-native";
 import { ActivityIndicator, Dimensions, StatusBar } from "react-native";
 

@@ -1,6 +1,7 @@
 import { Text, View } from "native-base";
 import type { ReactElement } from "react";
 import { useEffect, useState } from "react";
+import React from "react";
 import { ActivityIndicator, StyleSheet, TouchableOpacity } from "react-native";
 
 import type { StandingType } from "../../../types/StandingType";
