@@ -186,7 +186,9 @@ export class PersonResolver
       accessLevel < AccessLevel.Admin
     ) {
       return Err(
-        new ActionDeniedError("Only tech committee can set committee roles")
+        new ActionDeniedError(
+          "Only tech committee can create committee members"
+        )
       );
     } else if (
       (input.captainOf ?? []).some(
@@ -195,7 +197,9 @@ export class PersonResolver
       accessLevel < AccessLevel.Admin
     ) {
       return Err(
-        new ActionDeniedError("Only tech committee can set committee roles")
+        new ActionDeniedError(
+          "Only tech committee can create committee members"
+        )
       );
     }
 
@@ -233,7 +237,9 @@ export class PersonResolver
       accessLevel < AccessLevel.Admin
     ) {
       return Err(
-        new ActionDeniedError("Only tech committee can set committee roles")
+        new ActionDeniedError(
+          "Only tech committee can modify committee members"
+        )
       );
     } else if (
       (input.captainOf ?? []).some(
@@ -242,7 +248,9 @@ export class PersonResolver
       accessLevel < AccessLevel.Admin
     ) {
       return Err(
-        new ActionDeniedError("Only tech committee can set committee roles")
+        new ActionDeniedError(
+          "Only tech committee can modify committee members"
+        )
       );
     }
 
@@ -275,6 +283,15 @@ export class PersonResolver
     @Arg("people", () => [BulkPersonInput]) people: BulkPersonInput[],
     @Arg("marathonId", () => GlobalIdScalar) marathonId: GlobalId
   ): Promise<ConcreteResult<PersonNode[]>> {
+    for (const person of people) {
+      if (person.committee || person.role) {
+        return Err(
+          new ActionDeniedError(
+            "Only tech committee can create committee members"
+          )
+        );
+      }
+    }
     return new AsyncResult(
       this.personRepository.bulkLoadPeople(people, {
         uuid: marathonId.id,
