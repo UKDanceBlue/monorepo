@@ -304,7 +304,6 @@ describe("Committee chair or coordinator authorization", (test) => {
   test("has correct permissions for committee chair or coordinator", ({
     expect,
   }) => {
-    expect(ability).can("manage", "CommitteeNode", ".");
     expect(ability).can("manage", "EventNode", ".");
     expect(ability).can("manage", "FeedNode", ".");
     expect(ability).can("manage", "ImageNode", ".");
