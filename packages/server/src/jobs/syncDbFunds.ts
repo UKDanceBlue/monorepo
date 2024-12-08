@@ -178,7 +178,7 @@ export const syncDbFunds = new Cron(
     name: "sync-db-funds",
     paused: true,
     catch: (error) => {
-      console.error("Failed to sync DBFunds", error);
+      logger.error("Failed to sync DBFunds", { error });
     },
   },
   async () => {
@@ -200,7 +200,7 @@ export const syncDbFundsPast = new Cron(
     name: "sync-db-funds-past",
     paused: true,
     catch: (error) => {
-      console.error("Failed to sync DBFunds for past marathons", error);
+      logger.error("Failed to sync DBFunds for past marathons", { error });
     },
   },
   async () => {

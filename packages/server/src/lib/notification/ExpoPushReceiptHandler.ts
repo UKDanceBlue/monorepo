@@ -2,6 +2,7 @@ import { Service } from "@freshgum/typedi";
 import type { ExpoPushReceipt } from "expo-server-sdk";
 import { Expo } from "expo-server-sdk";
 
+import { logger } from "#lib/logging/standardLogging.js";
 import { DeviceRepository } from "#repositories/device/DeviceRepository.js";
 import { NotificationDeliveryRepository } from "#repositories/notificationDelivery/NotificationDeliveryRepository.js";
 
@@ -54,7 +55,7 @@ export class ExpoPushReceiptHandler {
           receipts: updateParam,
         });
       } catch (error) {
-        console.error("Failed to fetch push receipts", error);
+        logger.error("Failed to fetch push receipts", { error });
       }
     }
 

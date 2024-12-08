@@ -41,6 +41,7 @@
   "dependencies": {
     "@ant-design/icons": "^5.5.1",
     "@casl/ability": "^6.7.2",
+    "@mdxeditor/editor": "^3.20.0",
     "@refinedev/antd": "^5.44.0",
     "@refinedev/core": "^4.56.0",
     "@refinedev/devtools": "^1.2.10",
@@ -60,6 +61,7 @@
     "graphql-scalars": "^1.23.0",
     "lodash.isequal": "^4.5.0",
     "luxon": "^3.5.0",
+    "markdown-it": "^14.1.0",
     "normalize.css": "^8.0.1",
     "pluralize": "^8.0.0",
     "rc-picker": "^4.8.2",
@@ -86,6 +88,7 @@
     "@tanstack/router-plugin": "^1.81.9",
     "@types/lodash.isequal": "^4.5.8",
     "@types/luxon": "^3.4.2",
+    "@types/markdown-it": "^14",
     "@types/pluralize": "^0.0.33",
     "@types/react": "~18.3.12",
     "@types/react-dom": "~18.3.1",

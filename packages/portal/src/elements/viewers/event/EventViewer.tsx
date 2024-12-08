@@ -8,11 +8,12 @@ import { Button, Descriptions, Flex, Image, List, Typography } from "antd";
 import DescriptionsItem from "antd/es/descriptions/Item.js";
 import type { Interval } from "luxon";
 import { DateTime } from "luxon";
+import Markdown from "markdown-it";
 import { useMemo } from "react";
 import { thumbHashToDataURL } from "thumbhash";
 
 import type { FragmentOf } from "#graphql/index.js";
-import { graphql,readFragment } from "#graphql/index.js";
+import { graphql, readFragment } from "#graphql/index.js";
 
 import { useEventDeletePopup } from "../../components/event/EventDeletePopup";
 
@@ -41,6 +42,8 @@ export const EventViewerFragment = graphql(/* GraphQL */ `
     updatedAt
   }
 `);
+
+const markdown = new Markdown({ linkify: true });
 
 export function EventViewer({
   eventFragment,
@@ -74,6 +77,11 @@ export function EventViewer({
       );
     },
   });
+
+  const parsedDescription = useMemo(() => {
+    if (!eventData?.description) return undefined;
+    return markdown.render(eventData.description);
+  }, [eventData?.description]);
 
   if (!eventData) {
     return (
@@ -156,7 +164,7 @@ export function EventViewer({
             <Typography.Paragraph>{eventData.summary}</Typography.Paragraph>
           </DescriptionsItem>
         )}
-        {eventData.description && (
+        {eventData.location && (
           <Descriptions.Item label="Location">
             <Typography.Text>{eventData.location}</Typography.Text>
           </Descriptions.Item>
@@ -178,9 +186,11 @@ export function EventViewer({
             </List>
           </Descriptions.Item>
         )}
-        {eventData.description && (
+        {parsedDescription && (
           <Descriptions.Item label="Description">
-            <Typography.Paragraph>{eventData.description}</Typography.Paragraph>
+            <Typography.Paragraph>
+              <div dangerouslySetInnerHTML={{ __html: parsedDescription }} />
+            </Typography.Paragraph>
           </Descriptions.Item>
         )}
         <Descriptions.Item label="Created">

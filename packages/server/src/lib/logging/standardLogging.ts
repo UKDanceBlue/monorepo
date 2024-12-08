@@ -1,5 +1,6 @@
 import { Container } from "@freshgum/typedi";
 import { debugStringify } from "@ukdanceblue/common";
+import { ConcreteError } from "@ukdanceblue/common/error";
 import type winston from "winston";
 import type { Logform } from "winston";
 import { createLogger, format, transports } from "winston";
@@ -49,15 +50,25 @@ const consoleTransport = new transports.Console({
     format.colorize({
       colors: syslogColors,
     }),
-    format.printf(({ level, message, ...rest }: Logform.TransformableInfo) => {
-      const filteredRestEntries = Object.entries(rest).filter(
-        ([key]) => typeof key !== "symbol"
-      );
+    format.printf(
+      ({ level, message, error, ...rest }: Logform.TransformableInfo) => {
+        if (error instanceof ConcreteError) {
+          rest.error = `${error.tag.description} - ${error.detailedMessage} - ${error.stack}`;
+        } else if (error instanceof Error) {
+          rest.error = `${error.name} - ${error.message} - ${error.stack}`;
+        } else if (error != null) {
+          rest.error = debugStringify(error);
+        }
 
-      return filteredRestEntries.length > 0
-        ? `${level}: ${debugStringify(message)} ${debugStringify(Object.fromEntries(filteredRestEntries), true, false)}`
-        : `${level}: ${debugStringify(message)}`;
-    })
+        const filteredRestEntries = Object.entries(rest).filter(
+          ([key]) => typeof key !== "symbol"
+        );
+
+        return filteredRestEntries.length > 0
+          ? `${level}: ${debugStringify(message)} ${debugStringify(Object.fromEntries(filteredRestEntries), true, true)}`
+          : `${level}: ${debugStringify(message)}`;
+      }
+    )
   ),
 });
 

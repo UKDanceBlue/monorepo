@@ -3,6 +3,7 @@ export * from "./control.js";
 export * from "./direct.js";
 export * from "./error.js";
 export * as ErrorCode from "./errorCode.js";
+export * from "./fetch.js";
 export * from "./http.js";
 export * from "./luxon.js";
 export * from "./option.js";

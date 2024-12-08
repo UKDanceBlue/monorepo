@@ -17,7 +17,6 @@ const EventsTableFragment = graphql(/* GraphQL */ `
   fragment EventsTableFragment on EventNode {
     id
     title
-    description
     occurrences {
       id
       interval {
@@ -171,7 +170,6 @@ export const EventsTable = () => {
               field: sort.field as
                 | "uuid"
                 | "title"
-                | "description"
                 | "occurrenceStart"
                 | "summary",
               direction:
@@ -187,11 +185,6 @@ export const EventsTable = () => {
             dataIndex: "title",
             key: "title",
             sorter: true,
-          },
-          {
-            title: "Description",
-            dataIndex: "description",
-            key: "description",
           },
           {
             title: "Occurrences",
