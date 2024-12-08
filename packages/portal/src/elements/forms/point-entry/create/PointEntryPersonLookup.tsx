@@ -1,5 +1,8 @@
 import { ClearOutlined, PlusOutlined, SearchOutlined } from "@ant-design/icons";
+import type { FormApi } from "@tanstack/react-form";
+import { Field, useField } from "@tanstack/react-form";
 import { AutoComplete, Button, Descriptions, Flex, Form, Input } from "antd";
+import type { VariablesOf } from "gql.tada";
 import type { LegacyRef } from "react";
 import { useEffect, useState } from "react";
 import { useMutation, useQuery } from "urql";
@@ -11,13 +14,13 @@ import {
 } from "#hooks/useAntFeedback.js";
 import { useQueryStatusWatcher } from "#hooks/useQueryStatusWatcher.js";
 
+import type { createPointEntryAndAssignDocument } from "../../../../documents/pointEntry.js";
 import {
   createPersonByLinkBlue,
   getPersonByLinkBlueDocument,
   getPersonByUuidDocument,
   searchPersonByNameDocument,
 } from "../../../../documents/pointEntry.js";
-import type { usePointEntryCreatorForm } from "./usePointEntryCreatorForm.js";
 
 const generalLinkblueRegex = new RegExp(/^[A-Za-z]{3,4}\d{3}$/);
 export function PointEntryPersonLookup({
@@ -27,7 +30,12 @@ export function PointEntryPersonLookup({
   selectedPersonRef,
   clearButtonRef,
 }: {
-  formApi: ReturnType<typeof usePointEntryCreatorForm>["formApi"];
+  formApi: FormApi<
+    Omit<
+      VariablesOf<typeof createPointEntryAndAssignDocument>["input"],
+      "teamUuid"
+    > & { shouldAddToTeam: boolean }
+  >;
   nameFieldRef: LegacyRef<HTMLDivElement>;
   linkblueFieldRef: Parameters<typeof Input>[0]["ref"];
   selectedPersonRef: LegacyRef<HTMLSpanElement>;
@@ -35,7 +43,8 @@ export function PointEntryPersonLookup({
 }) {
   const { showErrorMessage } = useUnknownErrorHandler();
   // Form state (shared with parent)
-  const { state, setValue: setPersonFromUuid } = formApi.useField({
+  const { state, setValue: setPersonFromUuid } = useField({
+    form: formApi,
     name: "personFromUuid",
   });
   const personFromUuid = state.value;
@@ -43,7 +52,7 @@ export function PointEntryPersonLookup({
   const [selectedPersonQuery, updateSelectedPerson] = useQuery({
     query: getPersonByUuidDocument,
     pause: true,
-    variables: { uuid: personFromUuid ?? "" },
+    variables: { id: personFromUuid ?? "" },
   });
   useQueryStatusWatcher({
     fetching: selectedPersonQuery.fetching,
@@ -53,7 +62,7 @@ export function PointEntryPersonLookup({
 
   useEffect(() => {
     if (personFromUuid) {
-      updateSelectedPerson({ uuid: personFromUuid });
+      updateSelectedPerson({ id: personFromUuid });
     }
   }, [personFromUuid, updateSelectedPerson]);
 
@@ -175,7 +184,8 @@ export function PointEntryPersonLookup({
   });
 
   return (
-    <formApi.Field
+    <Field
+      form={formApi}
       name="personFromUuid"
       children={(field) => (
         <>

@@ -1,7 +1,6 @@
 import { useForm } from "@tanstack/react-form";
 import { createFileRoute } from "@tanstack/react-router";
 import { useNavigate } from "@tanstack/react-router";
-import { AccessLevel, CommitteeIdentifier } from "@ukdanceblue/common";
 import { Editable, useEditor } from "@wysimark/react";
 import { Button, Input } from "antd";
 import type { DateTime } from "luxon";
@@ -13,7 +12,6 @@ import type { TanAntChildInputProps } from "#elements/components/form/TanAntForm
 import { TanAntFormItem } from "#elements/components/form/TanAntFormItem.js";
 import { graphql } from "#graphql/index.js";
 import { useQueryStatusWatcher } from "#hooks/useQueryStatusWatcher.js";
-import { routerAuthCheck } from "#tools/routerAuthCheck.js";
 
 function AddMarathonHourPage() {
   const [{ fetching, error }, addMarathonHour] = useMutation(
@@ -184,18 +182,4 @@ function AddMarathonHourPage() {
 
 export const Route = createFileRoute("/marathon/$marathonId/hours/add")({
   component: AddMarathonHourPage,
-  beforeLoad({ context }) {
-    routerAuthCheck(Route, context);
-  },
-  staticData: {
-    authorizationRules: [
-      {
-        accessLevel: AccessLevel.CommitteeChairOrCoordinator,
-        committeeIdentifier: CommitteeIdentifier.programmingCommittee,
-      },
-      {
-        accessLevel: AccessLevel.Admin,
-      },
-    ],
-  },
 });

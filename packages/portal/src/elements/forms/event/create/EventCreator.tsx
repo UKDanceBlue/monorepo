@@ -128,7 +128,7 @@ export function EventCreator() {
                 {field.state.value.map((occurrence, index) => (
                   <List.Item key={occurrence.uuid ?? index}>
                     <EventOccurrencePicker
-                      defaultOccurrence={occurrence}
+                      value={occurrence}
                       onChange={(value) => {
                         field.state.value.splice(index, 1, value);
                         field.handleChange(field.state.value);

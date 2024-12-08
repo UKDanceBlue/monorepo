@@ -15,7 +15,7 @@ export const housekeeping = new Cron(
     name: "housekeeping",
     paused: true,
     catch: (error) => {
-      console.error("Failed to fixup user data", error);
+      logger.error("Failed to fixup user data", { error });
     },
   },
   async () => {
@@ -97,7 +97,7 @@ async function userHousekeeping(prisma: PrismaClient) {
 
     await jobStateRepository.logCompletedJob(housekeeping);
   } catch (error) {
-    console.error("Failed to clean up user data", { error });
+    logger.error("Failed to clean up user data", { error });
   }
 }
 

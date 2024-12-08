@@ -2,7 +2,6 @@ import { Service } from "@freshgum/typedi";
 import type { CrudResolver, GlobalId } from "@ukdanceblue/common";
 import {
   AccessControlAuthorized,
-  AccessLevel,
   ConfigurationNode,
   dateTimeFromSomething,
   GlobalIdScalar,
@@ -37,6 +36,7 @@ export class ConfigurationResolver
     private readonly logDir: string
   ) {}
 
+  @AccessControlAuthorized("readActive")
   @Query(() => GetConfigurationResponse, {
     name: "activeConfiguration",
     description:
@@ -64,7 +64,7 @@ export class ConfigurationResolver
     return Ok(resp);
   }
 
-  @AccessControlAuthorized({ accessLevel: AccessLevel.Admin })
+  @AccessControlAuthorized("get")
   @Query(() => ConfigurationNode, {
     name: "configuration",
     description: "Get a particular configuration entry by UUID",
@@ -88,7 +88,7 @@ export class ConfigurationResolver
     return Ok(configurationModelToResource(row));
   }
 
-  @AccessControlAuthorized({ accessLevel: AccessLevel.Admin })
+  @AccessControlAuthorized("list", "ConfigurationNode")
   @Query(() => [ConfigurationNode], {
     name: "allConfigurations",
     description: "Get all configurations, irrespective of time",
@@ -101,7 +101,7 @@ export class ConfigurationResolver
     return Ok(rows.map(configurationModelToResource));
   }
 
-  @AccessControlAuthorized({ accessLevel: AccessLevel.Admin })
+  @AccessControlAuthorized("create")
   @Mutation(() => ConfigurationNode, {
     name: "createConfiguration",
     description:
@@ -122,7 +122,7 @@ export class ConfigurationResolver
     return Ok(configurationModelToResource(row));
   }
 
-  @AccessControlAuthorized({ accessLevel: AccessLevel.Admin })
+  @AccessControlAuthorized("create")
   @Mutation(() => [ConfigurationNode], {
     name: "createConfigurations",
     description:
@@ -148,13 +148,13 @@ export class ConfigurationResolver
     return Ok(rows.map(configurationModelToResource));
   }
 
-  @AccessControlAuthorized({ accessLevel: AccessLevel.Admin })
+  @AccessControlAuthorized("delete")
   @Mutation(() => ConfigurationNode, {
     name: "deleteConfiguration",
     description: "Delete a configuration by UUID",
   })
   async deleteConfiguration(
-    @Arg("uuid", () => GlobalIdScalar) { id }: GlobalId
+    @Arg("id", () => GlobalIdScalar) { id }: GlobalId
   ): Promise<ConcreteResult<ConfigurationNode>> {
     const row = await this.configurationRepository.deleteConfiguration(id);
 
@@ -172,7 +172,7 @@ export class ConfigurationResolver
     return Ok(configurationModelToResource(row));
   }
 
-  @AccessControlAuthorized({ accessLevel: AccessLevel.SuperAdmin })
+  @AccessControlAuthorized("read", "all")
   @Query(() => String, {
     name: "auditLog",
     description: "Get the audit log file from the server",

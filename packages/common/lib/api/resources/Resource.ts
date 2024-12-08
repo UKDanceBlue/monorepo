@@ -3,7 +3,7 @@ import { Field, ObjectType } from "type-graphql";
 import type { Class } from "utility-types";
 
 import { dateTimeFromSomething } from "../../utility/time/intervalTools.js";
-import { GlobalId } from "../scalars/GlobalId.js";
+import { GlobalId, isGlobalId } from "../scalars/GlobalId.js";
 
 @ObjectType()
 export abstract class Resource {
@@ -17,6 +17,13 @@ export abstract class Resource {
    * implements it.
    */
   public getUniqueId(): string {
+    if ("id" in this) {
+      if (isGlobalId(this.id)) {
+        return this.id.id;
+      } else if (typeof this.id === "string") {
+        return this.id;
+      }
+    }
     throw new Error(`Method not implemented by subclass.`);
   }
 

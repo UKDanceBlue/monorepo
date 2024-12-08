@@ -1,6 +1,5 @@
 import { SendOutlined } from "@ant-design/icons";
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { AccessLevel } from "@ukdanceblue/common";
 import { Button, Flex, Typography } from "antd";
 import { useQuery } from "urql";
 
@@ -9,12 +8,11 @@ import { NotificationDeliveriesTable } from "#elements/tables/notification/Notif
 import { NotificationViewer } from "#elements/viewers/notification/NotificationViewer.js";
 import { graphql } from "#graphql/index.js";
 import { useQueryStatusWatcher } from "#hooks/useQueryStatusWatcher.js";
-import { routerAuthCheck } from "#tools/routerAuthCheck.js";
 
 const notificationViewerDocument = graphql(
   /* GraphQL */ `
-    query NotificationViewer($uuid: GlobalId!) {
-      notification(uuid: $uuid) {
+    query NotificationViewer($id: GlobalId!) {
+      notification(id: $id) {
         ...SingleNotificationFragment
       }
     }
@@ -27,7 +25,7 @@ function ViewNotificationPage() {
 
   const [{ data, fetching, error }, refetch] = useQuery({
     query: notificationViewerDocument,
-    variables: { uuid: notificationId },
+    variables: { id: notificationId },
   });
 
   useQueryStatusWatcher({
@@ -59,15 +57,7 @@ export const Route = createFileRoute("/notifications/$notificationId/")({
   component: ViewNotificationPage,
   async beforeLoad({ context, params: { notificationId } }) {
     await context.urqlClient.query(notificationViewerDocument, {
-      uuid: notificationId,
+      id: notificationId,
     });
-    routerAuthCheck(Route, context);
-  },
-  staticData: {
-    authorizationRules: [
-      {
-        accessLevel: AccessLevel.CommitteeChairOrCoordinator,
-      },
-    ],
   },
 });

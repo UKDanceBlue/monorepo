@@ -3,20 +3,20 @@ import { ImageNode, InstagramFeedNode } from "@ukdanceblue/common";
 import {
   BasicError,
   ConcreteError,
+  FetchError,
   InvariantError,
 } from "@ukdanceblue/common/error";
 import { toBasicError } from "@ukdanceblue/common/error";
 import { hash } from "crypto";
 import { DateTime } from "luxon";
-import mime from "mime";
-import sharp from "sharp";
 import { AsyncResult, Result } from "ts-results-es";
 import { Err, Ok } from "ts-results-es";
 import { z } from "zod";
 
 import { ZodError } from "#error/zod.js";
-import { generateThumbHash } from "#lib/thumbHash.js";
 import { instagramApiKeyToken } from "#lib/typediTokens.js";
+
+import { externalUrlToImage } from "../externalUrlToImage.js";
 
 const feedSchema = z.object({
   data: z.array(
@@ -29,15 +29,15 @@ const feedSchema = z.object({
       timestamp: z.string().transform((iso) => DateTime.fromISO(iso)),
     })
   ),
-  paging: z.object({
-    cursors: z.object({
-      before: z.string(),
+  // paging: z.object({
+  //   cursors: z.object({
+  //     before: z.string(),
 
-      after: z.string(),
-    }),
-    next: z.string().url().optional(),
-    previous: z.string().url().optional(),
-  }),
+  //     after: z.string(),
+  //   }),
+  //   next: z.string().url().optional(),
+  //   previous: z.string().url().optional(),
+  // }),
 });
 
 export type InstagramFeedItem = z.TypeOf<typeof feedSchema>["data"][number];
@@ -117,7 +117,9 @@ export class InsagramApi {
 
 async function instagramFeedItemToNode(
   item: InstagramFeedItem
-): Promise<Result<InstagramFeedNode, [InvariantError]>> {
+): Promise<
+  Result<InstagramFeedNode, [InvariantError | FetchError | BasicError]>
+> {
   const image = await instagramMediaUrlToNode(item.media_url);
 
   if (image.isErr()) {
@@ -142,7 +144,9 @@ const cachedImageNodes: [string, ImageNode][] = [];
 
 async function instagramMediaUrlToNode(
   media_url: string | undefined
-): Promise<Result<ImageNode | undefined, InvariantError>> {
+): Promise<
+  Result<ImageNode | undefined, InvariantError | FetchError | BasicError>
+> {
   if (!media_url) return Ok(undefined);
 
   const cached = cachedImageNodes.find(([url]) => url === media_url);
@@ -150,32 +154,17 @@ async function instagramMediaUrlToNode(
 
   const url = new URL(media_url);
 
-  const imageResp = await fetch(url);
-  const image = sharp(await imageResp.arrayBuffer());
-  const {
-    thumbHash,
-    width,
-    height,
-    metadata: { format },
-  } = await generateThumbHash({ image });
-
-  if (!width || !height) {
-    return Err(new InvariantError("Could not find dimensions of image"));
-  }
-
-  const node = ImageNode.init({
-    id: hash("sha1", media_url),
-    height,
-    width,
-    mimeType: (format && mime.getType(format)) ?? "image/jpeg",
-    thumbHash: Buffer.from(thumbHash).toString("base64"),
-    url,
-  });
-
-  if (cachedImageNodes.length >= cachedImageNodesSize) {
-    cachedImageNodes.shift();
-  }
-  cachedImageNodes.push([media_url, node]);
-
-  return Ok(node);
+  return new AsyncResult(externalUrlToImage(url)).map((image) => {
+    const node = ImageNode.init({
+      id: hash("sha1", media_url),
+      ...image,
+      thumbHash: image.thumbHash.toString("base64"),
+      mimeType: image.mimeType.toString(),
+    });
+    if (cachedImageNodes.length >= cachedImageNodesSize) {
+      cachedImageNodes.shift();
+    }
+    cachedImageNodes.push([media_url, node]);
+    return node;
+  }).promise;
 }

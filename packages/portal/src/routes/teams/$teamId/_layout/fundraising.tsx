@@ -1,9 +1,4 @@
 import { createFileRoute } from "@tanstack/react-router";
-import {
-  AccessLevel,
-  CommitteeIdentifier,
-  CommitteeRole,
-} from "@ukdanceblue/common";
 import { AutoComplete, Button, Card, Flex, Form, Space } from "antd";
 import { useState } from "react";
 import { useMutation, useQuery } from "urql";
@@ -16,7 +11,6 @@ import { graphql } from "#graphql/index.js";
 import { useListQuery } from "#hooks/useListQuery.js";
 import { useAuthorizationRequirement } from "#hooks/useLoginState.js";
 import { useQueryStatusWatcher } from "#hooks/useQueryStatusWatcher.js";
-import { routerAuthCheck } from "#tools/routerAuthCheck.js";
 
 const ViewTeamFundraisingDocument = graphql(
   /* GraphQL */ `
@@ -31,7 +25,7 @@ const ViewTeamFundraisingDocument = graphql(
       $stringFilters: [FundraisingEntryResolverKeyedStringFilterItem!]
       $numericFilters: [FundraisingEntryResolverKeyedNumericFilterItem!]
     ) {
-      team(uuid: $teamUuid) {
+      team(id: $teamUuid) {
         fundraisingTotalAmount
         solicitationCode {
           id
@@ -102,13 +96,8 @@ function ViewTeamFundraising() {
     useState(false);
 
   const canSetSolicitationCode = useAuthorizationRequirement(
-    {
-      committeeIdentifier: CommitteeIdentifier.fundraisingCommittee,
-      minCommitteeRole: CommitteeRole.Coordinator,
-    },
-    {
-      accessLevel: AccessLevel.Admin,
-    }
+    "update",
+    "SolicitationCodeNode"
   );
 
   const listQuery = useListQuery(
@@ -296,14 +285,4 @@ function ViewTeamFundraising() {
 
 export const Route = createFileRoute("/teams/$teamId/_layout/fundraising")({
   component: ViewTeamFundraising,
-  beforeLoad({ context }) {
-    routerAuthCheck(Route, context);
-  },
-  staticData: {
-    authorizationRules: [
-      {
-        accessLevel: AccessLevel.UKY,
-      },
-    ],
-  },
 });

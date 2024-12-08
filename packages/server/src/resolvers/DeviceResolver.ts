@@ -2,7 +2,6 @@ import { Service } from "@freshgum/typedi";
 import type { CrudResolver, GlobalId } from "@ukdanceblue/common";
 import {
   AccessControlAuthorized,
-  AccessLevel,
   DeviceNode,
   GetDeviceByUuidResponse,
   GlobalIdScalar,
@@ -71,7 +70,7 @@ export class DeviceResolver
     return resp;
   }
 
-  @AccessControlAuthorized({ accessLevel: AccessLevel.Admin })
+  @AccessControlAuthorized("list", "DeviceNode")
   @Query(() => ListDevicesResponse, {
     name: "devices",
     description: "List all devices",
@@ -138,13 +137,13 @@ export class DeviceResolver
     });
   }
 
-  @AccessControlAuthorized({ accessLevel: AccessLevel.Admin })
+  @AccessControlAuthorized("delete")
   @Mutation(() => DeviceNode, {
     name: "deleteDevice",
     description: "Delete a device by it's UUID",
   })
   async deleteDevice(
-    @Arg("uuid", () => GlobalIdScalar) { id }: GlobalId
+    @Arg("id", () => GlobalIdScalar) { id }: GlobalId
   ): Promise<DeviceNode> {
     const row = await this.deviceRepository.deleteDevice({ uuid: id });
 

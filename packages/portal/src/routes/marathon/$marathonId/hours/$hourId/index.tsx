@@ -1,7 +1,7 @@
 import { useForm } from "@tanstack/react-form";
 import { createFileRoute } from "@tanstack/react-router";
 import { useNavigate } from "@tanstack/react-router";
-import { AccessLevel, dateTimeFromSomething } from "@ukdanceblue/common";
+import { dateTimeFromSomething } from "@ukdanceblue/common";
 import { Editable, useEditor } from "@wysimark/react";
 import { Button, Input } from "antd";
 import type { DateTime } from "luxon";
@@ -13,11 +13,10 @@ import type { TanAntChildInputProps } from "#elements/components/form/TanAntForm
 import { TanAntFormItem } from "#elements/components/form/TanAntFormItem.js";
 import { graphql } from "#graphql/index.js";
 import { useQueryStatusWatcher } from "#hooks/useQueryStatusWatcher.js";
-import { routerAuthCheck } from "#tools/routerAuthCheck.js";
 
 const editMarathonHourDataDocument = graphql(/* GraphQL */ `
   query EditMarathonHourData($marathonHourUuid: GlobalId!) {
-    marathonHour(uuid: $marathonHourUuid) {
+    marathonHour(id: $marathonHourUuid) {
       details
       durationInfo
       shownStartingAt
@@ -27,8 +26,8 @@ const editMarathonHourDataDocument = graphql(/* GraphQL */ `
 `);
 
 const editMarathonHourDocument = graphql(/* GraphQL */ `
-  mutation EditMarathonHour($input: SetMarathonHourInput!, $uuid: GlobalId!) {
-    setMarathonHour(input: $input, uuid: $uuid) {
+  mutation EditMarathonHour($input: SetMarathonHourInput!, $id: GlobalId!) {
+    setMarathonHour(input: $input, id: $id) {
       id
     }
   }
@@ -91,7 +90,7 @@ function EditMarathonHourPage() {
           shownStartingAt,
           title: values.title,
         },
-        uuid: hourId,
+        id: hourId,
       });
 
       if (data) {
@@ -219,13 +218,5 @@ export const Route = createFileRoute("/marathon/$marathonId/hours/$hourId/")({
     context.urqlClient.query(editMarathonHourDataDocument, {
       marathonHourUuid: hourId,
     });
-    routerAuthCheck(Route, context);
-  },
-  staticData: {
-    authorizationRules: [
-      {
-        accessLevel: AccessLevel.CommitteeChairOrCoordinator,
-      },
-    ],
   },
 });

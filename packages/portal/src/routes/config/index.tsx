@@ -1,11 +1,9 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { AccessLevel } from "@ukdanceblue/common";
 import { Button, Collapse, Divider, Flex, Form, Input, Space } from "antd";
 import { useState } from "react";
 
 import { ConfigItem } from "#elements/forms/config/ConfigItem.js";
 import { useConfigForm } from "#elements/forms/config/useConfigForm.js";
-import { routerAuthCheck } from "#tools/routerAuthCheck.js";
 
 // Form keys can only contain uppercase letters and underscores
 const FORM_KEY_REGEX = /^[A-Z_]+$/;
@@ -126,14 +124,4 @@ function ConfigPage() {
 
 export const Route = createFileRoute("/config/")({
   component: ConfigPage,
-  beforeLoad({ context }) {
-    routerAuthCheck(Route, context);
-  },
-  staticData: {
-    authorizationRules: [
-      {
-        accessLevel: AccessLevel.Admin,
-      },
-    ],
-  },
 });

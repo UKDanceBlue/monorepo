@@ -1,5 +1,5 @@
 import { Service } from "@freshgum/typedi";
-import { Prisma, PrismaClient } from "@prisma/client";
+import { Event, EventOccurrence, Prisma, PrismaClient } from "@prisma/client";
 import { SortDirection } from "@ukdanceblue/common";
 
 import type { FilterItems } from "#lib/prisma-utils/gqlFilterToPrismaFilter.js";
@@ -57,7 +57,26 @@ export type EventFilters = FilterItems<
 
 type UniqueEventParam = { id: number } | { uuid: string };
 
+import { ConcreteError } from "@ukdanceblue/common/error";
+import { Ok, Result } from "ts-results-es";
+
+import { externalUrlToImage } from "#lib/external-apis/externalUrlToImage.js";
 import { prismaToken } from "#lib/typediTokens.js";
+import {
+  handleRepositoryError,
+  RepositoryError,
+} from "#repositories/shared.js";
+
+export interface ForeignEvent {
+  id: string;
+  title: string;
+  description: string;
+  location: string;
+  url: URL;
+  startsOn?: Date | string;
+  endsOn?: Date | string;
+  imageUrls: URL[];
+}
 
 @Service([prismaToken])
 export class EventRepository {
@@ -191,22 +210,160 @@ export class EventRepository {
     });
   }
 
-  updateEvent(param: UniqueEventParam, data: Prisma.EventUpdateInput) {
-    try {
-      return this.prisma.event.update({
-        where: param,
-        data,
-        include: { eventOccurrences: true },
-      });
-    } catch (error) {
-      if (
-        error instanceof Prisma.PrismaClientKnownRequestError &&
-        error.code === "P2025"
-      ) {
-        return null;
-      } else {
-        throw error;
+  loadForeignEvents(
+    events: ForeignEvent[]
+  ): Promise<Result<Event[], ConcreteError>> {
+    const results: Event[] = [];
+    return this.prisma.$transaction(async (prisma) => {
+      for (const event of events) {
+        // eslint-disable-next-line no-await-in-loop
+        const existingEvent = await prisma.event.findUnique({
+          where: { remoteId: event.id },
+        });
+
+        if (existingEvent) {
+          continue;
+        }
+
+        const images = Result.all(
+          // eslint-disable-next-line no-await-in-loop
+          await Promise.all(event.imageUrls.map(externalUrlToImage))
+        );
+
+        if (images.isErr()) {
+          return images;
+        }
+
+        results.push(
+          // eslint-disable-next-line no-await-in-loop
+          await prisma.event.create({
+            data: {
+              title: event.title,
+              description: `${event.description}\n\n[More info](${event.url.href})`,
+              location: event.location,
+              remoteId: event.id,
+              eventOccurrences:
+                event.startsOn && event.endsOn
+                  ? {
+                      create: {
+                        date: event.startsOn,
+                        endDate: event.endsOn,
+                      },
+                    }
+                  : undefined,
+              eventImages: {
+                create: images
+                  .unwrap()
+                  .map(({ height, mimeType, thumbHash, url, width }) => ({
+                    image: {
+                      create: {
+                        height,
+                        width,
+                        thumbHash,
+                        file: {
+                          create: {
+                            filename: url.pathname.split("/").at(-1) ?? "",
+                            locationUrl: url.href,
+                            mimeSubtypeName: mimeType.subtype,
+                            mimeTypeName: mimeType.type,
+                            mimeParameters:
+                              mimeType.params.keys.length > 0
+                                ? {
+                                    set: [...mimeType.params.entries()].map(
+                                      ([k, v]) => `${k}=${v}`
+                                    ),
+                                  }
+                                : undefined,
+                          },
+                        },
+                      },
+                    },
+                  })),
+              },
+            },
+          })
+        );
       }
+
+      return Ok(results);
+    });
+  }
+
+  async updateEvent(
+    param: UniqueEventParam,
+    data: {
+      title: string;
+      summary: string | null;
+      description: string | null;
+      location: string | null;
+      eventOccurrences: {
+        uuid?: string;
+        interval: {
+          start: Date | string;
+          end: Date | string;
+        };
+        fullDay: boolean;
+      }[];
+    }
+  ): Promise<
+    Result<Event & { eventOccurrences: EventOccurrence[] }, RepositoryError>
+  > {
+    try {
+      return Ok(
+        await this.prisma.$transaction(async (prisma) => {
+          await prisma.eventOccurrence.deleteMany({
+            where: {
+              event: param,
+              uuid: {
+                notIn: data.eventOccurrences
+                  .filter((occurrence) => occurrence.uuid != null)
+                  .map((occurrence) => occurrence.uuid!),
+              },
+            },
+          });
+          return prisma.event.update({
+            where: param,
+            include: { eventOccurrences: true },
+            data: {
+              title: data.title,
+              summary: data.summary,
+              description: data.description,
+              location: data.location,
+              eventOccurrences: {
+                createMany: {
+                  data: data.eventOccurrences
+                    .filter((occurrence) => occurrence.uuid == null)
+                    .map(
+                      (
+                        occurrence
+                      ): Prisma.EventOccurrenceCreateManyEventInput => ({
+                        date: occurrence.interval.start,
+                        endDate: occurrence.interval.end,
+                        fullDay: occurrence.fullDay,
+                      })
+                    ),
+                },
+                updateMany: data.eventOccurrences
+                  .filter((occurrence) => occurrence.uuid != null)
+                  .map(
+                    (
+                      occurrence
+                    ): Prisma.EventOccurrenceUpdateManyWithWhereWithoutEventInput => ({
+                      where: { uuid: occurrence.uuid },
+                      data: {
+                        date: occurrence.interval.start,
+                        endDate: occurrence.interval.end,
+                        fullDay: occurrence.fullDay,
+                      },
+                    })
+                  ),
+              },
+            },
+          });
+        })
+      );
+    } catch (error) {
+      return handleRepositoryError(error);
     }
   }
 

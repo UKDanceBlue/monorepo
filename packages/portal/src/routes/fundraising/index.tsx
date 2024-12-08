@@ -1,6 +1,5 @@
 import { BarsOutlined, FileOutlined, UploadOutlined } from "@ant-design/icons";
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { AccessLevel, CommitteeIdentifier } from "@ukdanceblue/common";
 import { Button, Flex } from "antd";
 import { useState } from "react";
 import { useQuery } from "urql";
@@ -13,7 +12,6 @@ import {
 import { graphql } from "#graphql/index";
 import { useListQuery } from "#hooks/useListQuery";
 import { useQueryStatusWatcher } from "#hooks/useQueryStatusWatcher";
-import { routerAuthCheck } from "#tools/routerAuthCheck";
 
 const ViewTeamFundraisingDocument = graphql(
   /* GraphQL */ `
@@ -46,20 +44,6 @@ const ViewTeamFundraisingDocument = graphql(
 
 export const Route = createFileRoute("/fundraising/")({
   component: RouteComponent,
-  staticData: {
-    authorizationRules: [
-      {
-        accessLevel: AccessLevel.Admin,
-      },
-      {
-        accessLevel: AccessLevel.CommitteeChairOrCoordinator,
-        committeeIdentifier: CommitteeIdentifier.fundraisingCommittee,
-      },
-    ],
-  },
-  beforeLoad({ context }) {
-    routerAuthCheck(Route, context);
-  },
 });
 
 function RouteComponent() {

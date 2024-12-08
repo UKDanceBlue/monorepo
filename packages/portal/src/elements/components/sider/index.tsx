@@ -245,6 +245,12 @@ export const Sider: React.FC<
 
     return (
       <Layout.Sider
+        style={{
+          overflow: "auto",
+          height: "100vh",
+          position: "fixed",
+          left: 0,
+        }}
         collapsible
         collapsed={collapsed}
         onCollapse={(collapsed: boolean): void => setCollapsed(collapsed)}
@@ -262,11 +268,11 @@ export const Sider: React.FC<
       theme={{
         components: {
           Menu: {
-            colorItemBg: "transparent",
-            colorItemText: "#fff",
-            colorItemTextSelected: "#fff",
-            colorItemBgSelected: "transparent",
-            colorItemTextHover: "#fff",
+            itemBg: "transparent",
+            itemColor: "#fff",
+            itemSelectedColor: "#fff",
+            itemSelectedBg: "transparent",
+            itemHoverColor: "#fff",
           },
         },
       }}

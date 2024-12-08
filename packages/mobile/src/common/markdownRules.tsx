@@ -5,7 +5,7 @@ import {
 } from "@ukdanceblue/react-native-markdown-display";
 import { Platform } from "expo-modules-core";
 import { Box, Divider, Heading, Link, Row, Text, VStack } from "native-base";
-import type { FlexAlignType, TextStyle } from "react-native";
+import type { DimensionValue, FlexAlignType, TextStyle } from "react-native";
 import { StyleSheet } from "react-native";
 
 import { CustomImageRenderer } from "./components/CustomImageRenderer";
@@ -44,7 +44,7 @@ export interface MarkdownRuleStyle {
   marginBottom: number;
   flexWrap: "wrap" | "nowrap" | "wrap-reverse";
   alignItems: FlexAlignType;
-  width: string;
+  width: DimensionValue;
 }
 
 const markdownTextStyleKeys = new Set<keyof Partial<TextStyle>>([
@@ -265,9 +265,7 @@ export const rules: typeof renderRules = {
       );
 
       const orderedList = parent[orderedListIndex];
-      const listItemNumber = (
-        orderedList.attributes
-      )?.start
+      const listItemNumber = orderedList.attributes?.start
         ? Number(orderedList.attributes.start) + (node.index ?? Number.NaN)
         : (node.index ?? Number.NaN) + 1;
 

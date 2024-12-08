@@ -37,7 +37,7 @@ export function useTeamEditorForm(
       }
 
       const { data } = await setTeam({
-        uuid: teamData.id,
+        id: teamData.id,
         input: {
           name: values.name ?? null,
           legacyStatus: values.legacyStatus ?? null,

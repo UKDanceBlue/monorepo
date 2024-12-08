@@ -96,7 +96,6 @@
       "env": {
         "REACT_EDITOR": "code"
       },
-
       "autoAttachChildProcesses": false
     },
     {
@@ -121,17 +120,19 @@
       "request": "launch",
       "type": "firefox",
       "url": "http://localhost:5173",
-      "webRoot": "${workspaceFolder}/packages/portal/src",
+      "webRoot": "${workspaceFolder}/packages/portal",
       "presentation": {
         "group": "5portal"
-      }
+      },
+      "keepProfileChanges": true,
+      "profile": "default"
     },
     {
       "name": "Debug Portal (chrome)",
       "request": "launch",
       "type": "chrome",
       "url": "http://localhost:5173",
-      "webRoot": "${workspaceFolder}/packages/portal/src",
+      "webRoot": "${workspaceFolder}/packages/portal",
       "presentation": {
         "group": "5portal"
       }

@@ -19,30 +19,30 @@ export const createNotificationDocument = graphql(/* GraphQL */ `
 `);
 
 export const cancelNotificationScheduleDocument = graphql(/* GraphQL */ `
-  mutation CancelNotificationSchedule($uuid: GlobalId!) {
-    abortScheduledNotification(uuid: $uuid) {
+  mutation CancelNotificationSchedule($id: GlobalId!) {
+    abortScheduledNotification(id: $id) {
       id
     }
   }
 `);
 
 export const deleteNotificationDocument = graphql(/* GraphQL */ `
-  mutation DeleteNotification($uuid: GlobalId!, $force: Boolean) {
-    deleteNotification(uuid: $uuid, force: $force) {
+  mutation DeleteNotification($id: GlobalId!, $force: Boolean) {
+    deleteNotification(id: $id, force: $force) {
       id
     }
   }
 `);
 
 export const sendNotificationDocument = graphql(/* GraphQL */ `
-  mutation SendNotification($uuid: GlobalId!) {
-    sendNotification(uuid: $uuid)
+  mutation SendNotification($id: GlobalId!) {
+    sendNotification(id: $id)
   }
 `);
 
 export const scheduleNotificationDocument = graphql(/* GraphQL */ `
-  mutation ScheduleNotification($uuid: GlobalId!, $sendAt: DateTimeISO!) {
-    scheduleNotification(uuid: $uuid, sendAt: $sendAt) {
+  mutation ScheduleNotification($id: GlobalId!, $sendAt: DateTimeISO!) {
+    scheduleNotification(id: $id, sendAt: $sendAt) {
       id
     }
   }

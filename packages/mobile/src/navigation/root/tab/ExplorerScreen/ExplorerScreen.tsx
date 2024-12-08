@@ -1,5 +1,6 @@
 import { Button, Text, VStack } from "native-base";
 import { useEffect, useState } from "react";
+import React from "react";
 import { RefreshControl, ScrollView } from "react-native-gesture-handler";
 
 import type { FeedSortingItem } from "./combineFeeds";

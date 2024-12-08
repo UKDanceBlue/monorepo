@@ -2,6 +2,7 @@ import { FontAwesome } from "@expo/vector-icons";
 import type { Interval } from "luxon";
 import { DateTime } from "luxon";
 import { Heading, Icon, Row, Text } from "native-base";
+import React from "react";
 import { useMemo } from "react";
 
 /**

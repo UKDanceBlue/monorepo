@@ -1,18 +1,27 @@
 import { MoonOutlined, SettingOutlined, SunOutlined } from "@ant-design/icons";
-import { AuthPage } from "@refinedev/antd";
-import { useLogin } from "@refinedev/core";
-import { createRootRouteWithContext, Outlet } from "@tanstack/react-router";
-import { Button, ConfigProvider, Layout, Menu } from "antd";
+import { AuthPage, useNotificationProvider } from "@refinedev/antd";
+import { Refine, useLogin } from "@refinedev/core";
+import {
+  createRootRouteWithContext,
+  Link,
+  Outlet,
+} from "@tanstack/react-router";
+import { Button, ConfigProvider, Layout, Menu, notification } from "antd";
 import type { useAppProps } from "antd/es/app/context.js";
 import { lazy, Suspense, useContext, useState } from "react";
 import type { Client as UrqlClient } from "urql";
 
 import watermark from "#assets/watermark.svg";
 import { themeConfigContext } from "#config/antThemeConfig.ts";
+import { authProvider } from "#config/refine/authentication.ts";
+import { accessControlProvider } from "#config/refine/authorization.ts";
+import { dataProvider } from "#config/refine/data.ts";
+import { refineResources } from "#config/refine/resources.tsx";
+import { routerBindings } from "#config/refine/router.tsx";
+import { SessionStorageKeys } from "#config/storage.tsx";
 import { Sider } from "#elements/components/sider/index.tsx";
-import { ConfigModal } from "#elements/singletons/NavigationMenu.tsx";
+import { ConfigModal } from "#elements/singletons/ConfigModal.tsx";
 import { refreshLoginState, useLoginState } from "#hooks/useLoginState.js";
-import { routerAuthCheck } from "#tools/routerAuthCheck.js";
 
 const TanStackRouterDevtools =
   process.env.NODE_ENV === "production"
@@ -72,53 +81,71 @@ function RootComponent() {
   return (
     <>
       <Layout style={{ height: "100%" }}>
-        <Sider
-          Title={() => (
-            <img
-              src={watermark}
-              alt="DanceBlue Logo"
-              style={{ width: "100%" }}
-            />
-          )}
-          render={({ items, logout }) => (
-            <ConfigProvider
-              theme={{
-                components: {
-                  Select: {
-                    colorText: "rgba(255, 255, 255, 0.65)",
-                    colorIcon: "rgba(255, 255, 255, 0.65)",
-                  },
-                },
+        <ConfigProvider
+          theme={{
+            components: {
+              Select: {
+                colorText: "rgba(255, 255, 255, 0.65)",
+                colorIcon: "rgba(255, 255, 255, 0.65)",
+              },
+            },
+          }}
+        >
+          <Sider
+            Title={() => (
+              <Link to="/">
+                <img
+                  src={watermark}
+                  alt="DanceBlue Logo"
+                  style={{ width: "100%" }}
+                />
+              </Link>
+            )}
+            render={({ items, logout }) => (
+              <>
+                {items}
+                <Menu.Item
+                  key="settings"
+                  icon={<SettingOutlined />}
+                  onClick={() => setSettinsOpen(true)}
+                >
+                  Settings
+                </Menu.Item>
+                <Menu.Item
+                  key="theme"
+                  icon={
+                    dark ? (
+                      <SunOutlined style={{ color: "inherit" }} />
+                    ) : (
+                      <MoonOutlined style={{ color: "inherit" }} />
+                    )
+                  }
+                  onClick={() => setDark(!dark)}
+                >
+                  {dark ? "Light" : "Dark"} Theme
+                </Menu.Item>
+                {logout}
+              </>
+            )}
+          />
+        </ConfigProvider>
+        <Layout style={{ marginLeft: 200 }}>
+          {sessionStorage.getItem(SessionStorageKeys.Masquerade)?.trim() && (
+            <div
+              style={{
+                background: "rgba(255, 0, 0, 0.5)",
+                padding: "1ch",
+                width: "100%",
+                textAlign: "center",
               }}
             >
-              {items}
-              <Menu.Item
-                key="settings"
-                icon={<SettingOutlined />}
-                onClick={() => setSettinsOpen(true)}
-              >
-                Settings
-              </Menu.Item>
-              <Menu.Item
-                key="theme"
-                icon={
-                  dark ? (
-                    <SunOutlined style={{ color: "inherit" }} />
-                  ) : (
-                    <MoonOutlined style={{ color: "inherit" }} />
-                  )
-                }
-                onClick={() => setDark(!dark)}
-              >
-                {dark ? "Light" : "Dark"} Theme
-              </Menu.Item>
-              {logout}
-            </ConfigProvider>
+              You are currently masquerading as another user
+            </div>
           )}
-        />
-        <Layout.Content style={{ padding: "1vh 3vw", overflowY: "scroll" }}>
-          <Outlet />
-        </Layout.Content>
+          <Layout.Content style={{ padding: "1vh 3vw", overflowY: "scroll" }}>
+            <Outlet />
+          </Layout.Content>
+        </Layout>
       </Layout>
       <Suspense>
         <TanStackRouterDevtools position="bottom-right" />
@@ -131,11 +158,36 @@ function RootComponent() {
   );
 }
 
+function RootWithRefine() {
+  return (
+    <Refine
+      dataProvider={dataProvider}
+      notificationProvider={useNotificationProvider}
+      routerProvider={routerBindings}
+      authProvider={authProvider}
+      options={{
+        projectId: "DqkUbD-wpgLRK-UO3SFV",
+        title: {
+          icon: <img src={watermark} alt="DanceBlue Logo" />,
+          text: "DanceBlue Portal",
+        },
+        mutationMode: "optimistic",
+      }}
+      accessControlProvider={accessControlProvider}
+      resources={refineResources}
+    >
+      <RootComponent />
+    </Refine>
+  );
+}
+
 export const Route = createRootRouteWithContext<RouterContext>()({
-  component: RootComponent,
+  component: RootWithRefine,
   beforeLoad: async ({ context }) => {
-    await refreshLoginState(context.urqlClient);
-    routerAuthCheck(Route, context);
+    const loginState = await refreshLoginState(context.urqlClient);
+    loginState.mapErr((error) =>
+      notification.error({ message: String(error) })
+    );
   },
   staticData: {
     authorizationRules: null,

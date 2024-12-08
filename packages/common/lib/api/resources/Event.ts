@@ -1,4 +1,4 @@
-import { Field, ID, ObjectType } from "type-graphql";
+import { Field, ObjectType } from "type-graphql";
 
 import { createNodeClasses, Node } from "../relay.js";
 import type { GlobalId } from "../scalars/GlobalId.js";
@@ -45,26 +45,19 @@ export class EventNode extends TimestampedResource implements Node {
   implements: [],
 })
 export class EventOccurrenceNode extends Resource {
-  @Field(() => ID)
-  id!: string;
+  @Field(() => GlobalIdScalar)
+  id!: GlobalId;
   @Field(() => IntervalISO)
   interval!: IntervalISO;
   @Field(() => Boolean)
   fullDay!: boolean;
-
-  public getUniqueId(): string {
-    return this.id;
-  }
 
   public static init(init: {
     id: string;
     interval: IntervalISO;
     fullDay: boolean;
   }) {
-    const resource = this.createInstance();
-    resource.id = init.id;
-    resource.interval = init.interval;
-    resource.fullDay = init.fullDay;
+    const resource = this.createInstance().withValues(init);
     return resource;
   }
 }

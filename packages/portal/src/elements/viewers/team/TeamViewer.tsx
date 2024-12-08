@@ -4,19 +4,14 @@ import {
   MinusCircleTwoTone,
 } from "@ant-design/icons";
 import { Link, useNavigate } from "@tanstack/react-router";
-import {
-  AccessLevel,
-  CommitteeIdentifier,
-  CommitteeRole,
-  MembershipPositionType,
-} from "@ukdanceblue/common";
+import { MembershipPositionType } from "@ukdanceblue/common";
 import { Button, Descriptions, Empty, Flex } from "antd";
 import { useState } from "react";
 import { useMutation } from "urql";
 
 import { PersonSearch } from "#elements/components/person/PersonSearch.js";
 import type { FragmentOf } from "#graphql/index.js";
-import { graphql,readFragment } from "#graphql/index.js";
+import { graphql, readFragment } from "#graphql/index.js";
 import { useAuthorizationRequirement } from "#hooks/useLoginState.js";
 import { useQueryStatusWatcher } from "#hooks/useQueryStatusWatcher.js";
 
@@ -56,29 +51,14 @@ export function TeamViewer({
 }) {
   const teamData = readFragment(TeamViewerFragment, teamFragment) ?? undefined;
 
-  const canEditTeams = useAuthorizationRequirement(
-    {
-      accessLevel: AccessLevel.Admin,
-    },
-    {
-      committeeIdentifier: CommitteeIdentifier.dancerRelationsCommittee,
-      minCommitteeRole: CommitteeRole.Coordinator,
-    }
-  );
+  const canEditTeams = useAuthorizationRequirement("update", "TeamNode");
 
   const canEditMemberships = useAuthorizationRequirement(
-    {
-      accessLevel: AccessLevel.Admin,
-    },
-    {
-      accessLevel: AccessLevel.CommitteeChairOrCoordinator,
-      committeeIdentifier: CommitteeIdentifier.viceCommittee,
-    }
+    "update",
+    "MembershipNode"
   );
 
-  const canViewPeople = useAuthorizationRequirement({
-    accessLevel: AccessLevel.Committee,
-  });
+  const canViewPeople = useAuthorizationRequirement("get", "PersonNode");
 
   const [personToAssignToTeam, setPersonToAssignToTeam] = useState<{
     uuid: string;

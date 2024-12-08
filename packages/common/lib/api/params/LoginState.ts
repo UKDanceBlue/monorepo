@@ -1,5 +1,8 @@
-import { Field,ObjectType } from "type-graphql";
+import { PackRule } from "@casl/ability/extra";
+import { JSONResolver } from "graphql-scalars";
+import { Field, ObjectType } from "type-graphql";
 
+import { AppAbility } from "../../authorization/accessControl.js";
 import {
   AccessLevel,
   Authorization,
@@ -24,4 +27,7 @@ export class LoginState implements Authorization {
 
   @Field(() => [EffectiveCommitteeRole])
   effectiveCommitteeRoles!: EffectiveCommitteeRole[];
+
+  @Field(() => [[JSONResolver]])
+  abilityRules!: PackRule<AppAbility["rules"][number]>[];
 }

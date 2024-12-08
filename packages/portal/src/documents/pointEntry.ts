@@ -35,8 +35,8 @@ export const createPointEntryAndAssignDocument = graphql(/* GraphQL */ `
 `);
 
 export const getPersonByUuidDocument = graphql(/* GraphQL */ `
-  query GetPersonByUuid($uuid: GlobalId!) {
-    person(uuid: $uuid) {
+  query GetPersonByUuid($id: GlobalId!) {
+    person(id: $id) {
       id
       name
       linkblue

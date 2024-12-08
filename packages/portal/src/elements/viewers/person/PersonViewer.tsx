@@ -15,7 +15,7 @@ import {
 import { Button, Card, Descriptions, Empty, Flex, Typography } from "antd";
 
 import type { FragmentOf } from "#graphql/index.js";
-import { graphql,readFragment } from "#graphql/index.js";
+import { graphql, readFragment } from "#graphql/index.js";
 import { useAuthorizationRequirement } from "#hooks/useLoginState.js";
 
 import { usePersonDeletePopup } from "../../components/person/PersonDeletePopup";
@@ -71,9 +71,7 @@ export function PersonViewer({
     },
   });
 
-  const canEditPerson = useAuthorizationRequirement(
-    AccessLevel.CommitteeChairOrCoordinator
-  );
+  const canEditPerson = useAuthorizationRequirement("update", "PersonNode");
 
   if (!personData) {
     return (
@@ -138,15 +136,30 @@ export function PersonViewer({
                 label: "Email",
                 children: personData.email,
               },
-              {
-                label: "Access Level",
-                children: stringifyAccessLevel(
-                  roleToAccessLevel({
-                    dbRole: personData.dbRole,
-                    effectiveCommitteeRoles: committees,
-                  })
-                ),
-              },
+              ...(authorization
+                ? [
+                    {
+                      label: "Access Level",
+                      children: (
+                        <span
+                          title={authorization.effectiveCommitteeRoles
+                            .map(
+                              (role) =>
+                                `${committeeNames[role.identifier]}: ${role.role}`
+                            )
+                            .join("\n")}
+                        >
+                          {stringifyAccessLevel(
+                            roleToAccessLevel(
+                              committees,
+                              authorization.authSource
+                            )
+                          )}
+                        </span>
+                      ),
+                    },
+                  ]
+                : []),
               ...committees.map((committee) => ({
                 label: `${committeeNames[committee.identifier]} (${committee.year})`,
                 children: committee.role,

@@ -50,17 +50,18 @@ export const useNotificationManagerForm = ({
 
   return uuid
     ? {
-        sendNotification: () => sendNotification({ uuid }),
+        sendNotification: () => sendNotification({ id: uuid }),
         scheduleNotification: (sendAt: DateTime) => {
           const sendAtISO = sendAt.toISO();
           if (!sendAtISO) {
             throw new Error("Invalid sendAt date");
           }
-          return scheduleNotification({ uuid, sendAt: sendAtISO });
+          return scheduleNotification({ id: uuid, sendAt: sendAtISO });
         },
-        cancelNotificationSchedule: () => cancelNotificationSchedule({ uuid }),
+        cancelNotificationSchedule: () =>
+          cancelNotificationSchedule({ id: uuid }),
         deleteNotification: (force = false) =>
-          deleteNotification({ uuid, force }),
+          deleteNotification({ id: uuid, force }),
       }
     : undefined;
 };

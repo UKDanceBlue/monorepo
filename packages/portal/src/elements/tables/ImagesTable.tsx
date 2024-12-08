@@ -109,7 +109,7 @@ export const ImagesTable = ({
     <>
       <Modal
         open={Boolean(previewedImageId)}
-        onCancel={() => navigate({ from: "/images/$", params: { _splat: "" } })}
+        onCancel={() => navigate({ to: "/images" })}
         cancelButtonProps={{ style: { display: "none" } }}
         okButtonProps={{ style: { display: "none" } }}
         forceRender
@@ -238,7 +238,10 @@ export const ImagesTable = ({
               thumbHash ? (
                 <Button
                   onClick={() =>
-                    navigate({ from: "/images/$", params: { _splat: row.id } })
+                    navigate({
+                      to: "/images",
+                      search: { imageId: row.id },
+                    })
                   }
                   type="text"
                   style={{ padding: 0 }}
@@ -277,7 +280,10 @@ export const ImagesTable = ({
               <Flex gap="small" align="center">
                 <Button
                   onClick={() =>
-                    navigate({ from: "/images/$", params: { _splat: row.id } })
+                    navigate({
+                      to: "/images",
+                      search: { imageId: row.id },
+                    })
                   }
                   icon={<EyeOutlined />}
                 />

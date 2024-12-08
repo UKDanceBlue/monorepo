@@ -1,4 +1,4 @@
-import { AccessLevel, dateTimeFromSomething } from "@ukdanceblue/common";
+import { dateTimeFromSomething } from "@ukdanceblue/common";
 import { useEffect, useMemo, useState } from "react";
 import { useQuery } from "urql";
 
@@ -33,7 +33,7 @@ const allMarathonsDocument = graphql(/* GraphQL */ `
 
 const selectedMarathonDocument = graphql(/* GraphQL */ `
   query SelectedMarathon($marathonId: GlobalId!) {
-    marathon(uuid: $marathonId) {
+    marathon(id: $marathonId) {
       id
       year
       startDate
@@ -49,7 +49,10 @@ export const MarathonConfigProvider = ({
   children: React.ReactNode;
   valueOverride?: Pick<MarathonContextData, "marathon" | "marathons">;
 }) => {
-  const canSeeMarathonList = useAuthorizationRequirement(AccessLevel.Committee);
+  const canSeeMarathonList = useAuthorizationRequirement(
+    "list",
+    "MarathonNode"
+  );
 
   const [marathonId, setMarathonId] = useState<string | null>(null);
 

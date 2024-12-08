@@ -1,17 +1,15 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { AccessLevel } from "@ukdanceblue/common";
 import { useQuery } from "urql";
 
 import { PersonEditorFragment, TeamNameFragment } from "#documents/person.ts";
 import { PersonEditor } from "#elements/forms/person/edit/PersonEditor.js";
 import { graphql } from "#graphql/index.js";
 import { useQueryStatusWatcher } from "#hooks/useQueryStatusWatcher.js";
-import { routerAuthCheck } from "#tools/routerAuthCheck.js";
 
 const viewPersonPageDocument = graphql(
   /* GraphQL */ `
-    query EditPersonPage($uuid: GlobalId!) {
-      person(uuid: $uuid) {
+    query EditPersonPage($id: GlobalId!) {
+      person(id: $id) {
         ...PersonEditorFragment
       }
       teams(sendAll: true, sortBy: ["name"], sortDirection: [asc]) {
@@ -29,7 +27,7 @@ export function EditPersonPage() {
 
   const [{ data, fetching, error }, refetchPerson] = useQuery({
     query: viewPersonPageDocument,
-    variables: { uuid: personId },
+    variables: { id: personId },
   });
 
   useQueryStatusWatcher({
@@ -52,14 +50,6 @@ export function EditPersonPage() {
 export const Route = createFileRoute("/people/$personId/edit")({
   component: EditPersonPage,
   async beforeLoad({ context, params: { personId } }) {
-    await context.urqlClient.query(viewPersonPageDocument, { uuid: personId });
-    routerAuthCheck(Route, context);
-  },
-  staticData: {
-    authorizationRules: [
-      {
-        accessLevel: AccessLevel.Admin,
-      },
-    ],
+    await context.urqlClient.query(viewPersonPageDocument, { id: personId });
   },
 });

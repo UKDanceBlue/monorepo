@@ -1,8 +1,6 @@
 import { Service } from "@freshgum/typedi";
-import { CommitteeRole } from "@prisma/client";
 import {
   AccessControlAuthorized,
-  AccessLevel,
   FeedItem,
   FeedNode,
   type GlobalId,
@@ -27,13 +25,13 @@ import {
 } from "type-graphql";
 
 import { FileManager } from "#files/FileManager.js";
-import { InsagramApi } from "#lib/feed-api/instagramfeed.js";
+import { InsagramApi } from "#lib/external-apis/feed/instagramfeed.js";
 import { logger } from "#lib/logging/standardLogging.js";
 import { feedItemModelToResource } from "#repositories/feed/feedModelToResource.js";
 import { FeedRepository } from "#repositories/feed/FeedRepository.js";
 import { imageModelToResource } from "#repositories/image/imageModelToResource.js";
 
-import type { GraphQLContext } from "./context.js";
+import type { GraphQLContext } from "../lib/auth/context.js";
 
 @Resolver(() => FeedNode)
 @Service([FeedRepository, FileManager, InsagramApi])
@@ -45,9 +43,7 @@ export class FeedResolver {
   ) {}
 
   @Query(() => FeedNode, { description: "Get a feed item by its UUID" })
-  @AccessControlAuthorized({
-    accessLevel: AccessLevel.Public,
-  })
+  @AccessControlAuthorized("get")
   async feedItem(
     @Arg("feedItemId", () => GlobalIdScalar) { id }: GlobalId
   ): Promise<ConcreteResult<FeedNode>> {
@@ -61,9 +57,7 @@ export class FeedResolver {
   }
 
   @Query(() => [FeedItem], { description: "Get the active feed" })
-  @AccessControlAuthorized({
-    accessLevel: AccessLevel.Public,
-  })
+  @AccessControlAuthorized("readActive", "FeedNode")
   async feed(
     @Arg("limit", () => Int, { defaultValue: 10, nullable: true })
     limit: number
@@ -92,14 +86,7 @@ export class FeedResolver {
     return Ok(mostRecentNItems);
   }
 
-  @AccessControlAuthorized(
-    {
-      accessLevel: AccessLevel.Admin,
-    },
-    {
-      authRules: [{ minCommitteeRole: CommitteeRole.Chair }],
-    }
-  )
+  @AccessControlAuthorized("create")
   @Mutation(() => FeedNode, { description: "Add a new item to the feed" })
   async createFeedItem(
     @Arg("input") input: CreateFeedInput
@@ -112,14 +99,7 @@ export class FeedResolver {
     return feedItemModelToResource(feedItem);
   }
 
-  @AccessControlAuthorized(
-    {
-      accessLevel: AccessLevel.Admin,
-    },
-    {
-      authRules: [{ minCommitteeRole: CommitteeRole.Chair }],
-    }
-  )
+  @AccessControlAuthorized("update", "ImageNode")
   @Mutation(() => FeedNode, { description: "Attach an image to a feed item" })
   async attachImageToFeedItem(
     @Arg("feedItemUuid", () => GlobalIdScalar) feedItemUuid: GlobalId,
@@ -139,14 +119,7 @@ export class FeedResolver {
     return feedItemModelToResource(feedItem);
   }
 
-  @AccessControlAuthorized(
-    {
-      accessLevel: AccessLevel.Admin,
-    },
-    {
-      authRules: [{ minCommitteeRole: CommitteeRole.Chair }],
-    }
-  )
+  @AccessControlAuthorized("update", "ImageNode")
   @Mutation(() => FeedNode, { description: "Remove an image from a feed item" })
   async removeImageFromFeedItem(
     @Arg("feedItemUuid", () => GlobalIdScalar) feedItemUuid: GlobalId
@@ -160,14 +133,7 @@ export class FeedResolver {
     return feedItemModelToResource(feedItem);
   }
 
-  @AccessControlAuthorized(
-    {
-      accessLevel: AccessLevel.Admin,
-    },
-    {
-      authRules: [{ minCommitteeRole: CommitteeRole.Chair }],
-    }
-  )
+  @AccessControlAuthorized("update")
   @Mutation(() => FeedNode, { description: "Set the content of a feed item" })
   async setFeedItem(
     @Arg("feedItemUuid", () => GlobalIdScalar) feedItemUuid: GlobalId,
@@ -186,14 +152,7 @@ export class FeedResolver {
     return feedItemModelToResource(feedItem);
   }
 
-  @AccessControlAuthorized(
-    {
-      accessLevel: AccessLevel.Admin,
-    },
-    {
-      authRules: [{ minCommitteeRole: CommitteeRole.Chair }],
-    }
-  )
+  @AccessControlAuthorized("delete")
   @Mutation(() => Boolean, { description: "Delete a feed item" })
   async deleteFeedItem(
     @Arg("feedItemUuid", () => GlobalIdScalar) feedItemUuid: GlobalId

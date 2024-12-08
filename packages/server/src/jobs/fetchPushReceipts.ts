@@ -18,7 +18,7 @@ export const fetchPushReceipts = new Cron(
     name: "fetch-push-receipts",
     paused: true,
     catch: (error) => {
-      console.error("Failed to fetch push receipts", error);
+      logger.error("Failed to fetch push receipts", { error });
     },
   },
   async () => {
@@ -29,7 +29,7 @@ export const fetchPushReceipts = new Cron(
 
       await jobStateRepository.logCompletedJob(fetchPushReceipts);
     } catch (error) {
-      console.error("Failed to fetch push receipts", { error });
+      logger.error("Failed to fetch push receipts", { error });
     }
   }
 );

@@ -21,9 +21,13 @@ import type {
 } from "express";
 import express from "express";
 
-import { applicationPortToken, loggingLevelToken } from "#lib/typediTokens.js";
+import type { GraphQLContext } from "#auth/context.js";
+import {
+  applicationPortToken,
+  isDevelopmentToken,
+  loggingLevelToken,
+} from "#lib/typediTokens.js";
 import { logger } from "#logging/logger.js";
-import type { GraphQLContext } from "#resolvers/context.js";
 
 const applicationPort = Container.get(applicationPortToken);
 const loggingLevel = Container.get(loggingLevelToken);
@@ -108,6 +112,9 @@ export async function createServer() {
   app.use(
     cors({
       credentials: true,
+      origin: Container.get(isDevelopmentToken)
+        ? [/^https:\/\/(\w+\.)?danceblue\.org$/, /^http:\/\/localhost:\d+$/]
+        : /^https:\/\/(\w+\.)?danceblue\.org$/,
     })
   );
 
@@ -162,19 +169,17 @@ export async function startServer(
   const { default: uploadRouter } = await import(
     "./routes/api/upload/index.js"
   );
-  const { graphqlContextFunction } = await import("./resolvers/context.js");
+  const { authenticate } = await import("./lib/auth/context.js");
 
   app.use(cookieParser());
 
   app.use(
     "/graphql",
 
-    cors(),
-
     express.json(),
 
     expressMiddleware<GraphQLContext>(apolloServer, {
-      context: graphqlContextFunction,
+      context: authenticate,
     })
   );
   const apiRouter = express.Router();

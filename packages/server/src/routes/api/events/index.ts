@@ -1,4 +1,5 @@
 import { Service } from "@freshgum/typedi";
+import cors from "cors";
 import { DateTime } from "luxon";
 
 import { FileManager } from "#files/FileManager.js";
@@ -37,7 +38,7 @@ export default class EventsRouter extends RouterService {
   ) {
     super("/events");
 
-    this.addGetRoute("/upcoming", async (req, res, next) => {
+    this.addGetRoute("/upcoming", cors(), async (req, res, next) => {
       try {
         let eventsToSend = 10;
         if (req.query.count) {

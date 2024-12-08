@@ -1,6 +1,5 @@
 import type { AuthSource, Prisma, PrismaClient } from "@prisma/client";
 import type { DbRole } from "@ukdanceblue/common";
-import { MembershipPositionType } from "@ukdanceblue/common";
 
 import { logger } from "#logging/logger.js";
 
@@ -35,9 +34,7 @@ export async function findPersonForLogin(
     linkblue?: string | undefined | null;
     name?: string | undefined | null;
     dbRole?: DbRole | undefined | null;
-  },
-  memberOf?: (string | number)[],
-  captainOf?: (string | number)[]
+  }
 ) {
   logger.trace(`Looking for person with auth IDs: ${JSON.stringify(authIds)}`);
   // TODO: pick specific values of authIds to search for, instead of all of them at once
@@ -98,31 +95,6 @@ export async function findPersonForLogin(
       throw new Error("No email provided for new user");
     }
 
-    const memberOfIds = await Promise.all(
-      memberOf?.map(async (teamId) => {
-        if (typeof teamId === "string") {
-          const team = await client.team.findUnique({
-            where: { uuid: teamId },
-          });
-          return team?.id;
-        } else {
-          return teamId;
-        }
-      }) ?? []
-    );
-    const captainOfIds = await Promise.all(
-      captainOf?.map(async (teamId) => {
-        if (typeof teamId === "string") {
-          const team = await client.team.findUnique({
-            where: { uuid: teamId },
-          });
-          return team?.id;
-        } else {
-          return teamId;
-        }
-      }) ?? []
-    );
-
     currentPerson = await client.person.create({
       data: {
         authIdPairs: {
@@ -136,38 +108,6 @@ export async function findPersonForLogin(
         email: userInfo.email,
         name: userInfo.name ?? null,
         linkblue: userInfo.linkblue?.toLowerCase() ?? null,
-        memberships: {
-          createMany: {
-            data: [
-              ...memberOfIds
-                .filter((id): id is Exclude<typeof id, undefined> => id != null)
-                .map(
-                  (
-                    id
-                  ): {
-                    teamId: number;
-                    position: MembershipPositionType;
-                  } => ({
-                    teamId: id,
-                    position: MembershipPositionType.Member,
-                  })
-                ),
-              ...captainOfIds
-                .filter((id): id is Exclude<typeof id, undefined> => id != null)
-                .map(
-                  (
-                    id
-                  ): {
-                    teamId: number;
-                    position: MembershipPositionType;
-                  } => ({
-                    teamId: id,
-                    position: MembershipPositionType.Captain,
-                  })
-                ),
-            ],
-          },
-        },
       },
       include,
     });

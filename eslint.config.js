@@ -171,7 +171,6 @@ export default eslintTs.config(
       "unicorn/prefer-regexp-test": "error",
       "unicorn/prefer-set-has": "error",
       "unicorn/prefer-set-size": "error",
-      "unicorn/prefer-spread": "error",
       "unicorn/prefer-string-replace-all": "error",
       "unicorn/prefer-string-starts-ends-with": "error",
       "unicorn/prefer-string-trim-start-end": "error",

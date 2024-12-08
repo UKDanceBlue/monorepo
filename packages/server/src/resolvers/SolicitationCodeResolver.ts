@@ -30,7 +30,6 @@ import {
 import { SolicitationCodeRepository } from "#repositories/solicitationCode/SolicitationCodeRepository.js";
 import { teamModelToResource } from "#repositories/team/teamModelToResource.js";
 
-import { globalFundraisingAccessParam } from "./accessParams.js";
 import { FundraisingEntryResolver } from "./FundraisingEntryResolver.js";
 
 @Resolver(() => SolicitationCodeNode)
@@ -43,7 +42,7 @@ export class SolicitationCodeResolver
     private readonly solicitationCodeRepository: SolicitationCodeRepository
   ) {}
 
-  @AccessControlAuthorized(globalFundraisingAccessParam)
+  @AccessControlAuthorized("get")
   @Query(() => SolicitationCodeNode)
   async solicitationCode(
     @Arg("id", () => GlobalIdScalar) { id }: GlobalId
@@ -60,7 +59,7 @@ export class SolicitationCodeResolver
     ).promise;
   }
 
-  @AccessControlAuthorized(globalFundraisingAccessParam)
+  @AccessControlAuthorized("get")
   @Query(() => ListSolicitationCodesResponse)
   async solicitationCodes(
     @Args(() => ListSolicitationCodesArgs) _query: ListSolicitationCodesArgs
@@ -80,7 +79,7 @@ export class SolicitationCodeResolver
     ).promise;
   }
 
-  @AccessControlAuthorized(globalFundraisingAccessParam)
+  @AccessControlAuthorized("create")
   @Mutation(() => SolicitationCodeNode)
   createSolicitationCode(
     @Arg("input") { prefix, code, name }: CreateSolicitationCodeInput
@@ -99,7 +98,7 @@ export class SolicitationCodeResolver
     ).promise;
   }
 
-  @AccessControlAuthorized(globalFundraisingAccessParam)
+  @AccessControlAuthorized("update")
   @Mutation(() => SolicitationCodeNode)
   setSolicitationCode(
     @Arg("id", () => GlobalIdScalar) { id }: GlobalId,
@@ -118,7 +117,7 @@ export class SolicitationCodeResolver
     ).promise;
   }
 
-  @AccessControlAuthorized(globalFundraisingAccessParam)
+  @AccessControlAuthorized("list", "FundraisingEntryNode")
   @FieldResolver(() => ListFundraisingEntriesResponse)
   async entries(
     @Root() { id }: SolicitationCodeNode,
@@ -127,7 +126,7 @@ export class SolicitationCodeResolver
     return this.fundraisingEntryResolver.fundraisingEntries(args, id);
   }
 
-  @AccessControlAuthorized(globalFundraisingAccessParam)
+  @AccessControlAuthorized("list", "TeamNode")
   @FieldResolver(() => [TeamNode])
   async teams(
     @Root() { id: { id } }: SolicitationCodeNode,
@@ -148,7 +147,7 @@ export class SolicitationCodeResolver
       .promise;
   }
 
-  @AccessControlAuthorized(globalFundraisingAccessParam)
+  @AccessControlAuthorized("update", "SolicitationCodeNode")
   @Mutation(() => VoidResolver, { name: "assignSolicitationCodeToTeam" })
   async assignSolicitationCodeToTeam(
     @Arg("teamId", () => GlobalIdScalar) { id: teamId }: GlobalId,
@@ -166,7 +165,7 @@ export class SolicitationCodeResolver
     return result.map(() => VoidScalar);
   }
 
-  @AccessControlAuthorized(globalFundraisingAccessParam)
+  @AccessControlAuthorized("update", "SolicitationCodeNode")
   @Mutation(() => VoidResolver, { name: "removeSolicitationCodeFromTeam" })
   async removeSolicitationCodeFromTeam(
     @Arg("teamId", () => GlobalIdScalar) { id: teamId }: GlobalId

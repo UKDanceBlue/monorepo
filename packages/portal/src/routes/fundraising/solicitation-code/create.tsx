@@ -2,29 +2,13 @@ import { useForm } from "@refinedev/antd";
 import type { HttpError } from "@refinedev/core";
 import { useBack } from "@refinedev/core";
 import { createFileRoute } from "@tanstack/react-router";
-import { AccessLevel, CommitteeIdentifier } from "@ukdanceblue/common";
 import { Button, Flex, Form, Input, InputNumber } from "antd";
 
 import { createSolicitationCodeDocument } from "#documents/solicitationCode.ts";
 import type { ResultOf, VariablesOf } from "#graphql/index";
-import { routerAuthCheck } from "#tools/routerAuthCheck.tsx";
 
 export const Route = createFileRoute("/fundraising/solicitation-code/create")({
   component: RouteComponent,
-  beforeLoad({ context }) {
-    routerAuthCheck(Route, context);
-  },
-  staticData: {
-    authorizationRules: [
-      {
-        accessLevel: AccessLevel.Admin,
-      },
-      {
-        accessLevel: AccessLevel.CommitteeChairOrCoordinator,
-        committeeIdentifier: CommitteeIdentifier.fundraisingCommittee,
-      },
-    ],
-  },
 });
 
 function RouteComponent() {

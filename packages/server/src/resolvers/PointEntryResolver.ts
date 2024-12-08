@@ -2,9 +2,6 @@ import { Service } from "@freshgum/typedi";
 import type { CrudResolver, GlobalId } from "@ukdanceblue/common";
 import {
   AccessControlAuthorized,
-  AccessLevel,
-  CommitteeIdentifier,
-  CommitteeRole,
   GlobalIdScalar,
   LegacyError,
   LegacyErrorCode,
@@ -48,12 +45,10 @@ export class PointEntryResolver
     private readonly personRepository: PersonRepository
   ) {}
 
-  @AccessControlAuthorized({
-    accessLevel: AccessLevel.Committee,
-  })
+  @AccessControlAuthorized("get")
   @Query(() => PointEntryNode, { name: "pointEntry" })
   async pointEntry(
-    @Arg("uuid", () => GlobalIdScalar) { id }: GlobalId
+    @Arg("id", () => GlobalIdScalar) { id }: GlobalId
   ): Promise<PointEntryNode> {
     const model = await this.pointEntryRepository.findPointEntryByUnique({
       uuid: id,
@@ -66,9 +61,7 @@ export class PointEntryResolver
     return pointEntryModelToResource(model);
   }
 
-  @AccessControlAuthorized({
-    accessLevel: AccessLevel.Committee,
-  })
+  @AccessControlAuthorized("list", "PointEntryNode")
   @Query(() => ListPointEntriesResponse, { name: "pointEntries" })
   async pointEntries(
     @Args(() => ListPointEntriesArgs) query: ListPointEntriesArgs
@@ -100,14 +93,7 @@ export class PointEntryResolver
     });
   }
 
-  @AccessControlAuthorized({
-    authRules: [
-      {
-        committeeIdentifier: CommitteeIdentifier.viceCommittee,
-        minCommitteeRole: CommitteeRole.Coordinator,
-      },
-    ],
-  })
+  @AccessControlAuthorized("create")
   @Mutation(() => PointEntryNode, { name: "createPointEntry" })
   async createPointEntry(
     @Arg("input") input: CreatePointEntryInput
@@ -127,17 +113,10 @@ export class PointEntryResolver
     return pointEntryModelToResource(model);
   }
 
-  @AccessControlAuthorized({
-    authRules: [
-      {
-        committeeIdentifier: CommitteeIdentifier.viceCommittee,
-        minCommitteeRole: CommitteeRole.Coordinator,
-      },
-    ],
-  })
+  @AccessControlAuthorized("delete")
   @Mutation(() => PointEntryNode, { name: "deletePointEntry" })
   async deletePointEntry(
-    @Arg("uuid", () => GlobalIdScalar) { id }: GlobalId
+    @Arg("id", () => GlobalIdScalar) { id }: GlobalId
   ): Promise<ConcreteResult<PointEntryNode>> {
     const row = await this.pointEntryRepository.deletePointEntry({ uuid: id });
 

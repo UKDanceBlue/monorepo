@@ -2,7 +2,6 @@ import { MinusCircleOutlined } from "@ant-design/icons";
 import { useForm } from "@refinedev/antd";
 import type { HttpError } from "@refinedev/core";
 import { createFileRoute, useParams } from "@tanstack/react-router";
-import { AccessLevel, CommitteeIdentifier } from "@ukdanceblue/common";
 import { Button, Flex, Form, Input } from "antd";
 import { useMutation, useQuery } from "urql";
 
@@ -24,26 +23,11 @@ import { graphql } from "#graphql/index";
 import { useAntFeedback, useAskConfirm } from "#hooks/useAntFeedback";
 import { useListQuery } from "#hooks/useListQuery";
 import { useQueryStatusWatcher } from "#hooks/useQueryStatusWatcher";
-import { routerAuthCheck } from "#tools/routerAuthCheck";
 
 export const Route = createFileRoute(
   "/fundraising/solicitation-code/$solicitationCodeId/"
 )({
   component: RouteComponent,
-  beforeLoad({ context }) {
-    routerAuthCheck(Route, context);
-  },
-  staticData: {
-    authorizationRules: [
-      {
-        accessLevel: AccessLevel.Admin,
-      },
-      {
-        accessLevel: AccessLevel.CommitteeChairOrCoordinator,
-        committeeIdentifier: CommitteeIdentifier.fundraisingCommittee,
-      },
-    ],
-  },
 });
 
 const SolicitationCodeDocument = graphql(

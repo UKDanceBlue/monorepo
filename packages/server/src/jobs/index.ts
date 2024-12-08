@@ -2,6 +2,7 @@ import "./fetchPushReceipts.js";
 import "./garbageCollectLogins.js";
 import "./syncDbFunds.js";
 import "./housekeeping.js";
+import "./getBBNEvents.js";
 
 import { Container } from "@freshgum/typedi";
 

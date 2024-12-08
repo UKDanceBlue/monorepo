@@ -3,8 +3,6 @@ import type { Prisma } from "@prisma/client";
 import type { CrudResolver, GlobalId } from "@ukdanceblue/common";
 import {
   AccessControlAuthorized,
-  AccessLevel,
-  CommitteeRole,
   EventNode,
   GlobalIdScalar,
   ImageNode,
@@ -18,6 +16,7 @@ import {
   ListEventsResponse,
   SetEventInput,
 } from "@ukdanceblue/common";
+import { ConcreteResult } from "@ukdanceblue/common/error";
 import { VoidResolver } from "graphql-scalars";
 import {
   Arg,
@@ -30,6 +29,7 @@ import {
   Root,
 } from "type-graphql";
 
+import type { GraphQLContext } from "#auth/context.js";
 import { FileManager } from "#files/FileManager.js";
 import { auditLogger } from "#logging/auditLogging.js";
 import {
@@ -40,8 +40,6 @@ import { EventRepository } from "#repositories/event/EventRepository.js";
 import { EventImagesRepository } from "#repositories/event/images/EventImagesRepository.js";
 import { imageModelToResource } from "#repositories/image/imageModelToResource.js";
 
-import type { GraphQLContext } from "./context.js";
-
 @Service([EventRepository, EventImagesRepository, FileManager])
 @Resolver(() => EventNode)
 export class EventResolver implements CrudResolver<EventNode, "event"> {
@@ -51,15 +49,13 @@ export class EventResolver implements CrudResolver<EventNode, "event"> {
     private readonly fileManager: FileManager
   ) {}
 
-  @AccessControlAuthorized({
-    accessLevel: AccessLevel.Public,
-  })
+  @AccessControlAuthorized("get")
   @Query(() => EventNode, {
     name: "event",
     description: "Get an event by UUID",
   })
   async event(
-    @Arg("uuid", () => GlobalIdScalar) { id }: GlobalId
+    @Arg("id", () => GlobalIdScalar) { id }: GlobalId
   ): Promise<EventNode> {
     const row = await this.eventRepository.findEventByUnique({ uuid: id });
 
@@ -73,9 +69,7 @@ export class EventResolver implements CrudResolver<EventNode, "event"> {
     );
   }
 
-  @AccessControlAuthorized({
-    accessLevel: AccessLevel.Public,
-  })
+  @AccessControlAuthorized("list", "EventNode")
   @Query(() => ListEventsResponse, {
     name: "events",
     description: "List events",
@@ -108,14 +102,7 @@ export class EventResolver implements CrudResolver<EventNode, "event"> {
     });
   }
 
-  @AccessControlAuthorized(
-    {
-      accessLevel: AccessLevel.Admin,
-    },
-    {
-      authRules: [{ minCommitteeRole: CommitteeRole.Chair }],
-    }
-  )
+  @AccessControlAuthorized("create")
   @Mutation(() => EventNode, {
     name: "createEvent",
     description: "Create a new event",
@@ -147,20 +134,13 @@ export class EventResolver implements CrudResolver<EventNode, "event"> {
     );
   }
 
-  @AccessControlAuthorized(
-    {
-      accessLevel: AccessLevel.Admin,
-    },
-    {
-      authRules: [{ minCommitteeRole: CommitteeRole.Chair }],
-    }
-  )
+  @AccessControlAuthorized("delete")
   @Mutation(() => EventNode, {
     name: "deleteEvent",
     description: "Delete an event by UUID",
   })
   async deleteEvent(
-    @Arg("uuid", () => GlobalIdScalar) { id }: GlobalId
+    @Arg("id", () => GlobalIdScalar) { id }: GlobalId
   ): Promise<EventNode> {
     const row = await this.eventRepository.deleteEvent({ uuid: id });
 
@@ -168,30 +148,21 @@ export class EventResolver implements CrudResolver<EventNode, "event"> {
       throw new LegacyError(LegacyErrorCode.NotFound, "Event not found");
     }
 
-    auditLogger.secure("Event deleted", { uuid: id });
-
     return eventModelToResource(
       row,
       row.eventOccurrences.map(eventOccurrenceModelToResource)
     );
   }
 
-  @AccessControlAuthorized(
-    {
-      accessLevel: AccessLevel.Admin,
-    },
-    {
-      authRules: [{ minCommitteeRole: CommitteeRole.Chair }],
-    }
-  )
+  @AccessControlAuthorized("update")
   @Mutation(() => EventNode, {
     name: "setEvent",
     description: "Update an event by UUID",
   })
   async setEvent(
-    @Arg("uuid", () => GlobalIdScalar) { id }: GlobalId,
+    @Arg("id", () => GlobalIdScalar) { id }: GlobalId,
     @Arg("input") input: SetEventInput
-  ): Promise<EventNode> {
+  ): Promise<ConcreteResult<EventNode>> {
     const row = await this.eventRepository.updateEvent(
       { uuid: id },
       {
@@ -199,64 +170,20 @@ export class EventResolver implements CrudResolver<EventNode, "event"> {
         summary: input.summary,
         description: input.description,
         location: input.location,
-        eventOccurrences: {
-          createMany: {
-            data: input.occurrences
-              .filter((occurrence) => occurrence.uuid == null)
-              .map(
-                (occurrence): Prisma.EventOccurrenceCreateManyEventInput => ({
-                  date: occurrence.interval.start,
-                  endDate: occurrence.interval.end,
-                  fullDay: occurrence.fullDay,
-                })
-              ),
-          },
-          updateMany: input.occurrences
-            .filter((occurrence) => occurrence.uuid != null)
-            .map(
-              (
-                occurrence
-              ): Prisma.EventOccurrenceUpdateManyWithWhereWithoutEventInput => ({
-                where: { uuid: occurrence.uuid!.id },
-                data: {
-                  date: occurrence.interval.start,
-                  endDate: occurrence.interval.end,
-                  fullDay: occurrence.fullDay,
-                },
-              })
-            ),
-          // TODO: test if this delete also deletes the occurrences we are creating
-          deleteMany: {
-            uuid: {
-              notIn: input.occurrences
-                .filter((occurrence) => occurrence.uuid != null)
-                .map((occurrence) => occurrence.uuid!.id),
-            },
-          },
-        },
+        eventOccurrences: input.occurrences,
       }
     );
 
-    if (row == null) {
-      throw new LegacyError(LegacyErrorCode.NotFound, "Event not found");
-    }
-
-    auditLogger.secure("Event updated", { event: row });
-
-    return eventModelToResource(
-      row,
-      row.eventOccurrences.map(eventOccurrenceModelToResource)
-    );
+    return row.map((row) => {
+      auditLogger.secure("Event updated", { event: row });
+      return eventModelToResource(
+        row,
+        row.eventOccurrences.map(eventOccurrenceModelToResource)
+      );
+    });
   }
 
-  @AccessControlAuthorized(
-    {
-      accessLevel: AccessLevel.Admin,
-    },
-    {
-      authRules: [{ minCommitteeRole: CommitteeRole.Chair }],
-    }
-  )
+  @AccessControlAuthorized("update", "EventNode")
   @Mutation(() => VoidResolver, {
     name: "removeImageFromEvent",
     description: "Remove an image from an event",
@@ -277,14 +204,7 @@ export class EventResolver implements CrudResolver<EventNode, "event"> {
     auditLogger.secure("Event image removed", { eventUuid, imageUuid });
   }
 
-  @AccessControlAuthorized(
-    {
-      accessLevel: AccessLevel.Admin,
-    },
-    {
-      authRules: [{ minCommitteeRole: CommitteeRole.Chair }],
-    }
-  )
+  @AccessControlAuthorized("update", "EventNode")
   @Mutation(() => ImageNode, {
     name: "addExistingImageToEvent",
     description: "Add an existing image to an event",

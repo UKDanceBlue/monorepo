@@ -1,6 +1,5 @@
 import { PlusOutlined } from "@ant-design/icons";
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { AccessLevel } from "@ukdanceblue/common";
 import { Button, Empty, Flex } from "antd";
 import { useQuery } from "urql";
 
@@ -13,7 +12,6 @@ import {
   MarathonViewerFragment,
 } from "#elements/viewers/marathon/MarathonViewer.js";
 import { graphql } from "#graphql/index.js";
-import { routerAuthCheck } from "#tools/routerAuthCheck.js";
 
 const marathonOverviewPageDocument = graphql(
   /* GraphQL */ `
@@ -67,14 +65,4 @@ function MarathonOverviewPage() {
 
 export const Route = createFileRoute("/marathon/")({
   component: MarathonOverviewPage,
-  beforeLoad({ context }) {
-    routerAuthCheck(Route, context);
-  },
-  staticData: {
-    authorizationRules: [
-      {
-        accessLevel: AccessLevel.Committee,
-      },
-    ],
-  },
 });

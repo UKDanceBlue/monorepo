@@ -1,6 +1,7 @@
 import { FontAwesome, FontAwesome5 } from "@expo/vector-icons";
 import { openURL } from "expo-linking";
 import { Box, Button, HStack, Text, VStack } from "native-base";
+import React from "react";
 import {
   PixelRatio,
   Share,

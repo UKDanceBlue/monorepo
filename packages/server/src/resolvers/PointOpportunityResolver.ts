@@ -1,10 +1,7 @@
 import { Service } from "@freshgum/typedi";
-import { CommitteeRole } from "@prisma/client";
 import type { CrudResolver, GlobalId } from "@ukdanceblue/common";
 import {
   AccessControlAuthorized,
-  AccessLevel,
-  CommitteeIdentifier,
   EventNode,
   GlobalIdScalar,
   LegacyError,
@@ -46,12 +43,10 @@ export class PointOpportunityResolver
     private readonly pointOpportunityRepository: PointOpportunityRepository
   ) {}
 
-  @AccessControlAuthorized({
-    accessLevel: AccessLevel.Committee,
-  })
+  @AccessControlAuthorized("get")
   @Query(() => PointOpportunityNode, { name: "pointOpportunity" })
   async pointOpportunity(
-    @Arg("uuid", () => GlobalIdScalar) { id }: GlobalId
+    @Arg("id", () => GlobalIdScalar) { id }: GlobalId
   ): Promise<PointOpportunityNode> {
     const row =
       await this.pointOpportunityRepository.findPointOpportunityByUnique({
@@ -68,9 +63,7 @@ export class PointOpportunityResolver
     return pointOpportunityModelToResource(row);
   }
 
-  @AccessControlAuthorized({
-    accessLevel: AccessLevel.Committee,
-  })
+  @AccessControlAuthorized("list", "PointOpportunityNode")
   @Query(() => ListPointOpportunitiesResponse, { name: "pointOpportunities" })
   async pointOpportunities(
     @Args(() => ListPointOpportunitiesArgs) query: ListPointOpportunitiesArgs
@@ -102,14 +95,7 @@ export class PointOpportunityResolver
     });
   }
 
-  @AccessControlAuthorized({
-    authRules: [
-      {
-        committeeIdentifier: CommitteeIdentifier.viceCommittee,
-        minCommitteeRole: CommitteeRole.Coordinator,
-      },
-    ],
-  })
+  @AccessControlAuthorized("create")
   @Mutation(() => PointOpportunityNode, {
     name: "createPointOpportunity",
   })
@@ -127,19 +113,12 @@ export class PointOpportunityResolver
     return pointOpportunityModelToResource(row);
   }
 
-  @AccessControlAuthorized({
-    authRules: [
-      {
-        committeeIdentifier: CommitteeIdentifier.viceCommittee,
-        minCommitteeRole: CommitteeRole.Coordinator,
-      },
-    ],
-  })
+  @AccessControlAuthorized("update")
   @Mutation(() => PointOpportunityNode, {
     name: "setPointOpportunity",
   })
   async setPointOpportunity(
-    @Arg("uuid", () => GlobalIdScalar) { id }: GlobalId,
+    @Arg("id", () => GlobalIdScalar) { id }: GlobalId,
     @Arg("input") input: SetPointOpportunityInput
   ): Promise<PointOpportunityNode> {
     const row = await this.pointOpportunityRepository.updatePointOpportunity(
@@ -162,19 +141,12 @@ export class PointOpportunityResolver
     return pointOpportunityModelToResource(row);
   }
 
-  @AccessControlAuthorized({
-    authRules: [
-      {
-        committeeIdentifier: CommitteeIdentifier.viceCommittee,
-        minCommitteeRole: CommitteeRole.Coordinator,
-      },
-    ],
-  })
+  @AccessControlAuthorized("delete")
   @Mutation(() => PointOpportunityNode, {
     name: "deletePointOpportunity",
   })
   async deletePointOpportunity(
-    @Arg("uuid", () => GlobalIdScalar) { id }: GlobalId
+    @Arg("id", () => GlobalIdScalar) { id }: GlobalId
   ): Promise<PointOpportunityNode> {
     const row = await this.pointOpportunityRepository.deletePointOpportunity({
       uuid: id,

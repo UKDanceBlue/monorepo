@@ -39,7 +39,7 @@ import { PointEntryResolver } from "#resolvers/PointEntryResolver.js";
 import { PointOpportunityResolver } from "#resolvers/PointOpportunityResolver.js";
 import { TeamResolver } from "#resolvers/TeamResolver.js";
 
-import type { GraphQLContext } from "./context.js";
+import type { GraphQLContext } from "../lib/auth/context.js";
 import {
   DailyDepartmentNotificationBatchResolver,
   DailyDepartmentNotificationResolver,

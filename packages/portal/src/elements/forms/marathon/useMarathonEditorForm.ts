@@ -16,7 +16,7 @@ export function useMarathonCreatorForm({ marathonId }: { marathonId: string }) {
           $input: SetMarathonInput!
           $marathonId: GlobalId!
         ) {
-          setMarathon(input: $input, uuid: $marathonId) {
+          setMarathon(input: $input, id: $marathonId) {
             id
           }
         }
@@ -34,7 +34,7 @@ export function useMarathonCreatorForm({ marathonId }: { marathonId: string }) {
   ] = useQuery({
     query: graphql(/* GraphQL */ `
       query GetMarathon($marathonId: GlobalId!) {
-        marathon(uuid: $marathonId) {
+        marathon(id: $marathonId) {
           year
           startDate
           endDate

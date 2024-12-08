@@ -1,5 +1,8 @@
 import { Container } from "@freshgum/typedi";
+import { debugStringify } from "@ukdanceblue/common";
+import { ConcreteError } from "@ukdanceblue/common/error";
 import type winston from "winston";
+import type { Logform } from "winston";
 import { createLogger, format, transports } from "winston";
 
 import { logDirToken, loggingLevelToken } from "#lib/typediTokens.js";
@@ -44,12 +47,28 @@ export const syslogColors = {
 
 const consoleTransport = new transports.Console({
   format: format.combine(
-    format.errors(),
-    format.splat(),
-    format.simple(),
     format.colorize({
       colors: syslogColors,
-    })
+    }),
+    format.printf(
+      ({ level, message, error, ...rest }: Logform.TransformableInfo) => {
+        if (error instanceof ConcreteError) {
+          rest.error = `${error.tag.description} - ${error.detailedMessage} - ${error.stack}`;
+        } else if (error instanceof Error) {
+          rest.error = `${error.name} - ${error.message} - ${error.stack}`;
+        } else if (error != null) {
+          rest.error = debugStringify(error);
+        }
+
+        const filteredRestEntries = Object.entries(rest).filter(
+          ([key]) => typeof key !== "symbol"
+        );
+
+        return filteredRestEntries.length > 0
+          ? `${level}: ${debugStringify(message)} ${debugStringify(Object.fromEntries(filteredRestEntries), true, true)}`
+          : `${level}: ${debugStringify(message)}`;
+      }
+    )
   ),
 });
 
@@ -59,16 +78,12 @@ const combinedLogTransport = new transports.File({
   maxFiles: 3,
   dirname: logDir,
   silent: logDir === "TEST",
+  format: format.json({}),
 });
 
 export const logger = createLogger({
   level: loggingLevel,
   levels: SyslogLevels,
-  format: format.combine(
-    format.splat(),
-    format.colorize({ level: true, message: false }),
-    format.json()
-  ),
   transports: [combinedLogTransport, consoleTransport],
   exitOnError: false,
 }) as StandardLogger;

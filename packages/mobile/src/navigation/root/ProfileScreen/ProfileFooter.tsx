@@ -12,6 +12,7 @@ import {
   View,
 } from "native-base";
 import { useState } from "react";
+import React from "react";
 import { TextInput } from "react-native";
 
 import { useLogin, useLogOut } from "@/common/auth";

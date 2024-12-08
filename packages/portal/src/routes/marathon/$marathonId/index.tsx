@@ -1,5 +1,4 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { AccessLevel } from "@ukdanceblue/common";
 import { useQuery } from "urql";
 
 import {
@@ -7,12 +6,11 @@ import {
   MarathonViewerFragment,
 } from "#elements/viewers/marathon/MarathonViewer.js";
 import { graphql } from "#graphql/index.js";
-import { routerAuthCheck } from "#tools/routerAuthCheck.js";
 
 const marathonPageDocument = graphql(
   /* GraphQL */ `
     query MarathonPage($marathonUuid: GlobalId!) {
-      marathon(uuid: $marathonUuid) {
+      marathon(id: $marathonUuid) {
         ...MarathonViewerFragment
       }
     }
@@ -41,13 +39,5 @@ export const Route = createFileRoute("/marathon/$marathonId/")({
     context.urqlClient.query(marathonPageDocument, {
       marathonUuid: marathonId,
     });
-    routerAuthCheck(Route, context);
-  },
-  staticData: {
-    authorizationRules: [
-      {
-        accessLevel: AccessLevel.CommitteeChairOrCoordinator,
-      },
-    ],
   },
 });

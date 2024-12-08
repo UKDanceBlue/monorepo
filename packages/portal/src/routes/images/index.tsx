@@ -1,30 +1,30 @@
 import { PlusOutlined } from "@ant-design/icons";
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { AccessLevel } from "@ukdanceblue/common";
+import {
+  createFileRoute,
+  useNavigate,
+  useSearch,
+} from "@tanstack/react-router";
 import { Button, Flex, Typography } from "antd";
 import { useState } from "react";
 
 import { CreateImagePopup } from "#elements/components/image/CreateImagePopup.js";
 import { ImagesTable } from "#elements/tables/ImagesTable.js";
-import { routerAuthCheck } from "#tools/routerAuthCheck.js";
 
 export const Route = createFileRoute("/images/")({
   component: RouteComponent,
-  beforeLoad({ context }) {
-    routerAuthCheck(Route, context);
-  },
-  staticData: {
-    authorizationRules: [
-      {
-        accessLevel: AccessLevel.CommitteeChairOrCoordinator,
-      },
-    ],
+  validateSearch(search) {
+    return "previewedImage" in search &&
+      typeof search.previewedImage === "string"
+      ? { imageId: search.previewedImage }
+      : {};
   },
 });
 
 function RouteComponent() {
   const [createImageOpen, setCreateImageOpen] = useState(false);
   const navigate = useNavigate();
+
+  const { imageId } = useSearch({ from: "/images/" });
 
   return (
     <>
@@ -45,13 +45,13 @@ function RouteComponent() {
           setCreateImageOpen(false);
           if (createdImageUuid) {
             navigate({
-              to: "/images/$",
-              params: { _splat: createdImageUuid },
+              to: "/images",
+              search: { imageId: createdImageUuid },
             }).catch(console.error);
           }
         }}
       />
-      <ImagesTable />
+      <ImagesTable previewedImageId={imageId} />
     </>
   );
 }

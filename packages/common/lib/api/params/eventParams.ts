@@ -46,9 +46,10 @@ export class SetEventOccurrenceInput {
   @Field(() => GlobalIdScalar, {
     nullable: true,
     description:
-      "If updating an existing occurrence, the UUID of the occurrence to update",
+      "If updating an existing occurrence, the GlobalId of the occurrence to update",
   })
-  uuid!: GlobalId | null;
+  id!: GlobalId | null;
+
   @Field(() => IntervalISO)
   interval!: IntervalISO;
   @Field(() => Boolean)

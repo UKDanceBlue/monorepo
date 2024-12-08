@@ -6,8 +6,8 @@ import { useMutation } from "urql";
 import { graphql } from "#graphql/index.js";
 
 const deletePersonDocument = graphql(/* GraphQL */ `
-  mutation DeletePerson($uuid: GlobalId!) {
-    deletePerson(uuid: $uuid) {
+  mutation DeletePerson($id: GlobalId!) {
+    deletePerson(id: $id) {
       id
     }
   }
@@ -46,7 +46,7 @@ export const usePersonDeletePopup = ({
         title="Delete Person"
         open={open}
         onOk={() =>
-          deletePerson({ uuid }).then((value) => {
+          deletePerson({ id: uuid }).then((value) => {
             if (value.data?.deletePerson.id) {
               showInfoMessage({
                 message: "Person successfully deleted",

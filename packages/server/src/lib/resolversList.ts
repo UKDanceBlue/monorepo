@@ -8,7 +8,6 @@ import { EventResolver } from "#resolvers/EventResolver.js";
 import { FeedResolver } from "#resolvers/FeedResolver.js";
 import { FundraisingAssignmentResolver } from "#resolvers/FundraisingAssignmentResolver.js";
 import { FundraisingEntryResolver } from "#resolvers/FundraisingEntryResolver.js";
-import { SolicitationCodeResolver } from "#resolvers/SolicitationCodeResolver.js";
 import { ImageResolver } from "#resolvers/ImageResolver.js";
 import { LoginStateResolver } from "#resolvers/LoginState.js";
 import { MarathonHourResolver } from "#resolvers/MarathonHourResolver.js";
@@ -23,6 +22,7 @@ import { PersonResolver } from "#resolvers/PersonResolver.js";
 import { PointEntryResolver } from "#resolvers/PointEntryResolver.js";
 import { PointOpportunityResolver } from "#resolvers/PointOpportunityResolver.js";
 import { ReportResolver } from "#resolvers/ReportResolver.js";
+import { SolicitationCodeResolver } from "#resolvers/SolicitationCodeResolver.js";
 import { TeamResolver } from "#resolvers/TeamResolver.js";
 
 export const resolversList = [

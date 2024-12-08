@@ -1,20 +1,16 @@
-import { Container, Service } from "@freshgum/typedi";
+import { Service } from "@freshgum/typedi";
 import {
   CrudResolver,
-  CustomQueryAccessControl,
   type GlobalId,
   type MarathonYearString,
   SetFundraisingEntryInput,
 } from "@ukdanceblue/common";
 import {
   AccessControlAuthorized,
-  AccessLevel,
-  checkParam,
   DailyDepartmentNotificationNode,
   FundraisingAssignmentNode,
   FundraisingEntryNode,
   GlobalIdScalar,
-  MembershipPositionType,
   SolicitationCodeNode,
   SortDirection,
 } from "@ukdanceblue/common";
@@ -43,8 +39,6 @@ import { fundraisingEntryModelToNode } from "#repositories/fundraising/fundraisi
 import { FundraisingEntryRepository } from "#repositories/fundraising/FundraisingRepository.js";
 import { SolicitationCodeRepository } from "#repositories/solicitationCode/SolicitationCodeRepository.js";
 
-import { globalFundraisingAccessParam } from "./accessParams.js";
-
 @Resolver(() => FundraisingEntryNode)
 @Service([
   DBFundsFundraisingProvider,
@@ -65,7 +59,7 @@ export class FundraisingEntryResolver
     private readonly solicitationCodeRepository: SolicitationCodeRepository
   ) {}
 
-  @AccessControlAuthorized(globalFundraisingAccessParam)
+  @AccessControlAuthorized("get")
   @Query(() => FundraisingEntryNode)
   async fundraisingEntry(
     @Arg("id", () => GlobalIdScalar) { id }: GlobalId
@@ -76,7 +70,7 @@ export class FundraisingEntryResolver
     return entry.toAsyncResult().map(fundraisingEntryModelToNode).promise;
   }
 
-  @AccessControlAuthorized(globalFundraisingAccessParam)
+  @AccessControlAuthorized("list", "FundraisingEntryNode")
   @Query(() => ListFundraisingEntriesResponse)
   async fundraisingEntries(
     @Args(() => ListFundraisingEntriesArgs) args: ListFundraisingEntriesArgs,
@@ -128,62 +122,63 @@ export class FundraisingEntryResolver
     );
   }
 
-  @CustomQueryAccessControl<FundraisingEntryNode>(
-    async (root, context): Promise<boolean> => {
-      // We can't grant blanket access as otherwise people would see who else was assigned to an entry
-      // You can view all assignments for an entry if you are:
-      // 1. A fundraising coordinator or chair
-      const globalFundraisingAccess = checkParam(
-        globalFundraisingAccessParam,
-        context.authorization,
-        root,
-        {},
-        context
-      );
-      if (globalFundraisingAccess.isErr()) {
-        return false;
-      }
-      if (globalFundraisingAccess.value) {
-        return true;
-      }
-      const {
-        userData: { userId },
-        teamMemberships,
-      } = context;
-      const {
-        id: { id },
-      } = root;
+  // @CustomQueryAccessControl<FundraisingEntryNode>(
+  //   async (root, context): Promise<boolean> => {
+  //     // We can't grant blanket access as otherwise people would see who else was assigned to an entry
+  //     // You can view all assignments for an entry if you are:
+  //     // 1. A fundraising coordinator or chair
+  //     const globalFundraisingAccess = checkParam(
+  //       globalFundraisingAccessParam,
+  //       context.authorization,
+  //       root,
+  //       {},
+  //       context
+  //     );
+  //     if (globalFundraisingAccess.isErr()) {
+  //       return false;
+  //     }
+  //     if (globalFundraisingAccess.value) {
+  //       return true;
+  //     }
+  //     const {
+  //       userData: { userId },
+  //       teamMemberships,
+  //     } = context;
+  //     const {
+  //       id: { id },
+  //     } = root;
 
-      // 2. The captain of the team the entry is associated with
-      if (userId == null) {
-        return false;
-      }
-      const captainOf = teamMemberships.filter(
-        (membership) => membership.position === MembershipPositionType.Captain
-      );
-      if (captainOf.length === 0) {
-        return false;
-      }
+  //     // 2. The captain of the team the entry is associated with
+  //     if (userId == null) {
+  //       return false;
+  //     }
+  //     const captainOf = teamMemberships.filter(
+  //       (membership) => membership.position === MembershipPositionType.Captain
+  //     );
+  //     if (captainOf.length === 0) {
+  //       return false;
+  //     }
 
-      const solicitationCodeRepository = Container.get(
-        SolicitationCodeRepository
-      );
-      const solicitationCode =
-        await solicitationCodeRepository.getSolicitationCodeForEntry(
-          {
-            uuid: id,
-          },
-          true
-        );
-      if (solicitationCode.isErr()) {
-        return false;
-      }
+  //     const solicitationCodeRepository = Container.get(
+  //       SolicitationCodeRepository
+  //     );
+  //     const solicitationCode =
+  //       await solicitationCodeRepository.getSolicitationCodeForEntry(
+  //         {
+  //           uuid: id,
+  //         },
+  //         true
+  //       );
+  //     if (solicitationCode.isErr()) {
+  //       return false;
+  //     }
 
-      return captainOf.some(({ teamId }) =>
-        solicitationCode.value.teams.some((team) => team.uuid === teamId)
-      );
-    }
-  )
+  //     return captainOf.some(({ teamId }) =>
+  //       solicitationCode.value.teams.some((team) => team.uuid === teamId)
+  //     );
+  //   }
+  // )
+  @AccessControlAuthorized("list", "FundraisingAssignmentNode")
   @FieldResolver(() => [FundraisingAssignmentNode])
   async assignments(
     @Root() { id: { id } }: FundraisingEntryNode
@@ -204,9 +199,10 @@ export class FundraisingEntryResolver
       ).promise;
   }
 
-  @AccessControlAuthorized(globalFundraisingAccessParam, {
-    accessLevel: AccessLevel.Admin,
-  })
+  // @AccessControlAuthorized(globalFundraisingAccessParam, {
+  //   accessLevel: AccessLevel.Admin,
+  // })
+  @AccessControlAuthorized("modify")
   @Mutation(() => FundraisingEntryNode, { name: "setFundraisingEntry" })
   async setFundraisingEntry(
     @Arg("id", () => GlobalIdScalar) { id }: GlobalId,
@@ -232,9 +228,7 @@ export class FundraisingEntryResolver
     return entry.toAsyncResult().map(fundraisingEntryModelToNode).promise;
   }
 
-  @AccessControlAuthorized(globalFundraisingAccessParam, {
-    accessLevel: AccessLevel.Admin,
-  })
+  @AccessControlAuthorized("list", "FundraisingEntryNode")
   @Query(() => String)
   async rawFundraisingTotals(
     @Arg("marathonYear", () => String) marathonYear: MarathonYearString
@@ -243,9 +237,7 @@ export class FundraisingEntryResolver
     return result.map((data) => JSON.stringify(data));
   }
 
-  @AccessControlAuthorized(globalFundraisingAccessParam, {
-    accessLevel: AccessLevel.Admin,
-  })
+  @AccessControlAuthorized("list", "FundraisingEntryNode")
   @Query(() => String)
   async rawFundraisingEntries(
     @Arg("marathonYear", () => String) marathonYear: MarathonYearString,

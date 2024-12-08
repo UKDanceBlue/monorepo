@@ -1,15 +1,21 @@
+import { createMongoAbility } from "@casl/ability";
+import type { PackRule } from "@casl/ability/extra";
+import { unpackRules } from "@casl/ability/extra";
 import type {
-  AccessLevel,
+  AccessControlParam,
+  AppAbility,
   Authorization,
-  AuthorizationRule,
 } from "@ukdanceblue/common";
+import { AccessLevel, caslOptions } from "@ukdanceblue/common";
 import {
-  checkAuthorization,
   defaultAuthorization,
+  getAuthorizationFor,
   roleToAccessLevel,
 } from "@ukdanceblue/common";
 import { useMemo } from "react";
-import type { Client, OperationResult } from "urql";
+import type { Result } from "ts-results-es";
+import { Err, Ok } from "ts-results-es";
+import type { Client, CombinedError, OperationResult } from "urql";
 import { useQuery } from "urql";
 
 import type { ResultOf, VariablesOf } from "#graphql/index.js";
@@ -20,12 +26,15 @@ const loginStateDocument = graphql(/* GraphQL */ `
     loginState {
       loggedIn
       dbRole
+      authSource
       effectiveCommitteeRoles {
         role
         identifier
       }
+      abilityRules
     }
     me {
+      id
       name
       linkblue
       email
@@ -38,12 +47,15 @@ export interface PortalAuthData {
   loggedIn: boolean | undefined;
   me:
     | {
+        id: string;
         name?: string | null | undefined;
         linkblue?: string | null | undefined;
         email?: string | null | undefined;
       }
     | null
     | undefined;
+
+  ability: AppAbility;
 }
 
 function parseLoginState(
@@ -62,6 +74,12 @@ function parseLoginState(
       loggedIn: undefined,
       authorization: undefined,
       me: undefined,
+      ability: getAuthorizationFor({
+        accessLevel: AccessLevel.None,
+        effectiveCommitteeRoles: [],
+        teamMemberships: [],
+        userId: null,
+      }),
     };
   }
 
@@ -75,11 +93,20 @@ function parseLoginState(
       authorization: {
         effectiveCommitteeRoles: committees,
         dbRole: result.data.loginState.dbRole,
-        accessLevel: roleToAccessLevel({
-          dbRole: result.data.loginState.dbRole,
-          effectiveCommitteeRoles: committees,
-        }),
+        accessLevel: roleToAccessLevel(
+          committees,
+          result.data.loginState.authSource
+        ),
+        authSource: result.data.loginState.authSource,
       },
+      ability: createMongoAbility(
+        unpackRules(
+          result.data.loginState.abilityRules as PackRule<
+            AppAbility["rules"][number]
+          >[]
+        ),
+        caslOptions
+      ),
       me: result.data.me,
     };
   } else {
@@ -87,51 +114,52 @@ function parseLoginState(
       loggedIn: false,
       authorization: defaultAuthorization,
       me: null,
+      ability: getAuthorizationFor({
+        accessLevel: AccessLevel.None,
+        effectiveCommitteeRoles: [],
+        teamMemberships: [],
+        userId: null,
+      }),
     };
   }
 }
 
-export function getLoginState(client: Client): PortalAuthData {
+export function getLoginState(
+  client: Client
+): Result<PortalAuthData, CombinedError> {
   const loginState = client.readQuery(loginStateDocument, {});
 
-  return parseLoginState(loginState);
+  return loginState?.error
+    ? Err(loginState.error)
+    : Ok(parseLoginState(loginState));
 }
 
 export async function refreshLoginState(
   client: Client
-): Promise<PortalAuthData> {
+): Promise<Result<PortalAuthData, CombinedError>> {
   const loginState = await client.query(
     loginStateDocument,
     {},
     { requestPolicy: "cache-and-network" }
   );
 
-  return parseLoginState(loginState);
+  return loginState.error
+    ? Err(loginState.error)
+    : Ok(parseLoginState(loginState));
 }
 
 export function useLoginState(): PortalAuthData {
   const [result] = useQuery({
     query: loginStateDocument,
-    requestPolicy: "cache-only",
   });
 
   return useMemo(() => parseLoginState(result), [result]);
 }
 
 export function useAuthorizationRequirement(
-  ...rules: AuthorizationRule[] | [AccessLevel]
+  ...rule: AccessControlParam<false>
 ): boolean {
-  const { authorization } = useLoginState();
+  const { ability } = useLoginState();
 
-  if (!authorization) {
-    return false;
-  }
-
-  if (typeof rules[0] === "number") {
-    return authorization.accessLevel >= rules[0];
-  }
-
-  return (rules as AuthorizationRule[]).some((r) =>
-    checkAuthorization(r, authorization)
-  );
+  return ability.can(...rule);
 }

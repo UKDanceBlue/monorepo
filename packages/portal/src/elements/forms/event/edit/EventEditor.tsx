@@ -1,246 +1,200 @@
-import { PlusOutlined } from "@ant-design/icons";
-import { base64StringToArray } from "@ukdanceblue/common";
-import { App, Button, Empty, Flex, Form, Image, Input, List } from "antd";
+import "@mdxeditor/editor/style.css";
+
+import { LoadingOutlined, PlusOutlined } from "@ant-design/icons";
+import {
+  BlockTypeSelect,
+  BoldItalicUnderlineToggles,
+  CreateLink,
+  InsertImage,
+  linkDialogPlugin,
+  linkPlugin,
+  listsPlugin,
+  MDXEditor,
+  quotePlugin,
+  toolbarPlugin,
+  UndoRedo,
+} from "@mdxeditor/editor";
+import { headingsPlugin } from "@mdxeditor/editor";
+import { Edit, useForm } from "@refinedev/antd";
+import { type HttpError } from "@refinedev/core";
+import type { FormProps } from "antd";
+import { Button, Flex, Form, Input } from "antd";
 import { DateTime, Interval } from "luxon";
-import { thumbHashToDataURL } from "thumbhash";
-import type { UseQueryExecute } from "urql";
 
-import type { FragmentOf } from "#graphql/index.js";
-import { readFragment } from "#graphql/index.js";
+import { EventOccurrencePicker } from "#elements/components/event/EventOccurrencePicker.js";
+import type { ResultOf, VariablesOf } from "#graphql/index.js";
 
-import { EventOccurrencePicker } from "../../../components/event/EventOccurrencePicker";
-import { EventEditorFragment } from "./EventEditorGQL.js";
-import { useEventEditorForm } from "./useEventEditorForm.js";
+import type { EventEditorFragment } from "./EventEditorGQL.js";
+import {
+  eventEditorMutationDocument,
+  eventEditorQueryDocument,
+} from "./EventEditorGQL.js";
 
-export function EventEditor({
-  eventFragment,
-  refetchEvent,
-}: {
-  eventFragment?: FragmentOf<typeof EventEditorFragment> | undefined;
-  refetchEvent?: UseQueryExecute | undefined;
-}) {
-  const { message } = App.useApp();
-
-  const { formApi } = useEventEditorForm(eventFragment, refetchEvent);
-
-  const eventData = readFragment(EventEditorFragment, eventFragment);
-
-  if (!eventData) {
-    return <Empty description="Event not found" style={{ marginTop: "1em" }} />;
-  }
+export function EventEditor({ id }: { id: string }) {
+  const { formProps, saveButtonProps, onFinish } = useForm<
+    ResultOf<typeof EventEditorFragment>,
+    HttpError,
+    VariablesOf<typeof eventEditorMutationDocument>["input"],
+    Omit<ResultOf<typeof EventEditorFragment>, "occurrences"> & {
+      occurrences: { id?: string; interval: Interval; fullDay: boolean }[];
+    },
+    ResultOf<typeof EventEditorFragment>
+  >({
+    id,
+    action: "edit",
+    resource: "event",
+    meta: {
+      gqlMutation: eventEditorMutationDocument,
+      gqlQuery: eventEditorQueryDocument,
+    },
+    redirect: "show",
+    queryOptions: {
+      select({ data }) {
+        return {
+          data: {
+            ...data,
+            occurrences: data.occurrences.map((occurrence) => ({
+              id: occurrence.id,
+              interval: Interval.fromDateTimes(
+                DateTime.fromISO(occurrence.interval.start),
+                DateTime.fromISO(occurrence.interval.end)
+              ),
+              fullDay: occurrence.fullDay,
+            })),
+          },
+        };
+      },
+    },
+  });
 
   return (
-    <Flex vertical gap="middle" align="center">
+    <Edit saveButtonProps={saveButtonProps} resource="event">
       <Form
-        onFinish={() => {
-          formApi.handleSubmit().catch((error: unknown) => {
-            if (error instanceof Error) {
-              void message.error(error.message);
+        {...(formProps as unknown as FormProps<
+          Omit<
+            ResultOf<typeof EventEditorFragment>,
+            "occurrences" | "id" | "images"
+          > & {
+            occurrences: {
+              id?: string;
+              interval: Interval;
+              fullDay: boolean;
+            }[];
+          }
+        >)}
+        layout="vertical"
+        onFinish={(data) => {
+          const occurrences: NonNullable<
+            Parameters<typeof onFinish>[0]
+          >["occurrences"] = [];
+          for (const { interval, ...occurrence } of data.occurrences) {
+            if (!interval.isValid) {
+              throw new Error(`Invalid interval: ${interval.invalidReason}`);
+            } else if (!interval.start?.isValid) {
+              throw new Error(
+                `Invalid start: ${interval.start?.invalidReason}`
+              );
+            } else if (!interval.end?.isValid) {
+              throw new Error(`Invalid end: ${interval.end?.invalidReason}`);
             } else {
-              void message.error("An unknown error occurred");
+              occurrences.push({
+                ...occurrence,
+                interval: {
+                  start: interval.start.toISO(),
+                  end: interval.end.toISO(),
+                },
+              });
             }
+          }
+          return onFinish({
+            ...data,
+            occurrences,
+            description: data.description || undefined,
+            location: data.location || undefined,
+            summary: data.summary || undefined,
           });
         }}
-        labelCol={{ span: 8 }}
-        wrapperCol={{ span: 32 }}
       >
-        <formApi.Field
+        <Form.Item
+          label="Title"
           name="title"
-          validators={{
-            onChange: ({ value }) => (!value ? "Title is required" : undefined),
-          }}
-          children={(field) => (
-            <Form.Item
-              label="Title*"
-              validateStatus={field.state.meta.errors.length > 0 ? "error" : ""}
-              help={
-                field.state.meta.errors.length > 0
-                  ? field.state.meta.errors[0]
-                  : undefined
-              }
-            >
-              <Input
-                status={field.state.meta.errors.length > 0 ? "error" : ""}
-                name={field.name}
-                value={field.state.value}
-                onBlur={field.handleBlur}
-                onChange={(e) => field.handleChange(e.target.value)}
-              />
-            </Form.Item>
-          )}
-        />
-        {eventData.images.length > 0 && (
-          <Flex
-            gap="middle"
-            align="center"
-            style={{ maxHeight: "50vh", overflow: "auto" }}
-          >
-            <Image.PreviewGroup>
-              {eventData.images.map((image) => {
-                const thumbHash =
-                  image.thumbHash &&
-                  thumbHashToDataURL(base64StringToArray(image.thumbHash));
-
-                return (
-                  <Image
-                    src={image.url?.toString() ?? "about:blank"}
-                    fallback={thumbHash ?? "about:blank"}
-                    loading="lazy"
-                    placeholder={
-                      thumbHash == null ? (
-                        false
-                      ) : (
-                        <Image
-                          src={thumbHash}
-                          width={image.width}
-                          height={image.height}
-                        />
-                      )
-                    }
-                    width={image.width}
-                    height={image.height}
-                    alt={image.alt ?? undefined}
-                  />
-                );
-              })}
-            </Image.PreviewGroup>
-          </Flex>
-        )}
-        <formApi.Field
-          name="summary"
-          validators={{
-            onChange: ({ value }) =>
-              (value?.length ?? 0) > 255 ? "Too long" : undefined,
-          }}
-          children={(field) => (
-            <Form.Item
-              label="Summary*"
-              validateStatus={field.state.meta.errors.length > 0 ? "error" : ""}
-              help={
-                field.state.meta.errors.length > 0
-                  ? field.state.meta.errors[0]
-                  : undefined
-              }
-            >
-              <Input.TextArea
-                name={field.name}
-                value={field.state.value ?? undefined}
-                onBlur={field.handleBlur}
-                onChange={(e) => field.handleChange(e.target.value)}
-              />
-            </Form.Item>
-          )}
-        />
-        <formApi.Field
-          name="location"
-          children={(field) => (
-            <Form.Item
-              label="Location"
-              validateStatus={field.state.meta.errors.length > 0 ? "error" : ""}
-              help={
-                field.state.meta.errors.length > 0
-                  ? field.state.meta.errors[0]
-                  : undefined
-              }
-            >
-              <Input
-                name={field.name}
-                value={field.state.value ?? undefined}
-                onBlur={field.handleBlur}
-                onChange={(e) => field.handleChange(e.target.value)}
-              />
-            </Form.Item>
-          )}
-        />
-
-        <formApi.Field
-          name="occurrences"
-          validators={{
-            onChange: ({ value }) => {
-              for (let i = 0; i < value.length; i++) {
-                const interval = value[i]?.interval;
-                if (interval && !interval.isValid) {
-                  return `Occurrence interval ${i + 1} is invalid: ${
-                    interval.invalidExplanation
-                  }`;
-                }
-              }
-              return undefined;
-            },
-          }}
-          mode="array"
+          rules={[{ required: true, message: "Title is required" }]}
         >
-          {(field) => (
-            <Form.Item
-              label="Occurrences"
-              validateStatus={field.state.meta.errors.length > 0 ? "error" : ""}
-              help={
-                field.state.meta.errors.length > 0
-                  ? field.state.meta.errors[0]
-                  : undefined
-              }
-            >
-              <List>
-                {field.state.value.length > 0 ? (
-                  field.state.value.map((occurrence, index) => (
-                    <List.Item key={occurrence.uuid ?? index}>
-                      <EventOccurrencePicker
-                        defaultOccurrence={occurrence}
-                        onChange={(value) => {
-                          field.state.value.splice(index, 1, value);
-                          field.handleChange(field.state.value);
-                        }}
-                      />
-                    </List.Item>
-                  ))
-                ) : (
-                  <Empty description="No occurrences" />
-                )}
-              </List>
-              <Button
-                icon={<PlusOutlined />}
-                onClick={() => {
-                  field.pushValue({
-                    interval: Interval.fromDateTimes(
-                      DateTime.now(),
-                      DateTime.now().plus({ hours: 1 })
-                    ),
-                    fullDay: false,
-                  });
-                }}
-              >
-                Add occurrence
-              </Button>
-            </Form.Item>
+          <Input />
+        </Form.Item>
+        <Form.Item label="Summary" name="summary">
+          <Input.TextArea />
+        </Form.Item>
+        <Form.Item label="Location" name="location">
+          <Input />
+        </Form.Item>
+        <Form.List name="occurrences">
+          {(fields, { add, remove }) => (
+            <div>
+              {fields.map((field, i) => (
+                <Form.Item {...field}>
+                  <EventOccurrencePicker onDelete={() => remove(i)} />
+                </Form.Item>
+              ))}
+              <Form.Item>
+                <Button
+                  type="dashed"
+                  onClick={() =>
+                    add({
+                      interval: Interval.invalid("No input"),
+                      fullDay: false,
+                    })
+                  }
+                  icon={<PlusOutlined />}
+                >
+                  Add occurrence
+                </Button>
+              </Form.Item>
+            </div>
           )}
-        </formApi.Field>
-        <formApi.Field
-          name="description"
-          children={(field) => (
-            <Form.Item
-              label="Description"
-              validateStatus={field.state.meta.errors.length > 0 ? "error" : ""}
-              help={
-                field.state.meta.errors.length > 0
-                  ? field.state.meta.errors[0]
-                  : undefined
+        </Form.List>
+        <Form.Item label="Description" name="description">
+          {formProps.initialValues ? (
+            <MDXEditor
+              markdown={formProps.initialValues.description ?? ""}
+              onChange={(text) =>
+                formProps.form?.setFieldValue("description", text)
               }
-            >
-              <Input.TextArea
-                name={field.name}
-                value={field.state.value ?? undefined}
-                onBlur={field.handleBlur}
-                onChange={(e) => field.handleChange(e.target.value)}
-              />
-            </Form.Item>
+              plugins={[
+                headingsPlugin(),
+                quotePlugin(),
+                listsPlugin(),
+                linkPlugin({
+                  validateUrl(url) {
+                    try {
+                      new URL(url);
+                      return true;
+                    } catch {
+                      return false;
+                    }
+                  },
+                }),
+                linkDialogPlugin(),
+                toolbarPlugin({
+                  toolbarContents: () => (
+                    <>
+                      <UndoRedo />
+                      <BoldItalicUnderlineToggles />
+                      <BlockTypeSelect />
+                      <CreateLink />
+                      <InsertImage />
+                    </>
+                  ),
+                }),
+              ]}
+            />
+          ) : (
+            <Flex justify="center">
+              <LoadingOutlined spin />
+            </Flex>
           )}
-        />
-        <Form.Item wrapperCol={{ span: 32, offset: 8 }}>
-          <Button type="primary" htmlType="submit">
-            Save
-          </Button>
         </Form.Item>
       </Form>
-    </Flex>
+    </Edit>
   );
 }

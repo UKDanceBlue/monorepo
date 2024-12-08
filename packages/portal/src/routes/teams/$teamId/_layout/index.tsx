@@ -1,14 +1,10 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { AccessLevel } from "@ukdanceblue/common";
 import { Button, Flex } from "antd";
 
 import { useAuthorizationRequirement } from "#hooks/useLoginState.js";
-import { routerAuthCheck } from "#tools/routerAuthCheck.js";
 
 function ViewTeamPage() {
-  const canSeePoints = useAuthorizationRequirement({
-    accessLevel: AccessLevel.CommitteeChairOrCoordinator,
-  });
+  const canSeePoints = useAuthorizationRequirement("read", "PointEntryNode");
 
   return (
     <Flex justify="space-evenly" align="center">
@@ -37,14 +33,4 @@ function ViewTeamPage() {
 
 export const Route = createFileRoute("/teams/$teamId/_layout/")({
   component: ViewTeamPage,
-  staticData: {
-    authorizationRules: [
-      {
-        accessLevel: AccessLevel.UKY,
-      },
-    ],
-  },
-  beforeLoad({ context }) {
-    routerAuthCheck(Route, context);
-  },
 });

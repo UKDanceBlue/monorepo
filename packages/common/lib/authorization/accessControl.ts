@@ -1,110 +1,30 @@
-import type { Result } from "ts-results-es";
-import { Err, Ok } from "ts-results-es";
-import type { ArgsDictionary } from "type-graphql";
-import { Authorized } from "type-graphql";
-import type { Primitive } from "utility-types";
-
-import { parseGlobalId } from "../api/scalars/GlobalId.js";
-import type { InvalidArgumentError } from "../error/direct.js";
-import { InvariantError } from "../error/direct.js";
+import type {
+  AbilityOptionsOf,
+  ExtractSubjectType,
+  InferSubjects,
+  MongoAbility,
+} from "@casl/ability";
 import {
-  type Authorization,
-  type CommitteeIdentifier,
-  type CommitteeRole,
-  type GlobalId,
-  type MembershipPositionType,
+  AbilityBuilder,
+  createAliasResolver,
+  createMongoAbility,
+} from "@casl/ability";
+import validator from "validator";
+
+import type { EffectiveCommitteeRole } from "../api/resources/index.js";
+import {
+  parseGlobalId,
   type PersonNode,
-  type TeamType,
-  type UserData,
-} from "../index.js";
-import type { AccessLevel } from "./structures.js";
+  type ResourceClasses,
+} from "../api/resources/index.js";
+import { MembershipPositionType } from "../api/resources/Membership.js";
+import type { TeamType } from "../api/resources/Team.js";
+import type { Authorization } from "./structures.js";
 import {
-  committeeNames,
-  compareCommitteeRole,
-  stringifyAccessLevel,
+  AccessLevel,
+  CommitteeIdentifier,
+  CommitteeRole,
 } from "./structures.js";
-
-export interface AuthorizationRule {
-  /**
-   * The minimum access level required to access this resource
-   */
-  accessLevel?: AccessLevel;
-  // /**
-  //  * Exact committee role, cannot be used with minCommitteeRole
-  //  */
-  // committeeRole?: CommitteeRole;
-  /**
-   * Minimum committee role, cannot be used with committeeRole
-   */
-  minCommitteeRole?: CommitteeRole;
-  /**
-   * The committee's identifier, currently these are not normalized in an enum or the database
-   * so just go off what's used elsewhere in the codebase
-   *
-   * Cannot be used with committeeIdentifiers
-   */
-  committeeIdentifier?: CommitteeIdentifier;
-  /**
-   * Same as committeeIdentifier, but allows any of the listed identifiers
-   *
-   * Cannot be used with committeeIdentifier
-   */
-  committeeIdentifiers?: readonly CommitteeIdentifier[];
-}
-
-export function prettyPrintAuthorizationRule(rule: AuthorizationRule): string {
-  const parts: string[] = [];
-  if (rule.accessLevel != null) {
-    parts.push(
-      `have an access level of at least ${stringifyAccessLevel(rule.accessLevel)}`
-    );
-  }
-  if (rule.minCommitteeRole != null) {
-    parts.push(`have a committee role of at least ${rule.minCommitteeRole}`);
-  }
-  if (rule.committeeIdentifier != null) {
-    parts.push(`be a member of ${committeeNames[rule.committeeIdentifier]}`);
-  }
-  if (rule.committeeIdentifiers != null) {
-    parts.push(
-      `be a member of one of the following committees: ${rule.committeeIdentifiers
-        .map((id) => committeeNames[id])
-        .join(", ")}`
-    );
-  }
-  return parts.join(" and ");
-}
-
-export interface AccessControlContext {
-  authenticatedUser: PersonNode | null;
-  teamMemberships: SimpleTeamMembership[];
-  userData: UserData;
-  authorization: Authorization;
-}
-
-/**
- * An AccessControlParam accepts a user if:
- *
- * 1. The user's access level is greater than or equal to the access level specified (AccessLevel.None by default)
- * 2. The user's role matches one of the specified authorization rules
- * 3. The resolver arguments match ALL of the specified argument matchers
- * 4. The root object matches ALL of the specified root matchers
- * 5. The custom authorization rule returns true
- */
-export interface AccessControlParam<RootType = never> {
-  authRules?:
-    | readonly AuthorizationRule[]
-    | ((root: RootType) => readonly AuthorizationRule[]);
-  accessLevel?: AccessLevel;
-  argumentMatch?: {
-    argument: string | ((args: ArgsDictionary) => Primitive | Primitive[]);
-    extractor: (param: AccessControlContext) => Primitive | Primitive[];
-  }[];
-  rootMatch?: {
-    root: string | ((root: RootType) => Primitive | Primitive[]);
-    extractor: (param: AccessControlContext) => Primitive | Primitive[];
-  }[];
-}
 
 export interface SimpleTeamMembership {
   teamType: TeamType;
@@ -112,191 +32,329 @@ export interface SimpleTeamMembership {
   position: MembershipPositionType;
 }
 
-export interface AuthorizationContext {
+const NEVER = {} as never;
+const extraFieldsByResource = {
+  PersonNode: {
+    [".fundraisingAssignments"]: NEVER,
+    [".memberships"]: NEVER,
+  },
+  TeamNode: {
+    [".fundraisingAssignments"]: NEVER,
+    [".members"]: NEVER,
+    [".solicitationCode"]: NEVER,
+    [".fundraisingTotal"]: NEVER,
+  },
+  FundraisingAssignmentNode: {
+    [".withinTeamIds"]: NEVER,
+  },
+  NotificationNode: {
+    [".deliveryIssue"]: NEVER,
+    [".deliveryIssueAcknowledgedAt"]: NEVER,
+  },
+  NotificationDeliveryNode: {
+    [".receiptCheckedAt"]: NEVER,
+    [".chunkUuid"]: NEVER,
+    [".deliveryError"]: NEVER,
+  },
+  FundraisingEntryNode: {},
+  CommitteeNode: {},
+  ConfigurationNode: {},
+  DailyDepartmentNotificationNode: {},
+  DailyDepartmentNotificationBatchNode: {},
+  ImageNode: {},
+  MarathonNode: {},
+  MarathonHourNode: {},
+  PointEntryNode: {},
+  PointOpportunityNode: {},
+  SolicitationCodeNode: {},
+  DeviceNode: {},
+  EventNode: {},
+  FeedNode: {},
+  MembershipNode: {},
+};
+
+type ResourceSubject = {
+  [resource in keyof typeof ResourceClasses]: {
+    kind: resource;
+    id?: string;
+
+    // When allowing access to a resource, passing in no fields will allow access to all fields,
+    // so by passing in this $ field, we can change that behavior to default to no fields.
+    ["."]?: never;
+  } & Partial<(typeof extraFieldsByResource)[resource]>;
+};
+
+type SubjectValue = ResourceSubject[keyof ResourceSubject];
+export type Subject = InferSubjects<SubjectValue | "all", true>;
+
+export const SubjectStrings = [
+  ...(Object.keys(
+    extraFieldsByResource
+  ) as (keyof typeof extraFieldsByResource)[]),
+  "all",
+] as const;
+
+export type Action =
+  | "create"
+  | "get"
+  | "list"
+  | "read"
+  | "update"
+  | "delete"
+  | "modify"
+  | "manage"
+  | "readActive"
+  | "deploy";
+
+const resolveAction = createAliasResolver({
+  ["modify"]: ["read", "update", "delete"],
+  ["read"]: ["get", "list"],
+});
+
+export type AppAbility = MongoAbility<[Action, Subject]>;
+
+export interface AuthorizationContext extends Authorization {
   authenticatedUser: PersonNode | null;
   teamMemberships: SimpleTeamMembership[];
-  userData: UserData;
-  authorization: Authorization;
 }
 
-export function checkAuthorization(
-  {
-    accessLevel,
-    committeeIdentifier,
-    committeeIdentifiers,
-    // committeeRole,
-    minCommitteeRole,
-  }: AuthorizationRule,
-  authorization: Authorization
-) {
-  if (committeeIdentifier != null && committeeIdentifiers != null) {
-    throw new TypeError(
-      `Cannot specify both committeeIdentifier and committeeIdentifiers.`
-    );
-  }
+export const caslOptions: AbilityOptionsOf<AppAbility> = {
+  resolveAction,
+  detectSubjectType(subject) {
+    return ((subject as { __typename?: Subject }).__typename ??
+      subject.kind) as ExtractSubjectType<Subject>;
+  },
+};
 
-  let matches = true;
+export interface CaslParam
+  extends Pick<
+    AuthorizationContext,
+    "accessLevel" | "teamMemberships" | "effectiveCommitteeRoles"
+  > {
+  userId: string | null;
+}
 
-  // Access Level
-  if (accessLevel != null) {
-    matches &&= authorization.accessLevel >= accessLevel;
-  }
+export function getAuthorizationFor({
+  accessLevel,
+  userId,
+  teamMemberships,
+  effectiveCommitteeRoles,
+}: CaslParam): AppAbility {
+  const { can: allow, build } = new AbilityBuilder<AppAbility>(
+    createMongoAbility
+  );
 
-  if (minCommitteeRole != null) {
-    if (authorization.effectiveCommitteeRoles.length === 0) {
-      matches = false;
+  // All users may read active configurations and get device information (with that device's uuid)
+  allow("readActive", ["ConfigurationNode"], ".");
+  allow("get", ["DeviceNode"], ".");
+
+  if (accessLevel > AccessLevel.None) {
+    if (accessLevel === AccessLevel.SuperAdmin) {
+      // Super admins may manage all resources
+      allow(
+        "manage",
+        "all",
+        Object.values(extraFieldsByResource).reduce<string[]>(
+          (acc, fields) => acc.concat(Object.keys(fields)),
+          ["."]
+        )
+      );
     } else {
-      matches &&= authorization.effectiveCommitteeRoles.some(
-        (committee) =>
-          compareCommitteeRole(committee.role, minCommitteeRole) >= 0
+      // All users may read active feeds and marathon info
+      allow(
+        "readActive",
+        ["FeedNode", "MarathonNode", "MarathonHourNode"],
+        "."
       );
+      // All users may read committees, events, and images
+      allow("read", ["CommitteeNode", "EventNode", "ImageNode"], ".");
+      // All users may list teams
+      allow("list", ["TeamNode"], ".");
+
+      applyAccessLevelPermissions(accessLevel, allow);
+      applyCommitteePermissions(effectiveCommitteeRoles, allow);
+
+      if (userId != null) applyUserPermissions(userId, allow);
+
+      if (teamMemberships.length > 0)
+        applyTeamPermissions(teamMemberships, allow);
     }
   }
 
-  // Committee identifier(s)
-  if (committeeIdentifier != null) {
-    matches &&= authorization.effectiveCommitteeRoles.some(
-      (committee) => committee.identifier === committeeIdentifier
-    );
-  }
-  if (committeeIdentifiers != null) {
-    matches &&= authorization.effectiveCommitteeRoles.some((committee) =>
-      committeeIdentifiers.includes(committee.identifier)
-    );
-  }
-
-  return matches;
+  return build(caslOptions);
 }
 
-export function checkParam<RootType extends object = never>(
-  rule: AccessControlParam<RootType>,
-  authorization: Authorization,
-  root: RootType,
-  args: ArgsDictionary,
-  context: AccessControlContext
-): Result<boolean, InvariantError | InvalidArgumentError> {
-  if (rule.accessLevel != null) {
-    if (rule.accessLevel > authorization.accessLevel) {
-      return Ok(false);
+function applyTeamPermissions(
+  teamMemberships: SimpleTeamMembership[],
+  allow: AbilityBuilder<AppAbility>["can"]
+) {
+  const authTeamMemberships: string[] = [];
+  const authTeamCaptaincies: string[] = [];
+  for (const membership of teamMemberships) {
+    if (membership.position === MembershipPositionType.Captain) {
+      authTeamCaptaincies.push(membership.teamId);
     }
+    authTeamMemberships.push(membership.teamId);
   }
 
-  if (rule.authRules != null) {
-    const authRules =
-      typeof rule.authRules === "function"
-        ? rule.authRules(root)
-        : rule.authRules;
-    if (authRules.length === 0) {
-      return Err(
-        new InvariantError("Resource has no allowed authorization rules.")
-      );
-    }
-    let matches = false;
-    for (const authRule of authRules) {
-      matches = checkAuthorization(authRule, authorization);
-      if (matches) {
-        break;
-      }
-    }
-    if (!matches) {
-      return Ok(false);
-    }
-  }
+  // Members of a team may read the team's information and fundraising total
+  allow("get", "TeamNode", [".", ".fundraisingTotal"], {
+    id: { $in: authTeamMemberships },
+  });
+  // Members of a team may read the team's members
+  allow("list", "TeamNode", [".members"], {
+    id: { $in: authTeamMemberships },
+  });
 
-  if (rule.argumentMatch != null) {
-    for (const match of rule.argumentMatch) {
-      let argValue: Primitive | Primitive[];
-      if (match.argument === "id") {
-        // I think this code might be wrong, but I'm not 100% sure either way and don't have time to investigate
-        const parseReult = parseGlobalId(args.id as string).map(
-          ({ id: id }) => args[id] as Primitive | Primitive[]
-        );
-        if (parseReult.isErr()) {
-          return parseReult;
-        }
-        argValue = parseReult.value;
-      } else if (typeof match.argument === "string") {
-        argValue = args[match.argument] as Primitive | Primitive[];
-      } else {
-        argValue = match.argument(args);
-      }
-      if (argValue == null) {
-        return Err(
-          new InvariantError(
-            "FieldMatchAuthorized argument is null or undefined."
-          )
-        );
-      }
-      const expectedValue = match.extractor(context);
-
-      if (Array.isArray(expectedValue)) {
-        if (Array.isArray(argValue)) {
-          if (argValue.some((v) => expectedValue.includes(v))) {
-            return Ok(false);
-          }
-        } else if (expectedValue.includes(argValue)) {
-          return Ok(false);
-        }
-      } else if (argValue !== expectedValue) {
-        if (Array.isArray(argValue)) {
-          if (argValue.includes(expectedValue)) {
-            return Ok(false);
-          }
-        }
-      }
-    }
-  }
-
-  if (rule.rootMatch != null) {
-    let shouldContinue = false;
-    for (const match of rule.rootMatch) {
-      let rootValue: Primitive | Primitive[];
-      if (match.root === "id") {
-        rootValue = (root as { id: GlobalId }).id.id;
-      } else if (typeof match.root === "string") {
-        rootValue = (root as Record<string, Primitive | Primitive[]>)[
-          match.root
-        ];
-      } else {
-        rootValue = match.root(root);
-      }
-      if (rootValue == null) {
-        return Err(
-          new InvariantError("FieldMatchAuthorized root is null or undefined.")
-        );
-      }
-      const expectedValue = match.extractor(context);
-
-      if (Array.isArray(expectedValue)) {
-        if (Array.isArray(rootValue)) {
-          if (!rootValue.some((v) => expectedValue.includes(v))) {
-            shouldContinue = true;
-            break;
-          }
-        } else if (!expectedValue.includes(rootValue)) {
-          shouldContinue = true;
-          break;
-        }
-      } else if (Array.isArray(rootValue)) {
-        if (!rootValue.includes(expectedValue)) {
-          shouldContinue = true;
-          break;
-        }
-      } else if (rootValue !== expectedValue) {
-        shouldContinue = true;
-        break;
-      }
-    }
-    if (shouldContinue) {
-      return Ok(false);
-    }
-  }
-
-  return Ok(true);
+  // Captains of a team may manage the team's fundraising assignments
+  allow(["modify", "create"], "TeamNode", [".fundraisingAssignments"], {
+    id: { $in: authTeamCaptaincies },
+  });
+  // Captains of a team may get the team's solicitation code
+  allow("get", "TeamNode", [".solicitationCode"], {
+    id: { $in: authTeamCaptaincies },
+  });
 }
 
-export function AccessControlAuthorized<RootType extends object>(
-  ...roles: readonly AccessControlParam<RootType>[]
-): PropertyDecorator & MethodDecorator & ClassDecorator {
-  return Authorized<AccessControlParam>(...roles);
+function applyUserPermissions(
+  userId: string,
+  allow: AbilityBuilder<AppAbility>["can"]
+) {
+  const parsedUserId = validator.isUUID(userId)
+    ? userId
+    : parseGlobalId(userId).unwrap().id;
+
+  // Users may read their own information
+  allow("get", "PersonNode", ["."], {
+    id: {
+      $eq: parsedUserId,
+    },
+  });
+  // Users may read their own memberships and fundraising assignments
+  allow("list", "PersonNode", [".memberships", ".fundraisingAssignments"], {
+    id: {
+      $eq: parsedUserId,
+    },
+  });
+}
+
+function applyCommitteePermissions(
+  effectiveCommitteeRoles: EffectiveCommitteeRole[],
+  allow: AbilityBuilder<AppAbility>["can"]
+) {
+  for (const { identifier, role } of effectiveCommitteeRoles) {
+    // Members of vice committee may read all members and teams
+    // Coords/Chairs of vice committee may manage all members and teams
+    if (identifier === CommitteeIdentifier.viceCommittee) {
+      allow(role === CommitteeRole.Member ? "read" : "manage", "PersonNode", [
+        ".",
+        ".memberships",
+      ]);
+      allow(role === CommitteeRole.Member ? "read" : "manage", "TeamNode", [
+        ".",
+        ".members",
+      ]);
+      allow("list", "PointEntryNode", ".");
+    }
+
+    // Coords/Chairs of vice, community, tech, and marketing committees may deploy notifications
+    if (
+      role !== CommitteeRole.Member &&
+      (identifier === CommitteeIdentifier.viceCommittee ||
+        identifier === CommitteeIdentifier.communityDevelopmentCommittee ||
+        identifier === CommitteeIdentifier.techCommittee ||
+        identifier === CommitteeIdentifier.marketingCommittee)
+    ) {
+      allow("deploy", "NotificationNode", ".");
+    }
+
+    // Members of dancer relations committee may manage point opportunities, point entries, and team members
+    if (identifier === CommitteeIdentifier.dancerRelationsCommittee) {
+      allow("manage", ["PointOpportunityNode", "PointEntryNode"], ".");
+      allow("manage", "TeamNode", ".members");
+    }
+
+    // Members of programming committee may manage marathon hours
+    if (identifier === CommitteeIdentifier.programmingCommittee) {
+      allow("manage", "MarathonHourNode", ".");
+    }
+
+    // Members of fundraising committee may manage fundraising entries, daily department notifications, solicitation codes, and fundraising assignments
+    if (identifier === CommitteeIdentifier.fundraisingCommittee) {
+      allow(
+        "manage",
+        [
+          "FundraisingEntryNode",
+          "DailyDepartmentNotificationNode",
+          "SolicitationCodeNode",
+          "FundraisingAssignmentNode",
+        ],
+        "."
+      );
+      allow("manage", "TeamNode", [
+        ".fundraisingAssignments",
+        ".solicitationCode",
+      ]);
+      allow("read", "TeamNode", ".fundraisingTotal");
+    }
+  }
+}
+
+function applyAccessLevelPermissions(
+  accessLevel: number,
+  allow: AbilityBuilder<AppAbility>["can"]
+) {
+  // Coords/Chairs of any committee may:
+  if (accessLevel >= AccessLevel.CommitteeChairOrCoordinator) {
+    // Manage committees, events, feeds, images, and memberships
+    allow(
+      "manage",
+      ["EventNode", "FeedNode", "ImageNode", "MembershipNode"],
+      "."
+    );
+    // Manage people and their memberships
+    allow("manage", "PersonNode", [".", ".memberships"]);
+    // Read marathon info
+    allow("read", ["MarathonHourNode", "MarathonNode"], ".");
+    // Create (but not send) notifications
+    allow(["modify", "create"], "NotificationNode", ".");
+    // Read notifications
+    allow("read", "NotificationNode", [
+      ".",
+      ".deliveryIssue",
+      ".deliveryIssueAcknowledgedAt",
+    ]);
+    // Read notification deliveries
+    allow("read", "NotificationDeliveryNode", [
+      ".",
+      ".receiptCheckedAt",
+      ".chunkUuid",
+      ".deliveryError",
+    ]);
+  }
+
+  // Admins may:
+  if (accessLevel >= AccessLevel.Admin) {
+    // Manage configurations, marathons, marathon hours, fundraising assignments, and fundraising entries
+    allow(
+      "manage",
+      [
+        "ConfigurationNode",
+        "MarathonNode",
+        "MarathonHourNode",
+        "FundraisingAssignmentNode",
+        "FundraisingEntryNode",
+      ],
+      "."
+    );
+    // Manage teams and their assignments and solicitation code
+    allow("manage", "TeamNode", [
+      ".fundraisingAssignments",
+      ".solicitationCode",
+    ]);
+    // Read fundraising totals
+    allow("read", "TeamNode", ".fundraisingTotal");
+    // Deploy notifications
+    allow("deploy", "NotificationNode", ".");
+  }
 }

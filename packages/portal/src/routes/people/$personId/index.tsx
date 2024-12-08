@@ -1,6 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useParams } from "@tanstack/react-router";
-import { AccessLevel } from "@ukdanceblue/common";
 import { useQuery } from "urql";
 
 import {
@@ -10,12 +9,11 @@ import {
 import { graphql } from "#graphql/index.js";
 import { useLoginState } from "#hooks/useLoginState.js";
 import { useQueryStatusWatcher } from "#hooks/useQueryStatusWatcher.js";
-import { routerAuthCheck } from "#tools/routerAuthCheck.js";
 
 const viewPersonPageDocument = graphql(
   /* GraphQL */ `
-    query ViewPersonPage($uuid: GlobalId!) {
-      person(uuid: $uuid) {
+    query ViewPersonPage($id: GlobalId!) {
+      person(id: $id) {
         ...PersonViewerFragment
       }
     }
@@ -29,7 +27,7 @@ function ViewPersonPage() {
 
   const [{ data, fetching, error }] = useQuery({
     query: viewPersonPageDocument,
-    variables: { uuid: personId },
+    variables: { id: personId },
   });
 
   useQueryStatusWatcher({
@@ -51,14 +49,6 @@ function ViewPersonPage() {
 export const Route = createFileRoute("/people/$personId/")({
   component: ViewPersonPage,
   async beforeLoad({ context, params: { personId } }) {
-    await context.urqlClient.query(viewPersonPageDocument, { uuid: personId });
-    routerAuthCheck(Route, context);
-  },
-  staticData: {
-    authorizationRules: [
-      {
-        accessLevel: AccessLevel.Committee,
-      },
-    ],
+    await context.urqlClient.query(viewPersonPageDocument, { id: personId });
   },
 });

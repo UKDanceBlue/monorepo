@@ -1,6 +1,7 @@
 import type { ASTNode } from "@ukdanceblue/react-native-markdown-display";
 import type { Key } from "react";
 import { useEffect, useState } from "react";
+import type { ImageStyle, StyleProp } from "react-native";
 import type { IFitImageProps } from "react-native-fit-image";
 import FitImage from "react-native-fit-image";
 
@@ -54,14 +55,14 @@ export const CustomImageRenderer = ({
           );
         }
         setImageProps({
-          style: styles._VIEW_SAFE_image,
+          style: styles._VIEW_SAFE_image as StyleProp<ImageStyle>,
           accessibilityLabel: alt ?? title,
           source: { uri: `${defaultImageHandler}${srcWithoutProtocol}` },
         });
       }
     } else {
       setImageProps({
-        style: styles._VIEW_SAFE_image,
+        style: styles._VIEW_SAFE_image as StyleProp<ImageStyle>,
         accessibilityLabel: alt ?? title,
         source: { uri: src },
       });

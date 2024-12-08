@@ -40,7 +40,6 @@ const NativeBaseMarkdown = ({
       style={style}
       markdownit={
         // This is caused by using a reexport
-
         MarkdownIt({ linkify: true, typographer: true, html: true })
       }
     >

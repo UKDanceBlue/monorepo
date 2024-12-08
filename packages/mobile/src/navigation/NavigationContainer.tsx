@@ -10,6 +10,7 @@ import {
 import { addNotificationResponseReceivedListener } from "expo-notifications";
 import { useDisclose } from "native-base";
 import { useRef, useState } from "react";
+import React from "react";
 import { StatusBar } from "react-native";
 import type { WebViewSource } from "react-native-webview/lib/WebViewTypes";
 

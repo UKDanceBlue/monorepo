@@ -1,6 +1,5 @@
 import { DownloadOutlined } from "@ant-design/icons";
 import { createFileRoute } from "@tanstack/react-router";
-import { AccessLevel, CommitteeIdentifier } from "@ukdanceblue/common";
 import { Button, Flex, Table, Typography } from "antd";
 import { DateTime } from "luxon";
 import { useMemo, useState } from "react";
@@ -9,7 +8,6 @@ import { utils, writeFile } from "xlsx";
 
 import { useMarathon } from "#config/marathonContext.js";
 import { graphql } from "#graphql/index.js";
-import { routerAuthCheck } from "#tools/routerAuthCheck.js";
 
 interface FundraisingTeam {
   name: string;
@@ -78,7 +76,7 @@ function DbFundsViewer() {
   }, [marathonYear, selectedId, teamData.data]);
 
   return (
-    (<Flex vertical>
+    <Flex vertical>
       <Flex vertical gap="small">
         <Typography.Title level={2}>Fundraising Teams</Typography.Title>
         <Flex gap="small">
@@ -221,24 +219,10 @@ function DbFundsViewer() {
           }}
         />
       </Flex>
-    </Flex>)
+    </Flex>
   );
 }
 
 export const Route = createFileRoute("/fundraising/dbfunds")({
   component: DbFundsViewer,
-  beforeLoad({ context }) {
-    routerAuthCheck(Route, context);
-  },
-  staticData: {
-    authorizationRules: [
-      {
-        accessLevel: AccessLevel.Admin,
-      },
-      {
-        accessLevel: AccessLevel.CommitteeChairOrCoordinator,
-        committeeIdentifier: CommitteeIdentifier.fundraisingCommittee,
-      },
-    ],
-  },
 });

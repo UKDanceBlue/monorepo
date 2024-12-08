@@ -1,17 +1,15 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { AccessLevel } from "@ukdanceblue/common";
 import { useQuery } from "urql";
 
 import { SingleNotificationFragment } from "#documents/notification.ts";
 import { ManageNotificationForm } from "#elements/forms/notification/manage/ManageNotificationForm.js";
 import { graphql } from "#graphql/index.js";
 import { useQueryStatusWatcher } from "#hooks/useQueryStatusWatcher.js";
-import { routerAuthCheck } from "#tools/routerAuthCheck.js";
 
 const notificationManagerDocument = graphql(
   /* GraphQL */ `
-    query NotificationManager($uuid: GlobalId!) {
-      notification(uuid: $uuid) {
+    query NotificationManager($id: GlobalId!) {
+      notification(id: $id) {
         ...SingleNotificationFragment
       }
     }
@@ -24,7 +22,7 @@ function ManageNotificationPage() {
 
   const [{ data, fetching, error }, refetchNotification] = useQuery({
     query: notificationManagerDocument,
-    variables: { uuid: notificationId },
+    variables: { id: notificationId },
   });
 
   useQueryStatusWatcher({
@@ -100,15 +98,7 @@ export const Route = createFileRoute("/notifications/$notificationId/manage")({
   component: ManageNotificationPage,
   async beforeLoad({ context, params: { notificationId } }) {
     await context.urqlClient.query(notificationManagerDocument, {
-      uuid: notificationId,
+      id: notificationId,
     });
-    routerAuthCheck(Route, context);
-  },
-  staticData: {
-    authorizationRules: [
-      {
-        accessLevel: AccessLevel.CommitteeChairOrCoordinator,
-      },
-    ],
   },
 });

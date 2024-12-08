@@ -155,6 +155,7 @@ export function buildDailyDepartmentNotificationWhere(
       }
     }
   }
-  where.solicitationCode = solicitationCodeWhere;
+  if (Object.keys(solicitationCodeWhere).length > 0)
+    where.solicitationCode = solicitationCodeWhere;
   return where;
 }

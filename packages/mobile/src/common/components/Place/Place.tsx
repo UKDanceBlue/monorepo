@@ -2,6 +2,7 @@
 import { FontAwesome5 } from "@expo/vector-icons";
 import { Divider, Heading, Text, View } from "native-base";
 import type { ReactElement } from "react";
+import React from "react";
 
 /**
  * A row-based component showing a target name, their rank (if applicable), and their points

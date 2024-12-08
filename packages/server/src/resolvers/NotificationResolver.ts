@@ -2,7 +2,6 @@ import { Service } from "@freshgum/typedi";
 import type { CrudResolver, GlobalId } from "@ukdanceblue/common";
 import {
   AccessControlAuthorized,
-  AccessLevel,
   GlobalIdScalar,
   LegacyError,
   LegacyErrorCode,
@@ -62,12 +61,10 @@ export class NotificationResolver
     private readonly notificationScheduler: NotificationScheduler
   ) {}
 
-  @AccessControlAuthorized({
-    accessLevel: AccessLevel.CommitteeChairOrCoordinator,
-  })
+  @AccessControlAuthorized("get")
   @Query(() => NotificationNode, { name: "notification" })
   async notification(
-    @Arg("uuid", () => GlobalIdScalar) { id }: GlobalId
+    @Arg("id", () => GlobalIdScalar) { id }: GlobalId
   ): Promise<ConcreteResult<NotificationNode>> {
     return this.notificationRepository
       .findNotificationByUnique({
@@ -76,9 +73,7 @@ export class NotificationResolver
       .map((row) => notificationModelToResource(row)).promise;
   }
 
-  @AccessControlAuthorized({
-    accessLevel: AccessLevel.CommitteeChairOrCoordinator,
-  })
+  @AccessControlAuthorized("list", "NotificationNode")
   @Query(() => ListNotificationsResponse, { name: "notifications" })
   async notifications(
     @Args(() => ListNotificationsArgs) query: ListNotificationsArgs
@@ -107,9 +102,7 @@ export class NotificationResolver
     });
   }
 
-  @AccessControlAuthorized({
-    accessLevel: AccessLevel.CommitteeChairOrCoordinator,
-  })
+  @AccessControlAuthorized("list", "NotificationDeliveryNode")
   @Query(() => ListNotificationDeliveriesResponse, {
     name: "notificationDeliveries",
   })
@@ -151,9 +144,7 @@ export class NotificationResolver
     });
   }
 
-  @AccessControlAuthorized({
-    accessLevel: AccessLevel.CommitteeChairOrCoordinator,
-  })
+  @AccessControlAuthorized("create")
   @Mutation(() => NotificationNode, { name: "stageNotification" })
   async stage(
     @Args(() => StageNotificationArgs) args: StageNotificationArgs
@@ -188,15 +179,13 @@ export class NotificationResolver
     return result.map((result) => notificationModelToResource(result));
   }
 
-  @AccessControlAuthorized({
-    accessLevel: AccessLevel.CommitteeChairOrCoordinator,
-  })
+  @AccessControlAuthorized("deploy", "NotificationNode")
   @Mutation(() => VoidResolver, {
     name: "sendNotification",
     description: "Send a notification immediately.",
   })
   async send(
-    @Arg("uuid", () => GlobalIdScalar) { id }: GlobalId
+    @Arg("id", () => GlobalIdScalar) { id }: GlobalId
   ): Promise<ConcreteResult<void>> {
     return this.notificationRepository
       .findNotificationByUnique({ uuid: id })
@@ -216,14 +205,12 @@ export class NotificationResolver
       }).promise;
   }
 
-  @AccessControlAuthorized({
-    accessLevel: AccessLevel.CommitteeChairOrCoordinator,
-  })
+  @AccessControlAuthorized("deploy", "NotificationNode")
   @Mutation(() => NotificationNode, {
     name: "scheduleNotification",
   })
   async schedule(
-    @Arg("uuid", () => GlobalIdScalar) { id }: GlobalId,
+    @Arg("id", () => GlobalIdScalar) { id }: GlobalId,
     @Arg("sendAt") sendAt: Date
   ): Promise<ConcreteResult<NotificationNode>> {
     this.notificationScheduler.ensureNotificationScheduler();
@@ -244,14 +231,12 @@ export class NotificationResolver
       .map(notificationModelToResource).promise;
   }
 
-  @AccessControlAuthorized({
-    accessLevel: AccessLevel.CommitteeChairOrCoordinator,
-  })
+  @AccessControlAuthorized("update", "NotificationNode")
   @Mutation(() => NotificationNode, {
     name: "acknowledgeDeliveryIssue",
   })
   async acknowledgeDeliveryIssue(
-    @Arg("uuid", () => GlobalIdScalar) { id }: GlobalId
+    @Arg("id", () => GlobalIdScalar) { id }: GlobalId
   ): Promise<ConcreteResult<NotificationNode>> {
     const notification =
       await this.notificationRepository.findNotificationByUnique({ uuid: id })
@@ -276,14 +261,12 @@ export class NotificationResolver
       .map(notificationModelToResource).promise;
   }
 
-  @AccessControlAuthorized({
-    accessLevel: AccessLevel.CommitteeChairOrCoordinator,
-  })
+  @AccessControlAuthorized("deploy", "NotificationNode")
   @Mutation(() => NotificationNode, {
     name: "abortScheduledNotification",
   })
   async abortScheduled(
-    @Arg("uuid", () => GlobalIdScalar) { id }: GlobalId
+    @Arg("id", () => GlobalIdScalar) { id }: GlobalId
   ): Promise<ConcreteResult<NotificationNode>> {
     return this.notificationRepository
       .findNotificationByUnique({ uuid: id })
@@ -306,12 +289,10 @@ export class NotificationResolver
       .map((notification) => notificationModelToResource(notification)).promise;
   }
 
-  @AccessControlAuthorized({
-    accessLevel: AccessLevel.CommitteeChairOrCoordinator,
-  })
+  @AccessControlAuthorized("delete", "NotificationNode")
   @Mutation(() => NotificationNode, { name: "deleteNotification" })
   async deleteNotification(
-    @Arg("uuid", () => GlobalIdScalar) { id }: GlobalId,
+    @Arg("id", () => GlobalIdScalar) { id }: GlobalId,
     @Arg("force", {
       nullable: true,
       description:
@@ -349,9 +330,7 @@ export class NotificationResolver
       .map(notificationModelToResource).promise;
   }
 
-  @AccessControlAuthorized({
-    accessLevel: AccessLevel.CommitteeChairOrCoordinator,
-  })
+  @AccessControlAuthorized("get")
   @FieldResolver(() => Int, { name: "deliveryCount" })
   async deliveryCount(
     @Root() { id: { id } }: NotificationNode
@@ -361,9 +340,7 @@ export class NotificationResolver
     });
   }
 
-  @AccessControlAuthorized({
-    accessLevel: AccessLevel.CommitteeChairOrCoordinator,
-  })
+  @AccessControlAuthorized("get")
   @FieldResolver(() => NotificationDeliveryIssueCount, {
     name: "deliveryIssueCount",
   })

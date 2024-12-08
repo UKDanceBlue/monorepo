@@ -1,19 +1,24 @@
 import { Container } from "@freshgum/typedi";
-import type { AccessControlParam } from "@ukdanceblue/common";
-import { AccessLevel, checkParam } from "@ukdanceblue/common";
+import type { AccessControlParam, Action } from "@ukdanceblue/common";
+import { AccessLevel, isGlobalId } from "@ukdanceblue/common";
 import {
   ConcreteError,
   FormattedConcreteError,
   toBasicError,
 } from "@ukdanceblue/common/error";
-import type { GraphQLResolveInfo } from "graphql";
+import {
+  GraphQLList,
+  GraphQLNonNull,
+  GraphQLObjectType,
+  type GraphQLResolveInfo,
+} from "graphql";
 import { Err, Option, Result } from "ts-results-es";
 import type { ArgsDictionary, MiddlewareFn } from "type-graphql";
 import { buildSchema } from "type-graphql";
 import { fileURLToPath } from "url";
 
+import type { GraphQLContext } from "#lib/auth/context.js";
 import { logger } from "#logging/logger.js";
-import type { GraphQLContext } from "#resolvers/context.js";
 
 import { resolversList } from "./resolversList.js";
 
@@ -77,46 +82,158 @@ for (const service of resolversList) {
   }
 }
 
+function pathToString(path: GraphQLResolveInfo["path"]): string {
+  let current: GraphQLResolveInfo["path"] | undefined = path;
+  let result = "";
+  while (current) {
+    result = `${current.key}.${result}`;
+    current = current.prev;
+  }
+  return result;
+}
+
 export default await buildSchema({
   resolvers: resolversList,
   emitSchemaFile: schemaPath,
-  authChecker<RootType extends object>(
+  authChecker(
     resolverData: {
-      root: RootType;
+      root: Record<string, unknown>;
       args: ArgsDictionary;
       context: GraphQLContext;
       info: GraphQLResolveInfo;
     },
-    params: AccessControlParam<RootType>[]
+    params: AccessControlParam[]
   ): boolean {
-    const { context, args, root } = resolverData;
-    const { authorization } = context;
+    const {
+      context,
+      root,
+      info: { parentType, returnType, variableValues, path },
+    } = resolverData;
+    const { accessLevel, ability } = context;
 
-    if (authorization.accessLevel === AccessLevel.SuperAdmin) {
+    if (accessLevel === AccessLevel.SuperAdmin) {
       return true;
     }
 
-    let ok = false;
+    if (params.length === 0) {
+      return true;
+    } else if (params.length === 1) {
+      const [rule] = params as [AccessControlParam];
 
-    for (const rule of params) {
-      const result = checkParam<RootType>(
-        rule,
-        authorization,
-        root,
-        args,
-        context
+      if (rule.length !== 1 && typeof rule[1] !== "string") {
+        return ability.can(...rule);
+      }
+
+      let action: Action;
+      let subject: string | undefined = undefined;
+      let field: string | undefined = undefined;
+
+      if (rule.length === 1) {
+        [action] = rule;
+      } else {
+        [action, , field] = rule;
+        subject = rule[1] as string;
+      }
+
+      if (!field) {
+        field = ".";
+      }
+
+      let id: string | undefined = undefined;
+      if (
+        parentType.name === "Query" ||
+        parentType.name === "Mutation" ||
+        parentType.name === "Subscription"
+      ) {
+        if ("id" in variableValues) {
+          if (typeof variableValues.id === "string") {
+            id = variableValues.id;
+          } else if (isGlobalId(variableValues.id)) {
+            id = variableValues.id.id;
+          } else {
+            throw new Error("Cannot determine ID for query");
+          }
+        } else {
+          const possibleIds = Object.values(variableValues).filter((value) =>
+            isGlobalId(value)
+          );
+          if (possibleIds.length === 1) {
+            id = possibleIds[0]!.id;
+          } else if (possibleIds.length > 1) {
+            throw new Error("Cannot determine ID for query");
+          }
+        }
+      } else if ("id" in root) {
+        if (typeof root.id === "string") {
+          id = root.id;
+        } else if (isGlobalId(root.id)) {
+          id = root.id.id;
+        } else {
+          throw new Error("Cannot determine ID for query");
+        }
+      }
+
+      if (subject === "all") {
+        return ability.can(action, "all", field);
+      }
+
+      if (!subject) {
+        let rt = returnType;
+        if (rt instanceof GraphQLNonNull) {
+          rt = rt.ofType;
+        }
+        if (rt instanceof GraphQLObjectType) {
+          if (
+            rt
+              .getInterfaces()
+              .some(({ name }) => name === "AbstractGraphQLPaginatedResponse")
+          ) {
+            const { data } = rt.getFields();
+            if (data) {
+              rt = data.type;
+            }
+          }
+        }
+        if (rt instanceof GraphQLNonNull) {
+          rt = rt.ofType;
+        }
+        if (rt instanceof GraphQLList) {
+          rt = rt.ofType;
+        }
+        if (rt instanceof GraphQLNonNull) {
+          rt = rt.ofType;
+        }
+        if (rt instanceof GraphQLObjectType) {
+          subject = rt.name;
+        }
+      }
+      if (!subject) {
+        throw new Error(
+          `Cannot determine subject type for query ${pathToString(path)}`
+        );
+      }
+
+      const ok = ability.can(
+        action,
+        {
+          kind: subject as never,
+          id,
+        },
+        field
       );
-      if (result.isErr()) {
-        throw new Error(result.error.detailedMessage);
-      }
-
-      ok = result.value;
-      if (ok) {
-        break;
-      }
+      logger.trace("Checking access control", {
+        rule: ability.relevantRuleFor(action, subject as never, field),
+        authorized: ok,
+        id,
+        action,
+        subject,
+        field,
+      });
+      return ok;
+    } else {
+      logger.error("Invalid access control rule", { params });
+      throw new Error("Invalid access control rule");
     }
-
-    return ok;
   },
   globalMiddlewares: [errorHandlingMiddleware],
   container: {

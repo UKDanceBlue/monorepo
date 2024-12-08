@@ -1,9 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import {
-  AccessLevel,
-  CommitteeRole,
-  dateTimeFromSomething,
-} from "@ukdanceblue/common";
+import { dateTimeFromSomething } from "@ukdanceblue/common";
 import {
   Button,
   Card,
@@ -21,7 +17,6 @@ import { useClient, useQuery } from "urql";
 import { graphql } from "#graphql/index.js";
 import { useImagePicker } from "#hooks/useImagePicker.js";
 import { useQueryStatusWatcher } from "#hooks/useQueryStatusWatcher.js";
-import { routerAuthCheck } from "#tools/routerAuthCheck.js";
 
 const feedPageDocument = graphql(/* GraphQL */ `
   query FeedPage {
@@ -47,8 +42,8 @@ const createFeedItemDocument = graphql(/* GraphQL */ `
 `);
 
 const deleteFeedItemDocument = graphql(/* GraphQL */ `
-  mutation DeleteFeedItem($uuid: GlobalId!) {
-    deleteFeedItem(feedItemUuid: $uuid)
+  mutation DeleteFeedItem($id: GlobalId!) {
+    deleteFeedItem(feedItemUuid: $id)
   }
 `);
 
@@ -192,7 +187,7 @@ function FeedPage() {
                   onClick={async () => {
                     await client
                       .mutation(deleteFeedItemDocument, {
-                        uuid: feedItem.id,
+                        id: feedItem.id,
                       })
                       .toPromise();
                     setTimeout(
@@ -222,16 +217,5 @@ export const Route = createFileRoute("/feed/")({
   component: FeedPage,
   async beforeLoad({ context }) {
     await context.urqlClient.query(feedPageDocument, {});
-    routerAuthCheck(Route, context);
-  },
-  staticData: {
-    authorizationRules: [
-      {
-        accessLevel: AccessLevel.Admin,
-      },
-      {
-        minCommitteeRole: CommitteeRole.Chair,
-      },
-    ],
   },
 });

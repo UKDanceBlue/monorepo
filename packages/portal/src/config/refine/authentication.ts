@@ -4,6 +4,7 @@ import type {
   CheckResponse,
   OnErrorResponse,
 } from "@refinedev/core";
+import { notification } from "antd";
 
 import { API_BASE_URL, urqlClient } from "#config/api.ts";
 import { getLoginState, refreshLoginState } from "#hooks/useLoginState.ts";
@@ -48,9 +49,9 @@ export const authProvider: AuthProvider = {
   login: async (): Promise<AuthActionResponse> => {
     try {
       const result = await openAuthPopup("login");
-      await refreshLoginState(urqlClient);
+      const loginState = await refreshLoginState(urqlClient);
       return {
-        success: result === "success",
+        success: result === "success" && loginState.isOk(),
       };
     } catch (error) {
       console.error(error);
@@ -61,16 +62,20 @@ export const authProvider: AuthProvider = {
     }
   },
   check: (): Promise<CheckResponse> => {
-    const { loggedIn } = getLoginState(urqlClient);
+    const loginState = getLoginState(urqlClient)
+      .map((loginState) => ({ authenticated: loginState.loggedIn ?? false }))
+      .mapErr((error) => ({ error, authenticated: false }));
 
-    return Promise.resolve({ authenticated: loggedIn ?? false });
+    return Promise.resolve(
+      loginState.isOk() ? loginState.value : loginState.error
+    );
   },
   logout: async (): Promise<AuthActionResponse> => {
     try {
       const result = await openAuthPopup("logout");
-      await refreshLoginState(urqlClient);
+      const loginState = await refreshLoginState(urqlClient);
       return {
-        success: result === "success",
+        success: result === "success" && loginState.isOk(),
       };
     } catch (error) {
       console.error(error);
@@ -82,6 +87,9 @@ export const authProvider: AuthProvider = {
     }
   },
   onError: (error): Promise<OnErrorResponse> => {
+    notification.error({
+      message: String(error),
+    });
     return Promise.resolve({ error });
   },
   // optional methods

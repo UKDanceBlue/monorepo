@@ -1,114 +1,31 @@
 import { DeleteOutlined } from "@ant-design/icons";
 import { Button, Checkbox, Flex } from "antd";
-import type { DateTime } from "luxon";
+import { DateTime } from "luxon";
 import { Interval } from "luxon";
-import { useEffect, useMemo, useRef, useState } from "react";
 
 import { LuxonDatePicker } from "#elements/components/antLuxonComponents.js";
 
-export function EventOccurrencePicker<
-  XEventOccurrenceInput extends
-    | { uuid: string; interval: Interval; fullDay: boolean }
-    | { interval: Interval; fullDay: boolean },
->({
-  defaultOccurrence,
-  onChange,
+export function EventOccurrencePicker({
+  value = {
+    interval: Interval.invalid("No input"),
+    fullDay: false,
+  },
+  onChange = () => undefined,
   onDelete,
+  id,
 }: {
-  defaultOccurrence: XEventOccurrenceInput;
-  onChange: (occurrence: XEventOccurrenceInput) => void;
+  value?: { id?: string; interval: Interval; fullDay: boolean };
+  onChange?: (occurrence: {
+    id?: string;
+    interval: Interval;
+    fullDay: boolean;
+  }) => void;
   onDelete?: () => void;
+  id?: string;
 }) {
-  const [start, setStart] = useState<DateTime | null>(
-    defaultOccurrence.interval.start
-  );
-  const [end, setEnd] = useState<DateTime | null>(
-    defaultOccurrence.interval.end
-  );
-  const [fullDay, setFullDay] = useState<boolean>(defaultOccurrence.fullDay);
-
-  const oldDefaultOccurrence = useRef(defaultOccurrence);
-  const oldStart = useRef(start);
-  const oldEnd = useRef(end);
-  const oldFullDay = useRef(fullDay);
-
-  useEffect(() => {
-    if (oldDefaultOccurrence.current !== defaultOccurrence) {
-      oldDefaultOccurrence.current = defaultOccurrence;
-    }
-    if (oldStart.current !== start) {
-      oldStart.current = start;
-    }
-    if (oldEnd.current !== end) {
-      oldEnd.current = end;
-    }
-    if (oldFullDay.current !== fullDay) {
-      oldFullDay.current = fullDay;
-    }
-  }, [defaultOccurrence, start, end, fullDay]);
-
-  const uuid = useMemo(() => {
-    if ("uuid" in defaultOccurrence) {
-      return defaultOccurrence.uuid;
-    }
-    return undefined;
-  }, [defaultOccurrence]);
-
-  useEffect(() => {
-    if (
-      start &&
-      end &&
-      (!Interval.fromDateTimes(start, end).equals(defaultOccurrence.interval) ||
-        fullDay !== defaultOccurrence.fullDay)
-    ) {
-      if (uuid) {
-        onChange({
-          uuid,
-          interval: Interval.fromDateTimes(start, end),
-          fullDay,
-        } as XEventOccurrenceInput);
-      } else {
-        onChange({
-          interval: Interval.fromDateTimes(start, end),
-          fullDay,
-        } as XEventOccurrenceInput);
-      }
-    }
-  }, [
-    start,
-    end,
-    fullDay,
-    onChange,
-    uuid,
-    defaultOccurrence.fullDay,
-    defaultOccurrence.interval,
-  ]);
-
-  useEffect(() => {
-    if (fullDay) {
-      if (start) {
-        setStart(start.startOf("day"));
-      }
-      if (end) {
-        setEnd(end.endOf("day"));
-      }
-    }
-  }, [fullDay, start, end]);
-
-  const fullDayCheckbox = (
-    <Checkbox
-      checked={fullDay}
-      onChange={(e) => {
-        setFullDay(e.target.checked);
-      }}
-    >
-      Full day
-    </Checkbox>
-  );
-
   return (
-    <Flex align="center" gap="middle">
-      {fullDay ? (
+    <Flex align="center" gap="middle" id={id}>
+      {/* {fullDay ? (
         <LuxonDatePicker.RangePicker
           value={[start, end]}
           onChange={(dates) => {
@@ -126,8 +43,37 @@ export function EventOccurrencePicker<
           showTime
           format="YYYY-MM-DD HH:mm"
         />
-      )}
-      {fullDayCheckbox}
+      )} */}
+      <LuxonDatePicker.RangePicker
+        value={[value.interval.start, value.interval.end]}
+        onChange={(dates) => {
+          onChange({
+            ...value,
+            interval: !dates
+              ? Interval.invalid("No input")
+              : Interval.fromDateTimes(
+                  dates[0] ?? DateTime.invalid("No input"),
+                  dates[1] ?? DateTime.invalid("No input")
+                ),
+          });
+        }}
+        showSecond={false}
+        use12Hours
+        showTime={!value.fullDay}
+        format={!value.fullDay ? "YYYY-MM-DD t" : "YYYY-MM-DD"}
+        style={{ minWidth: "50ch" }}
+      />
+      <Checkbox
+        checked={value.fullDay}
+        onChange={(e) => {
+          onChange({
+            ...value,
+            fullDay: e.target.checked,
+          });
+        }}
+      >
+        Full day
+      </Checkbox>
       <Button onClick={onDelete} icon={<DeleteOutlined />} />
     </Flex>
   );
