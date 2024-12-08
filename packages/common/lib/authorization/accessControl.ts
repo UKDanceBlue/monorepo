@@ -254,6 +254,7 @@ function applyCommitteePermissions(
         ".",
         ".members",
       ]);
+      allow("list", "PointEntryNode", ".");
     }
 
     // Coords/Chairs of vice, community, tech, and marketing committees may deploy notifications
