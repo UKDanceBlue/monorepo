@@ -531,7 +531,7 @@ type EventNode implements Node {
 
 type EventOccurrenceNode {
   fullDay: Boolean!
-  id: ID!
+  id: GlobalId!
   interval: IntervalISO!
 }
 
@@ -2479,12 +2479,12 @@ input SetEventInput {
 
 input SetEventOccurrenceInput {
   fullDay: Boolean!
-  interval: IntervalISOInput!
 
   """
-  If updating an existing occurrence, the UUID of the occurrence to update
+  If updating an existing occurrence, the GlobalId of the occurrence to update
   """
-  uuid: GlobalId
+  id: GlobalId
+  interval: IntervalISOInput!
 }
 
 input SetFeedInput {

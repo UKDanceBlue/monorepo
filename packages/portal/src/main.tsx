@@ -15,7 +15,7 @@ import type { useAppProps } from "antd/es/app/context.js";
 import { StrictMode, useEffect, useState } from "react";
 import { Provider as UrqlProvider } from "urql";
 
-import { AntConfigProvider, ThemeConfigProvider } from "#config/ant.js";
+import { ThemeConfigProvider } from "#config/ant.js";
 import { API_BASE_URL, urqlClient } from "#config/api.js";
 import { MarathonConfigProvider } from "#config/marathon.js";
 import { SpinningRibbon } from "#elements/components/design/RibbonSpinner.js";
@@ -97,15 +97,13 @@ declare module "@tanstack/react-router" {
 function Context({ children }: { children: React.ReactNode }) {
   return (
     <ThemeConfigProvider>
-      <AntConfigProvider>
-        <AntApp style={{ height: "100%" }}>
-          <UrqlProvider value={urqlClient}>
-            <DevtoolsProvider>
-              <MarathonConfigProvider>{children}</MarathonConfigProvider>
-            </DevtoolsProvider>
-          </UrqlProvider>
-        </AntApp>
-      </AntConfigProvider>
+      <AntApp style={{ height: "100%" }}>
+        <UrqlProvider value={urqlClient}>
+          <DevtoolsProvider>
+            <MarathonConfigProvider>{children}</MarathonConfigProvider>
+          </DevtoolsProvider>
+        </UrqlProvider>
+      </AntApp>
     </ThemeConfigProvider>
   );
 }
@@ -152,7 +150,7 @@ function RouterComponent() {
         display: "flex",
         justifyContent: "center",
         alignItems: "center",
-        backgroundColor: "#777",
+        backgroundColor: "#99f",
       }}
     >
       <Empty

@@ -19,6 +19,7 @@ export const refineResources: ResourceProps[] = [
       icon: <CalendarOutlined />,
       label: "Events",
       nodeName: "EventNode",
+      canDelete: true,
     },
     create: "/events/create",
     edit: "/events/:id/edit",
@@ -31,6 +32,7 @@ export const refineResources: ResourceProps[] = [
       icon: <TeamOutlined />,
       label: "Teams",
       nodeName: "TeamNode",
+      canDelete: true,
     },
     create: "/teams/create",
     edit: "/teams/:id/edit",
@@ -99,6 +101,7 @@ export const refineResources: ResourceProps[] = [
       icon: <UserOutlined />,
       label: "People",
       modelName: "PersonNode",
+      canDelete: true,
     },
     create: "/people/create",
     edit: "/people/:id/edit",
@@ -111,6 +114,7 @@ export const refineResources: ResourceProps[] = [
       icon: <BellOutlined />,
       label: "Notifications",
       modelName: "NotificationNode",
+      canDelete: true,
     },
     create: "/notifications/create",
     edit: "/notifications/:id/edit",
@@ -123,6 +127,7 @@ export const refineResources: ResourceProps[] = [
       icon: <FlagOutlined />,
       label: "Marathon",
       modelName: "MarathonNode",
+      canDelete: true,
     },
     create: "/marathon/create",
     edit: "/marathon/:id/edit",
@@ -135,6 +140,7 @@ export const refineResources: ResourceProps[] = [
       icon: <ContainerOutlined />,
       label: "Feed",
       modelName: "FeedNode",
+      canDelete: true,
     },
     create: "/feed/create",
     edit: "/feed/:id/edit",
@@ -147,6 +153,7 @@ export const refineResources: ResourceProps[] = [
       icon: <FileImageOutlined />,
       label: "Images",
       modelName: "ImageNode",
+      canDelete: true,
     },
     create: "/images/create",
     edit: "/images/:id/edit",
@@ -206,9 +213,9 @@ function check(url: string[] | undefined, urlParts: string[]) {
  * Accepts a url in the form /path/$param/path and returns the resource and action
  */
 export const findResourceAction = (
-  url: string
+  pathname: string
 ): { resource?: ResourceProps; action?: Action } => {
-  const urlParts = url.split("/").filter(Boolean);
+  const urlParts = pathname.split("/").filter(Boolean);
   for (const {
     listUrl,
     createUrl,

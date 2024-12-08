@@ -1,32 +1,20 @@
-import { DeleteOutlined, EditOutlined } from "@ant-design/icons";
 import { Breadcrumb, Show } from "@refinedev/antd";
 import type { HttpError } from "@refinedev/core";
 import { useOne } from "@refinedev/core";
-import { Link, useNavigate } from "@tanstack/react-router";
 import {
   base64StringToArray,
   intervalFromSomething,
 } from "@ukdanceblue/common";
-import {
-  Button,
-  Descriptions,
-  Empty,
-  Flex,
-  Image,
-  List,
-  Typography,
-} from "antd";
+import { Descriptions, Empty, Flex, Image, List, Typography } from "antd";
 import DescriptionsItem from "antd/es/descriptions/Item.js";
 import type { Interval } from "luxon";
 import { DateTime } from "luxon";
-import Markdown from "markdown-it";
 import { useMemo } from "react";
+import Markdown from "react-markdown";
 import { thumbHashToDataURL } from "thumbhash";
 
 import type { FragmentOf, ResultOf } from "#graphql/index.js";
 import { graphql } from "#graphql/index.js";
-
-import { useEventDeletePopup } from "../../components/event/EventDeletePopup";
 
 export const EventViewerFragment = graphql(/* GraphQL */ `
   fragment EventViewerFragment on EventNode {
@@ -54,15 +42,12 @@ export const EventViewerFragment = graphql(/* GraphQL */ `
   }
 `);
 
-const markdown = new Markdown({ linkify: true });
-
 export function EventViewer({ id }: { id: string }) {
-  const { data } = useOne<
+  const { data, isLoading } = useOne<
     FragmentOf<typeof EventViewerFragment>,
     HttpError,
     ResultOf<typeof EventViewerFragment>
   >({
-    resource: "event",
     id,
     meta: {
       gqlFragment: EventViewerFragment,
@@ -87,43 +72,14 @@ export function EventViewer({ id }: { id: string }) {
     [eventData?.occurrences]
   );
 
-  const navigate = useNavigate();
-  const { EventDeletePopup, showModal } = useEventDeletePopup({
-    uuid: eventData?.id ?? "",
-    onDelete: () => {
-      navigate({ to: "/events" }).catch((error: unknown) =>
-        console.error(error)
-      );
-    },
-  });
-
-  const parsedDescription = useMemo(() => {
-    if (!eventData?.description) return undefined;
-    return markdown.render(eventData.description);
-  }, [eventData?.description]);
-
   return (
-    <Show breadcrumb={<Breadcrumb />}>
+    <Show
+      breadcrumb={<Breadcrumb />}
+      title={eventData?.title}
+      recordItemId={id}
+      isLoading={isLoading}
+    >
       <Flex vertical gap="middle" align="center">
-        <Typography.Title level={2}>
-          {eventData?.title}
-          <Link
-            from="/events/$eventId"
-            to="edit"
-            params={{ eventId: eventData?.id }}
-            color="#efefef"
-          >
-            <EditOutlined style={{ marginLeft: "1em" }} />
-          </Link>
-          <Button
-            style={{ display: "inline", marginLeft: "1em" }}
-            onClick={showModal}
-            icon={<DeleteOutlined />}
-            danger
-            shape="circle"
-          />
-        </Typography.Title>
-        {EventDeletePopup}
         {!eventData ? (
           <Empty />
         ) : (
@@ -195,13 +151,11 @@ export function EventViewer({ id }: { id: string }) {
                   </List>
                 </Descriptions.Item>
               )}
-              {parsedDescription && (
+              {eventData.description && (
                 <Descriptions.Item label="Description">
-                  <Typography.Paragraph>
-                    <div
-                      dangerouslySetInnerHTML={{ __html: parsedDescription }}
-                    />
-                  </Typography.Paragraph>
+                  <div style={{ display: "block" }}>
+                    <Markdown>{eventData.description}</Markdown>
+                  </div>
                 </Descriptions.Item>
               )}
               <Descriptions.Item label="Created">

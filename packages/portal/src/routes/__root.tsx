@@ -5,11 +5,10 @@ import {
   createRootRouteWithContext,
   Link,
   Outlet,
-  useRouter,
 } from "@tanstack/react-router";
 import { Button, ConfigProvider, Layout, Menu, notification } from "antd";
 import type { useAppProps } from "antd/es/app/context.js";
-import { lazy, Suspense, useContext, useMemo, useState } from "react";
+import { lazy, Suspense, useContext, useState } from "react";
 import type { Client as UrqlClient } from "urql";
 
 import watermark from "#assets/watermark.svg";
@@ -18,7 +17,7 @@ import { authProvider } from "#config/refine/authentication.ts";
 import { accessControlProvider } from "#config/refine/authorization.ts";
 import { dataProvider } from "#config/refine/data.ts";
 import { refineResources } from "#config/refine/resources.tsx";
-import { refineRouterProvider } from "#config/refine/router.ts";
+import { routerBindings } from "#config/refine/router.tsx";
 import { SessionStorageKeys } from "#config/storage.tsx";
 import { Sider } from "#elements/components/sider/index.tsx";
 import { ConfigModal } from "#elements/singletons/ConfigModal.tsx";
@@ -164,7 +163,7 @@ function RootWithRefine() {
     <Refine
       dataProvider={dataProvider}
       notificationProvider={useNotificationProvider}
-      routerProvider={refineRouterProvider}
+      routerProvider={routerBindings}
       authProvider={authProvider}
       options={{
         projectId: "DqkUbD-wpgLRK-UO3SFV",
@@ -172,6 +171,7 @@ function RootWithRefine() {
           icon: <img src={watermark} alt="DanceBlue Logo" />,
           text: "DanceBlue Portal",
         },
+        mutationMode: "optimistic",
       }}
       accessControlProvider={accessControlProvider}
       resources={refineResources}

@@ -1,5 +1,5 @@
 import { Service } from "@freshgum/typedi";
-import { Event, Prisma, PrismaClient } from "@prisma/client";
+import { Event, EventOccurrence, Prisma, PrismaClient } from "@prisma/client";
 import { SortDirection } from "@ukdanceblue/common";
 
 import type { FilterItems } from "#lib/prisma-utils/gqlFilterToPrismaFilter.js";
@@ -62,6 +62,10 @@ import { Ok, Result } from "ts-results-es";
 
 import { externalUrlToImage } from "#lib/external-apis/externalUrlToImage.js";
 import { prismaToken } from "#lib/typediTokens.js";
+import {
+  handleRepositoryError,
+  RepositoryError,
+} from "#repositories/shared.js";
 
 export interface ForeignEvent {
   id: string;
@@ -285,22 +289,81 @@ export class EventRepository {
     });
   }
 
-  updateEvent(param: UniqueEventParam, data: Prisma.EventUpdateInput) {
+  async updateEvent(
+    param: UniqueEventParam,
+    data: {
+      title: string;
+      summary: string | null;
+      description: string | null;
+      location: string | null;
+      eventOccurrences: {
+        uuid?: string;
+        interval: {
+          start: Date | string;
+          end: Date | string;
+        };
+        fullDay: boolean;
+      }[];
+    }
+  ): Promise<
+    Result<Event & { eventOccurrences: EventOccurrence[] }, RepositoryError>
+  > {
     try {
-      return this.prisma.event.update({
-        where: param,
-        data,
-        include: { eventOccurrences: true },
-      });
+      return Ok(
+        await this.prisma.$transaction(async (prisma) => {
+          await prisma.eventOccurrence.deleteMany({
+            where: {
+              event: param,
+              uuid: {
+                notIn: data.eventOccurrences
+                  .filter((occurrence) => occurrence.uuid != null)
+                  .map((occurrence) => occurrence.uuid!),
+              },
+            },
+          });
+          return prisma.event.update({
+            where: param,
+            include: { eventOccurrences: true },
+            data: {
+              title: data.title,
+              summary: data.summary,
+              description: data.description,
+              location: data.location,
+              eventOccurrences: {
+                createMany: {
+                  data: data.eventOccurrences
+                    .filter((occurrence) => occurrence.uuid == null)
+                    .map(
+                      (
+                        occurrence
+                      ): Prisma.EventOccurrenceCreateManyEventInput => ({
+                        date: occurrence.interval.start,
+                        endDate: occurrence.interval.end,
+                        fullDay: occurrence.fullDay,
+                      })
+                    ),
+                },
+                updateMany: data.eventOccurrences
+                  .filter((occurrence) => occurrence.uuid != null)
+                  .map(
+                    (
+                      occurrence
+                    ): Prisma.EventOccurrenceUpdateManyWithWhereWithoutEventInput => ({
+                      where: { uuid: occurrence.uuid },
+                      data: {
+                        date: occurrence.interval.start,
+                        endDate: occurrence.interval.end,
+                        fullDay: occurrence.fullDay,
+                      },
+                    })
+                  ),
+              },
+            },
+          });
+        })
+      );
     } catch (error) {
-      if (
-        error instanceof Prisma.PrismaClientKnownRequestError &&
-        error.code === "P2025"
-      ) {
-        return null;
-      } else {
-        throw error;
-      }
+      return handleRepositoryError(error);
     }
   }
 

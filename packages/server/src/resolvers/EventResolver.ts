@@ -16,6 +16,7 @@ import {
   ListEventsResponse,
   SetEventInput,
 } from "@ukdanceblue/common";
+import { ConcreteResult } from "@ukdanceblue/common/error";
 import { VoidResolver } from "graphql-scalars";
 import {
   Arg,
@@ -161,7 +162,7 @@ export class EventResolver implements CrudResolver<EventNode, "event"> {
   async setEvent(
     @Arg("id", () => GlobalIdScalar) { id }: GlobalId,
     @Arg("input") input: SetEventInput
-  ): Promise<EventNode> {
+  ): Promise<ConcreteResult<EventNode>> {
     const row = await this.eventRepository.updateEvent(
       { uuid: id },
       {
@@ -169,54 +170,17 @@ export class EventResolver implements CrudResolver<EventNode, "event"> {
         summary: input.summary,
         description: input.description,
         location: input.location,
-        eventOccurrences: {
-          createMany: {
-            data: input.occurrences
-              .filter((occurrence) => occurrence.uuid == null)
-              .map(
-                (occurrence): Prisma.EventOccurrenceCreateManyEventInput => ({
-                  date: occurrence.interval.start,
-                  endDate: occurrence.interval.end,
-                  fullDay: occurrence.fullDay,
-                })
-              ),
-          },
-          updateMany: input.occurrences
-            .filter((occurrence) => occurrence.uuid != null)
-            .map(
-              (
-                occurrence
-              ): Prisma.EventOccurrenceUpdateManyWithWhereWithoutEventInput => ({
-                where: { uuid: occurrence.uuid!.id },
-                data: {
-                  date: occurrence.interval.start,
-                  endDate: occurrence.interval.end,
-                  fullDay: occurrence.fullDay,
-                },
-              })
-            ),
-          // TODO: test if this delete also deletes the occurrences we are creating
-          deleteMany: {
-            uuid: {
-              notIn: input.occurrences
-                .filter((occurrence) => occurrence.uuid != null)
-                .map((occurrence) => occurrence.uuid!.id),
-            },
-          },
-        },
+        eventOccurrences: input.occurrences,
       }
     );
 
-    if (row == null) {
-      throw new LegacyError(LegacyErrorCode.NotFound, "Event not found");
-    }
-
-    auditLogger.secure("Event updated", { event: row });
-
-    return eventModelToResource(
-      row,
-      row.eventOccurrences.map(eventOccurrenceModelToResource)
-    );
+    return row.map((row) => {
+      auditLogger.secure("Event updated", { event: row });
+      return eventModelToResource(
+        row,
+        row.eventOccurrences.map(eventOccurrenceModelToResource)
+      );
+    });
   }
 
   @AccessControlAuthorized("update", "EventNode")

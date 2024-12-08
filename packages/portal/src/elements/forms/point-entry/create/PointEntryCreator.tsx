@@ -194,7 +194,7 @@ export function PointEntryCreator({
                   {(personFromUuid) => (
                     <Checkbox
                       name={field.name}
-                      value={field.state.value}
+                      checked={field.state.value}
                       onChange={(val) => field.handleChange(val.target.checked)}
                       disabled={
                         !personFromUuid ||

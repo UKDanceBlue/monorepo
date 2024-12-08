@@ -1,5 +1,6 @@
+/* eslint-disable @typescript-eslint/only-throw-error */
 /* eslint-disable @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-member-access */
-import type { DataProvider } from "@refinedev/core";
+import type { DataProvider, HttpError } from "@refinedev/core";
 import type { Pagination } from "@refinedev/core";
 import type {
   BooleanFilterItemInterface,
@@ -12,6 +13,7 @@ import type {
   StringFilterItemInterface,
 } from "@ukdanceblue/common";
 import { getCrudOperationNames } from "@ukdanceblue/common";
+import type { CombinedError } from "@urql/core";
 import { gql } from "@urql/core";
 import camelcase from "camelcase";
 import {
@@ -45,6 +47,31 @@ export interface FilterObject {
   booleanFilters: BooleanFilterItemInterface<string>[];
 }
 
+function combinedToHttpError(error: CombinedError): HttpError {
+  if (error.networkError) {
+    return {
+      statusCode: 0,
+      message: error.networkError.message,
+      cause: error.networkError,
+    };
+  } else {
+    const { code } =
+      error.graphQLErrors.find((e) => e.extensions.code)?.extensions ?? {};
+    return {
+      statusCode:
+        typeof code === "number"
+          ? code
+          : code === "BAD_USER_INPUT"
+            ? 400
+            : code === "UNAUTHORIZED"
+              ? 401
+              : 500,
+      message: error.message,
+      cause: error,
+    };
+  }
+}
+
 type ListQueryOptions = PaginationOptions & SortingOptions & FilterObject;
 
 // We alias gql to gqlButDifferentName to avoid the GraphQL plugin giving us an error about the invalid syntax
@@ -69,7 +96,7 @@ export const dataProvider: Required<DataProvider> = {
       .toPromise();
 
     if (response.error) {
-      throw response.error;
+      throw combinedToHttpError(response.error);
     }
 
     const key = getOperationName(resource, "createOne");
@@ -90,22 +117,13 @@ export const dataProvider: Required<DataProvider> = {
 
   getOne: async (params) => {
     const { meta, id, resource } = params;
-    const gqlOperation = meta?.gqlQuery ?? meta?.gqlMutation;
 
     let query;
-    if (gqlOperation) {
-      query = isMutation(gqlOperation)
-        ? gqlButDifferentName`
-          query Get${camelcase(singular(resource), { pascalCase: true })}($id: GlobalId!) {
-            ${getOperationName(resource, "getOne")}(id: $id) {
-              ${getOperationFields(gqlOperation)}
-            }
-          }
-        `
-        : gqlOperation;
+    if (meta?.gqlQuery) {
+      query = meta.gqlQuery;
     } else if (meta?.gqlFragment) {
-      const fragmentDefinition = (meta.gqlFragment as DocumentNode)
-        .definitions[0];
+      const fragmentDefinition = (meta.gqlFragment as Partial<DocumentNode>)
+        .definitions?.[0];
       if (fragmentDefinition?.kind === Kind.FRAGMENT_DEFINITION) {
         query = gqlButDifferentName`
         query Get${camelcase(singular(resource), { pascalCase: true })}($id: GlobalId!) {
@@ -116,6 +134,14 @@ export const dataProvider: Required<DataProvider> = {
         ${meta.gqlFragment as DocumentNode}
       `;
       }
+    } else if (meta?.gqlMutation) {
+      query = gqlButDifferentName`
+          query Get${camelcase(singular(resource), { pascalCase: true })}($id: GlobalId!) {
+            ${getOperationName(resource, "getOne")}(id: $id) {
+              ${getOperationFields(meta.gqlMutation)}
+            }
+          }
+        `;
     }
 
     if (!query) {
@@ -130,7 +156,7 @@ export const dataProvider: Required<DataProvider> = {
       .toPromise();
 
     if (response.error) {
-      throw response.error;
+      throw combinedToHttpError(response.error);
     }
 
     const key = getOperationName(resource, "getOne");
@@ -176,7 +202,7 @@ export const dataProvider: Required<DataProvider> = {
       .toPromise();
 
     if (response.error) {
-      throw response.error;
+      throw combinedToHttpError(response.error);
     }
 
     const val = response.data[getOperationName(resource, "getList")];
@@ -228,7 +254,7 @@ export const dataProvider: Required<DataProvider> = {
     const data = response.data?.[key];
 
     if (response.error) {
-      throw response.error;
+      throw combinedToHttpError(response.error);
     }
 
     return { data };
@@ -243,20 +269,48 @@ export const dataProvider: Required<DataProvider> = {
   },
 
   deleteOne: async (params) => {
-    const { meta, id, resource } = params;
+    const { meta, id, variables, resource } = params;
 
-    if (!meta?.gqlMutation) {
+    let query;
+    if (meta?.gqlMutation) {
+      query = meta.gqlMutation;
+    } else if (meta?.gqlFragment) {
+      const fragmentDefinition = (meta.gqlFragment as Partial<DocumentNode>)
+        .definitions?.[0];
+      if (fragmentDefinition?.kind === Kind.FRAGMENT_DEFINITION) {
+        query = gqlButDifferentName`
+        mutation Delete${camelcase(singular(resource), { pascalCase: true })}($id: GlobalId!) {
+          ${getOperationName(resource, "deleteOne")}(id: $id) {
+            ...${fragmentDefinition.name.value}
+          }
+        }
+        ${meta.gqlFragment as DocumentNode}
+      `;
+      }
+    } else {
+      query = gqlButDifferentName`
+          mutation Delete${camelcase(singular(resource), { pascalCase: true })}($id: GlobalId!) {
+            ${getOperationName(resource, "deleteOne")}(id: $id) {
+              id
+            }
+          }
+        `;
+    }
+
+    if (!query) {
       throw new Error("Operation is required.");
     }
 
     const response = await urqlClient
-      .mutation(meta.gqlMutation, {
-        input: { id, ...meta.gqlVariables },
+      .mutation(query, {
+        id,
+        ...variables,
+        ...meta?.gqlVariables,
       })
       .toPromise();
 
     if (response.error) {
-      throw response.error;
+      throw combinedToHttpError(response.error);
     }
 
     const key = getOperationName(resource, "deleteOne");
@@ -293,7 +347,7 @@ export const dataProvider: Required<DataProvider> = {
     }
 
     if (response.error) {
-      throw response.error;
+      throw combinedToHttpError(response.error);
     }
 
     const { data } = response;
