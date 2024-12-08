@@ -86,6 +86,13 @@ type ResourceSubject = {
 type SubjectValue = ResourceSubject[keyof ResourceSubject];
 export type Subject = InferSubjects<SubjectValue | "all", true>;
 
+export const SubjectStrings = [
+  ...(Object.keys(
+    extraFieldsByResource
+  ) as (keyof typeof extraFieldsByResource)[]),
+  "all",
+] as const;
+
 export type Action =
   | "create"
   | "get"
@@ -100,7 +107,7 @@ export type Action =
 
 const resolveAction = createAliasResolver({
   ["modify"]: ["read", "update", "delete"],
-  ["read"]: ["get", "list", "readActive"],
+  ["read"]: ["get", "list"],
 });
 
 export type AppAbility = MongoAbility<[Action, Subject]>;
@@ -142,25 +149,27 @@ export function getAuthorizationFor({
     return build(caslOptions);
   }
 
+  allow("readActive", ["ConfigurationNode"], ".");
+  allow("get", ["DeviceNode"], ".");
+
   if (accessLevel === AccessLevel.None) {
     return doBuild();
   }
   if (accessLevel === AccessLevel.SuperAdmin) {
-    allow("manage", "all");
+    allow(
+      "manage",
+      "all",
+      Object.values(extraFieldsByResource).reduce<string[]>(
+        (acc, fields) => acc.concat(Object.keys(fields)),
+        ["."]
+      )
+    );
     return doBuild();
   }
 
-  allow("get", "DeviceNode", ".");
-  allow(
-    "readActive",
-    ["FeedNode", "ConfigurationNode", "MarathonNode", "MarathonHourNode"],
-    "."
-  );
-  allow("read", ["CommitteeNode", "EventNode", "ImageNode", "TeamNode"], ".");
-
-  if (accessLevel >= AccessLevel.Committee) {
-    allow("read", ["SolicitationCodeNode"], ".");
-  }
+  allow("readActive", ["FeedNode", "MarathonNode", "MarathonHourNode"], ".");
+  allow("read", ["CommitteeNode", "EventNode", "ImageNode"], ".");
+  allow("list", ["TeamNode"], ".");
 
   if (accessLevel >= AccessLevel.CommitteeChairOrCoordinator) {
     allow(
@@ -169,7 +178,7 @@ export function getAuthorizationFor({
       "."
     );
     allow("manage", "PersonNode", [".", ".memberships"]);
-    allow("read", "NotificationDeliveryNode", ".");
+    allow("read", ["MarathonHourNode", "MarathonNode"], ".");
     allow(["modify", "create"], "NotificationNode", ".");
     allow("read", "NotificationNode", [
       ".",
@@ -225,6 +234,12 @@ export function getAuthorizationFor({
         allow("manage", "TeamNode", ".members");
         break;
       }
+      case CommitteeIdentifier.programmingCommittee: {
+        if (role !== CommitteeRole.Member) {
+          allow("manage", "MarathonHourNode", ".");
+        }
+        break;
+      }
       case CommitteeIdentifier.fundraisingCommittee: {
         allow(
           "manage",
@@ -253,16 +268,16 @@ export function getAuthorizationFor({
     : null;
 
   if (parsedUserId) {
-    allow(
-      "read",
-      "PersonNode",
-      [".", ".memberships", ".fundraisingAssignments"],
-      {
-        id: {
-          $eq: parsedUserId,
-        },
-      }
-    );
+    allow("get", "PersonNode", ["."], {
+      id: {
+        $eq: parsedUserId,
+      },
+    });
+    allow("list", "PersonNode", [".memberships", ".fundraisingAssignments"], {
+      id: {
+        $eq: parsedUserId,
+      },
+    });
   }
 
   const authTeamMemberships = teamMemberships.map(
@@ -270,7 +285,10 @@ export function getAuthorizationFor({
   );
 
   if (authTeamMemberships.length > 0) {
-    allow("read", "TeamNode", [".", ".members", ".fundraisingTotal"], {
+    allow("get", "TeamNode", [".", ".fundraisingTotal"], {
+      id: { $in: authTeamMemberships },
+    });
+    allow("list", "TeamNode", [".members"], {
       id: { $in: authTeamMemberships },
     });
   }
@@ -281,10 +299,10 @@ export function getAuthorizationFor({
     )
     .map((membership) => membership.teamId);
   if (authTeamCaptaincies.length > 0) {
-    allow(["modify", "create"], "TeamNode", ".fundraisingAssignments", {
+    allow(["modify", "create"], "TeamNode", [".fundraisingAssignments"], {
       id: { $in: authTeamCaptaincies },
     });
-    allow("read", "TeamNode", ".solicitationCode", {
+    allow("get", "TeamNode", [".solicitationCode"], {
       id: { $in: authTeamCaptaincies },
     });
   }

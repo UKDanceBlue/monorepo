@@ -36,6 +36,7 @@ export class ConfigurationResolver
     private readonly logDir: string
   ) {}
 
+  @AccessControlAuthorized("readActive")
   @Query(() => GetConfigurationResponse, {
     name: "activeConfiguration",
     description:
