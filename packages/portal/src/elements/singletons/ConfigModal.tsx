@@ -20,7 +20,7 @@ export const ConfigModal = ({
     useContext(marathonContext);
 
   return (
-    <Modal open={open} onClose={onClose}>
+    <Modal open={open} onCancel={onClose}>
       <p>Select Marathon</p>
       <Select
         defaultValue={""}

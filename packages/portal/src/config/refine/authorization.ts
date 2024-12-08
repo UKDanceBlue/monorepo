@@ -12,23 +12,36 @@ export const accessControlProvider: AccessControlProvider = {
       return Promise.resolve({ can: false });
     }
 
+    const ok = loginState.value.ability.can(
+      action === "clone"
+        ? "create"
+        : action === "edit"
+          ? "update"
+          : action === "show"
+            ? "get"
+            : (action as Action),
+      params?.resource?.meta?.modelName
+        ? {
+            id: params.id ? String(params.id) : undefined,
+            kind: params.resource.meta.modelName as "FundraisingAssignmentNode",
+          }
+        : "all"
+    );
+
+    console.log("Checking access control", {
+      authorized: ok,
+      action,
+      subject: params?.resource?.meta?.modelName
+        ? {
+            id: params.id ? String(params.id) : undefined,
+            kind: params.resource.meta.modelName as "FundraisingAssignmentNode",
+          }
+        : "all",
+      params,
+    });
+
     return Promise.resolve({
-      can: loginState.value.ability.can(
-        action === "clone"
-          ? "create"
-          : action === "edit"
-            ? "update"
-            : action === "show"
-              ? "get"
-              : (action as Action),
-        params?.resource?.meta?.modelName
-          ? {
-              id: params.id ? String(params.id) : undefined,
-              kind: params.resource.meta
-                .modelName as "FundraisingAssignmentNode",
-            }
-          : "all"
-      ),
+      can: ok,
     });
   },
   options: {

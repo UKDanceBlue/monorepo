@@ -18,7 +18,7 @@ export const refineResources: ResourceProps[] = [
     meta: {
       icon: <CalendarOutlined />,
       label: "Events",
-      nodeName: "EventNode",
+      modelName: "EventNode",
       canDelete: true,
     },
     create: "/events/create",
@@ -31,7 +31,7 @@ export const refineResources: ResourceProps[] = [
     meta: {
       icon: <TeamOutlined />,
       label: "Teams",
-      nodeName: "TeamNode",
+      modelName: "TeamNode",
       canDelete: true,
     },
     create: "/teams/create",
@@ -44,13 +44,14 @@ export const refineResources: ResourceProps[] = [
     meta: {
       icon: <DollarCircleOutlined />,
       label: "Fundraising",
+      modelName: "FundraisingEntryNode",
     },
   },
   {
     name: "fundraising",
     meta: {
       label: "Fundraising",
-      nodeName: "FundraisingEntryNode",
+      modelName: "FundraisingEntryNode",
       parent: "fundraising-group",
     },
     create: "/fundraising/create",
@@ -64,7 +65,7 @@ export const refineResources: ResourceProps[] = [
     meta: {
       label: "Solicitation Codes",
       parent: "fundraising-group",
-      nodeName: "SolicitationCodeNode",
+      modelName: "SolicitationCodeNode",
     },
     create: "/fundraising/solicitation-code/create",
     edit: "/fundraising/solicitation-code/:id/edit",
@@ -76,7 +77,7 @@ export const refineResources: ResourceProps[] = [
     meta: {
       label: "Uploaded DDNs",
       parent: "fundraising-group",
-      nodeName: "DailyDepartmentNotificationNode",
+      modelName: "DailyDepartmentNotificationNode",
     },
     create: "/fundraising/ddn/create",
     edit: "/fundraising/ddn/:id/edit",
