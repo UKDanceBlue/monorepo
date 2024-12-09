@@ -117,7 +117,7 @@ export function PointEntryOpportunityLookup({
                   input: {
                     name: values.name,
                     opportunityDate: values.opportunityDate
-                      ? String(values.opportunityDate)
+                      ? values.opportunityDate.toISOString()
                       : null,
                     type: TeamType.Spirit,
                     marathonUuid: marathon.id,
