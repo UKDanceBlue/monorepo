@@ -2,11 +2,15 @@ import { Select } from "antd";
 import { useMemo, useRef, useState } from "react";
 import { useQuery } from "urql";
 
-import { SessionStorageKeys } from "#config/storage.js";
+import { StorageManager, useStorageValue } from "#config/storage.ts";
 import { graphql } from "#graphql/index.js";
 
 export function MasqueradeSelector() {
   const [search, setSearch] = useState("");
+  const [, setMasquerade] = useStorageValue(
+    StorageManager.Local,
+    StorageManager.keys.masquerade
+  );
 
   const [{ data, fetching, error }] = useQuery({
     query: graphql(/* GraphQL */ `
@@ -47,6 +51,13 @@ export function MasqueradeSelector() {
         width: "100%",
         display: "inline-block",
       }}
+      notFoundContent={
+        search.length < 3
+          ? "Type at least 3 characters"
+          : fetching
+            ? null
+            : undefined
+      }
       options={
         data?.searchPeopleByName.map((person) => ({
           value: person.id,
@@ -54,7 +65,7 @@ export function MasqueradeSelector() {
         })) ?? []
       }
       onSelect={(value) => {
-        sessionStorage.setItem(SessionStorageKeys.Masquerade, String(value));
+        setMasquerade(String(value));
         window.location.reload();
       }}
       onSearch={setSearch}

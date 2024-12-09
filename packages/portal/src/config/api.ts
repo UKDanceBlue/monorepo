@@ -1,7 +1,7 @@
 import { devtoolsExchange } from "@urql/devtools";
 import { cacheExchange, Client, fetchExchange } from "urql";
 
-import { SessionStorageKeys } from "#config/storage.js";
+import { StorageManager } from "./storage";
 
 export const API_BASE_URL =
   import.meta.env.VITE_API_BASE_URL ||
@@ -14,9 +14,7 @@ export const urqlClient = new Client({
   exchanges: [devtoolsExchange, cacheExchange, fetchExchange],
   fetchOptions: () => {
     // const query = new URLSearchParams(window.location.search).get("masquerade");
-    const masquerade = sessionStorage
-      .getItem(SessionStorageKeys.Masquerade)
-      ?.trim();
+    const masquerade = StorageManager.Local.get(StorageManager.keys.masquerade);
     return {
       credentials: "include",
       headers: masquerade

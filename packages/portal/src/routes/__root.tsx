@@ -1,4 +1,4 @@
-import { MoonOutlined, SettingOutlined, SunOutlined } from "@ant-design/icons";
+import { SettingOutlined } from "@ant-design/icons";
 import { AuthPage, useNotificationProvider } from "@refinedev/antd";
 import { Refine, useLogin } from "@refinedev/core";
 import {
@@ -8,17 +8,16 @@ import {
 } from "@tanstack/react-router";
 import { Button, ConfigProvider, Layout, Menu, notification } from "antd";
 import type { useAppProps } from "antd/es/app/context.js";
-import { lazy, Suspense, useContext, useState } from "react";
+import { lazy, Suspense, useState } from "react";
 import type { Client as UrqlClient } from "urql";
 
 import watermark from "#assets/watermark.svg";
-import { themeConfigContext } from "#config/antThemeConfig.ts";
 import { authProvider } from "#config/refine/authentication.ts";
 import { accessControlProvider } from "#config/refine/authorization.ts";
 import { dataProvider } from "#config/refine/data.ts";
 import { refineResources } from "#config/refine/resources.tsx";
 import { routerBindings } from "#config/refine/router.tsx";
-import { SessionStorageKeys } from "#config/storage.tsx";
+import { StorageManager, useStorageValue } from "#config/storage.ts";
 import { Sider } from "#elements/components/sider/index.tsx";
 import { ConfigModal } from "#elements/singletons/ConfigModal.tsx";
 import { refreshLoginState, useLoginState } from "#hooks/useLoginState.js";
@@ -43,7 +42,10 @@ interface RouterContext {
 function RootComponent() {
   const { loggedIn } = useLoginState();
   const { mutate: login } = useLogin();
-  const { dark, setDark } = useContext(themeConfigContext);
+  const [collapsed, setCollapsed] = useState(false);
+  const masquerading =
+    useStorageValue(StorageManager.Local, StorageManager.keys.masquerade)[0] !==
+    null;
 
   const [settingsOpen, setSettinsOpen] = useState(false);
 
@@ -92,6 +94,8 @@ function RootComponent() {
           }}
         >
           <Sider
+            collapsed={collapsed}
+            setCollapsed={setCollapsed}
             Title={() => (
               <Link to="/">
                 <img
@@ -111,26 +115,13 @@ function RootComponent() {
                 >
                   Settings
                 </Menu.Item>
-                <Menu.Item
-                  key="theme"
-                  icon={
-                    dark ? (
-                      <SunOutlined style={{ color: "inherit" }} />
-                    ) : (
-                      <MoonOutlined style={{ color: "inherit" }} />
-                    )
-                  }
-                  onClick={() => setDark(!dark)}
-                >
-                  {dark ? "Light" : "Dark"} Theme
-                </Menu.Item>
                 {logout}
               </>
             )}
           />
         </ConfigProvider>
-        <Layout style={{ marginLeft: 200 }}>
-          {sessionStorage.getItem(SessionStorageKeys.Masquerade)?.trim() && (
+        <Layout>
+          {masquerading && (
             <div
               style={{
                 background: "rgba(255, 0, 0, 0.5)",

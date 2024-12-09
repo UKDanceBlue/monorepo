@@ -1,8 +1,7 @@
 import type { ThemeConfig } from "antd";
 import { ConfigProvider, theme } from "antd";
-import { useState } from "react";
 
-import { themeConfigContext } from "./antThemeConfig.js";
+import { StorageManager, useStorageValue } from "./storage.js";
 
 function makeAntDesignTheme({ dark }: { dark: boolean }): ThemeConfig {
   return {
@@ -23,18 +22,14 @@ export function ThemeConfigProvider({
 }: {
   children: React.ReactNode;
 }) {
-  const [dark, setDark] = useState(document.cookie.includes("dark=true"));
-
-  const setDarkAndCookie = (dark: boolean) => {
-    setDark(dark);
-    document.cookie = `dark=${dark}; path=/; max-age=31536000`;
-  };
+  const [dark] = useStorageValue(
+    StorageManager.Local,
+    StorageManager.keys.darkMode
+  );
 
   return (
-    <themeConfigContext.Provider value={{ dark, setDark: setDarkAndCookie }}>
-      <ConfigProvider theme={makeAntDesignTheme({ dark })}>
-        {children}
-      </ConfigProvider>
-    </themeConfigContext.Provider>
+    <ConfigProvider theme={makeAntDesignTheme({ dark: dark === "true" })}>
+      {children}
+    </ConfigProvider>
   );
 }

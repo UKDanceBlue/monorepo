@@ -1,5 +1,5 @@
 import { dateTimeFromSomething } from "@ukdanceblue/common";
-import { useEffect, useMemo, useState } from "react";
+import { useMemo } from "react";
 import { useQuery } from "urql";
 
 import { graphql } from "#graphql/index.js";
@@ -7,7 +7,7 @@ import { useAuthorizationRequirement } from "#hooks/useLoginState.js";
 
 import type { MarathonContextData } from "./marathonContext.js";
 import { marathonContext } from "./marathonContext.js";
-import { LocalStorageKeys } from "./storage.js";
+import { StorageManager, useStorageValue } from "./storage.js";
 
 const latestMarathonDocument = graphql(/* GraphQL */ `
   query ActiveMarathon {
@@ -54,15 +54,10 @@ export const MarathonConfigProvider = ({
     "MarathonNode"
   );
 
-  const [marathonId, setMarathonId] = useState<string | null>(null);
-
-  useEffect(() => {
-    if (marathonId) {
-      localStorage.setItem(LocalStorageKeys.SelectedMarathon, marathonId);
-    } else {
-      localStorage.removeItem(LocalStorageKeys.SelectedMarathon);
-    }
-  }, [marathonId]);
+  const [marathonId, setMarathonId] = useStorageValue(
+    StorageManager.Session,
+    StorageManager.keys.selectedMarathon
+  );
 
   const [latestMarathonResult] = useQuery({
     query: latestMarathonDocument,
@@ -77,23 +72,6 @@ export const MarathonConfigProvider = ({
     variables: { marathonId: marathonId ?? "" },
     pause: marathonId == null || valueOverride != null,
   });
-
-  useEffect(() => {
-    const storedMarathonId = localStorage.getItem(
-      LocalStorageKeys.SelectedMarathon
-    );
-    if (storedMarathonId) {
-      if (
-        allMarathonsResult.data?.marathons.data.some(
-          (m) => m.id === storedMarathonId
-        )
-      ) {
-        setMarathonId(storedMarathonId);
-      } else {
-        localStorage.removeItem(LocalStorageKeys.SelectedMarathon);
-      }
-    }
-  }, [allMarathonsResult.data?.marathons.data]);
 
   let marathon = null;
   if (marathonId != null && selectedMarathonResult.data != null) {

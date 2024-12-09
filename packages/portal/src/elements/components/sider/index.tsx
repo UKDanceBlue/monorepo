@@ -222,7 +222,7 @@ export const Sider: React.FC<
           maskClosable={true}
         >
           <Layout>
-            <Layout.Sider style={{ height: "100vh", overflow: "hidden" }}>
+            <Layout.Sider style={{ height: "100vh", overflow: "auto" }}>
               <RenderToTitle collapsed={false} />
               {renderMenu()}
             </Layout.Sider>
@@ -248,7 +248,6 @@ export const Sider: React.FC<
         style={{
           overflow: "auto",
           height: "100vh",
-          position: "fixed",
           left: 0,
         }}
         collapsible
