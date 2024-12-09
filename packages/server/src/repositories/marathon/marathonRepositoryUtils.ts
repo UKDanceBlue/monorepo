@@ -45,7 +45,7 @@ export function buildMarathonWhere(
   for (const filter of filters ?? []) {
     switch (filter.field) {
       case "year": {
-        where[filter.field] = oneOfFilterToPrisma(filter);
+        where[filter.field] = oneOfFilterToPrisma(filter, false);
         break;
       }
       case "startDate":

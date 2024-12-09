@@ -18,6 +18,7 @@ const notificationDateKeys = [
   "updatedAt",
   "sendAt",
   "startedSendingAt",
+  "deliveryIssueAcknowledgedAt",
 ] as const;
 type NotificationDateKey = (typeof notificationDateKeys)[number];
 

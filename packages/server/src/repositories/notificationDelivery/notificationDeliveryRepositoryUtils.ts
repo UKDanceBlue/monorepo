@@ -45,7 +45,7 @@ export function buildNotificationDeliveryWhere(
   for (const filter of filters ?? []) {
     switch (filter.field) {
       case "deliveryError": {
-        where[filter.field] = oneOfFilterToPrisma(filter);
+        where[filter.field] = oneOfFilterToPrisma(filter, true);
         break;
       }
       case "sentAt":

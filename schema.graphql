@@ -1479,6 +1479,7 @@ enum NotificationResolverAllKeys {
   body
   createdAt
   deliveryIssue
+  deliveryIssueAcknowledgedAt
   sendAt
   startedSendingAt
   title
@@ -1487,6 +1488,7 @@ enum NotificationResolverAllKeys {
 
 enum NotificationResolverDateFilterKeys {
   createdAt
+  deliveryIssueAcknowledgedAt
   sendAt
   startedSendingAt
   updatedAt

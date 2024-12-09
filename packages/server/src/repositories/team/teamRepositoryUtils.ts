@@ -58,16 +58,19 @@ export function buildTeamWhere(
           throw new Error(parsed.error.message);
         }
         where.marathon = {
-          uuid: oneOfFilterToPrisma({
-            ...filter,
-            value: parsed.value,
-          }),
+          uuid: oneOfFilterToPrisma(
+            {
+              ...filter,
+              value: parsed.value,
+            },
+            false
+          ),
         };
         break;
       }
       case "type":
       case "legacyStatus": {
-        where[filter.field] = oneOfFilterToPrisma(filter);
+        where[filter.field] = oneOfFilterToPrisma(filter, false);
         break;
       }
       case "totalPoints": {

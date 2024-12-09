@@ -10,7 +10,7 @@ import { Button, Flex, Table } from "antd";
 import type { ReactNode } from "react";
 import { useEffect } from "react";
 
-import { PaginationFragment } from "#documents/team.ts";
+import { PaginationFragment } from "#documents/shared.ts";
 import type { FragmentOf } from "#graphql/index.js";
 import { graphql, readFragment } from "#graphql/index.js";
 import type { UseListQueryHookReturn } from "#hooks/useListQuery.js";

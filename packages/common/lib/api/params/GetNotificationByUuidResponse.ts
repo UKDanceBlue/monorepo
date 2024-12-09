@@ -60,7 +60,11 @@ export class ListNotificationsArgs extends FilteredListQueryArgs<
   "title" | "body",
   "deliveryIssue",
   never,
-  "createdAt" | "updatedAt" | "sendAt" | "startedSendingAt",
+  | "createdAt"
+  | "updatedAt"
+  | "sendAt"
+  | "startedSendingAt"
+  | "deliveryIssueAcknowledgedAt",
   never
 >("NotificationResolver", {
   all: [
@@ -71,8 +75,15 @@ export class ListNotificationsArgs extends FilteredListQueryArgs<
     "deliveryIssue",
     "sendAt",
     "startedSendingAt",
+    "deliveryIssueAcknowledgedAt",
   ],
-  date: ["createdAt", "updatedAt", "sendAt", "startedSendingAt"],
+  date: [
+    "createdAt",
+    "updatedAt",
+    "sendAt",
+    "startedSendingAt",
+    "deliveryIssueAcknowledgedAt",
+  ],
   string: ["title", "body"],
   oneOf: ["deliveryIssue"],
 }) {}

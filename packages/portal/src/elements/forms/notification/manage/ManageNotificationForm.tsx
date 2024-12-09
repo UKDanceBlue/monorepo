@@ -122,8 +122,16 @@ export const ManageNotificationForm = ({
                 if (sendAt) {
                   void showConfirmModal({
                     ...confirmationModalProps,
-                    title:
-                      "!STOP! Are you sure you would like to schedule the notification? !STOP!",
+                    title: (
+                      <p style={{ textAlign: "center" }}>
+                        !STOP!
+                        <p>
+                          Are you sure you would like to <i>schedule</i> the
+                          notification?
+                        </p>
+                        !STOP!
+                      </p>
+                    ),
                     content: `This will send the notification to ${notification.deliveryCount} specified recipients on ${sendAt.toLocaleString(
                       DateTime.DATE_MED_WITH_WEEKDAY
                     )} at ${sendAt.toLocaleString(DateTime.TIME_SIMPLE)}.`,
@@ -144,14 +152,29 @@ export const ManageNotificationForm = ({
           <Form.Item label="Send the notification now">
             <Button
               type="primary"
-              disabled={notification.startedSendingAt !== null}
+              disabled={
+                notification.startedSendingAt !== null || !!notification.sendAt
+              }
+              title={
+                notification.sendAt
+                  ? "This notification is scheduled, cancel the schedule to send now"
+                  : undefined
+              }
               onClick={() => {
                 void showWarningModal({
                   ...confirmationModalProps,
-                  title:
-                    "!STOP! Are you sure you would like to send the notification? !STOP!",
-                  content:
-                    "This will immediately send the notification to ${notification.deliveryCount} recipients. There is no way to cancel this operation.",
+                  icon: null,
+                  title: (
+                    <p style={{ textAlign: "center" }}>
+                      !STOP!
+                      <p>
+                        Are you sure you would like to <i>send</i> the
+                        notification?
+                      </p>
+                      !STOP!
+                    </p>
+                  ),
+                  content: `This will immediately send the notification to ${notification.deliveryCount} recipients. There is no way to cancel this operation.`,
                   onOk: () => {
                     handleOperationResult(
                       sendNotification(),

@@ -96,7 +96,7 @@ export function buildFundraisingEntryWhere(
         break;
       }
       case "batchType": {
-        where.batchType = oneOfFilterToPrisma(filter);
+        where.batchType = oneOfFilterToPrisma(filter, false);
         break;
       }
       case "teamId": {
@@ -111,10 +111,13 @@ export function buildFundraisingEntryWhere(
             solicitationCode: {
               teams: {
                 some: {
-                  uuid: oneOfFilterToPrisma({
-                    ...filter,
-                    value: parsed.value,
-                  }),
+                  uuid: oneOfFilterToPrisma(
+                    {
+                      ...filter,
+                      value: parsed.value,
+                    },
+                    false
+                  ),
                 },
               },
             },

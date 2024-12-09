@@ -58,15 +58,18 @@ export function buildPointOpportunityWhere(
       }
       case "marathonUuid": {
         where.marathon = {
-          uuid: oneOfFilterToPrisma({
-            ...filter,
-            value: filter.value.map((v) => parseGlobalId(v).unwrap().id),
-          }),
+          uuid: oneOfFilterToPrisma(
+            {
+              ...filter,
+              value: filter.value.map((v) => parseGlobalId(v).unwrap().id),
+            },
+            false
+          ),
         };
         break;
       }
       case "type": {
-        where[filter.field] = oneOfFilterToPrisma(filter);
+        where[filter.field] = oneOfFilterToPrisma(filter, false);
         break;
       }
       case "opportunityDate":

@@ -2,11 +2,11 @@ import type { Prisma } from "@prisma/client";
 import type {
   AbstractBooleanFilterItem,
   AbstractDateFilterItem,
-  AbstractIsNullFilterItem,
   AbstractNumericFilterItem,
   AbstractOneOfFilterItem,
   AbstractStringFilterItem,
 } from "@ukdanceblue/common";
+import { AbstractIsNullFilterItem } from "@ukdanceblue/common";
 import {
   IsComparator,
   NumericComparator,
@@ -197,10 +197,28 @@ export function numericFilterToPrisma<T extends string>(
 }
 
 export function oneOfFilterToPrisma<T extends string>(
-  filter: AbstractOneOfFilterItem<T>
-): { not?: { in?: never[] } } | { in?: never[] } {
+  filter: AbstractOneOfFilterItem<T> | AbstractIsNullFilterItem<T>,
+  nullable: true
+): { not?: { in?: never[] } } | { in?: never[] } | NullFilter;
+export function oneOfFilterToPrisma<T extends string>(
+  filter: AbstractOneOfFilterItem<T> | AbstractIsNullFilterItem<T>,
+  nullable: false
+): { not?: { in?: never[] } } | { in?: never[] };
+export function oneOfFilterToPrisma<T extends string>(
+  filter: AbstractOneOfFilterItem<T> | AbstractIsNullFilterItem<T>,
+  nullable = false
+): { not?: { in?: never[] } } | { in?: never[] } | NullFilter {
+  if (nullable && filter instanceof AbstractIsNullFilterItem) {
+    if (filter.negate) {
+      return { not: { equals: null } };
+    }
+    return { equals: null };
+  }
+
   if (filter.negate) {
     return { not: { in: [...filter.value] as never[] } };
   }
   return { in: [...filter.value] as never[] };
 }
+
+type NullFilter = { equals: null } | { not: { equals: null } };

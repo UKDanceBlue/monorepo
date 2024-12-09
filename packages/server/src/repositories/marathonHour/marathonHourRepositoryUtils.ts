@@ -59,7 +59,7 @@ export function buildMarathonHourWhere(
         break;
       }
       case "marathonYear": {
-        where.marathon = { year: oneOfFilterToPrisma(filter) };
+        where.marathon = { year: oneOfFilterToPrisma(filter, false) };
         break;
       }
       case "shownStartingAt":

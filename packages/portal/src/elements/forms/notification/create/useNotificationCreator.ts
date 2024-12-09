@@ -93,7 +93,7 @@ export function useNotificationCreator(
               memberOfTeamType: values.audience.memberOfTeamType,
               users: values.audience.users?.map(({ id }) => id),
             },
-        url: values.url,
+        url: values.url || undefined,
       });
 
       resetWatcher();

@@ -49,8 +49,12 @@ export function buildNotificationWhere(
 
   for (const filter of filters ?? []) {
     switch (filter.field) {
+      case "deliveryIssueAcknowledgedAt": {
+        where[filter.field] = dateFilterToPrisma(filter);
+        break;
+      }
       case "deliveryIssue": {
-        where[filter.field] = oneOfFilterToPrisma(filter);
+        where[filter.field] = oneOfFilterToPrisma(filter, true);
         break;
       }
       case "title":

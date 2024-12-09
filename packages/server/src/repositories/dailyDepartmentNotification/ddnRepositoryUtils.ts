@@ -135,7 +135,7 @@ export function buildDailyDepartmentNotificationWhere(
         break;
       }
       case "SolicitationCodeNumber": {
-        solicitationCodeWhere.code = oneOfFilterToPrisma(filter);
+        solicitationCodeWhere.code = oneOfFilterToPrisma(filter, false);
         break;
       }
       case "SolicitationCodeName": {
@@ -143,7 +143,7 @@ export function buildDailyDepartmentNotificationWhere(
         break;
       }
       case "SolicitationCodePrefix": {
-        solicitationCodeWhere.prefix = oneOfFilterToPrisma(filter);
+        solicitationCodeWhere.prefix = oneOfFilterToPrisma(filter, false);
         break;
       }
       default: {

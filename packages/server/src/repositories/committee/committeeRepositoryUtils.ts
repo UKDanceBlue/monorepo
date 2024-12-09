@@ -37,7 +37,7 @@ export function buildCommitteeWhere(
   for (const filter of filters ?? []) {
     switch (filter.field) {
       case "identifier": {
-        where[filter.field] = oneOfFilterToPrisma(filter);
+        where[filter.field] = oneOfFilterToPrisma(filter, false);
         break;
       }
       case "createdAt":

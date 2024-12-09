@@ -69,13 +69,13 @@ export function buildPersonWhere(
         break;
       }
       case "committeeRole": {
-        membershipsWhereCommitteeRole = oneOfFilterToPrisma(filter);
+        membershipsWhereCommitteeRole = oneOfFilterToPrisma(filter, false);
         break;
       }
       case "committeeName": {
         membershipsWhereTeam = {
           correspondingCommittee: {
-            identifier: oneOfFilterToPrisma(filter),
+            identifier: oneOfFilterToPrisma(filter, false),
           },
         };
         break;

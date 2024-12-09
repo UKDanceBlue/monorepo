@@ -14,7 +14,7 @@ import type { Client as UrqlClient } from "urql";
 import watermark from "#assets/watermark.svg";
 import { authProvider } from "#config/refine/authentication.ts";
 import { accessControlProvider } from "#config/refine/authorization.ts";
-import { dataProvider } from "#config/refine/data.ts";
+import { dataProvider } from "#config/refine/graphql/data.ts";
 import { refineResources } from "#config/refine/resources.tsx";
 import { routerBindings } from "#config/refine/router.tsx";
 import { StorageManager, useStorageValue } from "#config/storage.ts";

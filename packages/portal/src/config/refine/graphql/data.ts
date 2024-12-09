@@ -26,8 +26,9 @@ import {
 } from "graphql";
 import pluralize, { singular } from "pluralize";
 
-import { API_BASE_URL, urqlClient } from "../api";
+import { API_BASE_URL, urqlClient } from "../../api";
 import { crudFiltersToFilterObject } from "./crudFiltersToFilterObject";
+import { makeListDocument } from "./makeListDocument";
 
 function getOperationName(
   resource: string,
@@ -168,10 +169,6 @@ export const dataProvider: Required<DataProvider> = {
   getList: async (params) => {
     const { meta, sorters, filters, pagination, resource } = params;
 
-    if (!meta?.gqlQuery) {
-      throw new Error("Operation is required.");
-    }
-
     const {
       dateFilters,
       isNullFilters,
@@ -181,11 +178,37 @@ export const dataProvider: Required<DataProvider> = {
       booleanFilters,
     } = crudFiltersToFilterObject(
       filters ?? [],
-      meta.fieldTypes as FieldTypes | undefined
+      meta?.fieldTypes as FieldTypes | undefined
     );
 
+    let query: DocumentNode | undefined;
+    if (meta?.gqlQuery) {
+      query = meta.gqlQuery;
+    } else if (meta?.gqlFragment) {
+      const fragmentDefinition = (meta.gqlFragment as Partial<DocumentNode>)
+        .definitions?.[0];
+      if (fragmentDefinition?.kind === Kind.FRAGMENT_DEFINITION) {
+        const pascalResource = camelcase(singular(resource), {
+          pascalCase: true,
+        });
+
+        query = makeListDocument(pascalResource, resource, fragmentDefinition, {
+          boolean: booleanFilters.length > 0,
+          date: dateFilters.length > 0,
+          isNull: isNullFilters.length > 0,
+          numeric: numericFilters.length > 0,
+          oneOf: oneOfFilters.length > 0,
+          string: stringFilters.length > 0,
+        });
+      }
+    }
+
+    if (!query) {
+      throw new Error("Operation is required.");
+    }
+
     const response = await urqlClient
-      .query(meta.gqlQuery, {
+      .query(query, {
         sortBy: sorters?.map((sorter) => sorter.field) ?? undefined,
         sortDirection: sorters?.map((sorter) => sorter.order) ?? undefined,
         page: pagination?.current ?? undefined,
@@ -196,8 +219,8 @@ export const dataProvider: Required<DataProvider> = {
         numericFilters: numericFilters.length > 0 ? numericFilters : undefined,
         oneOfFilters: oneOfFilters.length > 0 ? oneOfFilters : undefined,
         stringFilters: stringFilters.length > 0 ? stringFilters : undefined,
-        ...meta.variables,
-        ...meta.gqlVariables,
+        ...meta?.variables,
+        ...meta?.gqlVariables,
       } satisfies Partial<ListQueryOptions>)
       .toPromise();
 

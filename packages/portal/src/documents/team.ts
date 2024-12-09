@@ -55,11 +55,3 @@ export const TeamSelectFragment = graphql(/* GraphQL */ `
     type
   }
 `);
-
-export const PaginationFragment = graphql(/* GraphQL */ `
-  fragment PaginationFragment on AbstractGraphQLPaginatedResponse {
-    page
-    pageSize
-    total
-  }
-`);
