@@ -76,7 +76,7 @@ export const EventsTable = () => {
       initPage: 1,
       initPageSize: 10,
       initSorting: [],
-      initialStateOverride: {
+      initialFilters: {
         dateFilters: [
           {
             field: "occurrenceStart",

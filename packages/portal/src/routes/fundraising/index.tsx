@@ -47,22 +47,12 @@ export const Route = createFileRoute("/fundraising/")({
 });
 
 function RouteComponent() {
-  const [result] = useQuery({
-    query: ViewTeamFundraisingDocument,
-    variables: {
-      page: 1,
-      pageSize: 10,
-    },
-  });
-
   const [reportDialogOpen, setReportDialogOpen] = useState(false);
-
-  useQueryStatusWatcher(result);
 
   const listQuery = useListQuery(
     {
       initPage: 1,
-      initPageSize: 10,
+      initPageSize: 20,
       initSorting: [{ field: "donatedOn", direction: "desc" }],
     },
     {

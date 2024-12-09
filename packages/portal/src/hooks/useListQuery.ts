@@ -10,7 +10,7 @@ import type {
   StringFilterItemInterface,
 } from "@ukdanceblue/common";
 import type { Dispatch, SetStateAction } from "react";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 
 interface FilterObject<
   DateFields extends string,
@@ -108,19 +108,22 @@ export function useListQuery<
     initPage,
     initPageSize,
     initSorting,
-    initialStateOverride,
+    initialFilters,
   }: {
     initPage: number;
     initPageSize: number;
     initSorting: SortOption<AllFields>[];
-    initialStateOverride?: Partial<
-      ListQueryOptions<
-        DateFields,
-        IsNullFields,
-        NumericFields,
-        OneOfFields,
-        StringFields,
-        BooleanFields
+    initialFilters?: Partial<
+      Omit<
+        ListQueryOptions<
+          DateFields,
+          IsNullFields,
+          NumericFields,
+          OneOfFields,
+          StringFields,
+          BooleanFields
+        >,
+        "page" | "pageSize" | "sortBy" | "sortDirection"
       >
     >;
   },
@@ -149,17 +152,29 @@ export function useListQuery<
   IsNullFields,
   BooleanFields
 > {
-  const [initSortDirection, initSortBy] = useMemo(() => {
-    const initSortDirection: SortDirection[] = [];
-    const initSortBy: AllFields[] = [];
-    for (const sortOption of initSorting) {
-      initSortDirection.push(sortOption.direction);
-      initSortBy.push(sortOption.field);
-    }
-    return [initSortDirection, initSortBy];
-  }, [initSorting]);
+  const [page, setPage] = useState<number>(initPage);
+  const [pageSize, setPageSize] = useState<number>(initPageSize);
+  const [sorting, setSorting] = useState<SortOption<AllFields>[]>(initSorting);
+  const [dateFilters, setDateFilters] = useState<
+    DateFilterItemInterface<DateFields>[]
+  >(initialFilters?.dateFilters ?? []);
+  const [isNullFilters, setIsNullFilters] = useState<
+    IsNullFilterItemInterface<IsNullFields>[]
+  >(initialFilters?.isNullFilters ?? []);
+  const [numericFilters, setNumericFilters] = useState<
+    NumericFilterItemInterface<NumericFields>[]
+  >(initialFilters?.numericFilters ?? []);
+  const [oneOfFilters, setOneOfFilters] = useState<
+    OneOfFilterItemInterface<OneOfFields>[]
+  >(initialFilters?.oneOfFilters ?? []);
+  const [stringFilters, setStringFilters] = useState<
+    StringFilterItemInterface<StringFields>[]
+  >(initialFilters?.stringFilters ?? []);
+  const [booleanFilters, setBooleanFilters] = useState<
+    BooleanFilterItemInterface<BooleanFields>[]
+  >(initialFilters?.booleanFilters ?? []);
 
-  const [queryOptions, setQueryOptions] = useState<
+  const queryOptions = useMemo<
     ListQueryOptions<
       DateFields,
       IsNullFields,
@@ -168,42 +183,7 @@ export function useListQuery<
       StringFields,
       BooleanFields
     >
-  >({
-    page: initPage,
-    pageSize: initPageSize,
-    sortBy: initSortBy,
-    sortDirection: initSortDirection,
-    dateFilters: [],
-    isNullFilters: [],
-    numericFilters: [],
-    oneOfFilters: [],
-    stringFilters: [],
-    booleanFilters: [],
-  });
-
-  const [page, setPage] = useState<number>(initPage);
-  const [pageSize, setPageSize] = useState<number>(initPageSize);
-  const [sorting, setSorting] = useState<SortOption<AllFields>[]>(initSorting);
-  const [dateFilters, setDateFilters] = useState<
-    DateFilterItemInterface<DateFields>[]
-  >([]);
-  const [isNullFilters, setIsNullFilters] = useState<
-    IsNullFilterItemInterface<IsNullFields>[]
-  >([]);
-  const [numericFilters, setNumericFilters] = useState<
-    NumericFilterItemInterface<NumericFields>[]
-  >([]);
-  const [oneOfFilters, setOneOfFilters] = useState<
-    OneOfFilterItemInterface<OneOfFields>[]
-  >([]);
-  const [stringFilters, setStringFilters] = useState<
-    StringFilterItemInterface<StringFields>[]
-  >([]);
-  const [booleanFilters, setBooleanFilters] = useState<
-    BooleanFilterItemInterface<BooleanFields>[]
-  >([]);
-
-  useEffect(() => {
+  >(() => {
     const sortDirection: SortDirection[] = [];
     const sortBy: AllFields[] = [];
 
@@ -212,7 +192,7 @@ export function useListQuery<
       sortBy.push(sortOption.field);
     }
 
-    setQueryOptions({
+    return {
       page,
       pageSize,
       sortBy,
@@ -223,7 +203,7 @@ export function useListQuery<
       oneOfFilters,
       stringFilters,
       booleanFilters,
-    });
+    };
   }, [
     page,
     pageSize,
@@ -444,13 +424,6 @@ export function useListQuery<
     setOneOfFilters([]);
     setStringFilters([]);
     setBooleanFilters([]);
-  }, []);
-
-  useEffect(() => {
-    setQueryOptions((prevQueryOptions) => ({
-      ...prevQueryOptions,
-      ...initialStateOverride,
-    }));
   }, []);
 
   return {

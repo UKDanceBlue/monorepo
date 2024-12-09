@@ -80,7 +80,7 @@ export const DDNTable = () => {
       initPage: 1,
       initPageSize: 10,
       initSorting: [],
-      initialStateOverride: {},
+      initialFilters: {},
     },
     {
       allFields: [
