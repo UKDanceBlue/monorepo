@@ -1,26 +1,85 @@
-.flip {
-  backface-visibility: visible !important;
-  animation: flip 2s ease infinite;
+/* 40% of the animation */
+.ribbon .path1 {
+  animation: path1 2s ease infinite;
 }
-@keyframes flip {
+
+/* 20& of the animation */
+.ribbon .path2 {
+  animation: path2 2s ease infinite;
+}
+
+/* 20& of the animation */
+.ribbon .path3 {
+  animation: path3 2s ease infinite;
+}
+
+/* 20& of the animation */
+.ribbon .path4 {
+  animation: path4 2s ease infinite;
+}
+
+@keyframes path1 {
   0% {
-    transform: perspective(400px) rotateY(0);
-    animation-timing-function: ease-out;
+    opacity: 0;
   }
-  40% {
-    transform: perspective(400px) translateZ(150px) rotateY(170deg);
-    animation-timing-function: ease-out;
+  20% {
+    opacity: 1;
   }
   50% {
-    transform: perspective(400px) translateZ(150px) rotateY(190deg) scale(1);
-    animation-timing-function: ease-in;
+    opacity: 1;
   }
-  80% {
-    transform: perspective(400px) rotateY(360deg) scale(0.95);
-    animation-timing-function: ease-in;
+  70% {
+    opacity: 0;
   }
   100% {
-    transform: perspective(400px) scale(1);
-    animation-timing-function: ease-in;
+    opacity: 0;
+  }
+}
+
+@keyframes path2 {
+  0% {
+    opacity: 0;
+  }
+  30% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 1;
+  }
+  80% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes path3 {
+  0% {
+    opacity: 0;
+  }
+  40% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 1;
+  }
+  90% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes path4 {
+  0% {
+    opacity: 0;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
   }
 }

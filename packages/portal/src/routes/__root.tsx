@@ -108,6 +108,7 @@ function RootComponent() {
             render={({ items, logout }) => (
               <>
                 {items}
+                <Menu.Divider />
                 <Menu.Item
                   key="settings"
                   icon={<SettingOutlined />}

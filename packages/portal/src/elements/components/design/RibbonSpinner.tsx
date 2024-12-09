@@ -1,15 +1,45 @@
 import "./RibbonSpinner.css";
 
-import Ribbon from "#assets/ribbon.svg";
-
-export function SpinningRibbon({ size }: { size: string | number }) {
+export function LoadingRibbon({
+  size,
+  color = "#ffc627",
+}: {
+  size: string | number;
+  color?: string;
+}) {
   return (
-    <div className="flip">
-      <img
-        src={Ribbon}
-        alt="Loading..."
+    <div className="ribbon">
+      <svg
+        version="1.1"
+        id="Layer_1"
+        xmlns="http://www.w3.org/2000/svg"
+        x="0px"
+        y="0px"
+        viewBox="0 0 144 288"
         style={{ width: size, height: size }}
-      />
+        fill={color}
+      >
+        <path
+          className="path1"
+          d="M57.2,23.2c0,0-6.6,10.4,2,33.8c8.6,23.4,73.4,164.6,73.4,164.6L117,265.9L54.5,131.3c0,0-16.7-37.1-15.5-56
+      c1.2-19,7.6-31.2,10.7-37.6C52.8,31.1,57.2,23.2,57.2,23.2z"
+        />
+        <path
+          className="path2"
+          d="M76.9,43.5c7.2,0,13.8,2.6,19.2,6.9c1.4-4.6,2.1-8.9,2.2-12.9c0.1-5-0.9-8-1.3-8.8
+      c-0.1-0.3-5.4-14.5-20.1-14.5c-5.4,0-10.5,1.9-14.8,5.2c-0.8,1.3-4.4,7.4-4.6,14.1c-0.1,4.6,0.5,9.8,2,15.4
+      C64.5,45.5,70.5,43.5,76.9,43.5z"
+        />
+        <path
+          className="path3"
+          d="M95,60.8c-2.5,5.6-8.8,18.1-16.9,33.8c5.3,12,11.4,25.6,17.6,39.3c3.4-6.7,18.3-36.8,18.3-53.6
+        c0-19-5.6-31.6-8.3-38.2c-2.3-5.7-5.5-12.6-6.3-14.4C100.3,29.9,103.9,40.7,95,60.8z"
+        />
+        <path
+          className="path4"
+          d="M55,138.7c-21.6,40.8-43.6,81.8-43.6,81.8l12.7,45.2l48.4-89.1L55,138.7z"
+        />
+      </svg>
     </div>
   );
 }

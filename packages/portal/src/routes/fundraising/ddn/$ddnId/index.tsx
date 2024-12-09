@@ -3,7 +3,7 @@ import { stringifyDDNBatchType } from "@ukdanceblue/common";
 import { Descriptions } from "antd";
 import { useQuery } from "urql";
 
-import { SpinningRibbon } from "#elements/components/design/RibbonSpinner";
+import { LoadingRibbon } from "#elements/components/design/RibbonSpinner";
 import { graphql, readFragment } from "#graphql/index";
 import { useQueryStatusWatcher } from "#hooks/useQueryStatusWatcher";
 
@@ -308,7 +308,7 @@ function RouteComponent() {
           </Descriptions.Item>
         </Descriptions>
       ) : (
-        <SpinningRibbon size={96} />
+        <LoadingRibbon size={96} />
       )}
     </div>
   );

@@ -1,15 +1,10 @@
 import "normalize.css";
 import "./root.css";
 
-import { WarningOutlined } from "@ant-design/icons";
 import { DevtoolsPanel, DevtoolsProvider } from "@refinedev/devtools";
 import { browserTracingIntegration, init } from "@sentry/react";
-import {
-  createRouter,
-  ErrorComponent,
-  RouterProvider,
-} from "@tanstack/react-router";
-import { App, Empty, Spin } from "antd";
+import { createRouter, RouterProvider } from "@tanstack/react-router";
+import { App, Result, Spin } from "antd";
 import { App as AntApp } from "antd";
 import type { useAppProps } from "antd/es/app/context.js";
 import { StrictMode, useEffect, useState } from "react";
@@ -18,7 +13,7 @@ import { Provider as UrqlProvider } from "urql";
 import { ThemeConfigProvider } from "#config/ant.js";
 import { API_BASE_URL, urqlClient } from "#config/api.js";
 import { MarathonConfigProvider } from "#config/marathon.js";
-import { SpinningRibbon } from "#elements/components/design/RibbonSpinner.js";
+import { LoadingRibbon } from "#elements/components/design/RibbonSpinner.js";
 
 import { routeTree } from "./routeTree.gen.js";
 
@@ -52,9 +47,9 @@ const router = createRouter({
     >
       <Spin
         size="large"
-        tip="Loading"
+        tip="Connecting to server..."
         fullscreen
-        indicator={<SpinningRibbon size={70} />}
+        indicator={<LoadingRibbon size={96} />}
       >
         <div
           style={{
@@ -66,19 +61,16 @@ const router = createRouter({
     </div>
   ),
   defaultNotFoundComponent: () => (
-    <Empty
-      description="Page not found"
-      image={
-        <WarningOutlined
-          style={{
-            fontSize: "96px",
-            color: "#aa0",
-          }}
-        />
-      }
+    <Result
+      status="404"
+      title="404"
+      subTitle="Sorry, the page you visited does not exist."
     />
   ),
-  defaultErrorComponent: ({ error }) => <ErrorComponent error={error} />,
+  defaultErrorComponent: ({ error }) => (
+    <Result title={error.name} subTitle={error.message} status="error" />
+  ),
+
   context: {
     urqlClient,
     antApp: {} as useAppProps,
@@ -143,28 +135,17 @@ function RouterComponent() {
   const antApp = App.useApp();
 
   return isServerReachable === false ? (
-    <div
-      style={{
-        width: "100%",
-        height: "100%",
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-        backgroundColor: "#99f",
-      }}
-    >
-      <Empty
-        description="Server is not reachable. Contact tech"
-        image={
-          <WarningOutlined
-            style={{
-              fontSize: "96px",
-              color: "#e33",
-            }}
-          />
-        }
-      />
-    </div>
+    <Result
+      status="error"
+      title="Server is not reachable"
+      subTitle={
+        <span>
+          Contact tech committee or see our{" "}
+          <a href="https://status.danceblue.org/">status page</a> for more
+          information.
+        </span>
+      }
+    />
   ) : (
     <>
       <RouterProvider router={router} context={{ antApp }} />

@@ -6,8 +6,8 @@ import {
   FileImageOutlined,
   FileTextOutlined,
   FlagOutlined,
-  SettingOutlined,
   TeamOutlined,
+  ToolOutlined,
   UserOutlined,
 } from "@ant-design/icons";
 import type { Action, ResourceProps } from "@refinedev/core";
@@ -164,7 +164,7 @@ export const refineResources: ResourceProps[] = [
   {
     name: "config",
     meta: {
-      icon: <SettingOutlined />,
+      icon: <ToolOutlined />,
       label: "Config",
       modelName: "ConfigNode",
     },
