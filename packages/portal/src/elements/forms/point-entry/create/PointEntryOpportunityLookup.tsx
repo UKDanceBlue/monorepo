@@ -1,19 +1,11 @@
 import { PlusOutlined } from "@ant-design/icons";
-import { TeamType } from "@ukdanceblue/common";
-import {
-  App,
-  AutoComplete,
-  Button,
-  DatePicker,
-  Flex,
-  Form,
-  Input,
-  Modal,
-} from "antd";
+import { dateTimeFromSomething, TeamType } from "@ukdanceblue/common";
+import { App, AutoComplete, Button, Flex, Form, Input, Modal } from "antd";
 import { useState } from "react";
 import { useMutation, useQuery } from "urql";
 
 import { useMarathon } from "#config/marathonContext.js";
+import { LuxonDatePicker } from "#elements/components/antLuxonComponents.js";
 import type { VariablesOf } from "#graphql/index.js";
 import { graphql } from "#graphql/index.js";
 import { useQueryStatusWatcher } from "#hooks/useQueryStatusWatcher.js";
@@ -117,7 +109,7 @@ export function PointEntryOpportunityLookup({
                   input: {
                     name: values.name,
                     opportunityDate: values.opportunityDate
-                      ? String(values.opportunityDate)
+                      ? dateTimeFromSomething(values.opportunityDate).toISO()
                       : null,
                     type: TeamType.Spirit,
                     marathonUuid: marathon.id,
@@ -150,7 +142,7 @@ export function PointEntryOpportunityLookup({
                 name="opportunityDate"
                 rules={[{ required: true, message: "Description is required" }]}
               >
-                <DatePicker showTime />
+                <LuxonDatePicker />
               </Form.Item>
               <Form.Item>
                 <Button type="primary" htmlType="submit">

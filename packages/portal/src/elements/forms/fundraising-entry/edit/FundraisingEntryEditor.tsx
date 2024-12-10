@@ -9,6 +9,7 @@ import {
 import { Form, Input, InputNumber, Select } from "antd";
 import { readFragment, type ResultOf, type VariablesOf } from "gql.tada";
 import { DateTime } from "luxon";
+import { useState } from "react";
 
 import {
   FundraisingEntryEditorFragment,
@@ -61,10 +62,9 @@ export function FundraisingEntryEditor({ id }: { id: string }) {
     },
   });
 
+  const [solicitationCodeSearch, setSolicitationCodeSearch] = useState("");
   const { selectProps } = useSelect<
-    ResultOf<
-      typeof solicitationCodesDocument
-    >["solicitationCodes"]["data"][number],
+    ResultOf<typeof SolicitationCodeTextFragment>,
     HttpError,
     ResultOf<typeof SolicitationCodeTextFragment>
   >({
@@ -167,7 +167,17 @@ export function FundraisingEntryEditor({ id }: { id: string }) {
           label="Solicitation Code Override"
           name={["solicitationCodeOverrideId"]}
         >
-          <Select {...selectProps} allowClear />
+          <Select
+            {...selectProps}
+            allowClear
+            onSearch={setSolicitationCodeSearch}
+            options={selectProps.options?.filter((option) =>
+              option.label
+                ?.toString()
+                .toLowerCase()
+                .includes(solicitationCodeSearch.toLowerCase())
+            )}
+          />
         </Form.Item>
         <Form.Item
           label="Batch Type"

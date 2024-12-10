@@ -1,5 +1,7 @@
 import { graphql } from "#graphql/index.ts";
 
+import { PaginationFragment } from "./shared";
+
 export const SolicitationCodeTextFragment = graphql(/* GraphQL */ `
   fragment SolicitationCodeText on SolicitationCodeNode {
     id
@@ -10,14 +12,15 @@ export const SolicitationCodeTextFragment = graphql(/* GraphQL */ `
 export const solicitationCodesDocument = graphql(
   /* GraphQL */ `
     query SolicitationCodes {
-      solicitationCodes {
+      solicitationCodes(sendAll: true) {
         data {
           ...SolicitationCodeText
         }
+        ...PaginationFragment
       }
     }
   `,
-  [SolicitationCodeTextFragment]
+  [SolicitationCodeTextFragment, PaginationFragment]
 );
 
 export const AssignTeamToSolicitationCodeDocument = graphql(/* GraphQL */ `

@@ -5,7 +5,7 @@ import {
 } from "@ant-design/icons";
 import { Link, useNavigate } from "@tanstack/react-router";
 import { MembershipPositionType } from "@ukdanceblue/common";
-import { Button, Descriptions, Empty, Flex } from "antd";
+import { Button, Descriptions, Empty, Flex, Space } from "antd";
 import { useState } from "react";
 import { useMutation } from "urql";
 
@@ -96,9 +96,9 @@ export function TeamViewer({
   }
 
   return (
-    <Flex gap="1em" wrap="wrap">
+    <Space direction="horizontal" align="start" wrap>
       {TeamDeletePopup}
-      <Flex gap="1em" vertical flex={1} style={{ minWidth: "15em" }}>
+      <Space direction="vertical">
         <Descriptions bordered column={1} size="small" title="Team Overview">
           <Descriptions.Item label="Name">{teamData.name}</Descriptions.Item>
           <Descriptions.Item label="Marathon Year">
@@ -134,130 +134,132 @@ export function TeamViewer({
             </Link>
           </Flex>
         )}
-      </Flex>
-      <Descriptions
-        bordered
-        column={1}
-        size="small"
-        style={{ flex: 1, minWidth: "15em" }}
-        title="Team Members"
-      >
-        <Descriptions.Item label="Captains">
-          <ul>
-            {teamData.members
-              .filter(
-                ({ position }) => position === MembershipPositionType.Captain
-              )
-              .map((captain) =>
-                canViewPeople ? (
-                  <li key={captain.person.id}>
-                    <Link
-                      to="/people/$personId"
-                      params={{
-                        personId: captain.person.id,
-                      }}
-                    >
+      </Space>
+      <Space>
+        <Descriptions
+          bordered
+          column={1}
+          size="small"
+          style={{ flex: 1, minWidth: "15em" }}
+          title="Team Members"
+        >
+          <Descriptions.Item label="Captains">
+            <ul>
+              {teamData.members
+                .filter(
+                  ({ position }) => position === MembershipPositionType.Captain
+                )
+                .map((captain) =>
+                  canViewPeople ? (
+                    <li key={captain.person.id}>
+                      <Link
+                        to="/people/$personId"
+                        params={{
+                          personId: captain.person.id,
+                        }}
+                      >
+                        {captain.person.name ?? "Never logged in"} (
+                        {captain.person.linkblue ?? "No linkblue"})
+                      </Link>
+                      {canEditMemberships ? (
+                        <Button
+                          icon={<MinusCircleTwoTone />}
+                          type="text"
+                          shape="circle"
+                          style={{
+                            marginLeft: "0.5em",
+                          }}
+                          onClick={() =>
+                            removeFromTeam({
+                              person: captain.person.id,
+                              team: teamData.id,
+                            })
+                          }
+                        />
+                      ) : null}
+                    </li>
+                  ) : (
+                    <li key={captain.person.id}>
                       {captain.person.name ?? "Never logged in"} (
                       {captain.person.linkblue ?? "No linkblue"})
-                    </Link>
-                    {canEditMemberships ? (
-                      <Button
-                        icon={<MinusCircleTwoTone />}
-                        type="text"
-                        shape="circle"
-                        style={{
-                          marginLeft: "0.5em",
+                    </li>
+                  )
+                )}
+            </ul>
+          </Descriptions.Item>
+          <Descriptions.Item label="Members">
+            <div style={{ maxHeight: "10rem", overflowY: "scroll" }}>
+              <ul>
+                {teamData.members.map((member) =>
+                  canViewPeople ? (
+                    <li key={member.person.id}>
+                      <Link
+                        to="/people/$personId"
+                        params={{
+                          personId: member.person.id,
                         }}
-                        onClick={() =>
-                          removeFromTeam({
-                            person: captain.person.id,
-                            team: teamData.id,
-                          })
-                        }
-                      />
-                    ) : null}
-                  </li>
-                ) : (
-                  <li key={captain.person.id}>
-                    {captain.person.name ?? "Never logged in"} (
-                    {captain.person.linkblue ?? "No linkblue"})
-                  </li>
-                )
-              )}
-          </ul>
-        </Descriptions.Item>
-        <Descriptions.Item label="Members">
-          <div style={{ maxHeight: "10rem", overflowY: "scroll" }}>
-            <ul>
-              {teamData.members.map((member) =>
-                canViewPeople ? (
-                  <li key={member.person.id}>
-                    <Link
-                      to="/people/$personId"
-                      params={{
-                        personId: member.person.id,
-                      }}
-                    >
+                      >
+                        {member.person.name ?? "Never logged in"} (
+                        {member.person.linkblue ?? "No linkblue"})
+                      </Link>
+                      {canEditMemberships ? (
+                        <Button
+                          icon={<MinusCircleTwoTone />}
+                          type="text"
+                          shape="circle"
+                          style={{
+                            marginLeft: "0.5em",
+                          }}
+                          onClick={() =>
+                            removeFromTeam({
+                              person: member.person.id,
+                              team: teamData.id,
+                            })
+                          }
+                        />
+                      ) : null}
+                    </li>
+                  ) : (
+                    <li key={member.person.id}>
                       {member.person.name ?? "Never logged in"} (
                       {member.person.linkblue ?? "No linkblue"})
-                    </Link>
-                    {canEditMemberships ? (
-                      <Button
-                        icon={<MinusCircleTwoTone />}
-                        type="text"
-                        shape="circle"
-                        style={{
-                          marginLeft: "0.5em",
-                        }}
-                        onClick={() =>
-                          removeFromTeam({
-                            person: member.person.id,
-                            team: teamData.id,
-                          })
-                        }
-                      />
-                    ) : null}
-                  </li>
-                ) : (
-                  <li key={member.person.id}>
-                    {member.person.name ?? "Never logged in"} (
-                    {member.person.linkblue ?? "No linkblue"})
-                  </li>
-                )
-              )}
-            </ul>
-          </div>
-        </Descriptions.Item>
-        {canEditMemberships && (
-          <Descriptions.Item label="Add Member">
-            <PersonSearch
-              onSelect={(person) => {
-                setPersonToAssignToTeam(person);
-              }}
-              style={{ width: "100%" }}
-            />
+                    </li>
+                  )
+                )}
+              </ul>
+            </div>
           </Descriptions.Item>
-        )}
-      </Descriptions>
-      <AssignToTeamPopup
-        person={personToAssignToTeam}
-        onClose={() => {
-          setPersonToAssignToTeam(null);
-        }}
-        onSubmit={(position) => {
-          setPersonToAssignToTeam(null);
-          assignToTeam({
-            person: personToAssignToTeam?.uuid ?? "",
-            team: teamData.id,
-            position,
-          })
-            .then(() => {
-              window.location.reload();
+          {canEditMemberships && (
+            <Descriptions.Item label="Add Member">
+              <PersonSearch
+                onSelect={(person) => {
+                  setPersonToAssignToTeam(person);
+                }}
+                style={{ width: "100%", minWidth: "25ch" }}
+              />
+            </Descriptions.Item>
+          )}
+        </Descriptions>
+        <AssignToTeamPopup
+          person={personToAssignToTeam}
+          onClose={() => {
+            setPersonToAssignToTeam(null);
+          }}
+          onSubmit={(position) => {
+            setPersonToAssignToTeam(null);
+            assignToTeam({
+              person: personToAssignToTeam?.uuid ?? "",
+              team: teamData.id,
+              position,
             })
-            .catch((error: unknown) => console.error(error));
-        }}
-        teamName={teamData.name}
-      />
-    </Flex>
+              .then(() => {
+                window.location.reload();
+              })
+              .catch((error: unknown) => console.error(error));
+          }}
+          teamName={teamData.name}
+        />
+      </Space>
+    </Space>
   );
 }

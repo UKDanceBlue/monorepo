@@ -16,8 +16,6 @@ export function crudFiltersToFilterObject(
     stringFilters: [],
   };
 
-  console.log("crudFilters", crudFilters);
-
   for (const filter of crudFilters) {
     switch (filter.operator) {
       case "eq":

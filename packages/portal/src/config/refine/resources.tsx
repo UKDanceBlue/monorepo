@@ -79,7 +79,7 @@ export const refineResources: ResourceProps[] = [
   {
     name: "fundraising",
     meta: {
-      label: "Fundraising",
+      label: "Entries",
       modelName: "FundraisingEntryNode",
       parent: "fundraising-group",
       menuWeight: 1,

@@ -51,7 +51,6 @@ export function PointEntryTable({
         rowKey="uuid"
         loading={loading}
         pagination={false}
-        scroll={{ y: "50em" }}
         columns={[
           {
             title: "Person",

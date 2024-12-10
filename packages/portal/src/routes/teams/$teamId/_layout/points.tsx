@@ -24,7 +24,7 @@ function ViewTeamPoints() {
   });
 
   return (
-    <Flex gap="1em">
+    <Flex gap="1em" wrap="wrap">
       <div style={{ flex: 1 }}>
         <h2>Point Entries</h2>
         <PointEntryTable
