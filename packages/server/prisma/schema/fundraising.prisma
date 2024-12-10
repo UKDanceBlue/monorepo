@@ -117,7 +117,7 @@ view FundraisingEntryWithMeta {
   amount               Decimal?
   donatedTo            String?
   donatedBy            String?
-  donatedOn            DateTime?  @db.Date
+  donatedOn            DateTime?
   solicitationCodeText String?
   batchType            BatchType?
 
