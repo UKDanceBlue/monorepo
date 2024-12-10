@@ -6,7 +6,7 @@ import {
   Link,
   Outlet,
 } from "@tanstack/react-router";
-import { Button, ConfigProvider, Layout, Menu, notification } from "antd";
+import { Button, ConfigProvider, Layout, notification } from "antd";
 import type { useAppProps } from "antd/es/app/context.js";
 import { lazy, Suspense, useState } from "react";
 import type { Client as UrqlClient } from "urql";
@@ -42,7 +42,6 @@ interface RouterContext {
 function RootComponent() {
   const { loggedIn } = useLoginState();
   const { mutate: login } = useLogin();
-  const [collapsed, setCollapsed] = useState(false);
   const masquerading =
     useStorageValue(StorageManager.Local, StorageManager.keys.masquerade)[0] !==
     null;
@@ -94,8 +93,6 @@ function RootComponent() {
           }}
         >
           <Sider
-            collapsed={collapsed}
-            setCollapsed={setCollapsed}
             Title={() => (
               <Link to="/">
                 <img
@@ -105,20 +102,16 @@ function RootComponent() {
                 />
               </Link>
             )}
-            render={({ items, logout }) => (
-              <>
-                {items}
-                <Menu.Divider />
-                <Menu.Item
-                  key="settings"
-                  icon={<SettingOutlined />}
-                  onClick={() => setSettinsOpen(true)}
-                >
-                  Settings
-                </Menu.Item>
-                {logout}
-              </>
-            )}
+            getItems={({ items, logout }) => [
+              ...items,
+              {
+                key: "settings",
+                icon: <SettingOutlined />,
+                onClick: () => setSettinsOpen(true),
+                label: "Settings",
+              },
+              ...(logout ? [logout] : []),
+            ]}
           />
         </ConfigProvider>
         <Layout>

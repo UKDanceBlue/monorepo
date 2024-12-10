@@ -1,6 +1,5 @@
 import {
   BarsOutlined,
-  DashboardOutlined,
   LogoutOutlined,
   UnorderedListOutlined,
 } from "@ant-design/icons";
@@ -9,182 +8,167 @@ import {
   Title as DefaultTitle,
 } from "@refinedev/antd";
 import {
-  CanAccess,
-  type ITreeMenu,
-  pickNotDeprecated,
-  useActiveAuthProvider,
   useIsExistAuthentication,
   useLink,
   useLogout,
   useMenu,
-  useRefineContext,
-  useRouterContext,
-  useRouterType,
   useTitle,
   useTranslate,
   useWarnAboutChange,
 } from "@refinedev/core";
 import { Button, ConfigProvider, Drawer, Grid, Layout, Menu } from "antd";
-import React, { useState } from "react";
+import type { ItemType } from "antd/es/menu/interface";
+import React, { useMemo, useState } from "react";
+
+import { canSync } from "#config/refine/authorization.ts";
+import { StorageManager, useStorageValue } from "#config/storage.ts";
+import { useLoginState } from "#hooks/useLoginState.ts";
 
 import { drawerButtonStyles } from "./styles";
 
 export const Sider: React.FC<
   RefineLayoutSiderProps & {
-    collapsed?: boolean;
-    setCollapsed?: (collapsed: boolean) => void;
+    getItems?: (props: {
+      items: ItemType[];
+      logout: ItemType | false;
+      collapsed: boolean;
+    }) => ItemType[];
   }
-> = ({
-  Title: TitleFromProps,
-  render,
-  meta,
-  collapsed = false,
-  setCollapsed = () => undefined,
-}) => {
+> = ({ Title: TitleFromProps, getItems, meta }) => {
   const [drawerOpen, setDrawerOpen] = useState<boolean>(false);
+  const [menuCollapsed, setMenuCollapsed] = useStorageValue(
+    StorageManager.Local,
+    StorageManager.keys.collapseSidebar,
+    "true"
+  );
+
   const isExistAuthentication = useIsExistAuthentication();
-  const routerType = useRouterType();
-  const NewLink = useLink();
+  const Link = useLink();
   const { warnWhen, setWarnWhen } = useWarnAboutChange();
-  const { Link: LegacyLink } = useRouterContext();
-  const Link = routerType === "legacy" ? LegacyLink : NewLink;
   const TitleFromContext = useTitle();
   const translate = useTranslate();
   const { menuItems, selectedKey, defaultOpenKeys } = useMenu({ meta });
   const breakpoint = Grid.useBreakpoint();
-  const { hasDashboard } = useRefineContext();
-  const authProvider = useActiveAuthProvider();
-  const { mutate: mutateLogout } = useLogout({
-    v3LegacyAuthProviderCompatible: Boolean(authProvider?.isLegacy),
-  });
+  const { mutate: mutateLogout } = useLogout();
+  const loginState = useLoginState();
 
   const isMobile = breakpoint.lg === undefined ? false : !breakpoint.lg;
 
   const RenderToTitle = TitleFromProps ?? TitleFromContext ?? DefaultTitle;
 
-  const renderTreeView = (tree: ITreeMenu[], selectedKey?: string) => {
-    return tree.map((item: ITreeMenu) => {
-      const {
-        icon,
-        label,
-        route,
-        key,
-        name,
-        children,
-        parentName,
-        meta,
-        options,
-      } = item;
+  const items = useMemo((): ItemType[] => {
+    function makeItem(
+      treeItem: (typeof menuItems)[number]
+    ): ItemType | undefined {
+      const { key, name, children, meta, list } = treeItem;
+
+      const visible = canSync(
+        {
+          action: "list",
+          params: {
+            resource: treeItem,
+          },
+          resource: name,
+        },
+        loginState
+      );
+
+      if (!visible) {
+        return;
+      }
 
       if (children.length > 0) {
-        return (
-          <CanAccess
-            key={key}
-            resource={name}
-            action="list"
-            params={{
-              resource: item,
-            }}
-          >
-            <Menu.SubMenu
-              key={key}
-              icon={icon ?? <UnorderedListOutlined />}
-              title={label}
-            >
-              {renderTreeView(children, selectedKey)}
-            </Menu.SubMenu>
-          </CanAccess>
-        );
+        return {
+          key,
+          icon: meta?.icon ?? <UnorderedListOutlined />,
+          type: "submenu",
+          label: meta?.label,
+          children: makeChildren(children),
+        };
       }
+
       const isSelected = key === selectedKey;
-      const isRoute = !(
-        pickNotDeprecated(meta?.parent, options?.parent, parentName) !==
-          undefined && children.length === 0
-      );
-      return (
-        <CanAccess
-          key={key}
-          resource={name}
-          action="list"
-          params={{
-            resource: item,
-          }}
-        >
-          <Menu.Item
-            key={key}
-            style={{
-              fontWeight: isSelected ? "bold" : "normal",
-            }}
-            icon={icon ?? (isRoute && <UnorderedListOutlined />)}
-          >
-            <Link to={route ?? ""}>{label}</Link>
-            {!collapsed && isSelected && (
+      const isRoute = !(meta?.parent !== undefined && children.length === 0);
+      return {
+        key,
+        icon: meta?.icon ?? (isRoute && <UnorderedListOutlined />),
+        style: {
+          fontWeight: isSelected ? "bold" : "normal",
+        },
+        label: (
+          <>
+            <Link to={list?.toString() ?? ""}>{meta?.label}</Link>
+            {!menuCollapsed && isSelected && (
               <div className="ant-menu-tree-arrow" />
             )}
-          </Menu.Item>
-        </CanAccess>
-      );
-    });
-  };
+          </>
+        ),
+      };
+    }
 
-  const handleLogout = () => {
-    if (warnWhen) {
-      const confirm = window.confirm(
-        translate(
-          "warnWhenUnsavedChanges",
-          "Are you sure you want to leave? You have unsaved changes."
-        )
-      );
+    function makeChildren(tree: typeof menuItems): ItemType[] {
+      const menuTree: ItemType[] = [];
+      for (const item of tree) {
+        const menuItem = makeItem(item);
+        if (menuItem) {
+          menuTree.push(menuItem);
+        }
+      }
+      return menuTree;
+    }
 
-      if (confirm) {
-        setWarnWhen(false);
+    return makeChildren(menuItems);
+  }, [Link, loginState, menuCollapsed, menuItems, selectedKey]);
+
+  const siderItems = useMemo((): ItemType[] => {
+    const handleLogout = () => {
+      if (warnWhen) {
+        const confirm = window.confirm(
+          translate(
+            "warnWhenUnsavedChanges",
+            "Are you sure you want to leave? You have unsaved changes."
+          )
+        );
+
+        if (confirm) {
+          setWarnWhen(false);
+          mutateLogout();
+        }
+      } else {
         mutateLogout();
       }
-    } else {
-      mutateLogout();
-    }
-  };
+    };
 
-  const logout = isExistAuthentication && (
-    <Menu.Item key="logout" onClick={handleLogout} icon={<LogoutOutlined />}>
-      {translate("buttons.logout", "Logout")}
-    </Menu.Item>
-  );
+    const logout: ItemType | false = isExistAuthentication && {
+      key: "logout",
+      icon: <LogoutOutlined />,
+      onClick: handleLogout,
+      label: translate("buttons.logout", "Logout"),
+    };
 
-  const dashboard = hasDashboard ? (
-    <Menu.Item
-      key="dashboard"
-      style={{
-        fontWeight: selectedKey === "/" ? "bold" : "normal",
-      }}
-      icon={<DashboardOutlined />}
-    >
-      <Link to="/">{translate("dashboard.title", "Dashboard")}</Link>
-      {!collapsed && selectedKey === "/" && (
-        <div className="ant-menu-tree-arrow" />
-      )}
-    </Menu.Item>
-  ) : null;
-
-  const items = renderTreeView(menuItems, selectedKey);
-
-  const renderSider = () => {
-    if (render) {
-      return render({
-        dashboard,
+    if (getItems) {
+      return getItems({
         items,
         logout,
-        collapsed,
+        collapsed: menuCollapsed === "true",
       });
     }
-    return (
-      <>
-        {dashboard}
-        {items}
-        {logout}
-      </>
-    );
-  };
+
+    const itemList: ItemType[] = [...items];
+    if (logout) {
+      itemList.push(logout);
+    }
+    return itemList;
+  }, [
+    getItems,
+    isExistAuthentication,
+    items,
+    menuCollapsed,
+    mutateLogout,
+    setWarnWhen,
+    translate,
+    warnWhen,
+  ]);
 
   const renderMenu = () => {
     return (
@@ -197,68 +181,12 @@ export const Sider: React.FC<
           onClick={() => {
             setDrawerOpen(false);
             if (!breakpoint.lg) {
-              setCollapsed(true);
+              setMenuCollapsed("true");
             }
           }}
-        >
-          {renderSider()}
-        </Menu>
-      </>
-    );
-  };
-
-  const renderDrawerSider = () => {
-    return (
-      <>
-        <Drawer
-          open={drawerOpen}
-          onClose={() => setDrawerOpen(false)}
-          placement="left"
-          closable={false}
-          width={200}
-          bodyStyle={{
-            padding: 0,
-          }}
-          maskClosable={true}
-        >
-          <Layout>
-            <Layout.Sider style={{ height: "100vh", overflow: "auto" }}>
-              <RenderToTitle collapsed={false} />
-              {renderMenu()}
-            </Layout.Sider>
-          </Layout>
-        </Drawer>
-        <Button
-          style={drawerButtonStyles}
-          size="large"
-          onClick={() => setDrawerOpen(true)}
-          icon={<BarsOutlined />}
+          items={siderItems}
         />
       </>
-    );
-  };
-
-  const renderContent = () => {
-    if (isMobile) {
-      return renderDrawerSider();
-    }
-
-    return (
-      <Layout.Sider
-        style={{
-          overflow: "auto",
-          height: "100vh",
-          left: 0,
-        }}
-        collapsible
-        collapsed={collapsed}
-        onCollapse={(collapsed: boolean): void => setCollapsed(collapsed)}
-        collapsedWidth={80}
-        breakpoint="lg"
-      >
-        <RenderToTitle collapsed={collapsed} />
-        {renderMenu()}
-      </Layout.Sider>
     );
   };
 
@@ -276,7 +204,54 @@ export const Sider: React.FC<
         },
       }}
     >
-      {renderContent()}
+      {isMobile ? (
+        <>
+          <Drawer
+            open={drawerOpen}
+            onClose={() => setDrawerOpen(false)}
+            placement="left"
+            closable={false}
+            width={200}
+            styles={{
+              body: {
+                padding: 0,
+              },
+            }}
+            maskClosable={true}
+          >
+            <Layout>
+              <Layout.Sider style={{ height: "100vh", overflow: "auto" }}>
+                <RenderToTitle collapsed={false} />
+                {renderMenu()}
+              </Layout.Sider>
+            </Layout>
+          </Drawer>
+          <Button
+            style={drawerButtonStyles}
+            size="large"
+            onClick={() => setDrawerOpen(true)}
+            icon={<BarsOutlined />}
+          />
+        </>
+      ) : (
+        <Layout.Sider
+          style={{
+            overflow: "auto",
+            height: "100vh",
+            left: 0,
+          }}
+          collapsible
+          collapsed={menuCollapsed === "true"}
+          onCollapse={(collapsed: boolean): void =>
+            setMenuCollapsed(collapsed ? "true" : "false")
+          }
+          collapsedWidth={80}
+          breakpoint="lg"
+        >
+          <RenderToTitle collapsed={menuCollapsed === "true"} />
+          {renderMenu()}
+        </Layout.Sider>
+      )}
     </ConfigProvider>
   );
 };

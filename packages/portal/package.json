@@ -53,7 +53,7 @@
     "@urql/core": "^5.0.8",
     "@urql/devtools": "^2.0.3",
     "@wysimark/react": "^3.0.20",
-    "antd": "^5.22.3",
+    "antd": "^5.22.4",
     "camelcase": "^8.0.0",
     "class-validator": "^0.14.1",
     "gql.tada": "^1.8.10",

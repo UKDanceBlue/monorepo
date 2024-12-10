@@ -1,48 +1,22 @@
-import type { AccessControlProvider } from "@refinedev/core";
+import type { AccessControlProvider, CanParams } from "@refinedev/core";
 import type { Action } from "@ukdanceblue/common";
 
 import { urqlClient } from "#config/api.ts";
+import type { PortalAuthData } from "#hooks/useLoginState.ts";
 import { getLoginState } from "#hooks/useLoginState.ts";
 
 export const accessControlProvider: AccessControlProvider = {
-  can: ({ action, params }) => {
+  // eslint-disable-next-line @typescript-eslint/require-await
+  can: async (param) => {
     const loginState = getLoginState(urqlClient);
 
     if (loginState.isErr()) {
-      return Promise.resolve({ can: false });
+      return { can: false };
     }
 
-    const ok = loginState.value.ability.can(
-      action === "clone"
-        ? "create"
-        : action === "edit"
-          ? "update"
-          : action === "show"
-            ? "get"
-            : (action as Action),
-      params?.resource?.meta?.modelName
-        ? {
-            id: params.id ? String(params.id) : undefined,
-            kind: params.resource.meta.modelName as "FundraisingAssignmentNode",
-          }
-        : "all"
-    );
-
-    console.log("Checking access control", {
-      authorized: ok,
-      action,
-      subject: params?.resource?.meta?.modelName
-        ? {
-            id: params.id ? String(params.id) : undefined,
-            kind: params.resource.meta.modelName as "FundraisingAssignmentNode",
-          }
-        : "all",
-      params,
-    });
-
-    return Promise.resolve({
-      can: ok,
-    });
+    return {
+      can: canSync(param, loginState.value),
+    };
   },
   options: {
     buttons: {
@@ -54,3 +28,26 @@ export const accessControlProvider: AccessControlProvider = {
     },
   },
 };
+
+export function canSync(
+  { action, params }: CanParams,
+  loginState: PortalAuthData
+): boolean {
+  const ok = loginState.ability.can(
+    action === "clone"
+      ? "create"
+      : action === "edit"
+        ? "update"
+        : action === "show"
+          ? "get"
+          : (action as Action),
+    params?.resource?.meta?.modelName
+      ? {
+          id: params.id ? String(params.id) : undefined,
+          kind: params.resource.meta.modelName as "FundraisingAssignmentNode",
+        }
+      : "all"
+  );
+
+  return ok;
+}
