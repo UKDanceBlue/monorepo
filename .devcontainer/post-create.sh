@@ -1,12 +1,12 @@
 #!/bin/bash
 #cSpell:disable
 
-# echo "!!! ATTENTION !!!"
-# echo "DO NOT CLOSE THIS TERMINAL WINDOW UNTIL THE SETUP IS COMPLETE"
-# echo "!!! ATTENTION !!!"
-# echo ""
+echo "!!! ATTENTION !!!"
+echo "DO NOT CLOSE THIS TERMINAL WINDOW UNTIL THE SETUP IS COMPLETE"
+echo "!!! ATTENTION !!!"
+echo ""
 
-# sleep 1
+sleep 1
 
 # corepack use yarn@*
 # pushd packages/portal

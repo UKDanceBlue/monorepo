@@ -4,4 +4,4 @@ if [ -z "$ZROK_NAME" ]; then
   exit 1
 fi
 
-exec zrok share reserved "${ZROK_NAME}$1" --headless
+exec zrok share reserved "${ZROK_NAME}server" --headless
