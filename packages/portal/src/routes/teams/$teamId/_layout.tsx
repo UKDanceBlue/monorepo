@@ -5,14 +5,16 @@ import { useQuery } from "urql";
 
 import { teamPageDocument } from "#documents/team.js";
 import { TeamViewer } from "#elements/viewers/team/TeamViewer.js";
+import { useAuthorizationRequirement } from "#hooks/useLoginState.ts";
 import { useQueryStatusWatcher } from "#hooks/useQueryStatusWatcher.js";
 
 function ViewTeamPage() {
   const { teamId: teamUuid } = Route.useParams();
+  const canSeePoints = useAuthorizationRequirement("read", "PointEntryNode");
 
   const [{ fetching, data, error }] = useQuery({
     query: teamPageDocument,
-    variables: { teamUuid },
+    variables: { teamUuid, inclidePointEntries: canSeePoints },
   });
   useQueryStatusWatcher({
     fetching,

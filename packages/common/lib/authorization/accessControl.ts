@@ -216,6 +216,10 @@ function applyTeamPermissions(
   allow("get", "TeamNode", [".solicitationCode"], {
     id: { $in: authTeamCaptaincies },
   });
+  // Captains of a team may view the team's fundraising entries
+  allow("read", "TeamNode", [".fundraisingEntries"], {
+    id: { $in: authTeamCaptaincies },
+  });
 }
 
 function applyUserPermissions(
@@ -233,7 +237,7 @@ function applyUserPermissions(
     },
   });
   // Users may read their own memberships and fundraising assignments
-  allow("list", "PersonNode", [".memberships", ".fundraisingAssignments"], {
+  allow("read", "PersonNode", [".memberships", ".fundraisingAssignments"], {
     id: {
       $eq: parsedUserId,
     },
@@ -296,6 +300,7 @@ function applyCommitteePermissions(
       allow("manage", "TeamNode", [
         ".fundraisingAssignments",
         ".solicitationCode",
+        ".fundraisingEntries",
       ]);
       allow("read", "TeamNode", ".fundraisingTotal");
     }
@@ -354,6 +359,7 @@ function applyAccessLevelPermissions(
     allow("manage", "TeamNode", [
       ".fundraisingAssignments",
       ".solicitationCode",
+      ".fundraisingEntries",
     ]);
     // Read fundraising totals
     allow("read", "TeamNode", ".fundraisingTotal");

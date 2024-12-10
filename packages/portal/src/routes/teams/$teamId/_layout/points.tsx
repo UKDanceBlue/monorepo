@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { Flex } from "antd";
 import { useQuery } from "urql";
 
-import { teamPageDocument } from "#documents/team.js";
+import { teamPagePointsDocument } from "#documents/team.js";
 import { PointEntryCreator } from "#elements/forms/point-entry/create/PointEntryCreator.js";
 import { PointEntryTable } from "#elements/tables/point-entry/PointEntryTable.js";
 import { useAuthorizationRequirement } from "#hooks/useLoginState.js";
@@ -14,8 +14,8 @@ function ViewTeamPoints() {
   const canAddPoints = useAuthorizationRequirement("create", "PointEntryNode");
 
   const [{ fetching, data, error }, refetch] = useQuery({
-    query: teamPageDocument,
-    variables: { teamUuid },
+    query: teamPagePointsDocument,
+    variables: { teamUuid, inclidePointEntries: true },
   });
   useQueryStatusWatcher({
     fetching,

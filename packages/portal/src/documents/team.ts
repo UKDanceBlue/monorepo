@@ -4,19 +4,29 @@ import { graphql } from "#graphql/index.js";
 
 import { PointEntryCreatorFragment } from "./pointEntry";
 
-export const teamPageDocument = graphql(
+export const teamPagePointsDocument = graphql(
   /* GraphQL */ `
     query ViewTeamPage($teamUuid: GlobalId!) {
       team(id: $teamUuid) {
         ...PointEntryCreatorFragment
-        ...TeamViewerFragment
         pointEntries {
           ...PointEntryTableFragment
         }
       }
     }
   `,
-  [PointEntryCreatorFragment, TeamViewerFragment, PointEntryTableFragment]
+  [PointEntryCreatorFragment, PointEntryTableFragment]
+);
+
+export const teamPageDocument = graphql(
+  /* GraphQL */ `
+    query ViewTeamPage($teamUuid: GlobalId!) {
+      team(id: $teamUuid) {
+        ...TeamViewerFragment
+      }
+    }
+  `,
+  [TeamViewerFragment]
 );
 
 export const teamCreatorDocument = graphql(/* GraphQL */ `

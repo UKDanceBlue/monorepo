@@ -96,7 +96,7 @@ export function TeamViewer({
   }
 
   return (
-    <Space direction="horizontal" align="start" wrap>
+    <Space direction="horizontal" align="start" wrap style={{ width: "100%" }}>
       {TeamDeletePopup}
       <Space direction="vertical">
         <Descriptions bordered column={1} size="small" title="Team Overview">
