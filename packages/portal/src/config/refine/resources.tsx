@@ -16,19 +16,6 @@ import { parseGlobalId } from "@ukdanceblue/common";
 
 export const refineResources: ResourceProps[] = [
   {
-    name: "event",
-    meta: {
-      icon: <CalendarOutlined />,
-      label: "Events",
-      modelName: "EventNode",
-      canDelete: true,
-    },
-    create: "/events/create",
-    edit: "/events/:id/edit",
-    show: "/events/:id",
-    list: "/events",
-  },
-  {
     name: "team",
     meta: {
       icon: <TeamOutlined />,
@@ -50,24 +37,13 @@ export const refineResources: ResourceProps[] = [
     },
   },
   {
-    name: "fundraising",
-    meta: {
-      label: "Fundraising",
-      modelName: "FundraisingEntryNode",
-      parent: "fundraising-group",
-    },
-    create: "/fundraising/create",
-    edit: "/fundraising/:id/edit",
-    show: "/fundraising/:id",
-    list: "/fundraising",
-  },
-  {
     name: "solicitationCode",
     identifier: "solicitation-code",
     meta: {
       label: "Solicitation Codes",
       parent: "fundraising-group",
       modelName: "SolicitationCodeNode",
+      menuWeight: 2,
     },
     create: "/fundraising/solicitation-code/create",
     edit: "/fundraising/solicitation-code/:id/edit",
@@ -80,6 +56,7 @@ export const refineResources: ResourceProps[] = [
       label: "Uploaded DDNs",
       parent: "fundraising-group",
       modelName: "DailyDepartmentNotificationNode",
+      menuWeight: 3,
     },
     create: "/fundraising/ddn/create",
     edit: "/fundraising/ddn/:id/edit",
@@ -92,11 +69,25 @@ export const refineResources: ResourceProps[] = [
       label: "DB Funds (Legacy)",
       parent: "fundraising-group",
       modelName: "FundraisingEntryNode",
+      menuWeight: 4,
     },
     create: "/fundraising/dbfunds/create",
     edit: "/fundraising/dbfunds/:id/edit",
     show: "/fundraising/dbfunds/:id",
     list: "/fundraising/dbfunds",
+  },
+  {
+    name: "fundraising",
+    meta: {
+      label: "Fundraising",
+      modelName: "FundraisingEntryNode",
+      parent: "fundraising-group",
+      menuWeight: 1,
+    },
+    create: "/fundraising/create",
+    edit: "/fundraising/:id/edit",
+    show: "/fundraising/:id",
+    list: "/fundraising",
   },
   {
     name: "person",
@@ -125,17 +116,17 @@ export const refineResources: ResourceProps[] = [
     list: "/notifications",
   },
   {
-    name: "marathon",
+    name: "event",
     meta: {
-      icon: <FlagOutlined />,
-      label: "Marathon",
-      modelName: "MarathonNode",
+      icon: <CalendarOutlined />,
+      label: "Events",
+      modelName: "EventNode",
       canDelete: true,
     },
-    create: "/marathon/create",
-    edit: "/marathon/:id/edit",
-    show: "/marathon/:id",
-    list: "/marathon",
+    create: "/events/create",
+    edit: "/events/:id/edit",
+    show: "/events/:id",
+    list: "/events",
   },
   {
     name: "feed",
@@ -162,6 +153,19 @@ export const refineResources: ResourceProps[] = [
     edit: "/images/:id/edit",
     show: "/images/:id",
     list: "/images",
+  },
+  {
+    name: "marathon",
+    meta: {
+      icon: <FlagOutlined />,
+      label: "Marathon",
+      modelName: "MarathonNode",
+      canDelete: true,
+    },
+    create: "/marathon/create",
+    edit: "/marathon/:id/edit",
+    show: "/marathon/:id",
+    list: "/marathon",
   },
   {
     name: "config",

@@ -1,10 +1,8 @@
 import { BarsOutlined, FileOutlined, UploadOutlined } from "@ant-design/icons";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Button, Flex } from "antd";
-import { useState } from "react";
 import { useQuery } from "urql";
 
-import { FundraisingReportDialog } from "#elements/components/fundraising/FundraisingReportDialog";
 import {
   FundraisingEntriesTable,
   FundraisingEntryTableFragment,
@@ -47,8 +45,6 @@ export const Route = createFileRoute("/fundraising/")({
 });
 
 function RouteComponent() {
-  const [reportDialogOpen, setReportDialogOpen] = useState(false);
-
   const listQuery = useListQuery(
     {
       initPage: 1,
@@ -93,13 +89,11 @@ function RouteComponent() {
               View Raw DDNs
             </Button>
           </Link>
-          <Button
-            icon={<FileOutlined />}
-            size="large"
-            onClick={() => setReportDialogOpen(true)}
-          >
-            Generate Report
-          </Button>
+          <Link from="/fundraising" to="report">
+            <Button icon={<FileOutlined />} size="large">
+              Generate Report
+            </Button>
+          </Link>
           <Link from="/fundraising" to="ddn/upload">
             <Button icon={<UploadOutlined />} size="large">
               Upload a DDN
@@ -115,10 +109,6 @@ function RouteComponent() {
         }
         loading={fetching}
         showSolicitationCode
-      />
-      <FundraisingReportDialog
-        open={reportDialogOpen}
-        onClose={() => setReportDialogOpen(false)}
       />
     </>
   );

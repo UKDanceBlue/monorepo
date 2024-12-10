@@ -179,7 +179,7 @@ export function PointEntryOpportunityLookup({
                   }
                   setSelected(undefined);
                   setSearchOpportunitiesField(value);
-                  if (!option.value) {
+                  if (!option?.value) {
                     field.handleChange(undefined);
                   }
                 }}

@@ -17,11 +17,7 @@ function makeAntDesignTheme({ dark }: { dark: boolean }): ThemeConfig {
   };
 }
 
-export function ThemeConfigProvider({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export function AntdThemeProvider({ children }: { children: React.ReactNode }) {
   const [dark] = useStorageValue(
     StorageManager.Local,
     StorageManager.keys.darkMode

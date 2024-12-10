@@ -151,7 +151,7 @@ export class ReportResolver {
 
       case "type-by-team-per-day": {
         const data = await this.prisma.fundraisingEntryWithMeta.groupBy({
-          by: ["donatedOn", "batchType", "donatedTo"],
+          by: ["donatedOn", "batchType", "solicitationCodeText"],
           _sum: {
             amount: true,
           },
@@ -168,16 +168,16 @@ export class ReportResolver {
         >((acc, entry) => {
           const date =
             entry.donatedOn && DateTime.fromJSDate(entry.donatedOn).toISODate();
-          if (!date || !entry.batchType || !entry.donatedTo) {
+          if (!date || !entry.batchType || !entry.solicitationCodeText) {
             return acc;
           }
           if (!acc[date]) {
             acc[date] = {};
           }
-          if (!acc[date][entry.donatedTo]) {
-            acc[date][entry.donatedTo] = {};
+          if (!acc[date][entry.solicitationCodeText]) {
+            acc[date][entry.solicitationCodeText] = {};
           }
-          acc[date][entry.donatedTo]![entry.batchType] =
+          acc[date][entry.solicitationCodeText]![entry.batchType] =
             entry._sum.amount?.toNumber() ?? 0;
           return acc;
         }, {});

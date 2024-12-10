@@ -108,7 +108,9 @@ export const Sider: React.FC<
 
     function makeChildren(tree: typeof menuItems): ItemType[] {
       const menuTree: ItemType[] = [];
-      for (const item of tree) {
+      for (const item of tree.sort(
+        (a, b) => (a.meta?.menuWeight ?? 0) - (b.meta?.menuWeight ?? 0)
+      )) {
         const menuItem = makeItem(item);
         if (menuItem) {
           menuTree.push(menuItem);
@@ -220,7 +222,14 @@ export const Sider: React.FC<
             maskClosable={true}
           >
             <Layout>
-              <Layout.Sider style={{ height: "100vh", overflow: "auto" }}>
+              <Layout.Sider
+                style={{
+                  height: "100vh",
+                  overflow: "auto",
+                  scrollbarWidth: "thin",
+                  scrollbarColor: "rgba(2555,255,255,0.65) #0000",
+                }}
+              >
                 <RenderToTitle collapsed={false} />
                 {renderMenu()}
               </Layout.Sider>
@@ -238,7 +247,8 @@ export const Sider: React.FC<
           style={{
             overflow: "auto",
             height: "100vh",
-            left: 0,
+            scrollbarWidth: "thin",
+            scrollbarColor: "rgba(2555,255,255,0.65) #0000",
           }}
           collapsible
           collapsed={menuCollapsed === "true"}

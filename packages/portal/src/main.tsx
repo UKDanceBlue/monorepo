@@ -10,9 +10,10 @@ import type { useAppProps } from "antd/es/app/context.js";
 import { StrictMode, useEffect, useState } from "react";
 import { Provider as UrqlProvider } from "urql";
 
-import { ThemeConfigProvider } from "#config/ant.js";
+import { AntdThemeProvider } from "#config/ant.js";
 import { API_BASE_URL, urqlClient } from "#config/api.js";
 import { MarathonConfigProvider } from "#config/marathon.js";
+import { NivoThemeProvider } from "#config/nivo.js";
 import { LoadingRibbon } from "#elements/components/design/RibbonSpinner.js";
 
 import { routeTree } from "./routeTree.gen.js";
@@ -88,15 +89,17 @@ declare module "@tanstack/react-router" {
 
 function Context({ children }: { children: React.ReactNode }) {
   return (
-    <ThemeConfigProvider>
-      <AntApp style={{ height: "100%" }}>
+    <AntdThemeProvider>
+      <NivoThemeProvider>
         <UrqlProvider value={urqlClient}>
           <DevtoolsProvider>
-            <MarathonConfigProvider>{children}</MarathonConfigProvider>
+            <MarathonConfigProvider>
+              <AntApp style={{ height: "100%" }}>{children}</AntApp>
+            </MarathonConfigProvider>
           </DevtoolsProvider>
         </UrqlProvider>
-      </AntApp>
-    </ThemeConfigProvider>
+      </NivoThemeProvider>
+    </AntdThemeProvider>
   );
 }
 

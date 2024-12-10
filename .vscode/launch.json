@@ -116,24 +116,11 @@
       "autoAttachChildProcesses": false
     },
     {
-      "name": "Debug Portal (firefox)",
-      "request": "launch",
-      "type": "firefox",
-      "url": "http://localhost:5173",
-      "webRoot": "${workspaceFolder}/packages/portal",
-      "presentation": {
-        "group": "5portal"
-      },
-      "keepProfileChanges": true,
-      "profile": "default"
-    },
-    {
-      "name": "Debug Portal (chrome)",
+      "name": "Debug Portal",
       "request": "launch",
       "type": "chrome",
-      "runtimeExecutable": "chromium",
       "url": "http://localhost:5173",
-      "webRoot": "${workspaceFolder}/packages/portal",
+      "webRoot": "${workspaceFolder}/packages/portal/src",
       "presentation": {
         "group": "5portal"
       }
