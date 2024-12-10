@@ -11,6 +11,8 @@ import {
   UserOutlined,
 } from "@ant-design/icons";
 import type { Action, ResourceProps } from "@refinedev/core";
+import type { GlobalId } from "@ukdanceblue/common";
+import { parseGlobalId } from "@ukdanceblue/common";
 
 export const refineResources: ResourceProps[] = [
   {
@@ -186,6 +188,29 @@ export const refineResources: ResourceProps[] = [
     list: "/admin/logs",
   },
 ] as const;
+
+export function findResourceByGlobalId(
+  globalId: string | GlobalId
+): ResourceProps | undefined {
+  let typename: string;
+  if (typeof globalId === "string") {
+    const parsed = parseGlobalId(globalId);
+    if (parsed.isErr()) {
+      return undefined;
+    }
+    typename = parsed.value.typename;
+  } else {
+    typename = globalId.typename;
+  }
+
+  for (const resource of refineResources) {
+    if (resource.name === typename && resource.meta?.modelName === typename) {
+      return resource;
+    }
+  }
+
+  return undefined;
+}
 
 // An array of objects containing pre-split paths for refine resources as well as the index of the resource in refineResources
 const resourceUrlIndex = refineResources.map((resource, index) => {

@@ -1,45 +1,40 @@
+/* eslint-disable @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-member-access */
 import { Container } from "@freshgum/typedi";
+import type { JsonObject } from "@prisma/client/runtime/library";
+import type {
+  AccessControlParam,
+  GlobalId,
+  PrimitiveObject,
+} from "@ukdanceblue/common";
+import { isGlobalId, serializeGlobalId } from "@ukdanceblue/common";
+import type { GraphQLResolveInfo } from "graphql";
+import type { ArgsDictionary } from "type-graphql";
+import {
+  createMethodMiddlewareDecorator,
+  getMetadataStorage,
+} from "type-graphql";
 import type { LeveledLogMethod, Logger } from "winston";
 import { createLogger, format, transports } from "winston";
 
-import { logDirToken } from "#lib/typediTokens.js";
+import type { GraphQLContext } from "#auth/context.js";
+import { logDirToken, prismaToken } from "#lib/typediTokens.js";
 import { isDevelopmentToken } from "#lib/typediTokens.js";
+
+import { logger } from "./standardLogging.js";
 
 const logDir = Container.get(logDirToken);
 
 export interface AuditLogger extends Logger {
-  /**
-   * Log a message with the level `insecure`
-   *
-   * Use this level for common activities that
-   * influence users such as creating, updating,
-   * or deleting a resource
-   */
-  insecure: LeveledLogMethod;
-  /**
-   * Log a message with the level `secure`
-   *
-   * Use this level for more sensitive activities
-   * such as deleting a user or modifying a team
-   */
-  secure: LeveledLogMethod;
-  /**
-   * Log a message with the level `secure`
-   *
-   * Use this level for an action that might break
-   * something or is otherwise dangerous such as
-   * changing configurations
-   */
-  dangerous: LeveledLogMethod;
-  /**
-   * Log a message with the level `info`
-   *
-   * Use this level for general information
-   * about the operation of the server or
-   * the logger itself
-   */
-  info: LeveledLogMethod;
+  action: (
+    message: string,
+    meta: {
+      details?: PrimitiveObject;
+      userId?: string | number;
+      subjectGlobalId?: string | GlobalId;
+    }
+  ) => void;
 
+  info: LeveledLogMethod;
   warn: never;
   help: never;
   data: never;
@@ -58,7 +53,7 @@ export interface AuditLogger extends Logger {
 
 export const auditLoggerFileName = "audit.log.json";
 
-const auditLogTransport = new transports.File({
+const fileTransport = new transports.File({
   filename: auditLoggerFileName,
   dirname: logDir,
   silent: logDir === "TEST",
@@ -67,33 +62,137 @@ const auditLogTransport = new transports.File({
   format: format.combine(format.timestamp(), format.json()),
 });
 
-const dangerousConsoleTransport = new transports.Console({
-  format: format.combine(
-    format.splat(),
-    format.simple(),
-    format.colorize({
-      colors: {
-        dangerous: "red",
-        secure: "yellow",
-        insecure: "yellow",
-        info: "green",
-      },
-    })
-  ),
-});
+const writeAuditLog = (
+  message: string,
+  details?: PrimitiveObject,
+  userId?: string | number,
+  subjectGlobalId?: string | GlobalId
+) =>
+  Container.get(prismaToken).auditLog.create({
+    data: {
+      summary: message,
+      details: details ? (details as JsonObject) : {},
+      user: userId
+        ? typeof userId === "string"
+          ? { connect: { uuid: userId } }
+          : { connect: { id: userId } }
+        : undefined,
+      subjectGlobalId: subjectGlobalId
+        ? typeof subjectGlobalId === "string"
+          ? subjectGlobalId
+          : serializeGlobalId(subjectGlobalId)
+        : undefined,
+    },
+  });
 
-export const auditLogger = createLogger({
-  level: "info",
-  silent: false,
-  transports: [auditLogTransport, dangerousConsoleTransport],
+const isDevelopment = Container.get(isDevelopmentToken);
+const auditLogger = createLogger({
+  silent: !isDevelopment,
+  transports: [fileTransport],
   levels: {
     info: 6,
-    insecure: 4,
-    secure: 2,
-    dangerous: 0,
+    action: 3,
   },
 }) as AuditLogger;
 
-if (Container.get(isDevelopmentToken)) {
-  auditLogger.info("Audit Logger initialized");
+auditLogger.info("Audit Logger initialized");
+
+export function WithAuditLogging() {
+  return createMethodMiddlewareDecorator<GraphQLContext>(
+    async ({ args, context, info }, next) => {
+      if (info.rootValue) {
+        return next;
+      }
+      const { authorizedFields } = getMetadataStorage();
+      const auth = authorizedFields.find(
+        ({ fieldName }) => fieldName === info.fieldName
+      )?.roles[0] as AccessControlParam | undefined;
+
+      const result = await next();
+
+      await logAuditEvent(auth, info, args, result, context);
+
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+      return result;
+    }
+  );
+}
+
+export async function logAuditEvent(
+  auth: AccessControlParam | undefined,
+  info: GraphQLResolveInfo,
+  args: ArgsDictionary,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  result: any,
+  context: GraphQLContext
+) {
+  let message: string;
+  if (auth) {
+    const [action, subject, field] = auth;
+    if (typeof subject === "object") {
+      message = subject.id
+        ? `$${action} ${subject.kind}[id=${subject.id}]${field}`
+        : `${action} ${subject.kind}${field}`;
+    } else if (subject) {
+      message = `${action} ${subject}${field} at ${info.fieldName}`;
+    } else {
+      message = `${action} ${info.fieldName}`;
+    }
+  } else {
+    message = `accessed ${info.fieldName}`;
+  }
+
+  let id = undefined;
+  if ("id" in args) {
+    if (isGlobalId(args.id)) {
+      id = serializeGlobalId(args.id);
+    } else if (typeof args.id === "string") {
+      id = args.id;
+    }
+  } else if ("input" in args && "id" in args.input) {
+    if (isGlobalId(args.input.id)) {
+      id = serializeGlobalId(args.input.id);
+    } else if (typeof args.input.id === "string") {
+      id = args.input.id;
+    }
+  } else if ("id" in result) {
+    if (isGlobalId(result.id)) {
+      id = serializeGlobalId(result.id);
+    } else if (typeof result.id === "string") {
+      id = result.id;
+    }
+  } else if ("data" in result && "id" in result.data) {
+    if (isGlobalId(result.data.id)) {
+      id = serializeGlobalId(result.data.id);
+    } else if (typeof result.data.id === "string") {
+      id = result.data.id;
+    }
+  } else if ("value" in result && "id" in result.value) {
+    if (isGlobalId(result.value.id)) {
+      id = serializeGlobalId(result.value.id);
+    } else if (typeof result.value.id === "string") {
+      id = result.value.id;
+    }
+  } else if (
+    "value" in result &&
+    "value" in result.value &&
+    "id" in result.value.value
+  ) {
+    if (isGlobalId(result.value.value.id)) {
+      id = serializeGlobalId(result.value.value.id);
+    } else if (typeof result.value.value.id === "string") {
+      id = result.value.value.id;
+    }
+  }
+
+  try {
+    auditLogger.action(message, {
+      details: args,
+      userId: context.authenticatedUser?.id.id,
+      subjectGlobalId: id,
+    });
+    await writeAuditLog(message, args, context.authenticatedUser?.id.id, id);
+  } catch (error) {
+    logger.error("Error writing audit log", { error });
+  }
 }

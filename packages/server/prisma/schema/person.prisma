@@ -16,7 +16,7 @@ model Person {
   fundraisingAssignment             FundraisingAssignment[]
   assignedFundraisingEntries        FundraisingAssignment[]    @relation("fundraising_assignment_assigned_by_person")
 
-  edits Edit[]
+  edits AuditLog[]
 
   @@index([uuid])
 }

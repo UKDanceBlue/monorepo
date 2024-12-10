@@ -7,6 +7,8 @@ import type {
   DbRole,
   MembershipPositionType,
   NumericComparator,
+  Primitive,
+  PrimitiveObject,
   SortDirection,
   StringComparator,
   TeamLegacyStatus,
@@ -49,6 +51,8 @@ export const graphql = initGraphQLTada<{
     StringComparator: StringComparator;
     // IsComparator: IsComparator,
     BatchType: BatchType;
+    JSONObject: Record<string, Primitive | PrimitiveObject>;
+    PositiveFloat: number;
   };
 }>();
 

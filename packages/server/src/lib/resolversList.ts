@@ -1,3 +1,4 @@
+import { AuditLogResolver } from "#resolvers/AuditLogResolver.js";
 import { ConfigurationResolver } from "#resolvers/ConfigurationResolver.js";
 import {
   DailyDepartmentNotificationBatchResolver,
@@ -26,6 +27,7 @@ import { SolicitationCodeResolver } from "#resolvers/SolicitationCodeResolver.js
 import { TeamResolver } from "#resolvers/TeamResolver.js";
 
 export const resolversList = [
+  AuditLogResolver,
   ConfigurationResolver,
   DeviceResolver,
   DailyDepartmentNotificationResolver,

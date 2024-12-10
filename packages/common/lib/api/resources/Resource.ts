@@ -1,3 +1,4 @@
+import { GraphQLDateTimeISO } from "graphql-scalars";
 import type { DateTime } from "luxon";
 import { Field, ObjectType } from "type-graphql";
 import type { Class } from "utility-types";
@@ -44,13 +45,13 @@ export abstract class Resource {
 
 @ObjectType()
 export abstract class TimestampedResource extends Resource {
-  @Field(() => Date, { nullable: true })
+  @Field(() => GraphQLDateTimeISO, { nullable: true })
   createdAt!: Date;
   get createdAtDateTime(): DateTime {
     return dateTimeFromSomething(this.createdAt);
   }
 
-  @Field(() => Date, { nullable: true })
+  @Field(() => GraphQLDateTimeISO, { nullable: true })
   updatedAt!: Date;
   get updatedAtDateTime(): DateTime {
     return dateTimeFromSomething(this.updatedAt);

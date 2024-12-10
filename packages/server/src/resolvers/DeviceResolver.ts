@@ -29,7 +29,6 @@ import {
 } from "type-graphql";
 import Validator from "validator";
 
-import { auditLogger } from "#logging/auditLogging.js";
 import { deviceModelToResource } from "#repositories/device/deviceModelToResource.js";
 import { DeviceRepository } from "#repositories/device/DeviceRepository.js";
 import { notificationDeliveryModelToResource } from "#repositories/notificationDelivery/notificationDeliveryModelToResource.js";
@@ -146,8 +145,6 @@ export class DeviceResolver
     @Arg("id", () => GlobalIdScalar) { id }: GlobalId
   ): Promise<DeviceNode> {
     const row = await this.deviceRepository.deleteDevice({ uuid: id });
-
-    auditLogger.secure("Device deleted", { uuid: id });
 
     return deviceModelToResource(row);
   }

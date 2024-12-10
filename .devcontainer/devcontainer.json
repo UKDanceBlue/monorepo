@@ -79,7 +79,8 @@
         "GitHub.vscode-pull-request-github",
         "mtxr.sqltools",
         "mtxr.sqltools-driver-pg",
-        "fill-labs.dependi"
+        "fill-labs.dependi",
+        "yoavbls.pretty-ts-errors"
       ]
     }
   },

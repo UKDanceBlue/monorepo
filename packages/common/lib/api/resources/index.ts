@@ -1,3 +1,4 @@
+import { AuditLogNode } from "./AuditLog.js";
 import { CommitteeNode } from "./Committee.js";
 import { ConfigurationNode } from "./Configuration.js";
 import {
@@ -36,6 +37,7 @@ export * from "../scalars/Void.js";
 export { AuthIdPairResource as AuthIdPairNode } from "../types/AuthIdPair.js";
 export { EffectiveCommitteeRole } from "../types/EffectiveCommitteeRole.js";
 export { IntervalISO } from "../types/IntervalISO.js";
+export * from "./AuditLog.js";
 export * from "./Committee.js";
 export * from "./Configuration.js";
 export * from "./DailyDepartmentNotification.js";
@@ -76,6 +78,7 @@ export const ResourceClasses = {
   PointOpportunityNode,
   SolicitationCodeNode,
   TeamNode,
+  AuditLogNode,
 } as const;
 export type ResourceClasses =
   (typeof ResourceClasses)[keyof typeof ResourceClasses];

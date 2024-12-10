@@ -21,7 +21,6 @@ import { Arg, Args, Ctx, Mutation, Query, Resolver } from "type-graphql";
 
 import { FileManager } from "#files/FileManager.js";
 import { generateThumbHash } from "#lib/thumbHash.js";
-import { auditLogger } from "#logging/auditLogging.js";
 import { logger } from "#logging/standardLogging.js";
 import { imageModelToResource } from "#repositories/image/imageModelToResource.js";
 import { ImageRepository } from "#repositories/image/ImageRepository.js";
@@ -153,8 +152,6 @@ export class ImageResolver implements CrudResolver<ImageNode, "image"> {
       throw new LegacyError(LegacyErrorCode.NotFound, "Image not found");
     }
 
-    auditLogger.secure("Image alt text set", { image: result });
-
     return imageModelToResource(
       result,
       result.file,
@@ -202,8 +199,6 @@ export class ImageResolver implements CrudResolver<ImageNode, "image"> {
       throw new LegacyError(LegacyErrorCode.NotFound, "Image not found");
     }
 
-    auditLogger.secure("Image URL set", { image: result });
-
     return imageModelToResource(
       result,
       result.file,
@@ -223,8 +218,6 @@ export class ImageResolver implements CrudResolver<ImageNode, "image"> {
     if (result == null) {
       throw new LegacyError(LegacyErrorCode.NotFound, "Image not found");
     }
-
-    auditLogger.secure("Image deleted", { image: result });
 
     return imageModelToResource(
       result,

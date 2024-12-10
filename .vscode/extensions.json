@@ -18,6 +18,7 @@
     "vitest.explorer",
     "GitHub.copilot",
     "GitHub.vscode-pull-request-github",
-    "fill-labs.dependi"
+    "fill-labs.dependi",
+    "yoavbls.pretty-ts-errors"
   ]
 }

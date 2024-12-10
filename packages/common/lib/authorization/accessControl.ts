@@ -56,6 +56,7 @@ const extraFieldsByResource = {
     [".chunkUuid"]: NEVER,
     [".deliveryError"]: NEVER,
   },
+  AuditLogNode: {},
   FundraisingEntryNode: {},
   CommitteeNode: {},
   ConfigurationNode: {},
@@ -85,13 +86,14 @@ type ResourceSubject = {
 };
 
 type SubjectValue = ResourceSubject[keyof ResourceSubject];
-export type Subject = InferSubjects<SubjectValue | "all", true>;
+export type Subject = InferSubjects<SubjectValue | "all" | "Node", true>;
 
 export const SubjectStrings = [
   ...(Object.keys(
     extraFieldsByResource
   ) as (keyof typeof extraFieldsByResource)[]),
   "all",
+  "Node",
 ] as const;
 
 export type Action =
@@ -347,6 +349,7 @@ function applyAccessLevelPermissions(
       ],
       "."
     );
+    allow("read", "AuditLogNode", ".");
     // Manage teams and their assignments and solicitation code
     allow("manage", "TeamNode", [
       ".fundraisingAssignments",

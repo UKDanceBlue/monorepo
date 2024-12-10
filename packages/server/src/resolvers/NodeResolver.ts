@@ -1,6 +1,7 @@
 import { Service } from "@freshgum/typedi";
 import type { GlobalId } from "@ukdanceblue/common";
 import {
+  AccessControlAuthorized,
   ConfigurationNode,
   DailyDepartmentNotificationBatchNode,
   DailyDepartmentNotificationNode,
@@ -98,71 +99,72 @@ export class NodeResolver {
     // private readonly reportResolver: ReportResolver
   ) {}
 
+  @AccessControlAuthorized("get")
   @Query(() => Node)
   async node(
     @Arg("id", () => GlobalIdScalar) id: GlobalId,
     @Ctx() ctx: GraphQLContext
-  ): Promise<ConcreteResult<Node> | ConcreteResult<Option<Node>>> {
+  ): Promise<ConcreteResult<Node | Option<Node>>> {
     switch (id.typename) {
-      case DailyDepartmentNotificationNode.constructor.name: {
+      case DailyDepartmentNotificationNode.name: {
         return this.dailyDepartmentNotificationResolver.dailyDepartmentNotification(
           id
         );
       }
-      case DailyDepartmentNotificationBatchNode.constructor.name: {
+      case DailyDepartmentNotificationBatchNode.name: {
         return this.dailyDepartmentNotificationBatchResolver.dailyDepartmentNotificationBatch(
           id
         );
       }
-      case SolicitationCodeNode.constructor.name: {
+      case SolicitationCodeNode.name: {
         return this.solicitationCodeResolver.solicitationCode(id);
       }
-      case ConfigurationNode.constructor.name: {
+      case ConfigurationNode.name: {
         return this.configurationResolver.configuration(id);
       }
-      case DeviceNode.constructor.name: {
+      case DeviceNode.name: {
         const data = await this.deviceResolver.device(id.id);
         return Ok(data.data);
       }
-      case EventNode.constructor.name: {
+      case EventNode.name: {
         const data = await this.eventResolver.event(id);
         return Ok(data);
       }
-      case FeedResolver.constructor.name: {
+      case FeedResolver.name: {
         return this.feedResolver.feedItem(id);
       }
-      case FundraisingAssignmentNode.constructor.name: {
+      case FundraisingAssignmentNode.name: {
         return this.fundraisingAssignmentResolver.fundraisingAssignment(id);
       }
-      case FundraisingEntryNode.constructor.name: {
+      case FundraisingEntryNode.name: {
         return this.fundraisingEntryResolver.fundraisingEntry(id);
       }
-      case ImageNode.constructor.name: {
+      case ImageNode.name: {
         const data = await this.imageResolver.image(id, ctx);
         return Ok(data);
       }
-      case MarathonHourNode.constructor.name: {
+      case MarathonHourNode.name: {
         const data = await this.marathonHourResolver.marathonHour(id);
         return Ok(data);
       }
-      case MarathonNode.constructor.name: {
+      case MarathonNode.name: {
         return this.marathonResolver.marathon(id);
       }
-      case NotificationNode.constructor.name: {
+      case NotificationNode.name: {
         return this.notificationResolver.notification(id);
       }
-      case PersonNode.constructor.name: {
+      case PersonNode.name: {
         return this.personResolver.person(id);
       }
-      case PointOpportunityNode.constructor.name: {
+      case PointOpportunityNode.name: {
         const data = await this.pointOpportunityResolver.pointOpportunity(id);
         return Ok(data);
       }
-      case PointEntryNode.constructor.name: {
+      case PointEntryNode.name: {
         const data = await this.pointEntryResolver.pointEntry(id);
         return Ok(data);
       }
-      case TeamNode.constructor.name: {
+      case TeamNode.name: {
         return this.teamResolver.team(id);
       }
       default: {

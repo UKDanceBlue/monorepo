@@ -11,29 +11,20 @@ import {
   CreateConfigurationInput,
   GetConfigurationResponse,
 } from "@ukdanceblue/common";
-import {
-  ConcreteResult,
-  NotFoundError,
-  toBasicError,
-} from "@ukdanceblue/common/error";
-import { readFile } from "fs/promises";
-import { join } from "path";
+import { ConcreteResult, NotFoundError } from "@ukdanceblue/common/error";
 import { Err, Ok } from "ts-results-es";
 import { Arg, Mutation, Query, Resolver } from "type-graphql";
 
-import { logDirToken } from "#lib/typediTokens.js";
-import { auditLogger, auditLoggerFileName } from "#logging/auditLogging.js";
 import { configurationModelToResource } from "#repositories/configuration/configurationModelToResource.js";
 import { ConfigurationRepository } from "#repositories/configuration/ConfigurationRepository.js";
 
 @Resolver(() => ConfigurationNode)
-@Service([ConfigurationRepository, logDirToken])
+@Service([ConfigurationRepository])
 export class ConfigurationResolver
   implements CrudResolver<ConfigurationNode, "configuration">
 {
   constructor(
-    private readonly configurationRepository: ConfigurationRepository,
-    private readonly logDir: string
+    private readonly configurationRepository: ConfigurationRepository
   ) {}
 
   @AccessControlAuthorized("readActive")
@@ -117,8 +108,6 @@ export class ConfigurationResolver
       validUntil: dateTimeFromSomething(input.validUntil ?? null),
     });
 
-    auditLogger.dangerous("Configuration created", { configuration: row });
-
     return Ok(configurationModelToResource(row));
   }
 
@@ -140,10 +129,6 @@ export class ConfigurationResolver
         validUntil: dateTimeFromSomething(i.validUntil ?? null),
       }))
     );
-
-    auditLogger.dangerous("Configurations created", {
-      configurations: rows,
-    });
 
     return Ok(rows.map(configurationModelToResource));
   }
@@ -167,32 +152,6 @@ export class ConfigurationResolver
       );
     }
 
-    auditLogger.dangerous("Configuration deleted", { configuration: row });
-
     return Ok(configurationModelToResource(row));
-  }
-
-  @AccessControlAuthorized("read", "all")
-  @Query(() => String, {
-    name: "auditLog",
-    description: "Get the audit log file from the server",
-  })
-  async auditLog(
-    @Arg("lines", { defaultValue: 25 }) lines: number,
-    @Arg("offset", { defaultValue: 0 }) offset: number
-  ): Promise<ConcreteResult<string>> {
-    try {
-      const fileLookup = await readFile(join(this.logDir, auditLoggerFileName));
-      return Ok(
-        fileLookup
-          .toString("utf8")
-          .split("\n")
-          .reverse()
-          .slice(offset, offset + lines)
-          .join("\n")
-      );
-    } catch (error) {
-      return Err(toBasicError(error));
-    }
   }
 }

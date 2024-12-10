@@ -140,6 +140,7 @@ export default await buildSchema({
       }
 
       let id: string | undefined = undefined;
+      let idTypename: string | undefined = undefined;
       if (
         parentType.name === "Query" ||
         parentType.name === "Mutation" ||
@@ -150,6 +151,7 @@ export default await buildSchema({
             id = variableValues.id;
           } else if (isGlobalId(variableValues.id)) {
             id = variableValues.id.id;
+            idTypename = variableValues.id.typename;
           } else {
             throw new Error("Cannot determine ID for query");
           }
@@ -168,6 +170,7 @@ export default await buildSchema({
           id = root.id;
         } else if (isGlobalId(root.id)) {
           id = root.id.id;
+          idTypename = root.id.typename;
         } else {
           throw new Error("Cannot determine ID for query");
         }
@@ -207,6 +210,14 @@ export default await buildSchema({
           subject = rt.name;
         }
       }
+
+      if (subject === "Node") {
+        if (!idTypename) {
+          throw new Error("Cannot determine ID type for node-returning query");
+        }
+        subject = idTypename;
+      }
+
       if (!subject) {
         throw new Error(
           `Cannot determine subject type for query ${pathToString(path)}`

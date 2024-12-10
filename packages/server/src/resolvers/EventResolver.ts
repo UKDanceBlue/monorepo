@@ -31,7 +31,6 @@ import {
 
 import type { GraphQLContext } from "#auth/context.js";
 import { FileManager } from "#files/FileManager.js";
-import { auditLogger } from "#logging/auditLogging.js";
 import {
   eventModelToResource,
   eventOccurrenceModelToResource,
@@ -126,8 +125,6 @@ export class EventResolver implements CrudResolver<EventNode, "event"> {
       },
     });
 
-    auditLogger.secure("Event created", { event: row });
-
     return eventModelToResource(
       row,
       row.eventOccurrences.map(eventOccurrenceModelToResource)
@@ -175,7 +172,6 @@ export class EventResolver implements CrudResolver<EventNode, "event"> {
     );
 
     return row.map((row) => {
-      auditLogger.secure("Event updated", { event: row });
       return eventModelToResource(
         row,
         row.eventOccurrences.map(eventOccurrenceModelToResource)
@@ -200,8 +196,6 @@ export class EventResolver implements CrudResolver<EventNode, "event"> {
     if (!row) {
       throw new LegacyError(LegacyErrorCode.NotFound, "Image not found");
     }
-
-    auditLogger.secure("Event image removed", { eventUuid, imageUuid });
   }
 
   @AccessControlAuthorized("update", "EventNode")

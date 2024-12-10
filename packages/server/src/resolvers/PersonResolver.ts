@@ -48,7 +48,7 @@ import {
 } from "type-graphql";
 
 import type { GraphQLContext } from "#auth/context.js";
-import { auditLogger } from "#logging/auditLogging.js";
+import { WithAuditLogging } from "#lib/logging/auditLogging.js";
 import { fundraisingAssignmentModelToNode } from "#repositories/fundraising/fundraisingAssignmentModelToNode.js";
 import { FundraisingEntryRepository } from "#repositories/fundraising/FundraisingRepository.js";
 import {
@@ -70,6 +70,7 @@ export class PersonResolver
     private readonly fundraisingEntryRepository: FundraisingEntryRepository
   ) {}
 
+  @WithAuditLogging()
   @AccessControlAuthorized("get")
   @Query(() => PersonNode, { name: "person" })
   async person(
@@ -353,19 +354,10 @@ export class PersonResolver
   async deletePerson(
     @Arg("id", () => GlobalIdScalar) { id }: GlobalId
   ): Promise<ConcreteResult<PersonNode>> {
-    return new AsyncResult(this.personRepository.deletePerson({ uuid: id }))
-      .andThen((row) => personModelToResource(row, this.personRepository))
-      .map((person) => {
-        auditLogger.secure("Person deleted", {
-          person: {
-            name: person.name,
-            email: person.email,
-            uuid: person.id,
-          },
-        });
-
-        return person;
-      }).promise;
+    return new AsyncResult(
+      this.personRepository.deletePerson({ uuid: id })
+    ).andThen((row) => personModelToResource(row, this.personRepository))
+      .promise;
   }
 
   @AccessControlAuthorized("get", "PersonNode", ".memberships")

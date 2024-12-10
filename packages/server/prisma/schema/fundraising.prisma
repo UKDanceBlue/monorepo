@@ -14,8 +14,6 @@ model FundraisingEntry {
   donatedOnOverride          DateTime?  @db.Date
   batchTypeOverride          BatchType?
 
-  editHistory FundraisingEntryEdit[]
-
   enteredByPerson          Person?                      @relation(fields: [originallyEnteredByPersonId], references: [id], onDelete: SetNull)
   assignments              FundraisingAssignment[]
   ddn                      DailyDepartmentNotification?

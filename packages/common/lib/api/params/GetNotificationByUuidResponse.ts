@@ -56,7 +56,8 @@ export class ListNotificationsArgs extends FilteredListQueryArgs<
   | "body"
   | "deliveryIssue"
   | "sendAt"
-  | "startedSendingAt",
+  | "startedSendingAt"
+  | "deliveryIssueAcknowledgedAt",
   "title" | "body",
   "deliveryIssue",
   never,
