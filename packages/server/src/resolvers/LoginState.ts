@@ -15,7 +15,9 @@ export class LoginStateResolver {
       loggedIn: ctx.authSource !== AuthSource.None,
       effectiveCommitteeRoles: ctx.effectiveCommitteeRoles,
       accessLevel: ctx.accessLevel,
-      dbRole: ctx.dbRole ?? DbRole.None,
+      dbRole:
+        ctx.dbRole ??
+        (ctx.authSource === AuthSource.None ? DbRole.None : DbRole.Public),
       authSource: ctx.authSource,
       abilityRules: packRules(ctx.ability.rules),
     };
