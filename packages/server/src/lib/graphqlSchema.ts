@@ -121,7 +121,12 @@ export default await buildSchema({
       const [rule] = params as [AccessControlParam];
 
       if (rule.length !== 1 && typeof rule[1] !== "string") {
-        return ability.can(...rule);
+        const ok = ability.can(...rule);
+        logger.trace("Checking access control", {
+          rule: ability.relevantRuleFor(...rule),
+          authorized: ok,
+          canParameters: rule,
+        });
       }
 
       let action: Action;

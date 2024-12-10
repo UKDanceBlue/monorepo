@@ -27,7 +27,7 @@ export class ConfigurationResolver
     private readonly configurationRepository: ConfigurationRepository
   ) {}
 
-  @AccessControlAuthorized("readActive")
+  @AccessControlAuthorized("readActive", "ConfigurationNode")
   @Query(() => GetConfigurationResponse, {
     name: "activeConfiguration",
     description:
@@ -55,7 +55,7 @@ export class ConfigurationResolver
     return Ok(resp);
   }
 
-  @AccessControlAuthorized("get")
+  @AccessControlAuthorized("get", "ConfigurationNode")
   @Query(() => ConfigurationNode, {
     name: "configuration",
     description: "Get a particular configuration entry by UUID",
