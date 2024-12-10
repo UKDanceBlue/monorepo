@@ -47,11 +47,7 @@ import { SolicitationCodeRepository } from "#repositories/solicitationCode/Solic
 ])
 export class FundraisingEntryResolver
   implements
-    CrudResolver<
-      FundraisingEntryNode,
-      "fundraisingEntry",
-      "fundraisingEntries"
-    >
+    CrudResolver<FundraisingEntryNode, "fundraisingEntry", "fundraisingEntries">
 {
   constructor(
     private readonly fundraisingProvider: FundraisingProvider<number>,
@@ -178,7 +174,6 @@ export class FundraisingEntryResolver
   //     );
   //   }
   // )
-  @AccessControlAuthorized("list", "FundraisingAssignmentNode")
   @FieldResolver(() => [FundraisingAssignmentNode])
   async assignments(
     @Root() { id: { id } }: FundraisingEntryNode

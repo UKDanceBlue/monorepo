@@ -29,6 +29,7 @@ import { FundraisingEntryRepository } from "#repositories/fundraising/Fundraisin
 import { personModelToResource } from "#repositories/person/personModelToResource.js";
 import { PersonRepository } from "#repositories/person/PersonRepository.js";
 
+// TODO: Turn authorization back on for this field, currently we are only protected by the parent field
 @Resolver(() => FundraisingAssignmentNode)
 @Service([FundraisingEntryRepository, PersonRepository])
 export class FundraisingAssignmentResolver
@@ -147,7 +148,6 @@ export class FundraisingAssignmentResolver
   //     return false;
   //   }
   // )
-  @AccessControlAuthorized("create")
   @Mutation(() => FundraisingAssignmentNode)
   async assignEntryToPerson(
     @Arg("entryId", () => GlobalIdScalar) { id: entryId }: GlobalId,
@@ -209,7 +209,6 @@ export class FundraisingAssignmentResolver
   //     return false;
   //   }
   // )
-  @AccessControlAuthorized("update")
   @Mutation(() => FundraisingAssignmentNode)
   async updateFundraisingAssignment(
     @Arg("id", () => GlobalIdScalar) { id }: GlobalId,
@@ -268,7 +267,6 @@ export class FundraisingAssignmentResolver
   //     return false;
   //   }
   // )
-  @AccessControlAuthorized("delete")
   @Mutation(() => FundraisingAssignmentNode)
   async deleteFundraisingAssignment(
     @Arg("id", () => GlobalIdScalar) { id }: GlobalId
@@ -330,7 +328,6 @@ export class FundraisingAssignmentResolver
   //     );
   //   }
   // )
-  @AccessControlAuthorized("get")
   @FieldResolver(() => PersonNode, {
     nullable: true,
     description:
@@ -396,7 +393,7 @@ export class FundraisingAssignmentResolver
   //     );
   //   }
   // )
-  @AccessControlAuthorized("get")
+
   @FieldResolver(() => FundraisingEntryNode)
   async entry(
     @Root() { id: { id } }: FundraisingAssignmentNode

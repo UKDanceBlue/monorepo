@@ -5,7 +5,7 @@ import {
 } from "@ant-design/icons";
 import { Link, useNavigate } from "@tanstack/react-router";
 import { MembershipPositionType } from "@ukdanceblue/common";
-import { Button, Descriptions, Empty, Flex, Space } from "antd";
+import { Button, Descriptions, Empty, Flex } from "antd";
 import { useState } from "react";
 import { useMutation } from "urql";
 
@@ -51,7 +51,7 @@ export function TeamViewer({
 }) {
   const teamData = readFragment(TeamViewerFragment, teamFragment) ?? undefined;
 
-  const canEditTeams = useAuthorizationRequirement("update", "TeamNode");
+  const canEditTeams = useAuthorizationRequirement("manage", "TeamNode");
 
   const canEditMemberships = useAuthorizationRequirement(
     "update",
@@ -96,46 +96,65 @@ export function TeamViewer({
   }
 
   return (
-    <Space direction="horizontal" align="start" wrap style={{ width: "100%" }}>
+    <>
       {TeamDeletePopup}
-      <Space direction="vertical">
-        <Descriptions bordered column={1} size="small" title="Team Overview">
-          <Descriptions.Item label="Name">{teamData.name}</Descriptions.Item>
-          <Descriptions.Item label="Marathon Year">
-            {teamData.marathon.year}
-          </Descriptions.Item>
-          <Descriptions.Item label="Legacy Status">
-            {teamData.legacyStatus}
-          </Descriptions.Item>
-          <Descriptions.Item label="Total Points">
-            {teamData.totalPoints}
-          </Descriptions.Item>
-          <Descriptions.Item label="Type">{teamData.type}</Descriptions.Item>
-        </Descriptions>
-        {canEditTeams && (
-          <Flex justify="space-between">
-            <Button
-              style={{ width: "18ch" }}
-              onClick={showModal}
-              icon={<DeleteOutlined />}
-              danger
-              shape="round"
-            >
-              Delete Team
-            </Button>
-            <Link from="/teams/$teamId" to="edit">
+      <AssignToTeamPopup
+        person={personToAssignToTeam}
+        onClose={() => {
+          setPersonToAssignToTeam(null);
+        }}
+        onSubmit={(position) => {
+          setPersonToAssignToTeam(null);
+          assignToTeam({
+            person: personToAssignToTeam?.uuid ?? "",
+            team: teamData.id,
+            position,
+          })
+            .then(() => {
+              window.location.reload();
+            })
+            .catch((error: unknown) => console.error(error));
+        }}
+        teamName={teamData.name}
+      />
+      <Flex gap="1em" wrap="wrap">
+        <Flex gap="1em" vertical flex={1} style={{ minWidth: "15em" }}>
+          <Descriptions bordered column={1} size="small" title="Team Overview">
+            <Descriptions.Item label="Name">{teamData.name}</Descriptions.Item>
+            <Descriptions.Item label="Marathon Year">
+              {teamData.marathon.year}
+            </Descriptions.Item>
+            <Descriptions.Item label="Legacy Status">
+              {teamData.legacyStatus}
+            </Descriptions.Item>
+            <Descriptions.Item label="Total Points">
+              {teamData.totalPoints}
+            </Descriptions.Item>
+            <Descriptions.Item label="Type">{teamData.type}</Descriptions.Item>
+          </Descriptions>
+          {canEditTeams && (
+            <Flex justify="space-between">
               <Button
                 style={{ width: "18ch" }}
-                icon={<EditOutlined />}
+                onClick={showModal}
+                icon={<DeleteOutlined />}
+                danger
                 shape="round"
               >
-                Edit Team
+                Delete Team
               </Button>
-            </Link>
-          </Flex>
-        )}
-      </Space>
-      <Space>
+              <Link from="/teams/$teamId" to="edit">
+                <Button
+                  style={{ width: "18ch" }}
+                  icon={<EditOutlined />}
+                  shape="round"
+                >
+                  Edit Team
+                </Button>
+              </Link>
+            </Flex>
+          )}
+        </Flex>
         <Descriptions
           bordered
           column={1}
@@ -235,31 +254,12 @@ export function TeamViewer({
                 onSelect={(person) => {
                   setPersonToAssignToTeam(person);
                 }}
-                style={{ width: "100%", minWidth: "25ch" }}
+                style={{ width: "100%" }}
               />
             </Descriptions.Item>
           )}
         </Descriptions>
-        <AssignToTeamPopup
-          person={personToAssignToTeam}
-          onClose={() => {
-            setPersonToAssignToTeam(null);
-          }}
-          onSubmit={(position) => {
-            setPersonToAssignToTeam(null);
-            assignToTeam({
-              person: personToAssignToTeam?.uuid ?? "",
-              team: teamData.id,
-              position,
-            })
-              .then(() => {
-                window.location.reload();
-              })
-              .catch((error: unknown) => console.error(error));
-          }}
-          teamName={teamData.name}
-        />
-      </Space>
-    </Space>
+      </Flex>
+    </>
   );
 }

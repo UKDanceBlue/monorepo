@@ -161,8 +161,16 @@ export default await buildSchema({
           );
           if (possibleIds.length === 1) {
             id = possibleIds[0]!.id;
-          } else if (possibleIds.length > 1) {
-            throw new Error("Cannot determine ID for query");
+          } else {
+            const idx = possibleIds.findIndex(
+              (value) => value.typename === "PersonNode"
+            );
+            if (idx !== -1) {
+              possibleIds.splice(idx, 1);
+            }
+            if (possibleIds.length > 1) {
+              throw new Error("Cannot determine ID for query");
+            }
           }
         }
       } else if ("id" in root) {

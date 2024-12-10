@@ -11,6 +11,7 @@ import { DateTime } from "luxon";
 import type { FragmentOf } from "#graphql/index.js";
 import { graphql, readFragment } from "#graphql/index.js";
 import type { UseListQueryHookReturn } from "#hooks/useListQuery";
+import { useAuthorizationRequirement } from "#hooks/useLoginState.ts";
 import { useMakeStringSearchFilterProps } from "#hooks/useMakeSearchFilterProps.js";
 
 import {
@@ -82,6 +83,11 @@ export function FundraisingEntriesTable({
   potentialAssignees?: { value: string; label: string }[];
   showSolicitationCode?: boolean;
 }) {
+  const canEditFundraising = useAuthorizationRequirement(
+    "update",
+    "FundraisingEntryNode"
+  );
+
   const donatedByStringFilterProps = useMakeStringSearchFilterProps(
     "donatedBy",
     updateFilter,
@@ -367,6 +373,7 @@ export function FundraisingEntriesTable({
         },
         Table.EXPAND_COLUMN,
         {
+          hidden: !canEditFundraising,
           title: "Actions",
           key: "actions",
           render: ({ id }: { id: string }) => (
