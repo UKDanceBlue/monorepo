@@ -131,6 +131,7 @@
       "name": "Debug Portal (chrome)",
       "request": "launch",
       "type": "chrome",
+      "runtimeExecutable": "chromium",
       "url": "http://localhost:5173",
       "webRoot": "${workspaceFolder}/packages/portal",
       "presentation": {
