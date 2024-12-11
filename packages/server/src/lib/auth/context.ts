@@ -14,7 +14,6 @@ import {
   getAuthorizationFor,
   parseGlobalId,
   roleToAccessLevel,
-  TeamType,
 } from "@ukdanceblue/common";
 import type { ConcreteResult } from "@ukdanceblue/common/error";
 import { ErrorCode } from "@ukdanceblue/common/error";
@@ -89,10 +88,7 @@ async function getUserInfo(
     ...teamMemberships.value
   );
   outputContext.teamMemberships = teamMemberships.value.map((membership) => ({
-    teamType:
-      membership.team.type === "Committee"
-        ? TeamType.Spirit
-        : membership.team.type,
+    teamType: membership.team.type,
     position: membership.position,
     teamId: membership.team.uuid,
   }));
