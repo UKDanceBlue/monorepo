@@ -1,11 +1,11 @@
-import { DateTimeISOResolver, NonEmptyStringResolver } from "graphql-scalars";
+import { GraphQLDateTimeISO, GraphQLNonEmptyString } from "graphql-scalars";
 import { ArgsType, Field, ObjectType } from "type-graphql";
 
 import { Primitive } from "../../utility/primitive/TypeUtils.js";
 
 @ObjectType()
 export class ReportPage {
-  @Field(() => NonEmptyStringResolver)
+  @Field(() => GraphQLNonEmptyString)
   title!: string;
 
   @Field(() => [String])
@@ -61,12 +61,12 @@ export class Report {
 
 @ArgsType()
 export class ReportArgs {
-  @Field(() => DateTimeISOResolver, { nullable: true })
-  from?: string | null | undefined;
+  @Field(() => GraphQLDateTimeISO, { nullable: true })
+  from?: Date | null | undefined;
 
-  @Field(() => DateTimeISOResolver, { nullable: true })
-  to?: string | null | undefined;
+  @Field(() => GraphQLDateTimeISO, { nullable: true })
+  to?: Date | null | undefined;
 
-  @Field(() => NonEmptyStringResolver)
+  @Field(() => GraphQLNonEmptyString)
   report!: string;
 }

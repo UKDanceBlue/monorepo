@@ -1,4 +1,4 @@
-import { NonEmptyStringResolver } from "graphql-scalars";
+import { GraphQLNonEmptyString } from "graphql-scalars";
 import { ArgsType, Field, InputType, Int, ObjectType } from "type-graphql";
 
 import { FilteredListQueryArgs } from "../filtering/list-query-args/FilteredListQueryArgs.js";
@@ -16,7 +16,7 @@ export class ListPointEntriesResponse extends AbstractGraphQLPaginatedResponse<P
 
 @InputType()
 export class CreatePointEntryInput implements Partial<PointEntryNode> {
-  @Field(() => NonEmptyStringResolver, { nullable: true })
+  @Field(() => GraphQLNonEmptyString, { nullable: true })
   comment!: string | null;
 
   @Field(() => Int)

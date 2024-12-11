@@ -1,4 +1,4 @@
-import { DateTimeISOResolver } from "graphql-scalars";
+import { GraphQLDateTimeISO } from "graphql-scalars";
 import type { DateTime } from "luxon";
 import { Field, ObjectType } from "type-graphql";
 
@@ -16,12 +16,12 @@ export class MarathonNode extends TimestampedResource implements Node {
   id!: GlobalId;
   @Field(() => String)
   year!: string;
-  @Field(() => DateTimeISOResolver, { nullable: true })
+  @Field(() => GraphQLDateTimeISO, { nullable: true })
   startDate?: Date | undefined | null;
   get startDateDateTime(): DateTime | null {
     return dateTimeFromSomething(this.startDate) ?? null;
   }
-  @Field(() => DateTimeISOResolver, { nullable: true })
+  @Field(() => GraphQLDateTimeISO, { nullable: true })
   endDate?: Date | undefined | null;
   get endDateDateTime(): DateTime | null {
     return dateTimeFromSomething(this.endDate) ?? null;

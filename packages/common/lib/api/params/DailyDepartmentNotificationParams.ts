@@ -1,4 +1,4 @@
-import { LocalDateResolver, NonEmptyStringResolver } from "graphql-scalars";
+import { GraphQLLocalDate, GraphQLNonEmptyString } from "graphql-scalars";
 import { ArgsType, Field, InputType, ObjectType } from "type-graphql";
 
 import type { LocalDate } from "../../utility/time/localDate.js";
@@ -82,25 +82,25 @@ export class ListDailyDepartmentNotificationsResponse extends AbstractGraphQLPag
 
 @InputType()
 export class DailyDepartmentNotificationInput implements DDNInit {
-  @Field(() => NonEmptyStringResolver, { nullable: true })
+  @Field(() => GraphQLNonEmptyString, { nullable: true })
   division?: string | undefined;
 
-  @Field(() => NonEmptyStringResolver, { nullable: true })
+  @Field(() => GraphQLNonEmptyString, { nullable: true })
   department?: string | undefined;
 
-  @Field(() => LocalDateResolver, { nullable: true })
+  @Field(() => GraphQLLocalDate, { nullable: true })
   effectiveDate?: LocalDate | undefined;
 
-  @Field(() => LocalDateResolver)
+  @Field(() => GraphQLLocalDate)
   processDate!: LocalDate;
 
-  @Field(() => LocalDateResolver, { nullable: true })
+  @Field(() => GraphQLLocalDate, { nullable: true })
   pledgedDate?: LocalDate | undefined;
 
-  @Field(() => LocalDateResolver, { nullable: true })
+  @Field(() => GraphQLLocalDate, { nullable: true })
   transactionDate?: LocalDate | undefined;
 
-  @Field(() => NonEmptyStringResolver)
+  @Field(() => GraphQLNonEmptyString)
   transactionType!: string;
 
   @Field(() => Number, { nullable: true })
@@ -115,46 +115,46 @@ export class DailyDepartmentNotificationInput implements DDNInit {
   @Field(() => Number)
   pledgedAmount!: number;
 
-  @Field(() => NonEmptyStringResolver)
+  @Field(() => GraphQLNonEmptyString)
   accountNumber!: string;
 
-  @Field(() => NonEmptyStringResolver)
+  @Field(() => GraphQLNonEmptyString)
   accountName!: string;
 
-  @Field(() => NonEmptyStringResolver, { nullable: true })
+  @Field(() => GraphQLNonEmptyString, { nullable: true })
   holdingDestination?: string | undefined;
 
-  @Field(() => NonEmptyStringResolver, { nullable: true })
+  @Field(() => GraphQLNonEmptyString, { nullable: true })
   comment?: string | undefined;
 
-  @Field(() => NonEmptyStringResolver, { nullable: true })
+  @Field(() => GraphQLNonEmptyString, { nullable: true })
   secShares?: string | undefined;
 
-  @Field(() => NonEmptyStringResolver, { nullable: true })
+  @Field(() => GraphQLNonEmptyString, { nullable: true })
   secType?: string | undefined;
 
-  @Field(() => NonEmptyStringResolver, { nullable: true })
+  @Field(() => GraphQLNonEmptyString, { nullable: true })
   gikType?: string | undefined;
 
-  @Field(() => NonEmptyStringResolver, { nullable: true })
+  @Field(() => GraphQLNonEmptyString, { nullable: true })
   gikDescription?: string | undefined;
 
   @Field(() => Boolean)
   onlineGift!: boolean;
 
-  @Field(() => NonEmptyStringResolver)
+  @Field(() => GraphQLNonEmptyString)
   solicitationCode!: string;
 
-  @Field(() => NonEmptyStringResolver, { nullable: true })
+  @Field(() => GraphQLNonEmptyString, { nullable: true })
   solicitation?: string | undefined;
 
-  @Field(() => NonEmptyStringResolver, { nullable: true })
+  @Field(() => GraphQLNonEmptyString, { nullable: true })
   behalfHonorMemorial?: string | undefined;
 
-  @Field(() => NonEmptyStringResolver, { nullable: true })
+  @Field(() => GraphQLNonEmptyString, { nullable: true })
   matchingGift?: string | undefined;
 
-  @Field(() => NonEmptyStringResolver)
+  @Field(() => GraphQLNonEmptyString)
   batchId!: string;
 
   @Field(() => Boolean)
@@ -163,103 +163,103 @@ export class DailyDepartmentNotificationInput implements DDNInit {
   @Field(() => Boolean)
   divFirstGift!: boolean;
 
-  @Field(() => NonEmptyStringResolver)
+  @Field(() => GraphQLNonEmptyString)
   idSorter!: string;
 
-  @Field(() => NonEmptyStringResolver)
+  @Field(() => GraphQLNonEmptyString)
   combinedDonorName!: string;
 
-  @Field(() => NonEmptyStringResolver)
+  @Field(() => GraphQLNonEmptyString)
   combinedDonorSalutation!: string;
 
-  @Field(() => NonEmptyStringResolver, { nullable: true })
+  @Field(() => GraphQLNonEmptyString, { nullable: true })
   combinedDonorSort?: string | undefined;
 
-  @Field(() => NonEmptyStringResolver, { nullable: true })
+  @Field(() => GraphQLNonEmptyString, { nullable: true })
   donor1Id?: string | undefined;
 
-  @Field(() => NonEmptyStringResolver, { nullable: true })
+  @Field(() => GraphQLNonEmptyString, { nullable: true })
   donor1GiftKey?: string | undefined;
 
-  @Field(() => NonEmptyStringResolver, { nullable: true })
+  @Field(() => GraphQLNonEmptyString, { nullable: true })
   donor1Name?: string | undefined;
 
   @Field(() => Boolean, { nullable: true })
   donor1Deceased?: boolean | undefined;
 
-  @Field(() => NonEmptyStringResolver, { nullable: true })
+  @Field(() => GraphQLNonEmptyString, { nullable: true })
   donor1Constituency?: string | undefined;
 
-  @Field(() => NonEmptyStringResolver, { nullable: true })
+  @Field(() => GraphQLNonEmptyString, { nullable: true })
   donor1TitleBar?: string | undefined;
 
-  @Field(() => NonEmptyStringResolver, { nullable: true })
+  @Field(() => GraphQLNonEmptyString, { nullable: true })
   donor1Pm?: string | undefined;
 
-  @Field(() => NonEmptyStringResolver, { nullable: true })
+  @Field(() => GraphQLNonEmptyString, { nullable: true })
   donor1Degrees?: string | undefined;
 
-  @Field(() => NonEmptyStringResolver, { nullable: true })
+  @Field(() => GraphQLNonEmptyString, { nullable: true })
   donor2Id?: string | undefined;
 
-  @Field(() => NonEmptyStringResolver, { nullable: true })
+  @Field(() => GraphQLNonEmptyString, { nullable: true })
   donor2GiftKey?: string | undefined;
 
-  @Field(() => NonEmptyStringResolver, { nullable: true })
+  @Field(() => GraphQLNonEmptyString, { nullable: true })
   donor2Name?: string | undefined;
 
   @Field(() => Boolean, { nullable: true })
   donor2Deceased?: boolean | undefined;
 
-  @Field(() => NonEmptyStringResolver, { nullable: true })
+  @Field(() => GraphQLNonEmptyString, { nullable: true })
   donor2Constituency?: string | undefined;
 
-  @Field(() => NonEmptyStringResolver, { nullable: true })
+  @Field(() => GraphQLNonEmptyString, { nullable: true })
   donor2TitleBar?: string | undefined;
 
-  @Field(() => NonEmptyStringResolver, { nullable: true })
+  @Field(() => GraphQLNonEmptyString, { nullable: true })
   donor2Pm?: string | undefined;
 
-  @Field(() => NonEmptyStringResolver, { nullable: true })
+  @Field(() => GraphQLNonEmptyString, { nullable: true })
   donor2Degrees?: string | undefined;
 
-  @Field(() => NonEmptyStringResolver, { nullable: true })
+  @Field(() => GraphQLNonEmptyString, { nullable: true })
   donor1Relation?: string | undefined;
 
-  @Field(() => NonEmptyStringResolver, { nullable: true })
+  @Field(() => GraphQLNonEmptyString, { nullable: true })
   donor2Relation?: string | undefined;
 
-  @Field(() => NonEmptyStringResolver, { nullable: true })
+  @Field(() => GraphQLNonEmptyString, { nullable: true })
   transmittalSn?: string | undefined;
 
-  @Field(() => NonEmptyStringResolver, { nullable: true })
+  @Field(() => GraphQLNonEmptyString, { nullable: true })
   sapDocNum?: string | undefined;
 
-  @Field(() => LocalDateResolver, { nullable: true })
+  @Field(() => GraphQLLocalDate, { nullable: true })
   sapDocDate?: LocalDate | undefined;
 
-  @Field(() => NonEmptyStringResolver, { nullable: true })
+  @Field(() => GraphQLNonEmptyString, { nullable: true })
   jvDocNum?: string | undefined;
 
-  @Field(() => LocalDateResolver, { nullable: true })
+  @Field(() => GraphQLLocalDate, { nullable: true })
   jvDocDate?: LocalDate | undefined;
 
-  @Field(() => NonEmptyStringResolver, { nullable: true })
+  @Field(() => GraphQLNonEmptyString, { nullable: true })
   advFeeCcPhil?: string | undefined;
 
   @Field(() => Number, { nullable: true })
   advFeeAmtPhil?: number | undefined;
 
-  @Field(() => NonEmptyStringResolver, { nullable: true })
+  @Field(() => GraphQLNonEmptyString, { nullable: true })
   advFeeCcUnit?: string | undefined;
 
   @Field(() => Number, { nullable: true })
   advFeeAmtUnit?: number | undefined;
 
-  @Field(() => NonEmptyStringResolver, { nullable: true })
+  @Field(() => GraphQLNonEmptyString, { nullable: true })
   advFeeStatus?: string | undefined;
 
-  @Field(() => NonEmptyStringResolver, { nullable: true })
+  @Field(() => GraphQLNonEmptyString, { nullable: true })
   hcUnit?: string | undefined;
 }
 

@@ -1,4 +1,4 @@
-import { DateTimeISOResolver } from "graphql-scalars";
+import { GraphQLDateTimeISO } from "graphql-scalars";
 import type { DateTime } from "luxon";
 import { Field, Float, ObjectType } from "type-graphql";
 
@@ -29,13 +29,13 @@ export class FundraisingEntryNode extends TimestampedResource implements Node {
   @Field(() => String, { nullable: true, name: "donatedToOverride" })
   donatedToOverride!: string | null | undefined;
 
-  @Field(() => DateTimeISOResolver, { nullable: true, name: "donatedOn" })
+  @Field(() => GraphQLDateTimeISO, { nullable: true, name: "donatedOn" })
   donatedOn!: Date | null | undefined;
   get donatedOnDateTime(): DateTime | null | undefined {
     return dateTimeFromSomething(this.donatedOn);
   }
 
-  @Field(() => DateTimeISOResolver, {
+  @Field(() => GraphQLDateTimeISO, {
     nullable: true,
     name: "donatedOnOverride",
   })

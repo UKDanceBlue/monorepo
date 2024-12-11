@@ -1,4 +1,5 @@
-import { LocalDateResolver, NonEmptyStringResolver } from "graphql-scalars";
+import { IsDivisibleBy } from "class-validator";
+import { GraphQLLocalDate, GraphQLNonEmptyString } from "graphql-scalars";
 import { ArgsType, Field, Float, InputType, ObjectType } from "type-graphql";
 
 import type { LocalDate } from "../../utility/time/localDate.js";
@@ -54,22 +55,23 @@ export class ListFundraisingEntriesResponse extends AbstractGraphQLPaginatedResp
 
 @InputType("SetFundraisingEntryInput")
 export class SetFundraisingEntryInput {
-  @Field(() => NonEmptyStringResolver, { nullable: true })
+  @Field(() => GraphQLNonEmptyString, { nullable: true })
   notes?: string;
 
   @Field(() => GlobalIdScalar, { nullable: true })
   solicitationCodeOverrideId?: GlobalId;
 
+  @IsDivisibleBy(0.01)
   @Field(() => Float, { nullable: true })
   amountOverride?: number;
 
-  @Field(() => LocalDateResolver, { nullable: true })
+  @Field(() => GraphQLLocalDate, { nullable: true })
   donatedOnOverride?: LocalDate;
 
-  @Field(() => NonEmptyStringResolver, { nullable: true })
+  @Field(() => GraphQLNonEmptyString, { nullable: true })
   donatedToOverride?: string;
 
-  @Field(() => NonEmptyStringResolver, { nullable: true })
+  @Field(() => GraphQLNonEmptyString, { nullable: true })
   donatedByOverride?: string;
 
   @Field(() => BatchType, { nullable: true })

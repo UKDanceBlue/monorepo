@@ -1,4 +1,4 @@
-import { DateTimeISOResolver } from "graphql-scalars";
+import { GraphQLDateTimeISO } from "graphql-scalars";
 import type { DateTime } from "luxon";
 import { Field, ObjectType } from "type-graphql";
 
@@ -19,7 +19,7 @@ export class PointOpportunityNode extends TimestampedResource implements Node {
   name!: string;
   @Field(() => TeamType)
   type!: TeamType;
-  @Field(() => DateTimeISOResolver, { nullable: true })
+  @Field(() => GraphQLDateTimeISO, { nullable: true })
   opportunityDate!: Date | null;
   get opportunityDateTime(): DateTime | null {
     return dateTimeFromSomething(this.opportunityDate ?? null);

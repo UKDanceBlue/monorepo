@@ -1,4 +1,4 @@
-import { NonEmptyStringResolver } from "graphql-scalars";
+import { GraphQLNonEmptyString } from "graphql-scalars";
 import { ArgsType, Field, InputType, ObjectType } from "type-graphql";
 
 import { FilteredListQueryArgs } from "../filtering/list-query-args/FilteredListQueryArgs.js";
@@ -19,25 +19,26 @@ export class ListEventsResponse extends AbstractGraphQLPaginatedResponse<EventNo
 export class CreateEventOccurrenceInput {
   @Field(() => IntervalISO)
   interval!: IntervalISO;
+
   @Field(() => Boolean)
   fullDay!: boolean;
 }
 
 @InputType()
 export class CreateEventInput {
-  @Field(() => NonEmptyStringResolver)
+  @Field(() => GraphQLNonEmptyString)
   title!: string;
 
-  @Field(() => NonEmptyStringResolver, { nullable: true })
+  @Field(() => GraphQLNonEmptyString, { nullable: true })
   summary!: string | null;
 
-  @Field(() => NonEmptyStringResolver, { nullable: true })
+  @Field(() => GraphQLNonEmptyString, { nullable: true })
   location!: string | null;
 
   @Field(() => [CreateEventOccurrenceInput])
   occurrences!: CreateEventOccurrenceInput[];
 
-  @Field(() => NonEmptyStringResolver, { nullable: true })
+  @Field(() => GraphQLNonEmptyString, { nullable: true })
   description!: string | null;
 }
 
@@ -61,16 +62,16 @@ export class SetEventInput {
   @Field()
   title!: string;
 
-  @Field(() => NonEmptyStringResolver, { nullable: true })
+  @Field(() => GraphQLNonEmptyString, { nullable: true })
   summary!: string | null;
 
-  @Field(() => NonEmptyStringResolver, { nullable: true })
+  @Field(() => GraphQLNonEmptyString, { nullable: true })
   location!: string | null;
 
   @Field(() => [SetEventOccurrenceInput])
   occurrences!: SetEventOccurrenceInput[];
 
-  @Field(() => NonEmptyStringResolver, { nullable: true })
+  @Field(() => GraphQLNonEmptyString, { nullable: true })
   description!: string | null;
 }
 

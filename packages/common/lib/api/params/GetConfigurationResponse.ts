@@ -1,4 +1,5 @@
-import { DateTimeISOResolver } from "graphql-scalars";
+import { MinDate } from "class-validator";
+import { GraphQLDateTimeISO } from "graphql-scalars";
 import { Field, InputType, ObjectType } from "type-graphql";
 
 import { ConfigurationNode } from "../resources/Configuration.js";
@@ -17,9 +18,10 @@ export class CreateConfigurationInput implements Partial<ConfigurationNode> {
   @Field()
   value!: string;
 
-  @Field(() => DateTimeISOResolver, { nullable: true })
+  @Field(() => GraphQLDateTimeISO, { nullable: true })
   validAfter!: Date | null;
 
-  @Field(() => DateTimeISOResolver, { nullable: true })
+  @MinDate(() => new Date())
+  @Field(() => GraphQLDateTimeISO, { nullable: true })
   validUntil!: Date | null;
 }

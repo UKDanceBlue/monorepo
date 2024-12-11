@@ -1,4 +1,5 @@
-import { ArgsType, Field, InputType, Int, ObjectType } from "type-graphql";
+import { GraphQLNonNegativeInt, GraphQLPositiveInt } from "graphql-scalars";
+import { ArgsType, Field, InputType, ObjectType } from "type-graphql";
 
 import { FilteredListQueryArgs } from "../filtering/list-query-args/FilteredListQueryArgs.js";
 import { DeviceNode } from "../resources/Device.js";
@@ -74,9 +75,9 @@ export class NotificationDeliveriesArgs {
   })
   verifier?: string;
 
-  @Field(() => Int, { nullable: true, defaultValue: 1 })
+  @Field(() => GraphQLPositiveInt, { nullable: true, defaultValue: 1 })
   page?: number;
 
-  @Field(() => Int, { nullable: true, defaultValue: 10 })
+  @Field(() => GraphQLNonNegativeInt, { nullable: true, defaultValue: 10 })
   pageSize?: number;
 }
