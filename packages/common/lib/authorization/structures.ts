@@ -5,6 +5,7 @@ import type { EffectiveCommitteeRole } from "../api/types/EffectiveCommitteeRole
 export const AuthSource = {
   LinkBlue: "LinkBlue",
   Anonymous: "Anonymous",
+  Password: "Password",
   /**
    * This is a special auth source that is used to indicate that the user
    * is a demo user (i.e. Apple app review team)

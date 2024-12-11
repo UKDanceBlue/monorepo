@@ -1,5 +1,5 @@
 import { Service } from "@freshgum/typedi";
-import express from "express";
+import { RequestHandler, urlencoded } from "express";
 
 import { RouterService } from "#routes/RouteService.js";
 
@@ -12,39 +12,45 @@ import { oidcCallback } from "./oidcCallback.js";
 // https://www.passportjs.org
 // https://github.com/jaredhanson/oauth2orize
 
+const logout: RequestHandler = (req, res, next) => {
+  try {
+    res.clearCookie("token");
+
+    let redirectTo = "/";
+    const queryRedirectTo = Array.isArray(req.query.redirectTo)
+      ? req.query.redirectTo[0]
+      : req.query.redirectTo;
+    if (queryRedirectTo && (queryRedirectTo as string).length > 0) {
+      redirectTo = queryRedirectTo as string;
+    }
+
+    res.redirect(redirectTo);
+  } catch (error) {
+    next(error);
+  }
+};
+
 @Service([])
 export default class AuthRouter extends RouterService {
   constructor() {
     super("/auth");
 
-    this.addGetRoute("/logout", (req, res, next) => {
-      try {
-        res.clearCookie("token");
-
-        let redirectTo = "/";
-        const queryRedirectTo = Array.isArray(req.query.redirectTo)
-          ? req.query.redirectTo[0]
-          : req.query.redirectTo;
-        if (queryRedirectTo && (queryRedirectTo as string).length > 0) {
-          redirectTo = queryRedirectTo as string;
-        }
-
-        res.redirect(redirectTo);
-      } catch (error) {
-        next(error);
-      }
-    });
+    this.addGetRoute("/logout", logout);
+    this.addPostRoute("/logout", logout);
 
     this.addPostRoute(
       "/oidc-callback",
-      express.urlencoded({ extended: false }),
+      urlencoded({ extended: false }),
       oidcCallback
     );
 
     this.addGetRoute("/login", login);
+    this.addPostRoute("/login", urlencoded({ extended: false }), login);
 
     this.addGetRoute("/anonymous", anonymousLogin);
+    this.addPostRoute("/anonymous", anonymousLogin);
 
     this.addGetRoute("/demo", demoLogin);
+    this.addPostRoute("/demo", demoLogin);
   }
 }

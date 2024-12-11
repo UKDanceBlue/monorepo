@@ -9,7 +9,10 @@ import { notification } from "antd";
 import { API_BASE_URL, urqlClient } from "#config/api.ts";
 import { getLoginState, refreshLoginState } from "#hooks/useLoginState.ts";
 
-function openAuthPopup(path: "login" | "logout"): Promise<string> {
+function openAuthPopup(
+  path: "login" | "logout",
+  formValues: Record<string, string> | undefined
+): Promise<string> {
   return new Promise((resolve, _reject) => {
     // const popup = window.open(
     //   `${API_BASE_URL}/api/auth/${path}?returning=cookie&redirectTo=${encodeURI(
@@ -37,18 +40,36 @@ function openAuthPopup(path: "login" | "logout"): Promise<string> {
     // popup.addEventListener("beforeunload", () => {
     //   reject(new Error("User closed the popup"));
     // });
-    window.location.href = `${API_BASE_URL}/api/auth/${path}?returning=cookie&redirectTo=${encodeURI(
+    // window.location.href = `${API_BASE_URL}/api/auth/${path}?returning=cookie&redirectTo=${encodeURI(
+    //   window.location.href
+    // )}`;
+    const form = document.createElement("form");
+    form.method = "POST";
+    form.style.visibility = "hidden";
+    form.action = `${API_BASE_URL}/api/auth/${path}?returning=cookie&redirectTo=${encodeURI(
       window.location.href
     )}`;
+    for (const [key, value] of Object.entries(formValues ?? {})) {
+      const input = document.createElement("input");
+      input.type = "hidden";
+      input.name = key;
+      input.value = value;
+      form.appendChild(input);
+    }
+    document.body.appendChild(form);
+    form.submit();
     resolve("success");
   });
 }
 
 export const authProvider: AuthProvider = {
   // required methods
-  login: async (): Promise<AuthActionResponse> => {
+  login: async ({ email, password, linkblue }): Promise<AuthActionResponse> => {
     try {
-      const result = await openAuthPopup("login");
+      const result = await openAuthPopup(
+        "login",
+        linkblue ? {} : { email, password }
+      );
       const loginState = await refreshLoginState(urqlClient);
       return {
         success: result === "success" && loginState.isOk(),
@@ -72,7 +93,7 @@ export const authProvider: AuthProvider = {
   },
   logout: async (): Promise<AuthActionResponse> => {
     try {
-      const result = await openAuthPopup("logout");
+      const result = await openAuthPopup("logout", undefined);
       const loginState = await refreshLoginState(urqlClient);
       return {
         success: result === "success" && loginState.isOk(),

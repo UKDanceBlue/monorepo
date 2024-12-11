@@ -9,6 +9,7 @@ import {
   MembershipNode,
   MembershipPositionType,
   PersonNode,
+  SetPasswordInput,
   SortDirection,
   TeamType,
 } from "@ukdanceblue/common";
@@ -468,5 +469,35 @@ export class PersonResolver
     ).map((models) =>
       Promise.all(models.map((row) => fundraisingAssignmentModelToNode(row)))
     ).promise;
+  }
+
+  @AccessControlAuthorized("get", "PersonNode", ".password")
+  @FieldResolver(() => Boolean, { name: "hasPassword" })
+  async hasPassword(
+    @Root() { id: { id } }: PersonNode
+  ): Promise<ConcreteResult<boolean>> {
+    return new AsyncResult(
+      await this.personRepository.findPersonByUnique({ uuid: id })
+    )
+      .andThen((row) => row.toResult(new NotFoundError({ what: "Person" })))
+      .map((row) => row.hashedPassword != null).promise;
+  }
+
+  @AccessControlAuthorized("update", "PersonNode", ".password")
+  @Mutation(() => PersonNode, { name: "setPersonPassword" })
+  async setPassword(
+    @Arg("id", () => GlobalIdScalar) { id }: GlobalId,
+    @Arg("password", () => SetPasswordInput)
+    { password }: SetPasswordInput
+  ): Promise<ConcreteResult<PersonNode>> {
+    return new AsyncResult(
+      this.personRepository.setPassword(
+        {
+          uuid: id,
+        },
+        password ?? null
+      )
+    ).andThen((row) => personModelToResource(row, this.personRepository))
+      .promise;
   }
 }

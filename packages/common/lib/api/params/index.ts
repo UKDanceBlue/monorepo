@@ -11,7 +11,7 @@ export * from "./GetPointEntryByUuidResponse.js";
 export * from "./ListFundraisingEntriesResponse.js";
 export * from "./ListMarathonHoursResponse.js";
 export * from "./ListMarathonsResponse.js";
-export * from "./ListPeopleResponse.js";
+export * from "./personParams.js";
 export * from "./LoginState.js";
 export * from "./ReportParams.js";
 export * from "./SinglePointOpportunityResponse.js";

@@ -37,6 +37,7 @@ const extraFieldsByResource = {
   PersonNode: {
     [".fundraisingAssignments"]: NEVER,
     [".memberships"]: NEVER,
+    [".password"]: NEVER,
   },
   TeamNode: {
     [".fundraisingAssignments"]: NEVER,
@@ -365,5 +366,6 @@ function applyAccessLevelPermissions(
     allow("read", "TeamNode", ".fundraisingTotal");
     // Deploy notifications
     allow("deploy", "NotificationNode", ".");
+    allow("manage", "PersonNode", ".password");
   }
 }

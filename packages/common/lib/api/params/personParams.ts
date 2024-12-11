@@ -1,3 +1,4 @@
+import { IsStrongPassword } from "class-validator";
 import { EmailAddressResolver, NonEmptyStringResolver } from "graphql-scalars";
 import { ArgsType, Field, InputType, ObjectType } from "type-graphql";
 
@@ -104,4 +105,15 @@ export class BulkPersonInput {
 
   @Field(() => CommitteeRole, { nullable: true })
   role!: CommitteeRole | null | undefined;
+}
+
+@InputType()
+export class SetPasswordInput {
+  @IsStrongPassword({})
+  @Field(() => NonEmptyStringResolver, {
+    nullable: true,
+    description:
+      "If set to a string, replaces or sets the user's password. If set to null it clears any existing password",
+  })
+  password?: string | undefined | null;
 }

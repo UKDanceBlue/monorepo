@@ -1,3 +1,5 @@
+import crypto from "node:crypto";
+
 import { Service } from "@freshgum/typedi";
 import type {
   Committee,
@@ -26,6 +28,7 @@ import {
   InvariantError,
   NotFoundError,
   optionOf,
+  UnauthenticatedError,
 } from "@ukdanceblue/common/error";
 import {
   AsyncResult,
@@ -94,6 +97,8 @@ export type UniquePersonParam =
   | {
       linkblue: string;
     };
+
+import { promisify } from "node:util";
 
 import { prismaToken } from "#lib/typediTokens.js";
 import { CommitteeRepository } from "#repositories/committee/CommitteeRepository.js";
@@ -170,6 +175,92 @@ export class PersonRepository {
       return Ok(row);
     } catch (error) {
       return handleRepositoryError(error);
+    }
+  }
+
+  private readonly PASSWORD_ITERATIONS = 100_000;
+  private readonly PASSWORD_KEYLEN = 256;
+  private readonly PASSWORD_DIGEST = "sha512";
+  private readonly PASSWORD_SALTLEN = 16;
+
+  async passwordLogin(
+    email: string,
+    password: string
+  ): Promise<Result<Person, RepositoryError | UnauthenticatedError>> {
+    try {
+      const person = await this.findPersonByUnique({ email });
+      if (person.isErr()) {
+        return person;
+      }
+      if (
+        person.value.isNone() ||
+        !person.value.value.hashedPassword ||
+        !person.value.value.salt
+      ) {
+        return Err(new NotFoundError({ what: "Person" }));
+      }
+
+      const { hashedPassword, salt } = person.value.value;
+
+      const hashToCompare = await promisify(crypto.pbkdf2)(
+        Buffer.from(password, "utf8"),
+        salt,
+        this.PASSWORD_ITERATIONS,
+        this.PASSWORD_KEYLEN,
+        this.PASSWORD_DIGEST
+      );
+
+      return crypto.timingSafeEqual(hashToCompare, hashedPassword)
+        ? Ok(person.value.value)
+        : Err(new UnauthenticatedError());
+    } catch (error) {
+      return handleRepositoryError(error);
+    }
+  }
+
+  async setPassword(
+    param: UniquePersonParam,
+    password: string | null
+  ): Promise<Result<Person, RepositoryError | NotFoundError>> {
+    try {
+      if (password === null) {
+        const person = await this.prisma.person.update({
+          where: param,
+          data: {
+            salt: null,
+            hashedPassword: null,
+          },
+        });
+
+        return Ok(person);
+      }
+      const salt = crypto.randomBytes(this.PASSWORD_SALTLEN);
+      const hashedPassword = await promisify(crypto.pbkdf2)(
+        Buffer.from(password, "utf8"),
+        salt,
+        this.PASSWORD_ITERATIONS,
+        this.PASSWORD_KEYLEN,
+        this.PASSWORD_DIGEST
+      );
+
+      const person = await this.prisma.person.update({
+        where: param,
+        data: {
+          salt,
+          hashedPassword,
+        },
+      });
+
+      return Ok(person);
+    } catch (error) {
+      if (
+        error instanceof Prisma.PrismaClientKnownRequestError &&
+        error.code === "P2025"
+      ) {
+        return Err(new NotFoundError({ what: "Person" }));
+      } else {
+        return handleRepositoryError(error);
+      }
     }
   }
 

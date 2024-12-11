@@ -46,6 +46,7 @@ enum AuthSource {
   Demo
   LinkBlue
   None
+  Password
 }
 
 enum BatchType {
@@ -1389,6 +1390,7 @@ type Mutation {
   setMarathon(id: GlobalId!, input: SetMarathonInput!): MarathonNode!
   setMarathonHour(id: GlobalId!, input: SetMarathonHourInput!): MarathonHourNode!
   setPerson(id: GlobalId!, input: SetPersonInput!): PersonNode!
+  setPersonPassword(id: GlobalId!, password: SetPasswordInput!): PersonNode!
   setPointOpportunity(id: GlobalId!, input: SetPointOpportunityInput!): PointOpportunityNode!
   setSolicitationCode(id: GlobalId!, input: SetSolicitationCodeInput!): SolicitationCodeNode!
   setTeam(id: GlobalId!, input: SetTeamInput!): TeamNode!
@@ -1596,6 +1598,7 @@ type PersonNode implements Node {
   email: String!
   fundraisingAssignments: [FundraisingAssignmentNode!]!
   fundraisingTotalAmount: Float
+  hasPassword: Boolean!
   id: GlobalId!
   linkblue: String
   moraleTeams: [MembershipNode!]!
@@ -2543,6 +2546,13 @@ input SetMarathonInput {
   endDate: DateTimeISO
   startDate: DateTimeISO
   year: NonEmptyString!
+}
+
+input SetPasswordInput {
+  """
+  If set to a string, replaces or sets the user's password. If set to null it clears any existing password
+  """
+  password: NonEmptyString
 }
 
 input SetPersonInput {

@@ -52,7 +52,10 @@ export function roleToAccessLevel(
     }
     return maxLevel;
   } else {
-    authSource satisfies typeof AuthSource.LinkBlue | typeof AuthSource.Demo;
+    authSource satisfies
+      | typeof AuthSource.LinkBlue
+      | typeof AuthSource.Password
+      | typeof AuthSource.Demo;
     return AccessLevel.UKY;
   }
 }
