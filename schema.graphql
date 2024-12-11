@@ -2857,6 +2857,7 @@ enum TeamResolverStringFilterKeys {
 
 """Types of teams"""
 enum TeamType {
+  Mini
   Morale
   Spirit
 }

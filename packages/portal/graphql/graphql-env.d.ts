@@ -208,7 +208,7 @@ export type introspection_types = {
     'TeamResolverKeyedStringFilterItem': { kind: 'INPUT_OBJECT'; name: 'TeamResolverKeyedStringFilterItem'; isOneOf: false; inputFields: [{ name: 'comparison'; type: { kind: 'NON_NULL'; name: never; ofType: { kind: 'ENUM'; name: 'StringComparator'; ofType: null; }; }; defaultValue: null }, { name: 'field'; type: { kind: 'NON_NULL'; name: never; ofType: { kind: 'ENUM'; name: 'TeamResolverStringFilterKeys'; ofType: null; }; }; defaultValue: null }, { name: 'negate'; type: { kind: 'SCALAR'; name: 'Boolean'; ofType: null; }; defaultValue: "false" }, { name: 'value'; type: { kind: 'NON_NULL'; name: never; ofType: { kind: 'SCALAR'; name: 'String'; ofType: null; }; }; defaultValue: null }]; };
     'TeamResolverOneOfFilterKeys': { name: 'TeamResolverOneOfFilterKeys'; enumValues: 'legacyStatus' | 'marathonId' | 'type'; };
     'TeamResolverStringFilterKeys': { name: 'TeamResolverStringFilterKeys'; enumValues: 'name'; };
-    'TeamType': { name: 'TeamType'; enumValues: 'Morale' | 'Spirit'; };
+    'TeamType': { name: 'TeamType'; enumValues: 'Mini' | 'Morale' | 'Spirit'; };
     'URL': unknown;
     'UpdateFundraisingAssignmentInput': { kind: 'INPUT_OBJECT'; name: 'UpdateFundraisingAssignmentInput'; isOneOf: false; inputFields: [{ name: 'amount'; type: { kind: 'NON_NULL'; name: never; ofType: { kind: 'SCALAR'; name: 'Float'; ofType: null; }; }; defaultValue: null }]; };
     'Void': unknown;

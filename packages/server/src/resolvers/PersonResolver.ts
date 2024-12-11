@@ -386,13 +386,9 @@ export class PersonResolver
     @Root() { id: { id } }: PersonNode
   ): Promise<ConcreteResult<MembershipNode[]>> {
     return new AsyncResult(
-      this.personRepository.findMembershipsOfPerson(
-        {
-          uuid: id,
-        },
-        {},
-        [TeamType.Spirit]
-      )
+      this.personRepository.findMembershipsOfPerson({
+        uuid: id,
+      })
     ).map((models) => models.map(membershipModelToResource)).promise;
   }
 

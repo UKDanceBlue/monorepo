@@ -105,6 +105,7 @@ function RootComponent() {
               </Space>
             ),
           }}
+          rememberMe={false}
         />
       </ConfigProvider>
     );

@@ -577,10 +577,6 @@ export class PersonRepository {
     types: TeamType[] | undefined = undefined,
     includeTeam = false
   ): Promise<Result<(Membership & { team: Team })[], RepositoryError>> {
-    if (types?.includes(TeamType.Spirit)) {
-      // @ts-expect-error Before committees were split out, they had a special type. It is now equivalent to Spirit
-      types.push("Committee");
-    }
     try {
       const rows = await this.prisma.person
         .findUnique({

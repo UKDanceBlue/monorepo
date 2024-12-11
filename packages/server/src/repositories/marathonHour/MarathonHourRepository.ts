@@ -126,7 +126,7 @@ export class MarathonHourRepository {
     title: string;
     details?: string | undefined | null;
     marathon: UniqueParam;
-    shownStartingAt: string;
+    shownStartingAt: Date;
     durationInfo: string;
   }) {
     return this.prisma.marathonHour.create({
@@ -152,7 +152,7 @@ export class MarathonHourRepository {
       title?: string | undefined;
       details?: string | undefined | null;
       marathon?: UniqueParam | undefined;
-      shownStartingAt?: string | undefined;
+      shownStartingAt?: Date | undefined;
       durationInfo?: string | undefined;
     }
   ) {

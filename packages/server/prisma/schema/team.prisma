@@ -77,8 +77,7 @@ enum TeamLegacyStatus {
 enum TeamType {
   Spirit
   Morale
-  // TODO: Get rid of committee type
-  Committee
+  Mini
 }
 
 model PointEntry {
