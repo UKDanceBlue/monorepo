@@ -62,4 +62,6 @@ export class MembershipResolver {
       this.membershipRepository.findMembershipByUnique({ uuid: id })
     ).map((row) => row.committeeRole).promise;
   }
+
+  // TODO: Add a field resolver for the amount of points someone has for this membership
 }
