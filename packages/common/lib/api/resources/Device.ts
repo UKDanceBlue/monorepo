@@ -1,4 +1,4 @@
-import { DateTimeISOResolver } from "graphql-scalars";
+import { GraphQLDateTimeISO } from "graphql-scalars";
 import type { DateTime } from "luxon";
 import { Field, ObjectType } from "type-graphql";
 
@@ -13,7 +13,7 @@ export class DeviceNode extends TimestampedResource implements Node {
   @Field(() => GlobalIdScalar)
   id!: GlobalId;
 
-  @Field(() => DateTimeISOResolver, { nullable: true })
+  @Field(() => GraphQLDateTimeISO, { nullable: true })
   public lastLogin?: Date | undefined | null;
   get lastLoginDateTime(): DateTime | null {
     return dateTimeFromSomething(this.lastLogin ?? null);

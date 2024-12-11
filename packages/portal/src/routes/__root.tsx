@@ -6,7 +6,14 @@ import {
   Link,
   Outlet,
 } from "@tanstack/react-router";
-import { Button, ConfigProvider, Layout, notification } from "antd";
+import {
+  Button,
+  ConfigProvider,
+  Divider,
+  Layout,
+  notification,
+  Space,
+} from "antd";
 import type { useAppProps } from "antd/es/app/context.js";
 import { lazy, Suspense, useState } from "react";
 import type { Client as UrqlClient } from "urql";
@@ -50,32 +57,57 @@ function RootComponent() {
 
   if (!loggedIn) {
     return (
-      <AuthPage
-        forgotPasswordLink={false}
-        registerLink={false}
-        title={
-          <img src={watermark} alt="DanceBlue Logo" style={{ width: "30ch" }} />
-        }
-        hideForm
-        contentProps={{
-          cover: (
-            <div style={{ padding: "1ch" }}>
-              <Button
-                onClick={() => login({})}
-                type="primary"
-                style={{ width: "100%", marginBottom: "1ch" }}
+      <ConfigProvider form={{ variant: "filled" }}>
+        <AuthPage
+          forgotPasswordLink={false}
+          registerLink={false}
+          title={
+            <img
+              src={watermark}
+              alt="DanceBlue Logo"
+              style={{ width: "30ch" }}
+            />
+          }
+          formProps={{
+            layout: "horizontal",
+          }}
+          contentProps={{
+            styles: {
+              body: { margin: "0" },
+            },
+            style: {
+              padding: "0 32px",
+              maxWidth: "80ch",
+              margin: "auto",
+              boxShadow:
+                "rgba(0, 0, 0, 0.02) 0px 2px 4px, rgba(0, 0, 0, 0.02) 0px 1px 6px -1px, rgba(0, 0, 0, 0.03) 0px 1px 2px",
+              backgroundColor: "rgb(244, 252, 255)",
+            },
+            cover: (
+              <Space
+                direction="vertical"
+                size="large"
+                style={{ width: "100%" }}
               >
-                Log In
-              </Button>
-              <p style={{ textAlign: "justify" }}>
-                If you do not recognize this page, you may be looking for the{" "}
-                <a href="https://www.danceblue.org">DanceBlue website</a>{" "}
-                instead.
-              </p>
-            </div>
-          ),
-        }}
-      />
+                <p style={{ textAlign: "justify" }}>
+                  If you do not recognize this page, you may be looking for the{" "}
+                  <a href="https://www.danceblue.org">DanceBlue website</a>{" "}
+                  instead.
+                </p>
+                <Button
+                  onClick={() => login({ linkblue: true })}
+                  type="primary"
+                  style={{ width: "100%", marginBottom: "1ch" }}
+                >
+                  Log In with Linkblue
+                </Button>
+                <Divider>OR</Divider>
+              </Space>
+            ),
+          }}
+          rememberMe={false}
+        />
+      </ConfigProvider>
     );
   }
 

@@ -1,4 +1,4 @@
-import { URLResolver } from "graphql-scalars";
+import { GraphQLURL } from "graphql-scalars";
 import { Field, InterfaceType, ObjectType } from "type-graphql";
 
 import { createNodeClasses, Node } from "../relay.js";
@@ -32,7 +32,7 @@ export class FeedItem {
   @Field(() => ImageNode, { nullable: true })
   image?: ImageNode | undefined | null;
 
-  @Field(() => URLResolver, { nullable: true })
+  @Field(() => GraphQLURL, { nullable: true })
   link?: URL | undefined | null;
 
   @Field(() => Date, { nullable: true })
@@ -58,7 +58,7 @@ export class InstagramFeedNode
   @Field(() => ImageNode, { nullable: true })
   image?: ImageNode | undefined | null;
 
-  @Field(() => URLResolver, { nullable: true })
+  @Field(() => GraphQLURL, { nullable: true })
   link?: URL | undefined | null;
 
   public getUniqueId(): string {

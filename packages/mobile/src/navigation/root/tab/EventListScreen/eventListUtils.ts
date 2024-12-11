@@ -9,7 +9,7 @@ import { useQuery } from "urql";
 import { Logger } from "@/common/logger/Logger";
 import { showMessage } from "@/common/util/alertUtils";
 import type { FragmentType } from "@/graphql/index";
-import { graphql,readFragment } from "@/graphql/index";
+import { graphql, readFragment } from "@/graphql/index";
 import { EventScreenFragment } from "@/navigation/root/EventScreen/EventScreenFragment";
 
 import { RNCAL_DATE_FORMAT, RNCAL_DATE_FORMAT_NO_DAY } from "./constants";
@@ -166,7 +166,7 @@ const MULTI_DAY_EVENT_COLOR = "#3d3d80";
 export const markEvents = (
   events: readonly FragmentType<typeof EventScreenFragment>[]
 ) => {
-  const marked: MarkedDates = {};
+  const marked: Partial<MarkedDates> = {};
 
   for (const event of events) {
     const eventData = readFragment(EventScreenFragment, event);
@@ -180,7 +180,7 @@ export const markEvents = (
 
       if (interval.start.diff(interval.end).as("hours") < 24) {
         const dateString = luxonDateTimeToDateString(interval.start);
-        const existingDots = marked[dateString].dots ?? [];
+        const existingDots = marked[dateString]?.dots ?? [];
         marked[dateString] = {
           dots:
             existingDots.length < 3
@@ -201,7 +201,7 @@ export const markEvents = (
           const dateString = luxonDateTimeToDateString(
             (day as Interval<true>).start
           );
-          const existingDots = marked[dateString].dots ?? [];
+          const existingDots = marked[dateString]?.dots ?? [];
           marked[dateString] = {
             dots:
               existingDots.length < 3
@@ -234,7 +234,7 @@ export const useEvents = ({
 }: {
   month: DateTime<true> | DateTime<false>;
 }): [
-  markedDates: MarkedDates,
+  markedDates: Partial<MarkedDates>,
   eventsByMonth: ReturnType<typeof splitEvents>,
   refreshing: boolean,
   refresh: () => void,

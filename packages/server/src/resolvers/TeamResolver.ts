@@ -207,7 +207,8 @@ export class TeamResolver implements CrudResolver<TeamNode, "team"> {
     return memberships.map((row) => membershipModelToResource(row));
   }
 
-  @AccessControlAuthorized("list", "PointEntryNode")
+  // TODO: Restrict access to this field to vice, for now the mobile app relies on it
+  @AccessControlAuthorized("get", "TeamNode")
   @FieldResolver(() => [PointEntryNode])
   async pointEntries(
     @Root() { id: { id } }: TeamNode

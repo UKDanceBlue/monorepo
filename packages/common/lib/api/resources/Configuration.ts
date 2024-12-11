@@ -1,4 +1,4 @@
-import { DateTimeISOResolver } from "graphql-scalars";
+import { GraphQLDateTimeISO } from "graphql-scalars";
 import { DateTime } from "luxon";
 import { Field, ObjectType } from "type-graphql";
 
@@ -32,13 +32,13 @@ export class ConfigurationNode extends TimestampedResource implements Node {
   @Field(() => String)
   value!: string;
 
-  @Field(() => DateTimeISOResolver, { nullable: true })
+  @Field(() => GraphQLDateTimeISO, { nullable: true })
   validAfter?: Date | undefined | null;
   get validAfterDateTime(): DateTime | null {
     return dateTimeFromSomething(this.validAfter ?? null);
   }
 
-  @Field(() => DateTimeISOResolver, { nullable: true })
+  @Field(() => GraphQLDateTimeISO, { nullable: true })
   validUntil?: Date | undefined | null;
   get validUntilDateTime(): DateTime | null {
     return dateTimeFromSomething(this.validUntil ?? null);

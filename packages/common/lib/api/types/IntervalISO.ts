@@ -1,4 +1,4 @@
-import { DateTimeISOResolver } from "graphql-scalars";
+import { GraphQLDateTimeISO } from "graphql-scalars";
 import { DateTime, Interval } from "luxon";
 import { Field, InputType, ObjectType } from "type-graphql";
 
@@ -7,13 +7,13 @@ import { dateTimeFromSomething } from "../../utility/time/intervalTools.js";
 @ObjectType()
 @InputType("IntervalISOInput")
 export class IntervalISO {
-  @Field(() => DateTimeISOResolver)
+  @Field(() => GraphQLDateTimeISO)
   start!: Date;
   get startDateTime(): DateTime {
     return dateTimeFromSomething(this.start);
   }
 
-  @Field(() => DateTimeISOResolver)
+  @Field(() => GraphQLDateTimeISO)
   end!: Date;
   get endDateTime(): DateTime {
     return dateTimeFromSomething(this.end);

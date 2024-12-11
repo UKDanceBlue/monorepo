@@ -4,26 +4,30 @@ import {
   App,
   AutoComplete,
   Button,
+  Card,
   Empty,
   Flex,
   Form,
   Input,
   List,
   Select,
+  Space,
   Typography,
 } from "antd";
 import FormItem from "antd/es/form/FormItem";
 import type { ReactNode } from "react";
 import { useState } from "react";
-import type { UseQueryExecute } from "urql";
+import { useMutation, useQuery, type UseQueryExecute } from "urql";
 
 import { useMarathon } from "#config/marathonContext.js";
 import { TeamNameFragment } from "#documents/person.js";
 import { PersonEditorFragment } from "#documents/person.js";
 import { TanAntFormItem } from "#elements/components/form/TanAntFormItem.js";
 import type { FragmentOf } from "#graphql/index.js";
-import { readFragment } from "#graphql/index.js";
+import { graphql, readFragment } from "#graphql/index.js";
+import { useAntFeedback } from "#hooks/useAntFeedback.js";
 import { useAuthorizationRequirement } from "#hooks/useLoginState.js";
+import { useQueryStatusWatcher } from "#hooks/useQueryStatusWatcher.js";
 
 import { usePersonEditorForm } from "./usePersonEditorForm.js";
 
@@ -43,6 +47,11 @@ export function PersonEditor({
 
   // TODO: Make auth actually check for privallege escalation
   const isAdmin = useAuthorizationRequirement("manage", "all");
+  const canSetPassword = useAuthorizationRequirement(
+    "manage",
+    "PersonNode",
+    ".password"
+  );
 
   const { message } = App.useApp();
 
@@ -368,6 +377,108 @@ export function PersonEditor({
           )}
         </formApi.Subscribe>
       </Form>
+      {canSetPassword && (
+        <Card>
+          <PasswordForm id={personData.id} />
+        </Card>
+      )}
     </Flex>
+  );
+}
+
+const hasPasswordFormQuery = graphql(`
+  query HasPasswordFormQuery($id: GlobalId!) {
+    person(id: $id) {
+      id
+      hasPassword
+    }
+  }
+`);
+
+const passwordFormMutation = graphql(`
+  mutation PasswordFormMutation($id: GlobalId!, $password: SetPasswordInput!) {
+    setPersonPassword(id: $id, password: $password) {
+      id
+    }
+  }
+`);
+
+function PasswordForm({ id }: { id: string }) {
+  const [hasPasswordResult, refetch] = useQuery({
+    query: hasPasswordFormQuery,
+    variables: { id },
+  });
+  useQueryStatusWatcher(hasPasswordResult);
+
+  const [, setPassword] = useMutation(passwordFormMutation);
+
+  const { showErrorNotification } = useAntFeedback();
+
+  const [newPassword, setNewPassword] = useState<string | null>(null);
+
+  const hasPassword = hasPasswordResult.data?.person.hasPassword;
+
+  return (
+    <FormItem label="Password">
+      <Space>
+        <Space.Compact>
+          <Input
+            type="password"
+            autoComplete="new-password"
+            value={newPassword ?? ""}
+            onChange={(e) => setNewPassword(e.target.value)}
+          />
+          <Button
+            type="primary"
+            onClick={() => {
+              setPassword({ id, password: { password: newPassword } })
+                .then((val) => {
+                  if (val.error) {
+                    for (const e of val.error.graphQLErrors) {
+                      if ("validationErrors" in e.extensions) {
+                        showErrorNotification({
+                          message: e.message,
+                          description: (
+                            e.extensions.validationErrors as {
+                              property: string;
+                              constraints: Record<string, string>;
+                            }[]
+                          )
+                            .map(
+                              ({ property, constraints }) =>
+                                `${property}: ${Object.values(constraints).join(", ")}`
+                            )
+                            .join(", "),
+                        });
+                      }
+                    }
+                  }
+                })
+                .then(() => refetch({ requestPolicy: "network-only" }))
+                .catch((error: unknown) => {
+                  showErrorNotification({ message: String(error) });
+                });
+            }}
+            disabled={!newPassword}
+          >
+            Save Password
+          </Button>
+        </Space.Compact>
+        <Button
+          type="primary"
+          danger
+          onClick={() => {
+            setPassword({ id, password: { password: null } })
+              .then(() => refetch({ requestPolicy: "network-only" }))
+              .catch((error: unknown) => {
+                showErrorNotification({ message: String(error) });
+              });
+          }}
+          disabled={!hasPassword}
+        >
+          Clear
+        </Button>
+      </Space>
+    </FormItem>
   );
 }

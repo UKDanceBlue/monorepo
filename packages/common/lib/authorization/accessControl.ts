@@ -37,6 +37,7 @@ const extraFieldsByResource = {
   PersonNode: {
     [".fundraisingAssignments"]: NEVER,
     [".memberships"]: NEVER,
+    [".password"]: NEVER,
   },
   TeamNode: {
     [".fundraisingAssignments"]: NEVER,
@@ -149,6 +150,8 @@ export function getAuthorizationFor({
   // All users may read active configurations and get device information (with that device's uuid)
   allow("readActive", ["ConfigurationNode"], ".");
   allow("get", ["DeviceNode"], ".");
+  // All users may read active feeds and marathon info
+  allow("readActive", ["FeedNode", "MarathonNode", "MarathonHourNode"], ".");
 
   if (accessLevel > AccessLevel.None) {
     if (accessLevel === AccessLevel.SuperAdmin) {
@@ -162,16 +165,10 @@ export function getAuthorizationFor({
         )
       );
     } else {
-      // All users may read active feeds and marathon info
-      allow(
-        "readActive",
-        ["FeedNode", "MarathonNode", "MarathonHourNode"],
-        "."
-      );
       // All users may read committees, events, and images
-      allow("read", ["CommitteeNode", "EventNode", "ImageNode"], ".");
+      allow("get", ["ImageNode"], ".");
       // All users may list teams
-      allow("list", ["TeamNode"], ".");
+      allow("list", ["TeamNode", "EventNode"], ".");
 
       applyAccessLevelPermissions(accessLevel, allow);
       applyCommitteePermissions(effectiveCommitteeRoles, allow);
@@ -365,5 +362,6 @@ function applyAccessLevelPermissions(
     allow("read", "TeamNode", ".fundraisingTotal");
     // Deploy notifications
     allow("deploy", "NotificationNode", ".");
+    allow("manage", "PersonNode", ".password");
   }
 }

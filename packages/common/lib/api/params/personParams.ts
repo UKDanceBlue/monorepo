@@ -1,4 +1,5 @@
-import { EmailAddressResolver, NonEmptyStringResolver } from "graphql-scalars";
+import { IsStrongPassword } from "class-validator";
+import { EmailAddressResolver, GraphQLNonEmptyString } from "graphql-scalars";
 import { ArgsType, Field, InputType, ObjectType } from "type-graphql";
 
 import {
@@ -50,13 +51,13 @@ export class ListPeopleArgs extends FilteredListQueryArgs<
 }) {}
 @InputType()
 export class CreatePersonInput {
-  @Field(() => NonEmptyStringResolver, { nullable: true })
+  @Field(() => GraphQLNonEmptyString, { nullable: true })
   name?: string;
 
   @Field(() => EmailAddressResolver)
   email!: string;
 
-  @Field(() => NonEmptyStringResolver, { nullable: true })
+  @Field(() => GraphQLNonEmptyString, { nullable: true })
   linkblue?: string;
 
   @Field(() => DbRole, {
@@ -73,13 +74,13 @@ export class CreatePersonInput {
 }
 @InputType()
 export class SetPersonInput {
-  @Field(() => NonEmptyStringResolver, { nullable: true })
+  @Field(() => GraphQLNonEmptyString, { nullable: true })
   name?: string;
 
   @Field(() => EmailAddressResolver, { nullable: true })
   email?: string;
 
-  @Field(() => NonEmptyStringResolver, { nullable: true })
+  @Field(() => GraphQLNonEmptyString, { nullable: true })
   linkblue?: string;
 
   @Field(() => [MemberOf], { nullable: true })
@@ -90,13 +91,13 @@ export class SetPersonInput {
 }
 @InputType()
 export class BulkPersonInput {
-  @Field(() => NonEmptyStringResolver)
+  @Field(() => GraphQLNonEmptyString)
   name!: string;
 
   @Field(() => EmailAddressResolver)
   email!: string;
 
-  @Field(() => NonEmptyStringResolver)
+  @Field(() => GraphQLNonEmptyString)
   linkblue!: string;
 
   @Field(() => CommitteeIdentifier, { nullable: true })
@@ -104,4 +105,15 @@ export class BulkPersonInput {
 
   @Field(() => CommitteeRole, { nullable: true })
   role!: CommitteeRole | null | undefined;
+}
+
+@InputType()
+export class SetPasswordInput {
+  @IsStrongPassword({})
+  @Field(() => GraphQLNonEmptyString, {
+    nullable: true,
+    description:
+      "If set to a string, replaces or sets the user's password. If set to null it clears any existing password",
+  })
+  password?: string | undefined | null;
 }

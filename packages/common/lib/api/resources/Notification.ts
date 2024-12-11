@@ -1,4 +1,4 @@
-import { DateTimeISOResolver, URLResolver } from "graphql-scalars";
+import { GraphQLDateTimeISO, GraphQLURL } from "graphql-scalars";
 import type { DateTime } from "luxon";
 import { Field, ObjectType } from "type-graphql";
 
@@ -22,14 +22,14 @@ export class NotificationNode extends TimestampedResource implements Node {
   @Field(() => String)
   body!: string;
 
-  @Field(() => URLResolver, { nullable: true })
+  @Field(() => GraphQLURL, { nullable: true })
   url?: URL | undefined | null;
 
   @Field(() => String, { nullable: true })
   @AccessControlAuthorized("get", "NotificationNode", ".deliveryIssue")
   deliveryIssue?: string | undefined | null;
 
-  @Field(() => DateTimeISOResolver, { nullable: true })
+  @Field(() => GraphQLDateTimeISO, { nullable: true })
   @AccessControlAuthorized(
     "get",
     "NotificationNode",
@@ -40,7 +40,7 @@ export class NotificationNode extends TimestampedResource implements Node {
     return dateTimeFromSomething(this.deliveryIssueAcknowledgedAt ?? null);
   }
 
-  @Field(() => DateTimeISOResolver, {
+  @Field(() => GraphQLDateTimeISO, {
     nullable: true,
     description:
       "The time the notification is scheduled to be sent, if null it is either already sent or unscheduled.",
@@ -50,7 +50,7 @@ export class NotificationNode extends TimestampedResource implements Node {
     return dateTimeFromSomething(this.sendAt ?? null);
   }
 
-  @Field(() => DateTimeISOResolver, {
+  @Field(() => GraphQLDateTimeISO, {
     nullable: true,
     description: "The time the server started sending the notification.",
   })

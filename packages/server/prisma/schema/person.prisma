@@ -16,6 +16,9 @@ model Person {
   fundraisingAssignment             FundraisingAssignment[]
   assignedFundraisingEntries        FundraisingAssignment[]    @relation("fundraising_assignment_assigned_by_person")
 
+  hashedPassword Bytes?
+  salt           Bytes?
+
   edits AuditLog[]
 
   @@index([uuid])
@@ -34,6 +37,7 @@ enum AuthSource {
   LinkBlue
   Anonymous
   Demo
+  Password
 }
 
 model Membership {

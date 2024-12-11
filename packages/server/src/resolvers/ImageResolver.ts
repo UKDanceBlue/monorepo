@@ -15,7 +15,7 @@ import {
   ListImagesArgs,
   ListImagesResponse,
 } from "@ukdanceblue/common";
-import { URLResolver } from "graphql-scalars";
+import { GraphQLURL } from "graphql-scalars";
 import fetch from "node-fetch";
 import { Arg, Args, Ctx, Mutation, Query, Resolver } from "type-graphql";
 
@@ -164,7 +164,7 @@ export class ImageResolver implements CrudResolver<ImageNode, "image"> {
   @Mutation(() => ImageNode, { name: "setImageUrl" })
   async setImageUrl(
     @Arg("id", () => GlobalIdScalar) { id }: GlobalId,
-    @Arg("url", () => URLResolver) url: URL,
+    @Arg("url", () => GraphQLURL) url: URL,
     @Ctx() { serverUrl }: GraphQLContext
   ): Promise<ImageNode> {
     const { mime, thumbHash, width, height } = await handleImageUrl(url);

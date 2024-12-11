@@ -46,6 +46,7 @@ enum AuthSource {
   Demo
   LinkBlue
   None
+  Password
 }
 
 enum BatchType {
@@ -438,8 +439,8 @@ type DeviceNode implements Node {
 
   """List all notification deliveries for this device"""
   notificationDeliveries(
-    page: Int = 1
-    pageSize: Int = 10
+    page: PositiveInt = 1
+    pageSize: NonNegativeInt = 10
 
     """
     The verifier code for this device, if it does not match then the query will be rejected
@@ -1389,6 +1390,7 @@ type Mutation {
   setMarathon(id: GlobalId!, input: SetMarathonInput!): MarathonNode!
   setMarathonHour(id: GlobalId!, input: SetMarathonHourInput!): MarathonHourNode!
   setPerson(id: GlobalId!, input: SetPersonInput!): PersonNode!
+  setPersonPassword(id: GlobalId!, password: SetPasswordInput!): PersonNode!
   setPointOpportunity(id: GlobalId!, input: SetPointOpportunityInput!): PointOpportunityNode!
   setSolicitationCode(id: GlobalId!, input: SetSolicitationCodeInput!): SolicitationCodeNode!
   setTeam(id: GlobalId!, input: SetTeamInput!): TeamNode!
@@ -1596,6 +1598,7 @@ type PersonNode implements Node {
   email: String!
   fundraisingAssignments: [FundraisingAssignmentNode!]!
   fundraisingTotalAmount: Float
+  hasPassword: Boolean!
   id: GlobalId!
   linkblue: String
   moraleTeams: [MembershipNode!]!
@@ -2545,6 +2548,13 @@ input SetMarathonInput {
   year: NonEmptyString!
 }
 
+input SetPasswordInput {
+  """
+  If set to a string, replaces or sets the user's password. If set to null it clears any existing password
+  """
+  password: NonEmptyString
+}
+
 input SetPersonInput {
   captainOf: [MemberOf!]
   email: EmailAddress
@@ -2847,6 +2857,7 @@ enum TeamResolverStringFilterKeys {
 
 """Types of teams"""
 enum TeamType {
+  Mini
   Morale
   Spirit
 }

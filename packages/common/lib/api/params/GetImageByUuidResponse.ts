@@ -1,4 +1,4 @@
-import { NonEmptyStringResolver, URLResolver } from "graphql-scalars";
+import { GraphQLNonEmptyString, GraphQLURL } from "graphql-scalars";
 import { ArgsType, Field, InputType, ObjectType } from "type-graphql";
 
 import { FilteredListQueryArgs } from "../filtering/list-query-args/FilteredListQueryArgs.js";
@@ -7,10 +7,10 @@ import { AbstractGraphQLPaginatedResponse } from "./ApiResponse.js";
 
 @InputType()
 export class CreateImageInput implements Partial<ImageNode> {
-  @Field(() => NonEmptyStringResolver, { nullable: true })
+  @Field(() => GraphQLNonEmptyString, { nullable: true })
   alt?: string | undefined | null;
 
-  @Field(() => URLResolver, { nullable: true })
+  @Field(() => GraphQLURL, { nullable: true })
   url?: URL | undefined | null;
 }
 

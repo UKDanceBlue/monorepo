@@ -7,7 +7,7 @@ import type {
   OneOfFilterItemInterface,
   StringFilterItemInterface,
 } from "@ukdanceblue/common";
-import { DateTimeISOResolver, VoidResolver } from "graphql-scalars";
+import { GraphQLDateTimeISO, VoidResolver } from "graphql-scalars";
 import { Field, InputType } from "type-graphql";
 
 import type { Comparator } from "../ListQueryTypes.js";
@@ -103,7 +103,7 @@ export abstract class AbstractDateFilterItem<Field extends string>
   extends FilterItem<Field, string>
   implements DateFilterItemInterface<Field>
 {
-  @Field(() => DateTimeISOResolver)
+  @Field(() => GraphQLDateTimeISO)
   value!: string;
 
   @Field(() => NumericComparator, {

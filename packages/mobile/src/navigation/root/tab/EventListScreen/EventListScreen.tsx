@@ -3,6 +3,7 @@ import { ErrorBoundary } from "@sentry/react-native";
 import { DateTime } from "luxon";
 import { useEffect, useState } from "react";
 import { View } from "react-native";
+import type { MarkedDates } from "react-native-calendars/src/types";
 import type { InfinitePagerPageComponent } from "react-native-infinite-pager";
 import InfinitePager from "react-native-infinite-pager";
 
@@ -84,7 +85,7 @@ const EventListScreenPage: InfinitePagerPageComponent = ({
       <ErrorBoundary>
         <EventListPage
           eventsByMonth={eventsByMonth}
-          marked={markedDates}
+          marked={markedDates as MarkedDates}
           refreshing={refreshing}
           refresh={refresh}
           month={shownMonth}

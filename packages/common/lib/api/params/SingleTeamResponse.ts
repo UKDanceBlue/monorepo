@@ -1,4 +1,4 @@
-import { NonEmptyStringResolver } from "graphql-scalars";
+import { GraphQLNonEmptyString } from "graphql-scalars";
 import { ArgsType, Field, InputType, Int, ObjectType } from "type-graphql";
 
 import { DbRole } from "../../authorization/structures.js";
@@ -17,7 +17,7 @@ export class ListTeamsResponse extends AbstractGraphQLPaginatedResponse<TeamNode
 
 @InputType()
 export class CreateTeamInput implements OptionalToNullable<Partial<TeamNode>> {
-  @Field(() => NonEmptyStringResolver)
+  @Field(() => GraphQLNonEmptyString)
   name!: string;
 
   @Field(() => TeamType)
@@ -29,7 +29,7 @@ export class CreateTeamInput implements OptionalToNullable<Partial<TeamNode>> {
 
 @InputType()
 export class SetTeamInput implements OptionalToNullable<Partial<TeamNode>> {
-  @Field(() => NonEmptyStringResolver, { nullable: true })
+  @Field(() => GraphQLNonEmptyString, { nullable: true })
   name!: string | null;
 
   @Field(() => TeamType, { nullable: true })
@@ -38,13 +38,13 @@ export class SetTeamInput implements OptionalToNullable<Partial<TeamNode>> {
   @Field(() => TeamLegacyStatus, { nullable: true })
   legacyStatus!: TeamLegacyStatus | null;
 
-  @Field(() => NonEmptyStringResolver, { nullable: true })
+  @Field(() => GraphQLNonEmptyString, { nullable: true })
   persistentIdentifier!: string | null;
 }
 
 @InputType()
 export class BulkTeamInput {
-  @Field(() => NonEmptyStringResolver)
+  @Field(() => GraphQLNonEmptyString)
   name!: string;
 
   @Field(() => TeamType)
@@ -53,10 +53,10 @@ export class BulkTeamInput {
   @Field(() => TeamLegacyStatus)
   legacyStatus!: TeamLegacyStatus;
 
-  @Field(() => [NonEmptyStringResolver], { nullable: true })
+  @Field(() => [GraphQLNonEmptyString], { nullable: true })
   captainLinkblues!: string[] | null;
 
-  @Field(() => [NonEmptyStringResolver], { nullable: true })
+  @Field(() => [GraphQLNonEmptyString], { nullable: true })
   memberLinkblues!: string[] | null;
 }
 

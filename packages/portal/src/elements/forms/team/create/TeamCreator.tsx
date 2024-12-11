@@ -81,8 +81,9 @@ export function TeamCreator({
             <Select
               status={status}
               options={[
-                { label: "Spirit", value: TeamType.Spirit },
-                { label: "Morale", value: TeamType.Morale },
+                { label: "Spirit Team", value: TeamType.Spirit },
+                { label: "Morale Team", value: TeamType.Morale },
+                { label: "Mini Marathon", value: TeamType.Mini },
               ]}
               value={value}
               onBlur={onBlur}

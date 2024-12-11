@@ -1,4 +1,5 @@
-import { DateTimeISOResolver, NonEmptyStringResolver } from "graphql-scalars";
+import { Matches } from "class-validator";
+import { GraphQLDateTimeISO, GraphQLNonEmptyString } from "graphql-scalars";
 import { ArgsType, Field, InputType, ObjectType } from "type-graphql";
 
 import { FilteredListQueryArgs } from "../filtering/list-query-args/FilteredListQueryArgs.js";
@@ -15,26 +16,28 @@ export class ListMarathonsResponse extends AbstractGraphQLPaginatedResponse<Mara
 
 @InputType()
 export class CreateMarathonInput {
-  @Field(() => NonEmptyStringResolver)
+  @Matches(/^DB\d{2}$/, { message: "Year must be in the format DByy" })
+  @Field(() => GraphQLNonEmptyString)
   year!: string;
 
-  @Field(() => DateTimeISOResolver, { nullable: true })
-  startDate?: string | undefined | null;
+  @Field(() => GraphQLDateTimeISO, { nullable: true })
+  startDate?: Date | undefined | null;
 
-  @Field(() => DateTimeISOResolver, { nullable: true })
-  endDate?: string | undefined | null;
+  @Field(() => GraphQLDateTimeISO, { nullable: true })
+  endDate?: Date | undefined | null;
 }
 
 @InputType()
 export class SetMarathonInput {
-  @Field(() => NonEmptyStringResolver)
+  @Matches(/^DB\d{2}$/, { message: "Year must be in the format DByy" })
+  @Field(() => GraphQLNonEmptyString)
   year!: string;
 
-  @Field(() => DateTimeISOResolver, { nullable: true })
-  startDate?: string | undefined | null;
+  @Field(() => GraphQLDateTimeISO, { nullable: true })
+  startDate?: Date | undefined | null;
 
-  @Field(() => DateTimeISOResolver, { nullable: true })
-  endDate?: string | undefined | null;
+  @Field(() => GraphQLDateTimeISO, { nullable: true })
+  endDate?: Date | undefined | null;
 }
 
 @ArgsType()

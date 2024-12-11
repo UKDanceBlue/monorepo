@@ -161,7 +161,7 @@ export class MarathonResolver
     return marathon.map((m) => m.map(marathonModelToResource));
   }
 
-  @AccessControlAuthorized("get")
+  @AccessControlAuthorized("readActive")
   @Query(() => MarathonNode, {
     nullable: true,
     description:

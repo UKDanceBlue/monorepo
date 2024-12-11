@@ -1,4 +1,4 @@
-import { URLResolver } from "graphql-scalars";
+import { GraphQLURL } from "graphql-scalars";
 import { Field, Int, ObjectType } from "type-graphql";
 
 import { createNodeClasses, Node } from "../relay.js";
@@ -13,7 +13,7 @@ export class ImageNode extends TimestampedResource implements Node {
   @Field(() => GlobalIdScalar)
   id!: GlobalId;
 
-  @Field(() => URLResolver, { nullable: true })
+  @Field(() => GraphQLURL, { nullable: true })
   url!: URL | null;
 
   @Field(() => String)

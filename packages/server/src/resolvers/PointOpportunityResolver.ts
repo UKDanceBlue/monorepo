@@ -8,6 +8,7 @@ import {
   LegacyErrorCode,
   PointOpportunityNode,
   SortDirection,
+  TeamType,
 } from "@ukdanceblue/common";
 import {
   CreatePointOpportunityInput,
@@ -33,11 +34,7 @@ import { PointOpportunityRepository } from "#repositories/pointOpportunity/Point
 @Service([PointOpportunityRepository])
 export class PointOpportunityResolver
   implements
-    CrudResolver<
-      PointOpportunityNode,
-      "pointOpportunity",
-      "pointOpportunities"
-    >
+    CrudResolver<PointOpportunityNode, "pointOpportunity", "pointOpportunities">
 {
   constructor(
     private readonly pointOpportunityRepository: PointOpportunityRepository
@@ -102,6 +99,12 @@ export class PointOpportunityResolver
   async createPointOpportunity(
     @Arg("input") input: CreatePointOpportunityInput
   ): Promise<PointOpportunityNode> {
+    if (input.type === TeamType.Mini) {
+      throw new LegacyError(
+        LegacyErrorCode.InvalidRequest,
+        "Mini teams cannot have point opportunities"
+      );
+    }
     const row = await this.pointOpportunityRepository.createPointOpportunity({
       name: input.name,
       type: input.type,
@@ -121,6 +124,12 @@ export class PointOpportunityResolver
     @Arg("id", () => GlobalIdScalar) { id }: GlobalId,
     @Arg("input") input: SetPointOpportunityInput
   ): Promise<PointOpportunityNode> {
+    if (input.type === TeamType.Mini) {
+      throw new LegacyError(
+        LegacyErrorCode.InvalidRequest,
+        "Mini teams cannot have point opportunities"
+      );
+    }
     const row = await this.pointOpportunityRepository.updatePointOpportunity(
       { uuid: id },
       {

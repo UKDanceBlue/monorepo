@@ -64,7 +64,7 @@ export const Sider: React.FC<
 
       const visible = canSync(
         {
-          action: "list",
+          action: "read",
           params: {
             resource: treeItem,
           },

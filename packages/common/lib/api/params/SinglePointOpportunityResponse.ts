@@ -1,4 +1,4 @@
-import { DateTimeISOResolver, NonEmptyStringResolver } from "graphql-scalars";
+import { GraphQLDateTimeISO, GraphQLNonEmptyString } from "graphql-scalars";
 import { ArgsType, Field, InputType, ObjectType } from "type-graphql";
 
 import { FilteredListQueryArgs } from "../filtering/list-query-args/FilteredListQueryArgs.js";
@@ -17,10 +17,10 @@ export class ListPointOpportunitiesResponse extends AbstractGraphQLPaginatedResp
 
 @InputType()
 export class CreatePointOpportunityInput {
-  @Field(() => NonEmptyStringResolver)
+  @Field(() => GraphQLNonEmptyString)
   name!: string;
 
-  @Field(() => DateTimeISOResolver, { nullable: true })
+  @Field(() => GraphQLDateTimeISO, { nullable: true })
   opportunityDate!: Date | null;
 
   @Field(() => TeamType)
@@ -35,10 +35,10 @@ export class CreatePointOpportunityInput {
 
 @InputType()
 export class SetPointOpportunityInput {
-  @Field(() => NonEmptyStringResolver, { nullable: true })
+  @Field(() => GraphQLNonEmptyString, { nullable: true })
   name!: string | null;
 
-  @Field(() => DateTimeISOResolver, { nullable: true })
+  @Field(() => GraphQLDateTimeISO, { nullable: true })
   opportunityDate!: Date | null;
 
   @Field(() => TeamType, { nullable: true })

@@ -1,7 +1,5 @@
-import {
-  NonEmptyStringResolver,
-  NonNegativeIntResolver,
-} from "graphql-scalars";
+import { IsAlpha, IsUppercase } from "class-validator";
+import { GraphQLNonEmptyString, NonNegativeIntResolver } from "graphql-scalars";
 import { ArgsType, Field, InputType, ObjectType } from "type-graphql";
 
 import { FilteredListQueryArgs } from "../filtering/list-query-args/FilteredListQueryArgs.js";
@@ -33,18 +31,20 @@ export class ListSolicitationCodesResponse extends AbstractGraphQLPaginatedRespo
 
 @InputType("SetSolicitationCodeInput")
 export class SetSolicitationCodeInput {
-  @Field(() => NonEmptyStringResolver, { nullable: true })
+  @Field(() => GraphQLNonEmptyString, { nullable: true })
   name?: string | null | undefined;
 }
 
 @InputType("CreateSolicitationCodeInput")
 export class CreateSolicitationCodeInput extends SetSolicitationCodeInput {
-  @Field(() => NonEmptyStringResolver)
+  @IsAlpha()
+  @IsUppercase()
+  @Field(() => GraphQLNonEmptyString)
   prefix!: string;
 
   @Field(() => NonNegativeIntResolver)
   code!: number;
 
-  @Field(() => NonEmptyStringResolver, { nullable: true })
+  @Field(() => GraphQLNonEmptyString, { nullable: true })
   name?: string | null | undefined;
 }

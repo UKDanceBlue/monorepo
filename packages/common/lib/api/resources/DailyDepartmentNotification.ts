@@ -1,4 +1,4 @@
-import { LocalDateResolver } from "graphql-scalars";
+import { GraphQLLocalDate } from "graphql-scalars";
 import { Err, Ok, Result } from "ts-results-es";
 import { Field, ObjectType, registerEnumType } from "type-graphql";
 
@@ -122,16 +122,16 @@ export class DailyDepartmentNotificationNode extends Resource implements Node {
   @Field(() => String, { nullable: true })
   department?: string;
 
-  @Field(() => LocalDateResolver, { nullable: true })
+  @Field(() => GraphQLLocalDate, { nullable: true })
   effectiveDate?: string;
 
-  @Field(() => LocalDateResolver, { nullable: true })
+  @Field(() => GraphQLLocalDate, { nullable: true })
   processDate?: string;
 
-  @Field(() => LocalDateResolver, { nullable: true })
+  @Field(() => GraphQLLocalDate, { nullable: true })
   pledgedDate?: string;
 
-  @Field(() => LocalDateResolver, { nullable: true })
+  @Field(() => GraphQLLocalDate, { nullable: true })
   transactionDate?: string;
 
   @Field(() => String)
@@ -266,13 +266,13 @@ export class DailyDepartmentNotificationNode extends Resource implements Node {
   @Field(() => String, { nullable: true })
   sapDocNum?: string;
 
-  @Field(() => LocalDateResolver, { nullable: true })
+  @Field(() => GraphQLLocalDate, { nullable: true })
   sapDocDate?: string;
 
   @Field(() => String, { nullable: true })
   jvDocNum?: string;
 
-  @Field(() => LocalDateResolver, { nullable: true })
+  @Field(() => GraphQLLocalDate, { nullable: true })
   jvDocDate?: string;
 
   @Field(() => String, { nullable: true })
