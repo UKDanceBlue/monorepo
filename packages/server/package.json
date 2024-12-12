@@ -25,7 +25,8 @@
     "#prisma": "./dist/src/prisma.js",
     "#repositories/*.js": "./dist/src/repositories/*.js",
     "#resolvers/*.js": "./dist/src/resolvers/*.js",
-    "#routes/*.js": "./dist/src/routes/*.js"
+    "#routes/*.js": "./dist/src/routes/*.js",
+    "#schema/*.js": "./dist/src/schema/*.js"
   },
   "main": "dist/src/index.js",
   "scripts": {
@@ -64,6 +65,7 @@
     "croner": "^9.0.0",
     "dotenv": "^16.4.7",
     "dree": "^5.1.5",
+    "drizzle-orm": "^0.38.1",
     "expo-server-sdk": "^3.12.0",
     "express": "^4.21.2",
     "graphql": "^16.9.0",
@@ -104,8 +106,10 @@
     "@types/pg": "^8.11.10",
     "@types/serve-static": "^1.15.7",
     "@types/turndown": "^5.0.5",
+    "drizzle-kit": "^0.30.0",
     "nodemon": "^3.1.7",
     "prisma": "^5.22.0",
+    "tsx": "^4.19.2",
     "vitest": "^2.1.8"
   },
   "packageManager": "yarn@4.5.3+sha512.3003a14012e2987072d244c720506549c1aab73ee728208f1b2580a9fd67b92d61ba6b08fe93f6dce68fd771e3af1e59a0afa28dd242dd0940d73b95fedd4e90",

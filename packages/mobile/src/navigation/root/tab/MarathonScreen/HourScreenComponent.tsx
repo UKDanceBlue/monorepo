@@ -12,7 +12,7 @@ import ImageView, {
 import NativeBaseMarkdown from "@/common/components/NativeBaseMarkdown";
 import { TriviaCrack } from "@/common/marathonComponents/TriviaCrack";
 import type { FragmentType } from "@/graphql/index";
-import { graphql,readFragment } from "@/graphql/index";
+import { graphql, readFragment } from "@/graphql/index";
 
 const HourScreenFragment = graphql(/* GraphQL */ `
   fragment HourScreenFragment on MarathonHourNode {

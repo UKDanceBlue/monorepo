@@ -3,7 +3,7 @@ import { useQuery } from "urql";
 
 import { SimpleConfigFragment } from "@/common/fragments/Configuration";
 import { log, logError } from "@/common/logging";
-import { graphql,readFragment } from "@/graphql/index";
+import { graphql, readFragment } from "@/graphql/index";
 
 const useAllowedLoginTypesQuery = graphql(/* GraphQL */ `
   query useAllowedLoginTypes {

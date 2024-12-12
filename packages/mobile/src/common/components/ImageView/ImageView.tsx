@@ -1,7 +1,7 @@
 import { Image, type ImageProps } from "expo-image";
 
 import type { FragmentType } from "@/graphql/index";
-import { graphql,readFragment } from "@/graphql/index";
+import { graphql, readFragment } from "@/graphql/index";
 
 export const ImageViewFragment = graphql(/* GraphQL */ `
   fragment ImageViewFragment on ImageNode {

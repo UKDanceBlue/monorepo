@@ -37,10 +37,7 @@ import type { GraphQLContext } from "../lib/auth/context.js";
 @Service([DailyDepartmentNotificationRepository])
 export class DailyDepartmentNotificationResolver
   implements
-    CrudResolver<
-      DailyDepartmentNotificationNode,
-      "dailyDepartmentNotification"
-    >
+    CrudResolver<DailyDepartmentNotificationNode, "dailyDepartmentNotification">
 {
   constructor(
     private readonly dailyDepartmentNotificationRepository: DailyDepartmentNotificationRepository

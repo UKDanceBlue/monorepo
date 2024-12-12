@@ -5,7 +5,7 @@ import { ActivityIndicator } from "react-native";
 import { useQuery } from "urql";
 
 import { SimpleConfigFragment } from "@/common/fragments/Configuration";
-import { graphql,readFragment } from "@/graphql/index";
+import { graphql, readFragment } from "@/graphql/index";
 
 const stationNumberToName = (stationNumber: number) => {
   switch (stationNumber) {

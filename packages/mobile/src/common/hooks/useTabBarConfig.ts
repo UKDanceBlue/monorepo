@@ -3,7 +3,7 @@ import { useQuery } from "urql";
 
 import { SimpleConfigFragment } from "@/common/fragments/Configuration";
 import { Logger } from "@/common/logger/Logger";
-import { graphql,readFragment } from "@/graphql/index";
+import { graphql, readFragment } from "@/graphql/index";
 
 const useTabBarConfigQuery = graphql(/* GraphQL */ `
   query useTabBarConfig {

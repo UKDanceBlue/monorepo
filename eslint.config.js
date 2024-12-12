@@ -362,7 +362,7 @@ export default eslintTs.config(
   // },
   {
     name: "Server-specific",
-    files: ["packages/server/src/**/*.ts"],
+    files: ["packages/server/**/*.ts"],
     plugins: { node: eslintPluginNode },
     languageOptions: {
       ecmaVersion: 2022,
