@@ -1,5 +1,5 @@
 import { relations } from "drizzle-orm";
-import { foreignKey, index, integer, serial, text } from "drizzle-orm/pg-core";
+import { integer, serial, text } from "drizzle-orm/pg-core";
 
 import { danceblue } from "#schema/core.sql.js";
 import { pointOpportunityType } from "#schema/enums.sql.js";
@@ -10,85 +10,51 @@ import { person } from "#schema/tables/person.sql.js";
 import { team } from "#schema/tables/team.sql.js";
 import { timestamp } from "#schema/types.sql.js";
 
-export const pointEntry = danceblue.table(
-  "PointEntry",
-  {
-    id: serial().primaryKey().notNull(),
-    uuid: uuidField,
-    ...timestamps,
-    comment: text(),
-    points: integer().notNull(),
-    personFromId: integer(),
-    teamId: integer().notNull(),
-    pointOpportunityId: integer(),
-  },
-  (table) => [
-    index("PointEntry_uuid_idx").using(
-      "btree",
-      table.uuid.asc().nullsLast().op("uuid_ops")
-    ),
-
-    foreignKey({
-      columns: [table.personFromId],
-      foreignColumns: [person.id],
-      name: "PointEntry_personFromId_fkey",
-    })
-      .onUpdate("cascade")
-      .onDelete("set null"),
-    foreignKey({
-      columns: [table.pointOpportunityId],
-      foreignColumns: [pointOpportunity.id],
-      name: "PointEntry_pointOpportunityId_fkey",
-    })
-      .onUpdate("cascade")
-      .onDelete("set null"),
-    foreignKey({
-      columns: [table.teamId],
-      foreignColumns: [team.id],
-      name: "PointEntry_teamId_fkey",
-    })
-      .onUpdate("cascade")
-      .onDelete("cascade"),
-  ]
-);
-
-export const pointOpportunity = danceblue.table(
-  "PointOpportunity",
-  {
-    id: serial().primaryKey().notNull(),
-    uuid: uuidField,
-    ...timestamps,
-    name: text().notNull(),
-    opportunityDate: timestamp({
-      precision: 6,
-      withTimezone: true,
+export const pointEntry = danceblue.table("PointEntry", {
+  id: serial().primaryKey().notNull(),
+  uuid: uuidField(),
+  ...timestamps(),
+  comment: text(),
+  points: integer().notNull(),
+  personFromId: integer().references(() => person.id, {
+    onUpdate: "cascade",
+    onDelete: "set null",
+  }),
+  teamId: integer()
+    .notNull()
+    .references(() => team.id, {
+      onUpdate: "cascade",
+      onDelete: "cascade",
     }),
-    type: pointOpportunityType().notNull(),
-    eventId: integer(),
-    marathonId: integer().notNull(),
-  },
-  (table) => [
-    index("PointOpportunity_uuid_idx").using(
-      "btree",
-      table.uuid.asc().nullsLast().op("uuid_ops")
-    ),
+  pointOpportunityId: integer()
+    .notNull()
+    .references(() => pointOpportunity.id, {
+      onUpdate: "cascade",
+      onDelete: "set null",
+    }),
+});
 
-    foreignKey({
-      columns: [table.marathonId],
-      foreignColumns: [marathon.id],
-      name: "PointOpportunity_marathonId_fkey",
-    })
-      .onUpdate("cascade")
-      .onDelete("restrict"),
-    foreignKey({
-      columns: [table.eventId],
-      foreignColumns: [event.id],
-      name: "PointOpportunity_eventId_fkey",
-    })
-      .onUpdate("cascade")
-      .onDelete("set null"),
-  ]
-);
+export const pointOpportunity = danceblue.table("PointOpportunity", {
+  id: serial().primaryKey().notNull(),
+  uuid: uuidField(),
+  ...timestamps(),
+  name: text().notNull(),
+  opportunityDate: timestamp({
+    precision: 6,
+    withTimezone: true,
+  }),
+  type: pointOpportunityType().notNull(),
+  eventId: integer().references(() => event.id, {
+    onUpdate: "cascade",
+    onDelete: "set null",
+  }),
+  marathonId: integer()
+    .notNull()
+    .references(() => marathon.id, {
+      onUpdate: "cascade",
+      onDelete: "cascade",
+    }),
+});
 export const pointEntryRelations = relations(pointEntry, ({ one }) => ({
   person: one(person, {
     fields: [pointEntry.personFromId],

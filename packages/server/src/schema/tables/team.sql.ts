@@ -1,12 +1,6 @@
 import { relations } from "drizzle-orm";
-import {
-  foreignKey,
-  index,
-  integer,
-  serial,
-  text,
-  uniqueIndex,
-} from "drizzle-orm/pg-core";
+import type { AnyPgColumn } from "drizzle-orm/pg-core";
+import { integer, serial, text } from "drizzle-orm/pg-core";
 
 import { danceblue } from "#schema/core.sql.js";
 import {
@@ -20,88 +14,44 @@ import { marathon } from "#schema/tables/marathon.sql.js";
 import { membership } from "#schema/tables/person.sql.js";
 import { pointEntry } from "#schema/tables/points.sql.js";
 
-export const committee = danceblue.table(
-  "Committee",
-  {
-    id: serial().primaryKey().notNull(),
-    uuid: uuidField,
-    identifier: committeeName().notNull(),
-    parentCommitteeId: integer(),
-    ...timestamps,
-  },
-  (table) => [
-    uniqueIndex("Committee_identifier_key").using(
-      "btree",
-      table.identifier.asc().nullsLast().op("enum_ops")
-    ),
-    index("Committee_uuid_idx").using(
-      "btree",
-      table.uuid.asc().nullsLast().op("uuid_ops")
-    ),
+export const committee = danceblue.table("Committee", {
+  id: serial().primaryKey().notNull(),
+  uuid: uuidField(),
+  identifier: committeeName().notNull().unique(),
+  parentCommitteeId: integer().references((): AnyPgColumn => committee.id, {
+    onDelete: "set null",
+    onUpdate: "cascade",
+  }),
+  ...timestamps(),
+});
 
-    foreignKey({
-      columns: [table.parentCommitteeId],
-      foreignColumns: [table.id],
-      name: "Committee_parentCommitteeId_fkey",
-    })
-      .onUpdate("cascade")
-      .onDelete("set null"),
-  ]
-);
-export const team = danceblue.table(
-  "Team",
-  {
-    id: serial().primaryKey().notNull(),
-    uuid: uuidField,
-    ...timestamps,
-    name: text().notNull(),
-    type: teamType().notNull(),
-    legacyStatus: teamLegacyStatus().notNull(),
-    persistentIdentifier: text(),
-    marathonId: integer().notNull(),
-    correspondingCommitteeId: integer(),
-    dbFundsTeamId: integer(),
-    solicitationCodeId: integer(),
-  },
-  (table) => [
-    uniqueIndex("Team_marathonId_correspondingCommitteeId_key").using(
-      "btree",
-      table.marathonId.asc().nullsLast().op("int4_ops"),
-      table.correspondingCommitteeId.asc().nullsLast().op("int4_ops")
-    ),
-    uniqueIndex("Team_marathonId_persistentIdentifier_key").using(
-      "btree",
-      table.marathonId.asc().nullsLast().op("text_ops"),
-      table.persistentIdentifier.asc().nullsLast().op("int4_ops")
-    ),
-    index("Team_uuid_idx").using(
-      "btree",
-      table.uuid.asc().nullsLast().op("uuid_ops")
-    ),
+export const team = danceblue.table("Team", {
+  id: serial().primaryKey().notNull(),
+  uuid: uuidField(),
+  ...timestamps(),
+  name: text().notNull(),
+  type: teamType().notNull(),
+  legacyStatus: teamLegacyStatus().notNull(),
+  persistentIdentifier: text().unique(),
+  marathonId: integer()
+    .notNull()
+    .references(() => marathon.id, {
+      onDelete: "cascade",
+      onUpdate: "cascade",
+    }),
+  correspondingCommitteeId: integer()
+    .unique()
+    .references(() => committee.id, {
+      onDelete: "set null",
+      onUpdate: "cascade",
+    }),
+  dbFundsTeamId: integer(),
+  solicitationCodeId: integer().references(() => solicitationCode.id, {
+    onDelete: "set null",
+    onUpdate: "cascade",
+  }),
+});
 
-    foreignKey({
-      columns: [table.correspondingCommitteeId],
-      foreignColumns: [committee.id],
-      name: "Team_correspondingCommitteeId_fkey",
-    })
-      .onUpdate("cascade")
-      .onDelete("set null"),
-    foreignKey({
-      columns: [table.marathonId],
-      foreignColumns: [marathon.id],
-      name: "Team_marathonId_fkey",
-    })
-      .onUpdate("cascade")
-      .onDelete("cascade"),
-    foreignKey({
-      columns: [table.solicitationCodeId],
-      foreignColumns: [solicitationCode.id],
-      name: "Team_solicitationCodeId_fkey",
-    })
-      .onUpdate("cascade")
-      .onDelete("set null"),
-  ]
-);
 export const teamRelations = relations(team, ({ one, many }) => ({
   memberships: many(membership),
   pointEntrys: many(pointEntry),

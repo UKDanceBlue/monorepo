@@ -3,20 +3,21 @@ import { uuid } from "drizzle-orm/pg-core";
 
 import { timestamp } from "#schema/types.sql.js";
 
-export const timestampsBase = {
-  createdAt: timestamp({ precision: 6, withTimezone: true }).notNull(),
+export const timestamps = () => ({
+  createdAt: timestamp({ precision: 6, withTimezone: true })
+    .notNull()
+    .default(sql`CURRENT_TIMESTAMP`),
   updatedAt: timestamp({
     precision: 6,
     withTimezone: true,
-  }).notNull(),
-};
+  })
+    .notNull()
+    .default(sql`CURRENT_TIMESTAMP`)
+    .$onUpdate(() => sql`CURRENT_TIMESTAMP`),
+});
 
-export const timestamps = {
-  createdAt: timestampsBase.createdAt.default(sql`CURRENT_TIMESTAMP`),
-  updatedAt: timestampsBase.createdAt.notNull().default(sql`CURRENT_TIMESTAMP`),
-};
-
-export const uuidField = uuid()
-  .notNull()
-  .default(sql`gen_random_uuid()`)
-  .unique();
+export const uuidField = () =>
+  uuid()
+    .notNull()
+    .default(sql`gen_random_uuid()`)
+    .unique();

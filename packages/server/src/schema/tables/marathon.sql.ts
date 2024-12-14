@@ -1,12 +1,5 @@
 import { relations } from "drizzle-orm";
-import {
-  foreignKey,
-  index,
-  integer,
-  serial,
-  text,
-  uniqueIndex,
-} from "drizzle-orm/pg-core";
+import { foreignKey, index, integer, serial, text } from "drizzle-orm/pg-core";
 
 import { danceblue } from "#schema/core.sql.js";
 import { timestamps, uuidField } from "#schema/fields.sql.js";
@@ -20,10 +13,10 @@ export const marathonHourMapImage = danceblue.table(
   "MarathonHourMapImage",
   {
     id: serial().primaryKey().notNull(),
-    uuid: uuidField,
+    uuid: uuidField(),
     marathonHourId: integer().notNull(),
     imageId: integer().notNull(),
-    ...timestamps,
+    ...timestamps(),
   },
   (table) => [
     index("MarathonHourMapImage_uuid_idx").using(
@@ -52,7 +45,7 @@ export const marathonHour = danceblue.table(
   "MarathonHour",
   {
     id: serial().primaryKey().notNull(),
-    uuid: uuidField,
+    uuid: uuidField(),
     marathonId: integer().notNull(),
     title: text().notNull(),
     details: text(),
@@ -61,7 +54,7 @@ export const marathonHour = danceblue.table(
       withTimezone: true,
     }).notNull(),
     durationInfo: text().notNull(),
-    ...timestamps,
+    ...timestamps(),
   },
   (table) => [
     index("MarathonHour_uuid_idx").using(
@@ -79,28 +72,14 @@ export const marathonHour = danceblue.table(
   ]
 );
 
-export const marathon = danceblue.table(
-  "Marathon",
-  {
-    id: serial().primaryKey().notNull(),
-    uuid: uuidField,
-    ...timestamps,
-    year: text().notNull(),
-    startDate: timestamp({ precision: 6, withTimezone: true }),
-    endDate: timestamp({ precision: 6, withTimezone: true }),
-  },
-  (table) => [
-    index("Marathon_uuid_idx").using(
-      "btree",
-      table.uuid.asc().nullsLast().op("uuid_ops")
-    ),
-
-    uniqueIndex("Marathon_year_key").using(
-      "btree",
-      table.year.asc().nullsLast().op("text_ops")
-    ),
-  ]
-);
+export const marathon = danceblue.table("Marathon", {
+  id: serial().primaryKey().notNull(),
+  uuid: uuidField(),
+  ...timestamps(),
+  year: text().notNull().unique(),
+  startDate: timestamp({ precision: 6, withTimezone: true }),
+  endDate: timestamp({ precision: 6, withTimezone: true }),
+});
 export const marathonRelations = relations(marathon, ({ many }) => ({
   pointOpportunitys: many(pointOpportunity),
   marathonHours: many(marathonHour),

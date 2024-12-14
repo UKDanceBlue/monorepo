@@ -2,12 +2,11 @@ import { relations } from "drizzle-orm";
 import {
   boolean,
   doublePrecision,
-  foreignKey,
   integer,
   numeric,
   serial,
   text,
-  uniqueIndex,
+  unique,
 } from "drizzle-orm/pg-core";
 
 import { danceblue } from "#schema/core.sql.js";
@@ -27,40 +26,29 @@ export const dbFundsFundraisingEntry = danceblue.table(
     donatedBy: text(),
     donatedTo: text(),
     date: timestamp({ precision: 3, withTimezone: false }).notNull(),
-    dbFundsTeamId: integer().notNull(),
-    uuid: uuidField,
-    fundraisingEntryId: integer().notNull(),
-    createdAt: timestamps.createdAt,
+    dbFundsTeamId: integer()
+      .notNull()
+      .references(() => dbFundsTeam.id, {
+        onUpdate: "cascade",
+        onDelete: "cascade",
+      }),
+    uuid: uuidField(),
+    fundraisingEntryId: integer()
+      .notNull()
+      .unique()
+      .references(() => fundraisingEntry.id, {
+        onUpdate: "cascade",
+        onDelete: "cascade",
+      }),
+    createdAt: timestamps().createdAt,
   },
   (table) => [
-    uniqueIndex(
-      "DBFundsFundraisingEntry_donatedTo_donatedBy_date_dbFundsTea_key"
-    ).using(
-      "btree",
-      table.donatedTo.asc().nullsLast().op("timestamp_ops"),
-      table.donatedBy.asc().nullsLast().op("timestamp_ops"),
-      table.date.asc().nullsLast().op("int4_ops"),
-      table.dbFundsTeamId.asc().nullsLast().op("text_ops")
+    unique().on(
+      table.donatedTo,
+      table.donatedBy,
+      table.date,
+      table.dbFundsTeamId
     ),
-    uniqueIndex("DBFundsFundraisingEntry_fundraisingEntryId_key").using(
-      "btree",
-      table.fundraisingEntryId.asc().nullsLast().op("int4_ops")
-    ),
-
-    foreignKey({
-      columns: [table.dbFundsTeamId],
-      foreignColumns: [dbFundsTeam.id],
-      name: "DBFundsFundraisingEntry_dbFundsTeamId_fkey",
-    })
-      .onUpdate("cascade")
-      .onDelete("cascade"),
-    foreignKey({
-      columns: [table.fundraisingEntryId],
-      foreignColumns: [fundraisingEntry.id],
-      name: "DBFundsFundraisingEntry_fundraisingEntry",
-    })
-      .onUpdate("cascade")
-      .onDelete("cascade"),
   ]
 );
 
@@ -71,33 +59,20 @@ export const dbFundsTeam = danceblue.table(
     name: text().notNull(),
     totalAmount: doublePrecision().notNull(),
     active: boolean().notNull(),
-    marathonId: integer(),
-    uuid: uuidField,
-    solicitationCodeId: integer().notNull(),
-    createdAt: timestamps.createdAt,
+    marathonId: integer().references(() => marathon.id, {
+      onUpdate: "cascade",
+      onDelete: "set null",
+    }),
+    uuid: uuidField(),
+    solicitationCodeId: integer()
+      .notNull()
+      .references(() => solicitationCode.id, {
+        onUpdate: "cascade",
+        onDelete: "restrict",
+      }),
+    createdAt: timestamps().createdAt,
   },
-  (table) => [
-    uniqueIndex("DBFundsTeam_solicitationCodeId_marathonId_key").using(
-      "btree",
-      table.solicitationCodeId.asc().nullsLast().op("int4_ops"),
-      table.marathonId.asc().nullsLast().op("int4_ops")
-    ),
-
-    foreignKey({
-      columns: [table.marathonId],
-      foreignColumns: [marathon.id],
-      name: "DBFundsTeam_marathonId_fkey",
-    })
-      .onUpdate("cascade")
-      .onDelete("set null"),
-    foreignKey({
-      columns: [table.solicitationCodeId],
-      foreignColumns: [solicitationCode.id],
-      name: "DBFundsTeam_solicitationCodeId_fkey",
-    })
-      .onUpdate("cascade")
-      .onDelete("restrict"),
-  ]
+  (table) => [unique().on(table.solicitationCodeId, table.marathonId)]
 );
 export const dbFundsFundraisingEntryRelations = relations(
   dbFundsFundraisingEntry,

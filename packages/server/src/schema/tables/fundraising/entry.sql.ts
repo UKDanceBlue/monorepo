@@ -1,13 +1,11 @@
 import { relations } from "drizzle-orm";
 import {
   date,
-  foreignKey,
-  index,
   integer,
   numeric,
   serial,
   text,
-  uniqueIndex,
+  unique,
 } from "drizzle-orm/pg-core";
 
 import { danceblue } from "#schema/core.sql.js";
@@ -25,106 +23,62 @@ export const fundraisingAssignment = danceblue.table(
   "FundraisingAssignment",
   {
     id: serial().primaryKey().notNull(),
-    uuid: uuidField,
-    ...timestamps,
-    amount: numeric({ precision: 65, scale: 30 }).notNull(),
-    personId: integer().notNull(),
-    fundraisingId: integer().notNull(),
-    assignedBy: integer(),
+    uuid: uuidField(),
+    ...timestamps(),
+    amount: numeric({ precision: 65, scale: 2 }).notNull(),
+    personId: integer()
+      .notNull()
+      .references(() => person.id, {
+        onUpdate: "cascade",
+        onDelete: "cascade",
+      }),
+    fundraisingId: integer()
+      .notNull()
+      .references(() => fundraisingEntry.id, {
+        onUpdate: "cascade",
+        onDelete: "cascade",
+      }),
+    assignedBy: integer().references(() => person.id, {
+      onUpdate: "cascade",
+      onDelete: "set null",
+    }),
   },
-  (table) => [
-    uniqueIndex("FundraisingAssignment_fundraisingId_personId_key").using(
-      "btree",
-      table.fundraisingId.asc().nullsLast().op("int4_ops"),
-      table.personId.asc().nullsLast().op("int4_ops")
-    ),
-    index("FundraisingAssignment_uuid_idx").using(
-      "btree",
-      table.uuid.asc().nullsLast().op("uuid_ops")
-    ),
-
-    foreignKey({
-      columns: [table.assignedBy],
-      foreignColumns: [person.id],
-      name: "FundraisingAssignment_assignedBy_fkey",
-    })
-      .onUpdate("cascade")
-      .onDelete("set null"),
-    foreignKey({
-      columns: [table.personId],
-      foreignColumns: [person.id],
-      name: "FundraisingAssignment_personId_fkey",
-    })
-      .onUpdate("cascade")
-      .onDelete("cascade"),
-    foreignKey({
-      columns: [table.fundraisingId],
-      foreignColumns: [fundraisingEntry.id],
-      name: "fundraising_assignment_parent_entry",
-    })
-      .onUpdate("cascade")
-      .onDelete("cascade"),
-  ]
+  (table) => [unique().on(table.personId, table.fundraisingId)]
 );
+
 export const solicitationCode = danceblue.table(
   "SolicitationCode",
   {
     id: serial().primaryKey().notNull(),
-    uuid: uuidField,
-    ...timestamps,
+    uuid: uuidField(),
+    ...timestamps(),
     prefix: text().notNull(),
     code: integer().notNull(),
     name: text(),
   },
-  (table) => [
-    uniqueIndex("SolicitationCode_prefix_code_key").using(
-      "btree",
-      table.prefix.asc().nullsLast().op("int4_ops"),
-      table.code.asc().nullsLast().op("int4_ops")
-    ),
-    index("SolicitationCode_uuid_idx").using(
-      "btree",
-      table.uuid.asc().nullsLast().op("uuid_ops")
-    ),
-  ]
+  (table) => [unique().on(table.prefix, table.code)]
 );
-export const fundraisingEntry = danceblue.table(
-  "FundraisingEntry",
-  {
-    id: serial().primaryKey().notNull(),
-    uuid: uuidField,
-    ...timestamps,
-    notes: text(),
-    enteredByPersonId: integer(),
-    solicitationCodeId: integer(),
-    amountOverride: numeric({ precision: 65, scale: 30 }),
-    batchTypeOverride: batchType(),
-    donatedByOverride: text(),
-    donatedOnOverride: date(),
-    donatedToOverride: text(),
-  },
-  (table) => [
-    index("FundraisingEntry_uuid_idx").using(
-      "btree",
-      table.uuid.asc().nullsLast().op("uuid_ops")
-    ),
 
-    foreignKey({
-      columns: [table.enteredByPersonId],
-      foreignColumns: [person.id],
-      name: "FundraisingEntry_enteredByPersonId_fkey",
-    })
-      .onUpdate("cascade")
-      .onDelete("set null"),
-    foreignKey({
-      columns: [table.solicitationCodeId],
-      foreignColumns: [solicitationCode.id],
-      name: "FundraisingEntry_solicitationCodeId_fkey",
-    })
-      .onUpdate("cascade")
-      .onDelete("set null"),
-  ]
-);
+export const fundraisingEntry = danceblue.table("FundraisingEntry", {
+  id: serial().primaryKey().notNull(),
+  uuid: uuidField(),
+  ...timestamps(),
+  notes: text(),
+  enteredByPersonId: integer().references(() => person.id, {
+    onUpdate: "cascade",
+    onDelete: "set null",
+  }),
+  solicitationCodeOverrideId: integer().references(() => solicitationCode.id, {
+    onUpdate: "cascade",
+    onDelete: "set null",
+  }),
+  amountOverride: numeric({ precision: 65, scale: 2 }),
+  batchTypeOverride: batchType(),
+  donatedByOverride: text(),
+  donatedOnOverride: date(),
+  donatedToOverride: text(),
+});
+
 export const fundraisingAssignmentRelations = relations(
   fundraisingAssignment,
   ({ one }) => ({
@@ -156,11 +110,12 @@ export const fundraisingEntryRelations = relations(
       references: [person.id],
     }),
     solicitationCode: one(solicitationCode, {
-      fields: [fundraisingEntry.solicitationCodeId],
+      fields: [fundraisingEntry.solicitationCodeOverrideId],
       references: [solicitationCode.id],
     }),
   })
 );
+
 export const solicitationCodeRelations = relations(
   solicitationCode,
   ({ many }) => ({

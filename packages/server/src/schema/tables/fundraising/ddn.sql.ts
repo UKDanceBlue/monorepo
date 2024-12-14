@@ -2,14 +2,11 @@ import { relations } from "drizzle-orm";
 import {
   boolean,
   date,
-  foreignKey,
-  index,
   integer,
   numeric,
   primaryKey,
   serial,
   text,
-  uniqueIndex,
 } from "drizzle-orm/pg-core";
 
 import { danceblue } from "#schema/core.sql.js";
@@ -20,49 +17,26 @@ import { fundraisingEntry, solicitationCode } from "./entry.sql.js";
 export const dailyDepartmentNotificationBatch = danceblue.table(
   "DailyDepartmentNotificationBatch",
   {
-    batchId: text().notNull(),
+    batchId: text().notNull().unique(),
     id: serial().primaryKey().notNull(),
-    uuid: uuidField,
-    ...timestamps,
-  },
-  (table) => [
-    uniqueIndex("DailyDepartmentNotificationBatch_batchId_key").using(
-      "btree",
-      table.batchId.asc().nullsLast().op("text_ops")
-    ),
-    index("DailyDepartmentNotificationBatch_uuid_idx").using(
-      "btree",
-      table.uuid.asc().nullsLast().op("uuid_ops")
-    ),
-  ]
+    uuid: uuidField(),
+    ...timestamps(),
+  }
 );
-export const ddnDonor = danceblue.table(
-  "DDNDonor",
-  {
-    id: serial().primaryKey().notNull(),
-    uuid: uuidField,
-    donorId: text().notNull(),
-    giftKey: text(),
-    name: text(),
-    deceased: boolean().notNull(),
-    constituency: text(),
-    titleBar: text(),
-    pm: text(),
-    degrees: text().array(),
-    emails: text().array(),
-    ...timestamps,
-  },
-  (table) => [
-    uniqueIndex("DDNDonor_donorId_key").using(
-      "btree",
-      table.donorId.asc().nullsLast().op("text_ops")
-    ),
-    index("DDNDonor_uuid_idx").using(
-      "btree",
-      table.uuid.asc().nullsLast().op("uuid_ops")
-    ),
-  ]
-);
+export const ddnDonor = danceblue.table("DDNDonor", {
+  id: serial().primaryKey().notNull(),
+  uuid: uuidField(),
+  donorId: text().notNull().unique(),
+  giftKey: text(),
+  name: text(),
+  deceased: boolean().notNull(),
+  constituency: text(),
+  titleBar: text(),
+  pm: text(),
+  degrees: text().array(),
+  emails: text().array(),
+  ...timestamps(),
+});
 
 export const dailyDepartmentNotification = danceblue.table(
   "DailyDepartmentNotification",
@@ -106,82 +80,52 @@ export const dailyDepartmentNotification = danceblue.table(
     advFeeStatus: text(),
     hcUnit: text(),
     id: serial().primaryKey().notNull(),
-    solicitationCodeId: integer().notNull(),
-    fundraisingEntryId: integer().notNull(),
-    uuid: uuidField,
-    batchId: integer().notNull(),
-    ...timestamps,
-  },
-  (table) => [
-    uniqueIndex("DailyDepartmentNotification_fundraisingEntryId_key").using(
-      "btree",
-      table.fundraisingEntryId.asc().nullsLast().op("int4_ops")
-    ),
-    uniqueIndex(
-      "DailyDepartmentNotification_idSorter_processDate_batchId_so_key"
-    ).using(
-      "btree",
-      table.idSorter.asc().nullsLast().op("int4_ops"),
-      table.processDate.asc().nullsLast().op("int4_ops"),
-      table.batchId.asc().nullsLast().op("numeric_ops"),
-      table.solicitationCodeId.asc().nullsLast().op("text_ops"),
-      table.combinedAmount.asc().nullsLast().op("text_ops")
-    ),
-    index("DailyDepartmentNotification_uuid_idx").using(
-      "btree",
-      table.uuid.asc().nullsLast().op("uuid_ops")
-    ),
-
-    foreignKey({
-      columns: [table.solicitationCodeId],
-      foreignColumns: [solicitationCode.id],
-      name: "DailyDepartmentNotification_solicitationCodeId_fkey",
-    })
-      .onUpdate("cascade")
-      .onDelete("restrict"),
-    foreignKey({
-      columns: [table.fundraisingEntryId],
-      foreignColumns: [fundraisingEntry.id],
-      name: "DailyDepartmentNotification_fundraisingEntry",
-    })
-      .onUpdate("cascade")
-      .onDelete("cascade"),
-    foreignKey({
-      columns: [table.batchId],
-      foreignColumns: [dailyDepartmentNotificationBatch.id],
-      name: "DailyDepartmentNotification_batchId_fkey",
-    })
-      .onUpdate("cascade")
-      .onDelete("cascade"),
-  ]
+    solicitationCodeId: integer()
+      .notNull()
+      .references(() => solicitationCode.id, {
+        onUpdate: "cascade",
+        onDelete: "restrict",
+      }),
+    fundraisingEntryId: integer()
+      .notNull()
+      .unique()
+      .references(() => fundraisingEntry.id, {
+        onUpdate: "cascade",
+        onDelete: "cascade",
+      }),
+    uuid: uuidField(),
+    batchId: integer()
+      .notNull()
+      .references(() => dailyDepartmentNotificationBatch.id, {
+        onUpdate: "cascade",
+        onDelete: "cascade",
+      }),
+    ...timestamps(),
+  }
 );
+
 export const ddnDonorLink = danceblue.table(
   "DDNDonorLink",
   {
-    donorId: integer().notNull(),
-    ddnId: integer().notNull(),
+    donorId: integer()
+      .notNull()
+      .references(() => ddnDonor.id, {
+        onUpdate: "cascade",
+        onDelete: "restrict",
+      }),
+    ddnId: integer()
+      .notNull()
+      .references(() => dailyDepartmentNotification.id, {
+        onUpdate: "cascade",
+        onDelete: "restrict",
+      }),
     amount: numeric({ precision: 65, scale: 30 }).notNull(),
     relation: text(),
-    ...timestamps,
+    ...timestamps(),
   },
   (table) => [
-    foreignKey({
-      columns: [table.donorId],
-      foreignColumns: [ddnDonor.id],
-      name: "DDNDonorLink_donorId_fkey",
-    })
-      .onUpdate("cascade")
-      .onDelete("restrict"),
-    foreignKey({
-      columns: [table.ddnId],
-      foreignColumns: [dailyDepartmentNotification.id],
-      name: "DDNDonorLink_ddnId_fkey",
-    })
-      .onUpdate("cascade")
-      .onDelete("restrict"),
     primaryKey({
       columns: [table.donorId, table.ddnId],
-      name: "DDNDonorLink_pkey",
     }),
   ]
 );

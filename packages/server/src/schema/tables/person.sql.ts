@@ -1,13 +1,5 @@
 import { relations } from "drizzle-orm";
-import {
-  foreignKey,
-  index,
-  integer,
-  primaryKey,
-  serial,
-  text,
-  uniqueIndex,
-} from "drizzle-orm/pg-core";
+import { integer, primaryKey, serial, text, unique } from "drizzle-orm/pg-core";
 
 import { danceblue } from "#schema/core.sql.js";
 import {
@@ -27,89 +19,51 @@ import { pointEntry } from "#schema/tables/points.sql.js";
 import { team } from "#schema/tables/team.sql.js";
 import { bytea, citext } from "#schema/types.sql.js";
 
-export const person = danceblue.table(
-  "Person",
-  {
-    id: serial().primaryKey().notNull(),
-    uuid: uuidField,
-    ...timestamps,
-    name: citext("name"),
-    email: citext("email").notNull(),
-    linkblue: citext("linkblue"),
-    hashedPassword: bytea("hashedPassword"),
-    salt: bytea("salt"),
-  },
-  (table) => [
-    uniqueIndex("Person_email_key").using(
-      "btree",
-      table.email.asc().nullsLast().op("citext_ops")
-    ),
-    uniqueIndex("Person_linkblue_key").using(
-      "btree",
-      table.linkblue.asc().nullsLast().op("citext_ops")
-    ),
-    index("Person_uuid_idx").using(
-      "btree",
-      table.uuid.asc().nullsLast().op("uuid_ops")
-    ),
-  ]
-);
+export const person = danceblue.table("Person", {
+  id: serial().primaryKey().notNull(),
+  uuid: uuidField(),
+  ...timestamps(),
+  name: citext("name"),
+  email: citext("email").notNull().unique(),
+  linkblue: citext("linkblue").unique(),
+  hashedPassword: bytea("hashedPassword"),
+  salt: bytea("salt"),
+});
 export const membership = danceblue.table(
   "Membership",
   {
     id: serial().primaryKey().notNull(),
-    uuid: uuidField,
-    ...timestamps,
-    personId: integer().notNull(),
-    teamId: integer().notNull(),
+    uuid: uuidField(),
+    ...timestamps(),
+    personId: integer()
+      .notNull()
+      .references(() => person.id, {
+        onUpdate: "cascade",
+        onDelete: "cascade",
+      }),
+    teamId: integer()
+      .notNull()
+      .references(() => team.id, { onUpdate: "cascade", onDelete: "cascade" }),
     position: membershipPosition().notNull(),
     committeeRole: committeeRole(),
   },
-  (table) => [
-    uniqueIndex("Membership_personId_teamId_key").using(
-      "btree",
-      table.personId.asc().nullsLast().op("int4_ops"),
-      table.teamId.asc().nullsLast().op("int4_ops")
-    ),
-    index("Membership_uuid_idx").using(
-      "btree",
-      table.uuid.asc().nullsLast().op("uuid_ops")
-    ),
-
-    foreignKey({
-      columns: [table.personId],
-      foreignColumns: [person.id],
-      name: "Membership_personId_fkey",
-    })
-      .onUpdate("cascade")
-      .onDelete("cascade"),
-    foreignKey({
-      columns: [table.teamId],
-      foreignColumns: [team.id],
-      name: "Membership_teamId_fkey",
-    })
-      .onUpdate("cascade")
-      .onDelete("cascade"),
-  ]
+  (table) => [unique().on(table.personId, table.teamId)]
 );
 export const authIdPair = danceblue.table(
   "AuthIdPair",
   {
     source: authSource().notNull(),
     value: text().notNull(),
-    personId: integer().notNull(),
+    personId: integer()
+      .notNull()
+      .references(() => person.id, {
+        onUpdate: "cascade",
+        onDelete: "cascade",
+      }),
   },
   (table) => [
-    foreignKey({
-      columns: [table.personId],
-      foreignColumns: [person.id],
-      name: "AuthIdPair_personId_fkey",
-    })
-      .onUpdate("cascade")
-      .onDelete("cascade"),
     primaryKey({
       columns: [table.source, table.personId],
-      name: "AuthIdPair_pkey",
     }),
   ]
 );
