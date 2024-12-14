@@ -73,7 +73,7 @@ export const pointEntryRelations = relations(pointEntry, ({ one }) => ({
 export const pointOpportunityRelations = relations(
   pointOpportunity,
   ({ one, many }) => ({
-    pointEntrys: many(pointEntry),
+    pointEntries: many(pointEntry),
     marathon: one(marathon, {
       fields: [pointOpportunity.marathonId],
       references: [marathon.id],

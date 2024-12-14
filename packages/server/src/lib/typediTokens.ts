@@ -3,6 +3,7 @@
 import { Container, Token } from "@freshgum/typedi";
 import type { PrismaClient } from "@prisma/client";
 
+import type { db } from "../drizzle.js";
 import type { SyslogLevels } from "./logging/SyslogLevels.js";
 
 // These are all of the environment variables that the server uses
@@ -88,3 +89,4 @@ export function getEnvironment(): Environment {
   };
 }
 export const prismaToken = new Token<PrismaClient>("PrismaClient");
+export const drizzleToken = new Token<typeof db>("DrizzleORM");

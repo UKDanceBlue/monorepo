@@ -79,7 +79,7 @@ export const eventOccurrenceRelations = relations(
 
 export const eventRelations = relations(event, ({ many }) => ({
   eventOccurrences: many(eventOccurrence),
-  pointOpportunitys: many(pointOpportunity),
+  pointOpportunities: many(pointOpportunity),
   eventImages: many(eventImage),
 }));
 export const eventImageRelations = relations(eventImage, ({ one }) => ({

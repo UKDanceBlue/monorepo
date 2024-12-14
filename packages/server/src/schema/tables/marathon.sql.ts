@@ -81,7 +81,7 @@ export const marathon = danceblue.table("Marathon", {
   endDate: timestamp({ precision: 6, withTimezone: true }),
 });
 export const marathonRelations = relations(marathon, ({ many }) => ({
-  pointOpportunitys: many(pointOpportunity),
+  pointOpportunities: many(pointOpportunity),
   marathonHours: many(marathonHour),
   teams: many(team),
   dbFundsTeams: many(dbFundsTeam),

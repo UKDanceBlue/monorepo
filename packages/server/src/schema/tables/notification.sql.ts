@@ -65,7 +65,7 @@ export const notificationDeliveryRelations = relations(
 );
 
 export const notificationRelations = relations(notification, ({ many }) => ({
-  notificationDeliverys: many(notificationDelivery),
+  notificationDeliveries: many(notificationDelivery),
 }));
 
 export const committeeRelations = relations(committee, ({ one, many }) => ({

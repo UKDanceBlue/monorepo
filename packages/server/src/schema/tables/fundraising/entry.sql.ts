@@ -103,7 +103,7 @@ export const fundraisingEntryRelations = relations(
   fundraisingEntry,
   ({ one, many }) => ({
     fundraisingAssignments: many(fundraisingAssignment),
-    dbFundsFundraisingEntrys: many(dbFundsFundraisingEntry),
+    dbFundsFundraisingEntries: many(dbFundsFundraisingEntry),
     dailyDepartmentNotifications: many(dailyDepartmentNotification),
     person: one(person, {
       fields: [fundraisingEntry.enteredByPersonId],
@@ -122,6 +122,6 @@ export const solicitationCodeRelations = relations(
     teams: many(team),
     dbFundsTeams: many(dbFundsTeam),
     dailyDepartmentNotifications: many(dailyDepartmentNotification),
-    fundraisingEntrys: many(fundraisingEntry),
+    fundraisingEntries: many(fundraisingEntry),
   })
 );

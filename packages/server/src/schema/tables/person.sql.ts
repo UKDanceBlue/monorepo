@@ -80,7 +80,7 @@ export const membershipRelations = relations(membership, ({ one }) => ({
 
 export const personRelations = relations(person, ({ many }) => ({
   memberships: many(membership),
-  pointEntrys: many(pointEntry),
+  pointEntries: many(pointEntry),
   devices: many(device),
   fundraisingAssignments_assignedBy: many(fundraisingAssignment, {
     relationName: "fundraisingAssignment_assignedBy_person_id",
@@ -89,7 +89,7 @@ export const personRelations = relations(person, ({ many }) => ({
     relationName: "fundraisingAssignment_personId_person_id",
   }),
   files: many(file),
-  fundraisingEntrys: many(fundraisingEntry),
+  fundraisingEntries: many(fundraisingEntry),
   auditLogs: many(auditLog),
   authIdPairs: many(authIdPair),
 }));

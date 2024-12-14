@@ -89,7 +89,7 @@ export const dbFundsFundraisingEntryRelations = relations(
 );
 
 export const dbFundsTeamRelations = relations(dbFundsTeam, ({ one, many }) => ({
-  dbFundsFundraisingEntrys: many(dbFundsFundraisingEntry),
+  dbFundsFundraisingEntries: many(dbFundsFundraisingEntry),
   marathon: one(marathon, {
     fields: [dbFundsTeam.marathonId],
     references: [marathon.id],
