@@ -1,5 +1,4 @@
 import { Service } from "@freshgum/typedi";
-import { Committee, Prisma, PrismaClient, Team } from "@prisma/client";
 import {
   CommitteeIdentifier,
   committeeNames,
@@ -14,9 +13,11 @@ import {
   NotFoundError,
   toBasicError,
 } from "@ukdanceblue/common/error";
+import { eq } from "drizzle-orm";
 import { AsyncResult, Err, None, Ok, Result } from "ts-results-es";
 
 import type { FilterItems } from "#lib/prisma-utils/gqlFilterToPrismaFilter.js";
+import { FindManyParams, parseFindManyParams } from "#lib/queryFromArgs.js";
 import type { UniqueMarathonParam } from "#repositories/marathon/MarathonRepository.js";
 import { MarathonRepository } from "#repositories/marathon/MarathonRepository.js";
 import { MembershipRepository } from "#repositories/membership/MembershipRepository.js";
@@ -25,7 +26,9 @@ import {
   RepositoryError,
   SimpleUniqueParam,
 } from "#repositories/shared.js";
+import { committee } from "#schema/tables/team.sql.js";
 
+import { db } from "../../drizzle.js";
 import * as CommitteeDescriptions from "./committeeDescriptions.js";
 import {
   buildCommitteeOrder,
@@ -33,9 +36,20 @@ import {
 } from "./committeeRepositoryUtils.js";
 
 // Make sure that we are exporting a description for every committee
-CommitteeDescriptions[
-  "" as CommitteeIdentifier
-] satisfies Prisma.CommitteeUpsertWithoutChildCommitteesInput;
+"" as unknown as Omit<
+  typeof CommitteeDescriptions,
+  "CommitteeDescription"
+> satisfies Record<
+  CommitteeIdentifier,
+  CommitteeDescriptions.CommitteeDescription
+>;
+
+type CommitteeFields = "identifier" | "createdAt" | "updatedAt";
+const fieldLookup = {
+  identifier: committee.identifier,
+  createdAt: committee.createdAt,
+  updatedAt: committee.updatedAt,
+};
 
 const CommitteeOneOfKeys = ["identifier"] as const;
 type CommitteeOneOfKeys = (typeof CommitteeOneOfKeys)[number];
@@ -56,12 +70,9 @@ type CommitteeUniqueParam =
   | SimpleUniqueParam
   | { identifier: CommitteeIdentifier };
 
-import { prismaToken } from "#lib/typediTokens.js";
-
-@Service([prismaToken, MembershipRepository, MarathonRepository])
+@Service([MembershipRepository, MarathonRepository])
 export class CommitteeRepository {
   constructor(
-    private readonly prisma: PrismaClient,
     private readonly membershipRepository: MembershipRepository,
     private readonly marathonRepository: MarathonRepository
   ) {}
@@ -69,20 +80,19 @@ export class CommitteeRepository {
   // Finders
 
   async findCommittees(
-    filters: readonly CommitteeFilters[] | null | undefined,
-    order: readonly [key: string, sort: SortDirection][] | null | undefined,
-    limit?: number,
-    offset?: number
-  ): Promise<Result<Committee[], RepositoryError>> {
+    params: FindManyParams<CommitteeFields>
+  ): Promise<Result<(typeof committee.$inferSelect)[], RepositoryError>> {
     try {
-      const where = buildCommitteeWhere(filters);
-      const orderBy = buildCommitteeOrder(order);
+      const parsedParams = parseFindManyParams(params, fieldLookup);
+      if (parsedParams.isErr()) {
+        return Err(parsedParams.error);
+      }
 
-      const committees = await this.prisma.committee.findMany({
-        where,
-        orderBy,
-        take: limit,
-        skip: offset,
+      const committees = await db.query.committee.findMany({
+        orderBy: parsedParams.value.order,
+        where: parsedParams.value.where,
+        limit: parsedParams.value.limit,
+        offset: parsedParams.value.offset,
       });
 
       return Ok(committees);
@@ -93,12 +103,19 @@ export class CommitteeRepository {
 
   async findCommitteeByUnique(
     param: CommitteeUniqueParam
-  ): Promise<Result<Committee | null, RepositoryError>> {
+  ): Promise<
+    Result<typeof committee.$inferSelect | undefined, RepositoryError>
+  > {
     try {
-      const committee = await this.prisma.committee.findUnique({
-        where: param,
+      const row = await db.query.committee.findFirst({
+        where:
+          "identifier" in param
+            ? eq(committee.identifier, param.identifier)
+            : "id" in param
+              ? eq(committee.id, param.id)
+              : eq(committee.uuid, param.uuid),
       });
-      return Ok(committee);
+      return Ok(row);
     } catch (error) {
       return handleRepositoryError(error);
     }
@@ -346,7 +363,7 @@ export class CommitteeRepository {
         });
 
       if (result?.length === 1) {
-        return Ok(result[0]!);
+        return Ok(result[0]);
       } else if (result?.length === 0) {
         return Err(
           new NotFoundError({

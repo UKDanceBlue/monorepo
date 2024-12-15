@@ -22,7 +22,11 @@ logger.info(
 );
 
 await import("./prisma.js");
-await import("./drizzle.js");
+const { db, schema } = await import("./drizzle.js");
+
+const { seed } = await import("drizzle-seed");
+
+await seed(db, schema);
 
 const { createServer, startHttpServer, startServer } = await import(
   "./server.js"

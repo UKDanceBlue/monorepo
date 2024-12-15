@@ -41,15 +41,7 @@ export class SetMarathonInput {
 }
 
 @ArgsType()
-export class ListMarathonsArgs extends FilteredListQueryArgs<
-  "year" | "startDate" | "endDate" | "createdAt" | "updatedAt",
-  never,
-  "year",
-  never,
-  "startDate" | "endDate" | "createdAt" | "updatedAt",
-  never
->("MarathonResolver", {
-  all: ["year", "startDate", "endDate", "createdAt", "updatedAt"],
-  oneOf: ["year"],
-  date: ["startDate", "endDate", "createdAt", "updatedAt"],
-}) {}
+export class ListMarathonsArgs extends FilteredListQueryArgs(
+  "MarathonResolver",
+  ["year", "startDate", "endDate", "createdAt", "updatedAt"]
+) {}

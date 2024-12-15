@@ -12048,6 +12048,7 @@ __metadata:
     dree: "npm:^5.1.5"
     drizzle-kit: "npm:^0.30.0"
     drizzle-orm: "npm:^0.38.1"
+    drizzle-seed: "npm:^0.1.3"
     expo-server-sdk: "npm:^3.12.0"
     express: "npm:^4.21.2"
     graphql: "npm:^16.9.0"
@@ -16535,6 +16536,20 @@ __metadata:
     sqlite3:
       optional: true
   checksum: 10/ec1d25e7a994c2896076cc8934fabbfab93954eb716472c94a8d8dee38f0227629c60b0ebb8d3da74fc2db2072bec10f9430e85bd1ef45c4bcc39eb84755e2ff
+  languageName: node
+  linkType: hard
+
+"drizzle-seed@npm:^0.1.3":
+  version: 0.1.3
+  resolution: "drizzle-seed@npm:0.1.3"
+  dependencies:
+    pure-rand: "npm:^6.1.0"
+  peerDependencies:
+    drizzle-orm: ">=0.36.4"
+  peerDependenciesMeta:
+    drizzle-orm:
+      optional: true
+  checksum: 10/6dbce0ac4561aa793e12ea887da6fb6236ba2e02898471e3861c3f61326d41b5e8fb0710dc59fbffb9edcffeec007b84f16a95813bfa6fe84a24f147b5da98b5
   languageName: node
   linkType: hard
 
@@ -26692,6 +26707,13 @@ __metadata:
   version: 2.3.1
   resolution: "punycode@npm:2.3.1"
   checksum: 10/febdc4362bead22f9e2608ff0171713230b57aff9dddc1c273aa2a651fbd366f94b7d6a71d78342a7c0819906750351ca7f2edd26ea41b626d87d6a13d1bd059
+  languageName: node
+  linkType: hard
+
+"pure-rand@npm:^6.1.0":
+  version: 6.1.0
+  resolution: "pure-rand@npm:6.1.0"
+  checksum: 10/256aa4bcaf9297256f552914e03cbdb0039c8fe1db11fa1e6d3f80790e16e563eb0a859a1e61082a95e224fc0c608661839439f8ecc6a3db4e48d46d99216ee4
   languageName: node
   linkType: hard
 

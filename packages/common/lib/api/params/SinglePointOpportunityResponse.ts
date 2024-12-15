@@ -49,28 +49,7 @@ export class SetPointOpportunityInput {
 }
 
 @ArgsType()
-export class ListPointOpportunitiesArgs extends FilteredListQueryArgs<
-  | "name"
-  | "opportunityDate"
-  | "type"
-  | "createdAt"
-  | "updatedAt"
-  | "marathonUuid",
-  "name",
-  "type" | "marathonUuid",
-  never,
-  "opportunityDate" | "createdAt" | "updatedAt",
-  never
->("PointOpportunityResolver", {
-  all: [
-    "name",
-    "opportunityDate",
-    "type",
-    "createdAt",
-    "updatedAt",
-    "marathonUuid",
-  ],
-  oneOf: ["type", "marathonUuid"],
-  string: ["name"],
-  date: ["opportunityDate", "createdAt", "updatedAt"],
-}) {}
+export class ListPointOpportunitiesArgs extends FilteredListQueryArgs(
+  "PointOpportunityResolver",
+  ["name", "opportunityDate", "type", "createdAt", "updatedAt", "marathonUuid"]
+) {}

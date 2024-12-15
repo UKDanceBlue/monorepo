@@ -1,24 +1,8 @@
 import "reflect-metadata";
 
-export type * from "./api/filtering/FilterItem.js";
-export * from "./api/filtering/list-query-args/common.js";
+export * from "./api/filtering/Filter.js";
 export * from "./api/filtering/list-query-args/FilteredListQueryArgs.js";
-export * from "./api/filtering/list-query-args/FilterItem.js";
-export * from "./api/filtering/list-query-args/registerFilterKeyEnums.js";
-export * from "./api/filtering/list-query-args/UnfilteredListQueryArgs.js";
-export type {
-  FilterOptions,
-  ListQueryType,
-  PaginationOptions,
-  SortingOptions,
-} from "./api/filtering/ListQueryTypes.js";
-export {
-  Comparator,
-  IsComparator,
-  NumericComparator,
-  SortDirection,
-  StringComparator,
-} from "./api/filtering/ListQueryTypes.js";
+export * from "./api/filtering/ListQueryTypes.js";
 export * from "./api/jwt.js";
 export * from "./api/params/index.js";
 export * from "./api/resources/index.js";

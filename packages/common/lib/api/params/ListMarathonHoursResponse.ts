@@ -44,21 +44,9 @@ export class SetMarathonHourInput {
 }
 
 @ArgsType()
-export class ListMarathonHoursArgs extends FilteredListQueryArgs<
-  | "title"
-  | "details"
-  | "durationInfo"
-  | "marathonYear"
-  | "shownStartingAt"
-  | "createdAt"
-  | "updatedAt",
-  "title" | "details" | "durationInfo",
-  "marathonYear",
-  never,
-  "shownStartingAt" | "createdAt" | "updatedAt",
-  never
->("MarathonHourResolver", {
-  all: [
+export class ListMarathonHoursArgs extends FilteredListQueryArgs(
+  "MarathonHourResolver",
+  [
     "title",
     "details",
     "durationInfo",
@@ -66,8 +54,5 @@ export class ListMarathonHoursArgs extends FilteredListQueryArgs<
     "shownStartingAt",
     "createdAt",
     "updatedAt",
-  ],
-  string: ["title", "details", "durationInfo"],
-  oneOf: ["marathonYear"],
-  date: ["shownStartingAt", "createdAt", "updatedAt"],
-}) {}
+  ]
+) {}

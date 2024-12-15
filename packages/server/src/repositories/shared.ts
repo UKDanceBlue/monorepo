@@ -1,4 +1,8 @@
-import type { BasicError, NotFoundError } from "@ukdanceblue/common/error";
+import type {
+  BasicError,
+  InvariantError,
+  NotFoundError,
+} from "@ukdanceblue/common/error";
 import { toBasicError } from "@ukdanceblue/common/error";
 import { Err, Some } from "ts-results-es";
 
@@ -12,7 +16,11 @@ export type SimpleUniqueParam = { id: number } | { uuid: string };
 /**
  * The error types that can be returned by most repository functions
  */
-export type RepositoryError = SomePrismaError | BasicError | NotFoundError;
+export type RepositoryError =
+  | SomePrismaError
+  | BasicError
+  | NotFoundError
+  | InvariantError;
 
 /**
  * Takes in an arbitrary error and returns a PrismaError subclass if it is a Prisma error, or a BasicError if it is not

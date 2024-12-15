@@ -1,82 +1,65 @@
-import type { Prisma } from "@prisma/client";
 import { CommitteeIdentifier } from "@ukdanceblue/common";
 
-const createCommittee = (
-  identifier: CommitteeIdentifier,
-  parentIdentifier?: CommitteeIdentifier
-) => {
-  const committee = {
-    create: {
-      identifier,
-      parentCommittee: parentIdentifier
-        ? {
-            connect: {
-              identifier: parentIdentifier,
-            },
-          }
-        : undefined,
-    },
-    update: {
-      parentCommittee: parentIdentifier
-        ? {
-            connect: {
-              identifier: parentIdentifier,
-            },
-          }
-        : undefined,
-    },
-    where: {
-      identifier,
-    },
-  } satisfies Prisma.CommitteeUpsertWithoutChildCommitteesInput;
+export interface CommitteeDescription {
+  identifier: CommitteeIdentifier;
+  parentIdentifier?: CommitteeIdentifier;
+}
 
-  return committee;
+export const overallCommittee: CommitteeDescription = {
+  identifier: CommitteeIdentifier.overallCommittee,
 };
 
-export const overallCommittee = createCommittee(
-  CommitteeIdentifier.overallCommittee
-);
-export const viceCommittee = createCommittee(
-  CommitteeIdentifier.viceCommittee,
-  CommitteeIdentifier.overallCommittee
-);
-export const fundraisingCommittee = createCommittee(
-  CommitteeIdentifier.fundraisingCommittee,
-  CommitteeIdentifier.viceCommittee
-);
-export const dancerRelationsCommittee = createCommittee(
-  CommitteeIdentifier.dancerRelationsCommittee,
-  CommitteeIdentifier.viceCommittee
-);
-export const marketingCommittee = createCommittee(
-  CommitteeIdentifier.marketingCommittee,
-  CommitteeIdentifier.overallCommittee
-);
-export const corporateCommittee = createCommittee(
-  CommitteeIdentifier.corporateCommittee,
-  CommitteeIdentifier.overallCommittee
-);
-export const techCommittee = createCommittee(
-  CommitteeIdentifier.techCommittee,
-  CommitteeIdentifier.overallCommittee
-);
-export const operationsCommittee = createCommittee(
-  CommitteeIdentifier.operationsCommittee,
-  CommitteeIdentifier.overallCommittee
-);
-export const miniMarathonsCommittee = createCommittee(
-  CommitteeIdentifier.miniMarathonsCommittee,
-  CommitteeIdentifier.overallCommittee
-);
-export const communityDevelopmentCommittee = createCommittee(
-  CommitteeIdentifier.communityDevelopmentCommittee,
-  CommitteeIdentifier.overallCommittee
-);
-export const familyRelationsCommittee = createCommittee(
-  CommitteeIdentifier.familyRelationsCommittee,
-  CommitteeIdentifier.overallCommittee
-);
-export const programmingCommittee = createCommittee(
-  CommitteeIdentifier.programmingCommittee,
-  CommitteeIdentifier.overallCommittee
-);
+export const viceCommittee: CommitteeDescription = {
+  identifier: CommitteeIdentifier.viceCommittee,
+  parentIdentifier: CommitteeIdentifier.overallCommittee,
+};
+
+export const fundraisingCommittee: CommitteeDescription = {
+  identifier: CommitteeIdentifier.fundraisingCommittee,
+  parentIdentifier: CommitteeIdentifier.viceCommittee,
+};
+
+export const dancerRelationsCommittee: CommitteeDescription = {
+  identifier: CommitteeIdentifier.dancerRelationsCommittee,
+  parentIdentifier: CommitteeIdentifier.viceCommittee,
+};
+
+export const marketingCommittee: CommitteeDescription = {
+  identifier: CommitteeIdentifier.marketingCommittee,
+  parentIdentifier: CommitteeIdentifier.overallCommittee,
+};
+
+export const corporateCommittee: CommitteeDescription = {
+  identifier: CommitteeIdentifier.corporateCommittee,
+  parentIdentifier: CommitteeIdentifier.overallCommittee,
+};
+
+export const techCommittee: CommitteeDescription = {
+  identifier: CommitteeIdentifier.techCommittee,
+  parentIdentifier: CommitteeIdentifier.overallCommittee,
+};
+
+export const operationsCommittee: CommitteeDescription = {
+  identifier: CommitteeIdentifier.operationsCommittee,
+  parentIdentifier: CommitteeIdentifier.overallCommittee,
+};
+
+export const miniMarathonsCommittee: CommitteeDescription = {
+  identifier: CommitteeIdentifier.miniMarathonsCommittee,
+  parentIdentifier: CommitteeIdentifier.overallCommittee,
+};
+
+export const communityDevelopmentCommittee: CommitteeDescription = {
+  identifier: CommitteeIdentifier.communityDevelopmentCommittee,
+  parentIdentifier: CommitteeIdentifier.overallCommittee,
+};
+
+export const familyRelationsCommittee: CommitteeDescription = {
+  identifier: CommitteeIdentifier.familyRelationsCommittee,
+  parentIdentifier: CommitteeIdentifier.overallCommittee,
+};
+
+export const programmingCommittee: CommitteeDescription = {
+  identifier: CommitteeIdentifier.programmingCommittee,
+  parentIdentifier: CommitteeIdentifier.overallCommittee,
+};

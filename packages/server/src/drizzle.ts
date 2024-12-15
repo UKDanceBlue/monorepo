@@ -1,9 +1,6 @@
-import { Container } from "@freshgum/typedi";
 import { drizzle } from "drizzle-orm/node-postgres";
 
-import { drizzleToken, prismaToken } from "#lib/typediTokens.js";
 import { sqlLogger } from "#logging/sqlLogging.js";
-import { logger } from "#logging/standardLogging.js";
 import * as core from "#schema/core.sql.js";
 import * as enums from "#schema/enums.sql.js";
 import * as fields from "#schema/fields.sql.js";
@@ -24,7 +21,7 @@ import * as tablesTeam from "#schema/tables/team.sql.js";
 import * as types from "#schema/types.sql.js";
 import * as views from "#schema/views.sql.js";
 
-const schema = {
+export const schema = {
   ...views,
   ...types,
   ...tablesTeam,
@@ -55,7 +52,7 @@ export const db = drizzle(process.env.DATABASE_URL!, {
   },
 });
 
-console.log(await db.select().from(views.fundraisingEntryWithMeta).limit(4));
+// console.log(await db.select().from(views.fundraisingEntryWithMeta).limit(4));
 
 db.$client.addListener("error", (e: Error) => {
   sqlLogger.error(e);
@@ -64,11 +61,3 @@ db.$client.addListener("error", (e: Error) => {
 db.$client.addListener("notice", (msg: string) => {
   sqlLogger.info(String(msg));
 });
-
-Container.setValue(drizzleToken, db);
-
-if (!Container.has(prismaToken)) {
-  throw new Error("Drizzle not registered");
-} else {
-  logger.info("Drizzle registered");
-}
