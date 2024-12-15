@@ -1,16 +1,13 @@
 model Committee {
   id                 Int           @id @default(autoincrement())
-  uuid               String        @unique() @default(uuid()) @db.Uuid
-  identifier         CommitteeName @unique
-  correspondingTeams Team[]
-  parentCommittee    Committee?    @relation(fields: [parentCommitteeId], references: [id], name: "parent_committee")
-  childCommittees    Committee[]   @relation("parent_committee")
+  uuid               String        @unique(map: "Committee_uuid_unique") @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  identifier         CommitteeName @unique(map: "Committee_identifier_unique")
   parentCommitteeId  Int?
-
-  createdAt DateTime @default(now()) @db.Timestamptz(6)
-  updatedAt DateTime @updatedAt @db.Timestamptz(6)
-
-  @@index([uuid])
+  createdAt          DateTime      @default(now()) @db.Timestamptz(6)
+  updatedAt          DateTime      @updatedAt @db.Timestamptz(6)
+  parentCommittee    Committee?    @relation("parent_committee", fields: [parentCommitteeId], references: [id], map: "Committee_parentCommitteeId_Committee_id_fk")
+  childCommittees    Committee[]   @relation("parent_committee")
+  correspondingTeams Team?
 }
 
 enum CommitteeName {

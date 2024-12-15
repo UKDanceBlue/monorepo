@@ -3,39 +3,35 @@ model EventImage {
   updatedAt DateTime @updatedAt @db.Timestamptz(6)
   eventId   Int
   imageId   Int
-  event     Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
-  image     Image    @relation(fields: [imageId], references: [id], onDelete: Cascade)
+  event     Event    @relation(fields: [eventId], references: [id], onDelete: Cascade, map: "EventImage_eventId_Event_id_fk")
+  image     Image    @relation(fields: [imageId], references: [id], onDelete: Cascade, map: "EventImage_imageId_Image_id_fk")
 
-  @@id([eventId, imageId])
+  @@id([eventId, imageId], map: "EventImage_eventId_imageId_pk")
 }
 
 model EventOccurrence {
   id        Int      @id @default(autoincrement())
-  uuid      String   @unique() @default(uuid()) @db.Uuid
+  uuid      String   @unique(map: "EventOccurrence_uuid_unique") @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   createdAt DateTime @default(now()) @db.Timestamptz(6)
   updatedAt DateTime @updatedAt @db.Timestamptz(6)
   fullDay   Boolean  @default(false)
   date      DateTime @db.Timestamptz(6)
   endDate   DateTime @db.Timestamptz(6)
   eventId   Int
-  event     Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
-
-  @@index([uuid])
+  event     Event    @relation(fields: [eventId], references: [id], onDelete: Cascade, map: "EventOccurrence_eventId_Event_id_fk")
 }
 
 model Event {
   id                 Int                @id @default(autoincrement())
-  uuid               String             @unique() @default(uuid()) @db.Uuid
+  uuid               String             @unique(map: "Event_uuid_unique") @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   createdAt          DateTime           @default(now()) @db.Timestamptz(6)
   updatedAt          DateTime           @updatedAt @db.Timestamptz(6)
   title              String
   summary            String?
   description        String?
   location           String?
-  remoteId           String?            @unique
+  remoteId           String?            @unique(map: "Event_remoteId_unique")
   eventImages        EventImage[]
   eventOccurrences   EventOccurrence[]
   pointOpportunities PointOpportunity[]
-
-  @@index([uuid])
 }

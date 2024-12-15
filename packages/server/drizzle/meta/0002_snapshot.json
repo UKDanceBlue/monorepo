@@ -1,0 +1,3480 @@
+{
+  "id": "785c9e0d-2f3c-4f6c-81ff-45fbf31504f9",
+  "prevId": "38ae034d-c078-4d93-b968-504bcaccbd13",
+  "version": "7",
+  "dialect": "postgresql",
+  "tables": {
+    "danceblue.AuditLog": {
+      "name": "AuditLog",
+      "schema": "danceblue",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "uuid": {
+          "name": "uuid",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "summary": {
+          "name": "summary",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "details": {
+          "name": "details",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "editingUserId": {
+          "name": "editingUserId",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "subjectGlobalId": {
+          "name": "subjectGlobalId",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "createdAt": {
+          "name": "createdAt",
+          "type": "timestamp (6) with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "CURRENT_TIMESTAMP"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "AuditLog_editingUserId_Person_id_fk": {
+          "name": "AuditLog_editingUserId_Person_id_fk",
+          "tableFrom": "AuditLog",
+          "tableTo": "Person",
+          "schemaTo": "danceblue",
+          "columnsFrom": [
+            "editingUserId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "set null",
+          "onUpdate": "cascade"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "AuditLog_uuid_unique": {
+          "name": "AuditLog_uuid_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "uuid"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "danceblue.Device": {
+      "name": "Device",
+      "schema": "danceblue",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "uuid": {
+          "name": "uuid",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "createdAt": {
+          "name": "createdAt",
+          "type": "timestamp (6) with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "CURRENT_TIMESTAMP"
+        },
+        "updatedAt": {
+          "name": "updatedAt",
+          "type": "timestamp (6) with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "CURRENT_TIMESTAMP"
+        },
+        "expoPushToken": {
+          "name": "expoPushToken",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "lastSeen": {
+          "name": "lastSeen",
+          "type": "timestamp (6) with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "lastSeenPersonId": {
+          "name": "lastSeenPersonId",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "verifier": {
+          "name": "verifier",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "Device_lastSeenPersonId_Person_id_fk": {
+          "name": "Device_lastSeenPersonId_Person_id_fk",
+          "tableFrom": "Device",
+          "tableTo": "Person",
+          "schemaTo": "danceblue",
+          "columnsFrom": [
+            "lastSeenPersonId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "set null",
+          "onUpdate": "cascade"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "Device_uuid_unique": {
+          "name": "Device_uuid_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "uuid"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "danceblue.Event": {
+      "name": "Event",
+      "schema": "danceblue",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "uuid": {
+          "name": "uuid",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "createdAt": {
+          "name": "createdAt",
+          "type": "timestamp (6) with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "CURRENT_TIMESTAMP"
+        },
+        "updatedAt": {
+          "name": "updatedAt",
+          "type": "timestamp (6) with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "CURRENT_TIMESTAMP"
+        },
+        "title": {
+          "name": "title",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "summary": {
+          "name": "summary",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "description": {
+          "name": "description",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "location": {
+          "name": "location",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "remoteId": {
+          "name": "remoteId",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "Event_uuid_unique": {
+          "name": "Event_uuid_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "uuid"
+          ]
+        },
+        "Event_remoteId_unique": {
+          "name": "Event_remoteId_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "remoteId"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "danceblue.EventImage": {
+      "name": "EventImage",
+      "schema": "danceblue",
+      "columns": {
+        "createdAt": {
+          "name": "createdAt",
+          "type": "timestamp (6) with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "CURRENT_TIMESTAMP"
+        },
+        "updatedAt": {
+          "name": "updatedAt",
+          "type": "timestamp (6) with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "CURRENT_TIMESTAMP"
+        },
+        "eventId": {
+          "name": "eventId",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "imageId": {
+          "name": "imageId",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "EventImage_eventId_Event_id_fk": {
+          "name": "EventImage_eventId_Event_id_fk",
+          "tableFrom": "EventImage",
+          "tableTo": "Event",
+          "schemaTo": "danceblue",
+          "columnsFrom": [
+            "eventId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "cascade"
+        },
+        "EventImage_imageId_Image_id_fk": {
+          "name": "EventImage_imageId_Image_id_fk",
+          "tableFrom": "EventImage",
+          "tableTo": "Image",
+          "schemaTo": "danceblue",
+          "columnsFrom": [
+            "imageId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "cascade"
+        }
+      },
+      "compositePrimaryKeys": {
+        "EventImage_eventId_imageId_pk": {
+          "name": "EventImage_eventId_imageId_pk",
+          "columns": [
+            "eventId",
+            "imageId"
+          ]
+        }
+      },
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "danceblue.EventOccurrence": {
+      "name": "EventOccurrence",
+      "schema": "danceblue",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "uuid": {
+          "name": "uuid",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "createdAt": {
+          "name": "createdAt",
+          "type": "timestamp (6) with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "CURRENT_TIMESTAMP"
+        },
+        "updatedAt": {
+          "name": "updatedAt",
+          "type": "timestamp (6) with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "CURRENT_TIMESTAMP"
+        },
+        "fullDay": {
+          "name": "fullDay",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
+        },
+        "date": {
+          "name": "date",
+          "type": "timestamp (6) with time zone",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "endDate": {
+          "name": "endDate",
+          "type": "timestamp (6) with time zone",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "eventId": {
+          "name": "eventId",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "EventOccurrence_eventId_Event_id_fk": {
+          "name": "EventOccurrence_eventId_Event_id_fk",
+          "tableFrom": "EventOccurrence",
+          "tableTo": "Event",
+          "schemaTo": "danceblue",
+          "columnsFrom": [
+            "eventId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "cascade"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "EventOccurrence_uuid_unique": {
+          "name": "EventOccurrence_uuid_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "uuid"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "danceblue.FeedItem": {
+      "name": "FeedItem",
+      "schema": "danceblue",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "uuid": {
+          "name": "uuid",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "createdAt": {
+          "name": "createdAt",
+          "type": "timestamp (6) with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "CURRENT_TIMESTAMP"
+        },
+        "updatedAt": {
+          "name": "updatedAt",
+          "type": "timestamp (6) with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "CURRENT_TIMESTAMP"
+        },
+        "title": {
+          "name": "title",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "textContent": {
+          "name": "textContent",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "imageId": {
+          "name": "imageId",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "FeedItem_imageId_Image_id_fk": {
+          "name": "FeedItem_imageId_Image_id_fk",
+          "tableFrom": "FeedItem",
+          "tableTo": "Image",
+          "schemaTo": "danceblue",
+          "columnsFrom": [
+            "imageId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "set null",
+          "onUpdate": "cascade"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "FeedItem_uuid_unique": {
+          "name": "FeedItem_uuid_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "uuid"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "danceblue.File": {
+      "name": "File",
+      "schema": "danceblue",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "uuid": {
+          "name": "uuid",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "filename": {
+          "name": "filename",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "mimeTypeName": {
+          "name": "mimeTypeName",
+          "type": "varchar(127)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "mimeSubtypeName": {
+          "name": "mimeSubtypeName",
+          "type": "varchar(127)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "mimeParameters": {
+          "name": "mimeParameters",
+          "type": "text[]",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "locationUrl": {
+          "name": "locationUrl",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "requiresLogin": {
+          "name": "requiresLogin",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
+        },
+        "ownedBy": {
+          "name": "ownedBy",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "createdAt": {
+          "name": "createdAt",
+          "type": "timestamp (6) with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "CURRENT_TIMESTAMP"
+        },
+        "updatedAt": {
+          "name": "updatedAt",
+          "type": "timestamp (6) with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "CURRENT_TIMESTAMP"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "File_ownedBy_Person_id_fk": {
+          "name": "File_ownedBy_Person_id_fk",
+          "tableFrom": "File",
+          "tableTo": "Person",
+          "schemaTo": "danceblue",
+          "columnsFrom": [
+            "ownedBy"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "set null",
+          "onUpdate": "cascade"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "File_uuid_unique": {
+          "name": "File_uuid_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "uuid"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "danceblue.Image": {
+      "name": "Image",
+      "schema": "danceblue",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "uuid": {
+          "name": "uuid",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "createdAt": {
+          "name": "createdAt",
+          "type": "timestamp (6) with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "CURRENT_TIMESTAMP"
+        },
+        "updatedAt": {
+          "name": "updatedAt",
+          "type": "timestamp (6) with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "CURRENT_TIMESTAMP"
+        },
+        "thumbHash": {
+          "name": "thumbHash",
+          "type": "bytea",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "alt": {
+          "name": "alt",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "width": {
+          "name": "width",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "height": {
+          "name": "height",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "fileId": {
+          "name": "fileId",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "Image_fileId_File_id_fk": {
+          "name": "Image_fileId_File_id_fk",
+          "tableFrom": "Image",
+          "tableTo": "File",
+          "schemaTo": "danceblue",
+          "columnsFrom": [
+            "fileId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "set null",
+          "onUpdate": "cascade"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "Image_uuid_unique": {
+          "name": "Image_uuid_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "uuid"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "danceblue.DBFundsFundraisingEntry": {
+      "name": "DBFundsFundraisingEntry",
+      "schema": "danceblue",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "amount": {
+          "name": "amount",
+          "type": "numeric(65, 30)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "donatedBy": {
+          "name": "donatedBy",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "donatedTo": {
+          "name": "donatedTo",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "date": {
+          "name": "date",
+          "type": "timestamp (3)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "dbFundsTeamId": {
+          "name": "dbFundsTeamId",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "uuid": {
+          "name": "uuid",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "fundraisingEntryId": {
+          "name": "fundraisingEntryId",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "createdAt": {
+          "name": "createdAt",
+          "type": "timestamp (6) with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "CURRENT_TIMESTAMP"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "DBFundsFundraisingEntry_dbFundsTeamId_DBFundsTeam_id_fk": {
+          "name": "DBFundsFundraisingEntry_dbFundsTeamId_DBFundsTeam_id_fk",
+          "tableFrom": "DBFundsFundraisingEntry",
+          "tableTo": "DBFundsTeam",
+          "schemaTo": "danceblue",
+          "columnsFrom": [
+            "dbFundsTeamId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "cascade"
+        },
+        "DBFundsFundraisingEntry_fundraisingEntryId_FundraisingEntry_id_fk": {
+          "name": "DBFundsFundraisingEntry_fundraisingEntryId_FundraisingEntry_id_fk",
+          "tableFrom": "DBFundsFundraisingEntry",
+          "tableTo": "FundraisingEntry",
+          "schemaTo": "danceblue",
+          "columnsFrom": [
+            "fundraisingEntryId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "cascade"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "DBFundsFundraisingEntry_uuid_unique": {
+          "name": "DBFundsFundraisingEntry_uuid_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "uuid"
+          ]
+        },
+        "DBFundsFundraisingEntry_fundraisingEntryId_unique": {
+          "name": "DBFundsFundraisingEntry_fundraisingEntryId_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "fundraisingEntryId"
+          ]
+        },
+        "DBFundsFundraisingEntry_donatedTo_donatedBy_date_dbFundsTeamId_unique": {
+          "name": "DBFundsFundraisingEntry_donatedTo_donatedBy_date_dbFundsTeamId_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "donatedTo",
+            "donatedBy",
+            "date",
+            "dbFundsTeamId"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "danceblue.DBFundsTeam": {
+      "name": "DBFundsTeam",
+      "schema": "danceblue",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "totalAmount": {
+          "name": "totalAmount",
+          "type": "double precision",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "active": {
+          "name": "active",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "marathonId": {
+          "name": "marathonId",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "uuid": {
+          "name": "uuid",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "solicitationCodeId": {
+          "name": "solicitationCodeId",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "createdAt": {
+          "name": "createdAt",
+          "type": "timestamp (6) with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "CURRENT_TIMESTAMP"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "DBFundsTeam_marathonId_Marathon_id_fk": {
+          "name": "DBFundsTeam_marathonId_Marathon_id_fk",
+          "tableFrom": "DBFundsTeam",
+          "tableTo": "Marathon",
+          "schemaTo": "danceblue",
+          "columnsFrom": [
+            "marathonId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "set null",
+          "onUpdate": "cascade"
+        },
+        "DBFundsTeam_solicitationCodeId_SolicitationCode_id_fk": {
+          "name": "DBFundsTeam_solicitationCodeId_SolicitationCode_id_fk",
+          "tableFrom": "DBFundsTeam",
+          "tableTo": "SolicitationCode",
+          "schemaTo": "danceblue",
+          "columnsFrom": [
+            "solicitationCodeId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "restrict",
+          "onUpdate": "cascade"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "DBFundsTeam_uuid_unique": {
+          "name": "DBFundsTeam_uuid_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "uuid"
+          ]
+        },
+        "DBFundsTeam_solicitationCodeId_marathonId_unique": {
+          "name": "DBFundsTeam_solicitationCodeId_marathonId_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "solicitationCodeId",
+            "marathonId"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "danceblue.DailyDepartmentNotification": {
+      "name": "DailyDepartmentNotification",
+      "schema": "danceblue",
+      "columns": {
+        "division": {
+          "name": "division",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "department": {
+          "name": "department",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "effectiveDate": {
+          "name": "effectiveDate",
+          "type": "date",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "processDate": {
+          "name": "processDate",
+          "type": "date",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "pledgedDate": {
+          "name": "pledgedDate",
+          "type": "date",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "transactionDate": {
+          "name": "transactionDate",
+          "type": "date",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "transactionType": {
+          "name": "transactionType",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "combinedAmount": {
+          "name": "combinedAmount",
+          "type": "numeric(65, 30)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "pledgedAmount": {
+          "name": "pledgedAmount",
+          "type": "numeric(65, 30)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "accountNumber": {
+          "name": "accountNumber",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "accountName": {
+          "name": "accountName",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "holdingDestination": {
+          "name": "holdingDestination",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "comment": {
+          "name": "comment",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "secShares": {
+          "name": "secShares",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "secType": {
+          "name": "secType",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "gikType": {
+          "name": "gikType",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "gikDescription": {
+          "name": "gikDescription",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "onlineGift": {
+          "name": "onlineGift",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "solicitation": {
+          "name": "solicitation",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "behalfHonorMemorial": {
+          "name": "behalfHonorMemorial",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "matchingGift": {
+          "name": "matchingGift",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "ukFirstGift": {
+          "name": "ukFirstGift",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "divFirstGift": {
+          "name": "divFirstGift",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "idSorter": {
+          "name": "idSorter",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "combinedDonorName": {
+          "name": "combinedDonorName",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "combinedDonorSalutation": {
+          "name": "combinedDonorSalutation",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "combinedDonorSort": {
+          "name": "combinedDonorSort",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "transmittalSn": {
+          "name": "transmittalSn",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "sapDocNum": {
+          "name": "sapDocNum",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "sapDocDate": {
+          "name": "sapDocDate",
+          "type": "date",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "jvDocNum": {
+          "name": "jvDocNum",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "jvDocDate": {
+          "name": "jvDocDate",
+          "type": "date",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "advFeeCcPhil": {
+          "name": "advFeeCcPhil",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "advFeeAmtPhil": {
+          "name": "advFeeAmtPhil",
+          "type": "numeric(65, 30)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "advFeeCcUnit": {
+          "name": "advFeeCcUnit",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "advFeeAmtUnit": {
+          "name": "advFeeAmtUnit",
+          "type": "numeric(65, 30)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "advFeeStatus": {
+          "name": "advFeeStatus",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "hcUnit": {
+          "name": "hcUnit",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "solicitationCodeId": {
+          "name": "solicitationCodeId",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "fundraisingEntryId": {
+          "name": "fundraisingEntryId",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "uuid": {
+          "name": "uuid",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "batchId": {
+          "name": "batchId",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "createdAt": {
+          "name": "createdAt",
+          "type": "timestamp (6) with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "CURRENT_TIMESTAMP"
+        },
+        "updatedAt": {
+          "name": "updatedAt",
+          "type": "timestamp (6) with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "CURRENT_TIMESTAMP"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "DailyDepartmentNotification_solicitationCodeId_SolicitationCode_id_fk": {
+          "name": "DailyDepartmentNotification_solicitationCodeId_SolicitationCode_id_fk",
+          "tableFrom": "DailyDepartmentNotification",
+          "tableTo": "SolicitationCode",
+          "schemaTo": "danceblue",
+          "columnsFrom": [
+            "solicitationCodeId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "restrict",
+          "onUpdate": "cascade"
+        },
+        "DailyDepartmentNotification_fundraisingEntryId_FundraisingEntry_id_fk": {
+          "name": "DailyDepartmentNotification_fundraisingEntryId_FundraisingEntry_id_fk",
+          "tableFrom": "DailyDepartmentNotification",
+          "tableTo": "FundraisingEntry",
+          "schemaTo": "danceblue",
+          "columnsFrom": [
+            "fundraisingEntryId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "cascade"
+        },
+        "DailyDepartmentNotification_batchId_DailyDepartmentNotificationBatch_id_fk": {
+          "name": "DailyDepartmentNotification_batchId_DailyDepartmentNotificationBatch_id_fk",
+          "tableFrom": "DailyDepartmentNotification",
+          "tableTo": "DailyDepartmentNotificationBatch",
+          "schemaTo": "danceblue",
+          "columnsFrom": [
+            "batchId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "cascade"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "DailyDepartmentNotification_fundraisingEntryId_unique": {
+          "name": "DailyDepartmentNotification_fundraisingEntryId_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "fundraisingEntryId"
+          ]
+        },
+        "DailyDepartmentNotification_uuid_unique": {
+          "name": "DailyDepartmentNotification_uuid_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "uuid"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "danceblue.DailyDepartmentNotificationBatch": {
+      "name": "DailyDepartmentNotificationBatch",
+      "schema": "danceblue",
+      "columns": {
+        "batchId": {
+          "name": "batchId",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "uuid": {
+          "name": "uuid",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "createdAt": {
+          "name": "createdAt",
+          "type": "timestamp (6) with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "CURRENT_TIMESTAMP"
+        },
+        "updatedAt": {
+          "name": "updatedAt",
+          "type": "timestamp (6) with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "CURRENT_TIMESTAMP"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "DailyDepartmentNotificationBatch_batchId_unique": {
+          "name": "DailyDepartmentNotificationBatch_batchId_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "batchId"
+          ]
+        },
+        "DailyDepartmentNotificationBatch_uuid_unique": {
+          "name": "DailyDepartmentNotificationBatch_uuid_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "uuid"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "danceblue.DDNDonor": {
+      "name": "DDNDonor",
+      "schema": "danceblue",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "uuid": {
+          "name": "uuid",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "donorId": {
+          "name": "donorId",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "giftKey": {
+          "name": "giftKey",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "deceased": {
+          "name": "deceased",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "constituency": {
+          "name": "constituency",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "titleBar": {
+          "name": "titleBar",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "pm": {
+          "name": "pm",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "degrees": {
+          "name": "degrees",
+          "type": "text[]",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "emails": {
+          "name": "emails",
+          "type": "text[]",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "createdAt": {
+          "name": "createdAt",
+          "type": "timestamp (6) with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "CURRENT_TIMESTAMP"
+        },
+        "updatedAt": {
+          "name": "updatedAt",
+          "type": "timestamp (6) with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "CURRENT_TIMESTAMP"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "DDNDonor_uuid_unique": {
+          "name": "DDNDonor_uuid_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "uuid"
+          ]
+        },
+        "DDNDonor_donorId_unique": {
+          "name": "DDNDonor_donorId_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "donorId"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "danceblue.DDNDonorLink": {
+      "name": "DDNDonorLink",
+      "schema": "danceblue",
+      "columns": {
+        "donorId": {
+          "name": "donorId",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "ddnId": {
+          "name": "ddnId",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "amount": {
+          "name": "amount",
+          "type": "numeric(65, 30)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "relation": {
+          "name": "relation",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "createdAt": {
+          "name": "createdAt",
+          "type": "timestamp (6) with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "CURRENT_TIMESTAMP"
+        },
+        "updatedAt": {
+          "name": "updatedAt",
+          "type": "timestamp (6) with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "CURRENT_TIMESTAMP"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "DDNDonorLink_donorId_DDNDonor_id_fk": {
+          "name": "DDNDonorLink_donorId_DDNDonor_id_fk",
+          "tableFrom": "DDNDonorLink",
+          "tableTo": "DDNDonor",
+          "schemaTo": "danceblue",
+          "columnsFrom": [
+            "donorId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "restrict",
+          "onUpdate": "cascade"
+        },
+        "DDNDonorLink_ddnId_DailyDepartmentNotification_id_fk": {
+          "name": "DDNDonorLink_ddnId_DailyDepartmentNotification_id_fk",
+          "tableFrom": "DDNDonorLink",
+          "tableTo": "DailyDepartmentNotification",
+          "schemaTo": "danceblue",
+          "columnsFrom": [
+            "ddnId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "restrict",
+          "onUpdate": "cascade"
+        }
+      },
+      "compositePrimaryKeys": {
+        "DDNDonorLink_donorId_ddnId_pk": {
+          "name": "DDNDonorLink_donorId_ddnId_pk",
+          "columns": [
+            "donorId",
+            "ddnId"
+          ]
+        }
+      },
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "danceblue.FundraisingAssignment": {
+      "name": "FundraisingAssignment",
+      "schema": "danceblue",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "uuid": {
+          "name": "uuid",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "createdAt": {
+          "name": "createdAt",
+          "type": "timestamp (6) with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "CURRENT_TIMESTAMP"
+        },
+        "updatedAt": {
+          "name": "updatedAt",
+          "type": "timestamp (6) with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "CURRENT_TIMESTAMP"
+        },
+        "amount": {
+          "name": "amount",
+          "type": "numeric(65, 2)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "personId": {
+          "name": "personId",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "fundraisingId": {
+          "name": "fundraisingId",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "assignedBy": {
+          "name": "assignedBy",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "FundraisingAssignment_personId_Person_id_fk": {
+          "name": "FundraisingAssignment_personId_Person_id_fk",
+          "tableFrom": "FundraisingAssignment",
+          "tableTo": "Person",
+          "schemaTo": "danceblue",
+          "columnsFrom": [
+            "personId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "cascade"
+        },
+        "FundraisingAssignment_fundraisingId_FundraisingEntry_id_fk": {
+          "name": "FundraisingAssignment_fundraisingId_FundraisingEntry_id_fk",
+          "tableFrom": "FundraisingAssignment",
+          "tableTo": "FundraisingEntry",
+          "schemaTo": "danceblue",
+          "columnsFrom": [
+            "fundraisingId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "cascade"
+        },
+        "FundraisingAssignment_assignedBy_Person_id_fk": {
+          "name": "FundraisingAssignment_assignedBy_Person_id_fk",
+          "tableFrom": "FundraisingAssignment",
+          "tableTo": "Person",
+          "schemaTo": "danceblue",
+          "columnsFrom": [
+            "assignedBy"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "set null",
+          "onUpdate": "cascade"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "FundraisingAssignment_uuid_unique": {
+          "name": "FundraisingAssignment_uuid_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "uuid"
+          ]
+        },
+        "FundraisingAssignment_personId_fundraisingId_unique": {
+          "name": "FundraisingAssignment_personId_fundraisingId_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "personId",
+            "fundraisingId"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "danceblue.FundraisingEntry": {
+      "name": "FundraisingEntry",
+      "schema": "danceblue",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "uuid": {
+          "name": "uuid",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "createdAt": {
+          "name": "createdAt",
+          "type": "timestamp (6) with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "CURRENT_TIMESTAMP"
+        },
+        "updatedAt": {
+          "name": "updatedAt",
+          "type": "timestamp (6) with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "CURRENT_TIMESTAMP"
+        },
+        "notes": {
+          "name": "notes",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "enteredByPersonId": {
+          "name": "enteredByPersonId",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "solicitationCodeOverrideId": {
+          "name": "solicitationCodeOverrideId",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "amountOverride": {
+          "name": "amountOverride",
+          "type": "numeric(65, 2)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "batchTypeOverride": {
+          "name": "batchTypeOverride",
+          "type": "BatchType",
+          "typeSchema": "danceblue",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "donatedByOverride": {
+          "name": "donatedByOverride",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "donatedOnOverride": {
+          "name": "donatedOnOverride",
+          "type": "date",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "donatedToOverride": {
+          "name": "donatedToOverride",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "FundraisingEntry_enteredByPersonId_Person_id_fk": {
+          "name": "FundraisingEntry_enteredByPersonId_Person_id_fk",
+          "tableFrom": "FundraisingEntry",
+          "tableTo": "Person",
+          "schemaTo": "danceblue",
+          "columnsFrom": [
+            "enteredByPersonId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "set null",
+          "onUpdate": "cascade"
+        },
+        "FundraisingEntry_solicitationCodeOverrideId_SolicitationCode_id_fk": {
+          "name": "FundraisingEntry_solicitationCodeOverrideId_SolicitationCode_id_fk",
+          "tableFrom": "FundraisingEntry",
+          "tableTo": "SolicitationCode",
+          "schemaTo": "danceblue",
+          "columnsFrom": [
+            "solicitationCodeOverrideId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "set null",
+          "onUpdate": "cascade"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "FundraisingEntry_uuid_unique": {
+          "name": "FundraisingEntry_uuid_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "uuid"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "danceblue.SolicitationCode": {
+      "name": "SolicitationCode",
+      "schema": "danceblue",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "uuid": {
+          "name": "uuid",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "createdAt": {
+          "name": "createdAt",
+          "type": "timestamp (6) with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "CURRENT_TIMESTAMP"
+        },
+        "updatedAt": {
+          "name": "updatedAt",
+          "type": "timestamp (6) with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "CURRENT_TIMESTAMP"
+        },
+        "prefix": {
+          "name": "prefix",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "code": {
+          "name": "code",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "text": {
+          "name": "text",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "generated": {
+            "as": "format_solicitation_code(prefix, code, name)",
+            "type": "stored"
+          }
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "SolicitationCode_uuid_unique": {
+          "name": "SolicitationCode_uuid_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "uuid"
+          ]
+        },
+        "SolicitationCode_prefix_code_unique": {
+          "name": "SolicitationCode_prefix_code_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "prefix",
+            "code"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "danceblue.Marathon": {
+      "name": "Marathon",
+      "schema": "danceblue",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "uuid": {
+          "name": "uuid",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "createdAt": {
+          "name": "createdAt",
+          "type": "timestamp (6) with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "CURRENT_TIMESTAMP"
+        },
+        "updatedAt": {
+          "name": "updatedAt",
+          "type": "timestamp (6) with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "CURRENT_TIMESTAMP"
+        },
+        "year": {
+          "name": "year",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "startDate": {
+          "name": "startDate",
+          "type": "timestamp (6) with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "endDate": {
+          "name": "endDate",
+          "type": "timestamp (6) with time zone",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "Marathon_uuid_unique": {
+          "name": "Marathon_uuid_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "uuid"
+          ]
+        },
+        "Marathon_year_unique": {
+          "name": "Marathon_year_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "year"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "danceblue.MarathonHour": {
+      "name": "MarathonHour",
+      "schema": "danceblue",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "uuid": {
+          "name": "uuid",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "marathonId": {
+          "name": "marathonId",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "title": {
+          "name": "title",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "details": {
+          "name": "details",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "shownStartingAt": {
+          "name": "shownStartingAt",
+          "type": "timestamp (6) with time zone",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "durationInfo": {
+          "name": "durationInfo",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "createdAt": {
+          "name": "createdAt",
+          "type": "timestamp (6) with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "CURRENT_TIMESTAMP"
+        },
+        "updatedAt": {
+          "name": "updatedAt",
+          "type": "timestamp (6) with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "CURRENT_TIMESTAMP"
+        }
+      },
+      "indexes": {
+        "MarathonHour_uuid_idx": {
+          "name": "MarathonHour_uuid_idx",
+          "columns": [
+            {
+              "expression": "uuid",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last",
+              "opclass": "uuid_ops"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "MarathonHour_marathonId_fkey": {
+          "name": "MarathonHour_marathonId_fkey",
+          "tableFrom": "MarathonHour",
+          "tableTo": "Marathon",
+          "schemaTo": "danceblue",
+          "columnsFrom": [
+            "marathonId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "cascade"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "MarathonHour_uuid_unique": {
+          "name": "MarathonHour_uuid_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "uuid"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "danceblue.MarathonHourMapImage": {
+      "name": "MarathonHourMapImage",
+      "schema": "danceblue",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "uuid": {
+          "name": "uuid",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "marathonHourId": {
+          "name": "marathonHourId",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "imageId": {
+          "name": "imageId",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "createdAt": {
+          "name": "createdAt",
+          "type": "timestamp (6) with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "CURRENT_TIMESTAMP"
+        },
+        "updatedAt": {
+          "name": "updatedAt",
+          "type": "timestamp (6) with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "CURRENT_TIMESTAMP"
+        }
+      },
+      "indexes": {
+        "MarathonHourMapImage_uuid_idx": {
+          "name": "MarathonHourMapImage_uuid_idx",
+          "columns": [
+            {
+              "expression": "uuid",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last",
+              "opclass": "uuid_ops"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "MarathonHourMapImage_imageId_fkey": {
+          "name": "MarathonHourMapImage_imageId_fkey",
+          "tableFrom": "MarathonHourMapImage",
+          "tableTo": "Image",
+          "schemaTo": "danceblue",
+          "columnsFrom": [
+            "imageId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "cascade"
+        },
+        "MarathonHourMapImage_marathonHourId_fkey": {
+          "name": "MarathonHourMapImage_marathonHourId_fkey",
+          "tableFrom": "MarathonHourMapImage",
+          "tableTo": "MarathonHour",
+          "schemaTo": "danceblue",
+          "columnsFrom": [
+            "marathonHourId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "cascade"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "MarathonHourMapImage_uuid_unique": {
+          "name": "MarathonHourMapImage_uuid_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "uuid"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "danceblue.Configuration": {
+      "name": "Configuration",
+      "schema": "danceblue",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "uuid": {
+          "name": "uuid",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "key": {
+          "name": "key",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "value": {
+          "name": "value",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "validAfter": {
+          "name": "validAfter",
+          "type": "timestamp (6) with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "validUntil": {
+          "name": "validUntil",
+          "type": "timestamp (6) with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "createdAt": {
+          "name": "createdAt",
+          "type": "timestamp (6) with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "CURRENT_TIMESTAMP"
+        },
+        "updatedAt": {
+          "name": "updatedAt",
+          "type": "timestamp (6) with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "CURRENT_TIMESTAMP"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "Configuration_uuid_unique": {
+          "name": "Configuration_uuid_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "uuid"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "danceblue.JobState": {
+      "name": "JobState",
+      "schema": "danceblue",
+      "columns": {
+        "jobName": {
+          "name": "jobName",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "lastRun": {
+          "name": "lastRun",
+          "type": "timestamp (6) with time zone",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "danceblue.LoginFlowSession": {
+      "name": "LoginFlowSession",
+      "schema": "danceblue",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "uuid": {
+          "name": "uuid",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "createdAt": {
+          "name": "createdAt",
+          "type": "timestamp (6) with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "CURRENT_TIMESTAMP"
+        },
+        "updatedAt": {
+          "name": "updatedAt",
+          "type": "timestamp (6) with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "CURRENT_TIMESTAMP"
+        },
+        "codeVerifier": {
+          "name": "codeVerifier",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "redirectToAfterLogin": {
+          "name": "redirectToAfterLogin",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "setCookie": {
+          "name": "setCookie",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
+        },
+        "sendToken": {
+          "name": "sendToken",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "LoginFlowSession_uuid_unique": {
+          "name": "LoginFlowSession_uuid_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "uuid"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "danceblue.Notification": {
+      "name": "Notification",
+      "schema": "danceblue",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "uuid": {
+          "name": "uuid",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "createdAt": {
+          "name": "createdAt",
+          "type": "timestamp (6) with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "CURRENT_TIMESTAMP"
+        },
+        "updatedAt": {
+          "name": "updatedAt",
+          "type": "timestamp (6) with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "CURRENT_TIMESTAMP"
+        },
+        "title": {
+          "name": "title",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "body": {
+          "name": "body",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "url": {
+          "name": "url",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "deliveryIssue": {
+          "name": "deliveryIssue",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "deliveryIssueAcknowledgedAt": {
+          "name": "deliveryIssueAcknowledgedAt",
+          "type": "timestamp (6) with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "sendAt": {
+          "name": "sendAt",
+          "type": "timestamp (6) with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "startedSendingAt": {
+          "name": "startedSendingAt",
+          "type": "timestamp (6) with time zone",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "Notification_uuid_unique": {
+          "name": "Notification_uuid_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "uuid"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "danceblue.NotificationDelivery": {
+      "name": "NotificationDelivery",
+      "schema": "danceblue",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "uuid": {
+          "name": "uuid",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "deviceId": {
+          "name": "deviceId",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "notificationId": {
+          "name": "notificationId",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "receiptId": {
+          "name": "receiptId",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "deliveryError": {
+          "name": "deliveryError",
+          "type": "NotificationError",
+          "typeSchema": "danceblue",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "createdAt": {
+          "name": "createdAt",
+          "type": "timestamp (6) with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "CURRENT_TIMESTAMP"
+        },
+        "updatedAt": {
+          "name": "updatedAt",
+          "type": "timestamp (6) with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "CURRENT_TIMESTAMP"
+        },
+        "chunkUuid": {
+          "name": "chunkUuid",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "receiptCheckedAt": {
+          "name": "receiptCheckedAt",
+          "type": "timestamp (6) with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "sentAt": {
+          "name": "sentAt",
+          "type": "timestamp (6) with time zone",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "NotificationDelivery_deviceId_Device_id_fk": {
+          "name": "NotificationDelivery_deviceId_Device_id_fk",
+          "tableFrom": "NotificationDelivery",
+          "tableTo": "Device",
+          "schemaTo": "danceblue",
+          "columnsFrom": [
+            "deviceId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "cascade"
+        },
+        "NotificationDelivery_notificationId_Notification_id_fk": {
+          "name": "NotificationDelivery_notificationId_Notification_id_fk",
+          "tableFrom": "NotificationDelivery",
+          "tableTo": "Notification",
+          "schemaTo": "danceblue",
+          "columnsFrom": [
+            "notificationId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "cascade"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "NotificationDelivery_uuid_unique": {
+          "name": "NotificationDelivery_uuid_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "uuid"
+          ]
+        },
+        "NotificationDelivery_receiptId_unique": {
+          "name": "NotificationDelivery_receiptId_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "receiptId"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "danceblue.AuthIdPair": {
+      "name": "AuthIdPair",
+      "schema": "danceblue",
+      "columns": {
+        "source": {
+          "name": "source",
+          "type": "AuthSource",
+          "typeSchema": "danceblue",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "value": {
+          "name": "value",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "personId": {
+          "name": "personId",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "AuthIdPair_personId_Person_id_fk": {
+          "name": "AuthIdPair_personId_Person_id_fk",
+          "tableFrom": "AuthIdPair",
+          "tableTo": "Person",
+          "schemaTo": "danceblue",
+          "columnsFrom": [
+            "personId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "cascade"
+        }
+      },
+      "compositePrimaryKeys": {
+        "AuthIdPair_source_personId_pk": {
+          "name": "AuthIdPair_source_personId_pk",
+          "columns": [
+            "source",
+            "personId"
+          ]
+        }
+      },
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "danceblue.Membership": {
+      "name": "Membership",
+      "schema": "danceblue",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "uuid": {
+          "name": "uuid",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "createdAt": {
+          "name": "createdAt",
+          "type": "timestamp (6) with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "CURRENT_TIMESTAMP"
+        },
+        "updatedAt": {
+          "name": "updatedAt",
+          "type": "timestamp (6) with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "CURRENT_TIMESTAMP"
+        },
+        "personId": {
+          "name": "personId",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "teamId": {
+          "name": "teamId",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "position": {
+          "name": "position",
+          "type": "MembershipPosition",
+          "typeSchema": "danceblue",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "committeeRole": {
+          "name": "committeeRole",
+          "type": "CommitteeRole",
+          "typeSchema": "danceblue",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "Membership_personId_Person_id_fk": {
+          "name": "Membership_personId_Person_id_fk",
+          "tableFrom": "Membership",
+          "tableTo": "Person",
+          "schemaTo": "danceblue",
+          "columnsFrom": [
+            "personId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "cascade"
+        },
+        "Membership_teamId_Team_id_fk": {
+          "name": "Membership_teamId_Team_id_fk",
+          "tableFrom": "Membership",
+          "tableTo": "Team",
+          "schemaTo": "danceblue",
+          "columnsFrom": [
+            "teamId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "cascade"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "Membership_uuid_unique": {
+          "name": "Membership_uuid_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "uuid"
+          ]
+        },
+        "Membership_personId_teamId_unique": {
+          "name": "Membership_personId_teamId_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "personId",
+            "teamId"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "danceblue.Person": {
+      "name": "Person",
+      "schema": "danceblue",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "uuid": {
+          "name": "uuid",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "createdAt": {
+          "name": "createdAt",
+          "type": "timestamp (6) with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "CURRENT_TIMESTAMP"
+        },
+        "updatedAt": {
+          "name": "updatedAt",
+          "type": "timestamp (6) with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "CURRENT_TIMESTAMP"
+        },
+        "name": {
+          "name": "name",
+          "type": "citext",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "email": {
+          "name": "email",
+          "type": "citext",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "linkblue": {
+          "name": "linkblue",
+          "type": "citext",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "hashedPassword": {
+          "name": "hashedPassword",
+          "type": "bytea",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "salt": {
+          "name": "salt",
+          "type": "bytea",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "Person_uuid_unique": {
+          "name": "Person_uuid_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "uuid"
+          ]
+        },
+        "Person_email_unique": {
+          "name": "Person_email_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "email"
+          ]
+        },
+        "Person_linkblue_unique": {
+          "name": "Person_linkblue_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "linkblue"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "danceblue.PointEntry": {
+      "name": "PointEntry",
+      "schema": "danceblue",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "uuid": {
+          "name": "uuid",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "createdAt": {
+          "name": "createdAt",
+          "type": "timestamp (6) with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "CURRENT_TIMESTAMP"
+        },
+        "updatedAt": {
+          "name": "updatedAt",
+          "type": "timestamp (6) with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "CURRENT_TIMESTAMP"
+        },
+        "comment": {
+          "name": "comment",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "points": {
+          "name": "points",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "personFromId": {
+          "name": "personFromId",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "teamId": {
+          "name": "teamId",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "pointOpportunityId": {
+          "name": "pointOpportunityId",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "PointEntry_personFromId_Person_id_fk": {
+          "name": "PointEntry_personFromId_Person_id_fk",
+          "tableFrom": "PointEntry",
+          "tableTo": "Person",
+          "schemaTo": "danceblue",
+          "columnsFrom": [
+            "personFromId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "set null",
+          "onUpdate": "cascade"
+        },
+        "PointEntry_teamId_Team_id_fk": {
+          "name": "PointEntry_teamId_Team_id_fk",
+          "tableFrom": "PointEntry",
+          "tableTo": "Team",
+          "schemaTo": "danceblue",
+          "columnsFrom": [
+            "teamId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "cascade"
+        },
+        "PointEntry_pointOpportunityId_PointOpportunity_id_fk": {
+          "name": "PointEntry_pointOpportunityId_PointOpportunity_id_fk",
+          "tableFrom": "PointEntry",
+          "tableTo": "PointOpportunity",
+          "schemaTo": "danceblue",
+          "columnsFrom": [
+            "pointOpportunityId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "set null",
+          "onUpdate": "cascade"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "PointEntry_uuid_unique": {
+          "name": "PointEntry_uuid_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "uuid"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "danceblue.PointOpportunity": {
+      "name": "PointOpportunity",
+      "schema": "danceblue",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "uuid": {
+          "name": "uuid",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "createdAt": {
+          "name": "createdAt",
+          "type": "timestamp (6) with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "CURRENT_TIMESTAMP"
+        },
+        "updatedAt": {
+          "name": "updatedAt",
+          "type": "timestamp (6) with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "CURRENT_TIMESTAMP"
+        },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "opportunityDate": {
+          "name": "opportunityDate",
+          "type": "timestamp (6) with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "type": {
+          "name": "type",
+          "type": "PointOpportunityType",
+          "typeSchema": "danceblue",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "eventId": {
+          "name": "eventId",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "marathonId": {
+          "name": "marathonId",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "PointOpportunity_eventId_Event_id_fk": {
+          "name": "PointOpportunity_eventId_Event_id_fk",
+          "tableFrom": "PointOpportunity",
+          "tableTo": "Event",
+          "schemaTo": "danceblue",
+          "columnsFrom": [
+            "eventId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "set null",
+          "onUpdate": "cascade"
+        },
+        "PointOpportunity_marathonId_Marathon_id_fk": {
+          "name": "PointOpportunity_marathonId_Marathon_id_fk",
+          "tableFrom": "PointOpportunity",
+          "tableTo": "Marathon",
+          "schemaTo": "danceblue",
+          "columnsFrom": [
+            "marathonId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "cascade"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "PointOpportunity_uuid_unique": {
+          "name": "PointOpportunity_uuid_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "uuid"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "danceblue.Committee": {
+      "name": "Committee",
+      "schema": "danceblue",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "uuid": {
+          "name": "uuid",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "identifier": {
+          "name": "identifier",
+          "type": "CommitteeName",
+          "typeSchema": "danceblue",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "parentCommitteeId": {
+          "name": "parentCommitteeId",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "createdAt": {
+          "name": "createdAt",
+          "type": "timestamp (6) with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "CURRENT_TIMESTAMP"
+        },
+        "updatedAt": {
+          "name": "updatedAt",
+          "type": "timestamp (6) with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "CURRENT_TIMESTAMP"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "Committee_parentCommitteeId_Committee_id_fk": {
+          "name": "Committee_parentCommitteeId_Committee_id_fk",
+          "tableFrom": "Committee",
+          "tableTo": "Committee",
+          "schemaTo": "danceblue",
+          "columnsFrom": [
+            "parentCommitteeId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "set null",
+          "onUpdate": "cascade"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "Committee_uuid_unique": {
+          "name": "Committee_uuid_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "uuid"
+          ]
+        },
+        "Committee_identifier_unique": {
+          "name": "Committee_identifier_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "identifier"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "danceblue.Team": {
+      "name": "Team",
+      "schema": "danceblue",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "uuid": {
+          "name": "uuid",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "createdAt": {
+          "name": "createdAt",
+          "type": "timestamp (6) with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "CURRENT_TIMESTAMP"
+        },
+        "updatedAt": {
+          "name": "updatedAt",
+          "type": "timestamp (6) with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "CURRENT_TIMESTAMP"
+        },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "type": {
+          "name": "type",
+          "type": "TeamType",
+          "typeSchema": "danceblue",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "legacyStatus": {
+          "name": "legacyStatus",
+          "type": "TeamLegacyStatus",
+          "typeSchema": "danceblue",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "persistentIdentifier": {
+          "name": "persistentIdentifier",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "marathonId": {
+          "name": "marathonId",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "correspondingCommitteeId": {
+          "name": "correspondingCommitteeId",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "dbFundsTeamId": {
+          "name": "dbFundsTeamId",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "solicitationCodeId": {
+          "name": "solicitationCodeId",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "Team_marathonId_Marathon_id_fk": {
+          "name": "Team_marathonId_Marathon_id_fk",
+          "tableFrom": "Team",
+          "tableTo": "Marathon",
+          "schemaTo": "danceblue",
+          "columnsFrom": [
+            "marathonId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "cascade"
+        },
+        "Team_correspondingCommitteeId_Committee_id_fk": {
+          "name": "Team_correspondingCommitteeId_Committee_id_fk",
+          "tableFrom": "Team",
+          "tableTo": "Committee",
+          "schemaTo": "danceblue",
+          "columnsFrom": [
+            "correspondingCommitteeId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "set null",
+          "onUpdate": "cascade"
+        },
+        "Team_solicitationCodeId_SolicitationCode_id_fk": {
+          "name": "Team_solicitationCodeId_SolicitationCode_id_fk",
+          "tableFrom": "Team",
+          "tableTo": "SolicitationCode",
+          "schemaTo": "danceblue",
+          "columnsFrom": [
+            "solicitationCodeId"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "set null",
+          "onUpdate": "cascade"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "Team_uuid_unique": {
+          "name": "Team_uuid_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "uuid"
+          ]
+        },
+        "Team_persistentIdentifier_unique": {
+          "name": "Team_persistentIdentifier_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "persistentIdentifier"
+          ]
+        },
+        "Team_correspondingCommitteeId_unique": {
+          "name": "Team_correspondingCommitteeId_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "correspondingCommitteeId"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    }
+  },
+  "enums": {
+    "danceblue.AuthSource": {
+      "name": "AuthSource",
+      "schema": "danceblue",
+      "values": [
+        "LinkBlue",
+        "Anonymous",
+        "Demo",
+        "Password"
+      ]
+    },
+    "danceblue.BatchType": {
+      "name": "BatchType",
+      "schema": "danceblue",
+      "values": [
+        "DBFunds",
+        "Check",
+        "Transmittal",
+        "CreditCard",
+        "ACH",
+        "NonCash",
+        "PayrollDeduction",
+        "Unknown"
+      ]
+    },
+    "danceblue.CommitteeName": {
+      "name": "CommitteeName",
+      "schema": "danceblue",
+      "values": [
+        "programmingCommittee",
+        "fundraisingCommittee",
+        "communityDevelopmentCommittee",
+        "dancerRelationsCommittee",
+        "familyRelationsCommittee",
+        "techCommittee",
+        "operationsCommittee",
+        "marketingCommittee",
+        "corporateCommittee",
+        "miniMarathonsCommittee",
+        "viceCommittee",
+        "overallCommittee"
+      ]
+    },
+    "danceblue.CommitteeRole": {
+      "name": "CommitteeRole",
+      "schema": "danceblue",
+      "values": [
+        "Chair",
+        "Coordinator",
+        "Member"
+      ]
+    },
+    "danceblue.MembershipPosition": {
+      "name": "MembershipPosition",
+      "schema": "danceblue",
+      "values": [
+        "Member",
+        "Captain"
+      ]
+    },
+    "danceblue.NotificationError": {
+      "name": "NotificationError",
+      "schema": "danceblue",
+      "values": [
+        "DeviceNotRegistered",
+        "InvalidCredentials",
+        "MessageTooBig",
+        "MessageRateExceeded",
+        "MismatchSenderId",
+        "Unknown"
+      ]
+    },
+    "danceblue.PointOpportunityType": {
+      "name": "PointOpportunityType",
+      "schema": "danceblue",
+      "values": [
+        "Spirit",
+        "Morale",
+        "Committee"
+      ]
+    },
+    "danceblue.TeamLegacyStatus": {
+      "name": "TeamLegacyStatus",
+      "schema": "danceblue",
+      "values": [
+        "NewTeam",
+        "ReturningTeam",
+        "DemoTeam"
+      ]
+    },
+    "danceblue.TeamType": {
+      "name": "TeamType",
+      "schema": "danceblue",
+      "values": [
+        "Spirit",
+        "Morale",
+        "Mini"
+      ]
+    }
+  },
+  "schemas": {
+    "danceblue": "danceblue"
+  },
+  "sequences": {},
+  "roles": {},
+  "policies": {},
+  "views": {
+    "danceblue.FundraisingEntryWithMeta": {
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "uuid": {
+          "name": "uuid",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "createdAt": {
+          "name": "createdAt",
+          "type": "timestamp (6) with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "CURRENT_TIMESTAMP"
+        },
+        "updatedAt": {
+          "name": "updatedAt",
+          "type": "timestamp (6) with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "CURRENT_TIMESTAMP"
+        },
+        "notes": {
+          "name": "notes",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "enteredByPersonId": {
+          "name": "enteredByPersonId",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "solicitationCodeOverrideId": {
+          "name": "solicitationCodeOverrideId",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "batchTypeOverride": {
+          "name": "batchTypeOverride",
+          "type": "BatchType",
+          "typeSchema": "danceblue",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "donatedByOverride": {
+          "name": "donatedByOverride",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "donatedOnOverride": {
+          "name": "donatedOnOverride",
+          "type": "date",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "donatedToOverride": {
+          "name": "donatedToOverride",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "amountOverride": {
+          "name": "amountOverride",
+          "type": "numeric(65, 2)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "text": {
+          "name": "text",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "generated": {
+            "as": "format_solicitation_code(prefix, code, name)",
+            "type": "stored"
+          }
+        }
+      },
+      "definition": "select \"danceblue\".\"FundraisingEntry\".\"id\", \"danceblue\".\"FundraisingEntry\".\"uuid\", \"danceblue\".\"FundraisingEntry\".\"createdAt\", \"danceblue\".\"FundraisingEntry\".\"updatedAt\", COALESCE(\"danceblue\".\"FundraisingEntry\".\"amountOverride\", \"danceblue\".\"DBFundsFundraisingEntry\".\"amount\", \"danceblue\".\"DailyDepartmentNotification\".\"combinedAmount\") - COALESCE(\n          (select sum(\"amount\") from \"danceblue\".\"FundraisingAssignment\" where \"danceblue\".\"FundraisingAssignment\".\"fundraisingId\" = \"danceblue\".\"FundraisingEntry\".\"id\")\n          , 0::numeric(65,30)) as \"unassigned\", COALESCE(\"danceblue\".\"FundraisingEntry\".\"amountOverride\", \"danceblue\".\"DBFundsFundraisingEntry\".\"amount\", \"danceblue\".\"DailyDepartmentNotification\".\"combinedAmount\") as \"amount\", COALESCE(\"danceblue\".\"FundraisingEntry\".\"donatedToOverride\", \"danceblue\".\"DBFundsFundraisingEntry\".\"donatedTo\", \"danceblue\".\"DailyDepartmentNotification\".\"comment\") as \"donatedTo\", COALESCE(\"danceblue\".\"FundraisingEntry\".\"donatedByOverride\", \"danceblue\".\"DBFundsFundraisingEntry\".\"donatedBy\", \"danceblue\".\"DailyDepartmentNotification\".\"combinedDonorName\") as \"donatedBy\", COALESCE(\"danceblue\".\"FundraisingEntry\".\"donatedOnOverride\"::timestamp without time zone, \"danceblue\".\"DBFundsFundraisingEntry\".\"date\", \"danceblue\".\"DailyDepartmentNotification\".\"transactionDate\"::timestamp without time zone) as \"donatedOn\", \"danceblue\".\"FundraisingEntry\".\"notes\", \"danceblue\".\"FundraisingEntry\".\"enteredByPersonId\", \"danceblue\".\"FundraisingEntry\".\"solicitationCodeOverrideId\", \"danceblue\".\"FundraisingEntry\".\"batchTypeOverride\", \"danceblue\".\"FundraisingEntry\".\"donatedByOverride\", \"danceblue\".\"FundraisingEntry\".\"donatedOnOverride\", \"danceblue\".\"FundraisingEntry\".\"donatedToOverride\", \"danceblue\".\"FundraisingEntry\".\"amountOverride\", \"danceblue\".\"SolicitationCode\".\"text\", \"danceblue\".\"SolicitationCode\" as \"solicitationCodeId\", CASE\n        WHEN \"danceblue\".\"FundraisingEntry\".\"batchTypeOverride\" IS NOT NULL THEN \"danceblue\".\"FundraisingEntry\".\"batchTypeOverride\"\n        WHEN \"danceblue\".\"DailyDepartmentNotification\".\"id\" IS NULL THEN 'DBFunds'::\"BatchType\"\n        WHEN \"danceblue\".\"DailyDepartmentNotificationBatch\".\"id\" IS NULL THEN NULL::\"BatchType\"\n        WHEN \"left\"(\"right\"(\"danceblue\".\"DailyDepartmentNotificationBatch\".\"batchId\", 2), 1) = 'C'::text THEN 'Check'::\"BatchType\"\n        WHEN \"left\"(\"right\"(\"danceblue\".\"DailyDepartmentNotificationBatch\".\"batchId\", 2), 1) = 'T'::text THEN 'Transmittal'::\"BatchType\"\n        WHEN \"left\"(\"right\"(\"danceblue\".\"DailyDepartmentNotificationBatch\".\"batchId\", 2), 1) = 'D'::text THEN 'CreditCard'::\"BatchType\"\n        WHEN \"left\"(\"right\"(\"danceblue\".\"DailyDepartmentNotificationBatch\".\"batchId\", 2), 1) = 'A'::text THEN 'ACH'::\"BatchType\"\n        WHEN \"left\"(\"right\"(\"danceblue\".\"DailyDepartmentNotificationBatch\".\"batchId\", 2), 1) = 'N'::text THEN 'NonCash'::\"BatchType\"\n        WHEN \"left\"(\"right\"(\"danceblue\".\"DailyDepartmentNotificationBatch\".\"batchId\", 2), 1) = 'X'::text THEN 'PayrollDeduction'::\"BatchType\"\n        ELSE 'Unknown'::\"BatchType\"\n      END as \"batchType\" from \"danceblue\".\"FundraisingEntry\" left join \"danceblue\".\"FundraisingAssignment\" on \"danceblue\".\"FundraisingEntry\".\"id\" = \"danceblue\".\"FundraisingAssignment\".\"fundraisingId\" left join \"danceblue\".\"DailyDepartmentNotification\" on \"danceblue\".\"FundraisingEntry\".\"id\" = \"danceblue\".\"DailyDepartmentNotification\".\"fundraisingEntryId\" left join \"danceblue\".\"DailyDepartmentNotificationBatch\" on \"danceblue\".\"DailyDepartmentNotification\".\"batchId\" = \"danceblue\".\"DailyDepartmentNotificationBatch\".\"id\" left join \"danceblue\".\"DBFundsFundraisingEntry\" on \"danceblue\".\"FundraisingEntry\".\"id\" = \"danceblue\".\"DBFundsFundraisingEntry\".\"fundraisingEntryId\" left join \"danceblue\".\"DBFundsTeam\" on \"danceblue\".\"DBFundsFundraisingEntry\".\"dbFundsTeamId\" = \"danceblue\".\"DBFundsTeam\".\"id\" left join \"danceblue\".\"SolicitationCode\" on \"danceblue\".\"SolicitationCode\".\"id\" = COALESCE(\"danceblue\".\"FundraisingEntry\".\"solicitationCodeOverrideId\", \"danceblue\".\"DailyDepartmentNotification\".\"solicitationCodeId\", \"danceblue\".\"DBFundsTeam\".\"solicitationCodeId\")",
+      "name": "FundraisingEntryWithMeta",
+      "schema": "danceblue",
+      "isExisting": false,
+      "materialized": false
+    }
+  },
+  "_meta": {
+    "columns": {},
+    "schemas": {},
+    "tables": {}
+  }
+}

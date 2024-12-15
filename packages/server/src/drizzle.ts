@@ -55,6 +55,8 @@ export const db = drizzle(process.env.DATABASE_URL!, {
   },
 });
 
+console.log(await db.select().from(views.fundraisingEntryWithMeta).limit(4));
+
 db.$client.addListener("error", (e: Error) => {
   sqlLogger.error(e);
 });

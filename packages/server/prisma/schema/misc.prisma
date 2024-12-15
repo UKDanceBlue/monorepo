@@ -1,14 +1,12 @@
 model Configuration {
   id         Int       @id @default(autoincrement())
-  uuid       String    @unique() @default(uuid()) @db.Uuid
+  uuid       String    @unique(map: "Configuration_uuid_unique") @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   key        String
   value      String
   validAfter DateTime? @db.Timestamptz(6)
   validUntil DateTime? @db.Timestamptz(6)
   createdAt  DateTime  @default(now()) @db.Timestamptz(6)
   updatedAt  DateTime  @updatedAt @db.Timestamptz(6)
-
-  @@index([uuid])
 }
 
 model JobState {

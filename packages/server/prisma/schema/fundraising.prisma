@@ -1,179 +1,83 @@
 model FundraisingEntry {
-  id        Int      @id @default(autoincrement())
-  uuid      String   @unique() @default(uuid()) @db.Uuid
-  createdAt DateTime @default(now()) @db.Timestamptz(6)
-  updatedAt DateTime @updatedAt @db.Timestamptz(6)
-
+  id                          Int                          @id @default(autoincrement())
+  uuid                        String                       @unique(map: "FundraisingEntry_uuid_unique") @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  createdAt                   DateTime                     @default(now()) @db.Timestamptz(6)
+  updatedAt                   DateTime                     @updatedAt @db.Timestamptz(6)
   notes                       String?
-  originallyEnteredByPersonId Int?    @map("enteredByPersonId")
-
-  solicitationCodeOverrideId Int?       @map("solicitationCodeId")
-  amountOverride             Decimal?
-  donatedByOverride          String?
-  donatedToOverride          String?
-  donatedOnOverride          DateTime?  @db.Date
-  batchTypeOverride          BatchType?
-
-  enteredByPerson          Person?                      @relation(fields: [originallyEnteredByPersonId], references: [id], onDelete: SetNull)
-  assignments              FundraisingAssignment[]
-  ddn                      DailyDepartmentNotification?
-  dbFundsEntry             DBFundsFundraisingEntry?
-  solicitationCodeOverride SolicitationCode?            @relation(fields: [solicitationCodeOverrideId], references: [id])
-
-  @@index([uuid])
-}
-
-// SQL code for FundraisingEntryWithMeta, must include an updated copy in a migration when changing the view
-// DROP VIEW "FundraisingEntryWithMeta";
-// CREATE VIEW "FundraisingEntryWithMeta" AS
-// SELECT "fe"."id",
-//     "fe"."uuid",
-//     "fe"."createdAt",
-//     "fe"."updatedAt",
-//     COALESCE(
-//         "fe"."amountOverride",
-//         -- Calculate unassigned using db_funds_team_entries if available
-//         "dfe"."amount",
-//         -- Otherwise, use combinedAmount from DailyDepartmentNotification
-//         "ddn"."combinedAmount"
-//     ) - COALESCE(
-//         (
-//             SELECT SUM("assignment"."amount")
-//             FROM "FundraisingAssignment" "assignment"
-//             WHERE "assignment"."fundraisingId" = "fe"."id"
-//         ),
-//         0::numeric(65, 30)
-//     ) AS "unassigned",
-//     COALESCE(
-//         "fe"."amountOverride",
-//         "dfe"."amount",
-//         "ddn"."combinedAmount"
-//     ) AS "amount",
-//     COALESCE(
-//         "fe"."donatedToOverride",
-//         "dfe"."donatedTo",
-//         "ddn"."comment"
-//     ) AS "donatedTo",
-//     COALESCE(
-//         "fe"."donatedByOverride",
-//         "dfe"."donatedBy",
-//         "ddn"."combinedDonorName"
-//     ) AS "donatedBy",
-//     COALESCE(
-//         "fe"."donatedOnOverride",
-//         "dfe"."date",
-//         "ddn"."transactionDate"
-//     ) AS "donatedOn",
-//     "fe"."notes",
-//     "fe"."enteredByPersonId",
-//     "fe"."solicitationCodeId" AS "solicitationCodeOverrideId",
-//     "fe"."batchTypeOverride",
-//     "fe"."donatedByOverride",
-//     "fe"."donatedOnOverride",
-//     "fe"."donatedToOverride",
-//     "fe"."amountOverride",
-//     (
-//         SELECT format(
-//                 '%s%4s - %s',
-//                 "sc"."prefix",
-//                 to_char(
-//                     "sc"."code",
-//                     'fm9999999999999999999999999999999999999999999999990000'
-//                 ),
-//                 "sc"."name"
-//             )
-//         FROM "SolicitationCode" "sc"
-//         WHERE "sc"."id" = COALESCE(
-//                 "fe"."solicitationCodeId",
-//                 "ddn"."solicitationCodeId",
-//                 "dft"."solicitationCodeId"
-//             )
-//     ) AS "solicitationCodeText",
-//     CASE
-//         WHEN "fe"."batchTypeOverride" IS NOT NULL THEN "fe"."batchTypeOverride"
-//         WHEN "ddn" IS NULL THEN 'DBFunds'::"BatchType"
-//         WHEN "ddnb" IS NULL THEN NULL
-//         WHEN left(right("ddnb"."batchId", 2), 1) = 'C' THEN 'Check'::"BatchType"
-//         WHEN left(right("ddnb"."batchId", 2), 1) = 'T' THEN 'Transmittal'::"BatchType"
-//         WHEN left(right("ddnb"."batchId", 2), 1) = 'D' THEN 'CreditCard'::"BatchType"
-//         WHEN left(right("ddnb"."batchId", 2), 1) = 'A' THEN 'ACH'::"BatchType"
-//         WHEN left(right("ddnb"."batchId", 2), 1) = 'N' THEN 'NonCash'::"BatchType"
-//         WHEN left(right("ddnb"."batchId", 2), 1) = 'X' THEN 'PayrollDeduction'::"BatchType"
-//         ELSE 'Unknown'::"BatchType"
-//     END AS "batchType"
-// FROM "FundraisingEntry" "fe"
-//     LEFT OUTER JOIN "DailyDepartmentNotification" "ddn" ON "fe"."id" = "ddn"."fundraisingEntryId"
-//     LEFT OUTER JOIN "DailyDepartmentNotificationBatch" "ddnb" ON "ddn"."batchId" = "ddnb"."id"
-//     LEFT OUTER JOIN "DBFundsFundraisingEntry" "dfe" ON "fe"."id" = "dfe"."fundraisingEntryId"
-//     LEFT OUTER JOIN "DBFundsTeam" "dft" ON "dfe"."dbFundsTeamId" = "dft"."id";
-
-view FundraisingEntryWithMeta {
-  id        Int      @id @default(autoincrement())
-  uuid      String   @unique @default(uuid()) @db.Uuid
-  createdAt DateTime @default(now()) @db.Timestamptz(6)
-  updatedAt DateTime @updatedAt @db.Timestamptz(6)
-
-  unassigned           Decimal?
-  amount               Decimal?
-  donatedTo            String?
-  donatedBy            String?
-  donatedOn            DateTime?
-  solicitationCodeText String?
-  batchType            BatchType?
-
-  notes             String?
-  enteredByPersonId Int?
-
-  solicitationCodeOverrideId Int?
-  amountOverride             Decimal?
-  donatedByOverride          String?
-  donatedToOverride          String?
-  donatedOnOverride          DateTime?  @db.Date
-  batchTypeOverride          BatchType?
-
-  enteredByPerson          Person?                      @relation(fields: [enteredByPersonId], references: [id], onDelete: SetNull)
-  assignments              FundraisingAssignment[]
-  ddn                      DailyDepartmentNotification?
-  dbFundsEntry             DBFundsFundraisingEntry?
-  solicitationCodeOverride SolicitationCode?            @relation(fields: [solicitationCodeOverrideId], references: [id])
-
-  @@index([uuid])
+  originallyEnteredByPersonId Int?                         @map("enteredByPersonId")
+  solicitationCodeOverrideId  Int?
+  amountOverride              Decimal?                     @db.Decimal(65, 2)
+  batchTypeOverride           BatchType?
+  donatedByOverride           String?
+  donatedOnOverride           DateTime?                    @db.Date
+  donatedToOverride           String?
+  dbFundsEntry                DBFundsFundraisingEntry?
+  ddn                         DailyDepartmentNotification?
+  assignments                 FundraisingAssignment[]
+  enteredByPerson             Person?                      @relation(fields: [originallyEnteredByPersonId], references: [id], map: "FundraisingEntry_enteredByPersonId_Person_id_fk")
+  SolicitationCode            SolicitationCode?            @relation(fields: [solicitationCodeOverrideId], references: [id], map: "FundraisingEntry_solicitationCodeOverrideId_SolicitationCode_id")
 }
 
 model FundraisingAssignment {
   id                  Int                       @id @default(autoincrement())
-  uuid                String                    @unique() @default(uuid()) @db.Uuid
+  uuid                String                    @unique(map: "FundraisingAssignment_uuid_unique") @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   createdAt           DateTime                  @default(now()) @db.Timestamptz(6)
   updatedAt           DateTime                  @updatedAt @db.Timestamptz(6)
-  amount              Decimal
+  amount              Decimal                   @db.Decimal(65, 2)
   personId            Int
-  person              Person                    @relation(fields: [personId], references: [id], onDelete: Cascade)
-  parentEntryWithMeta FundraisingEntryWithMeta? @relation(fields: [fundraisingId], references: [id], onDelete: Cascade, map: "fundraising_assignment_parent_entry_with_meta")
-  parentEntry         FundraisingEntry          @relation(fields: [fundraisingId], references: [id], onDelete: Cascade, map: "fundraising_assignment_parent_entry")
   fundraisingId       Int
   assignedBy          Int?
-  assignedByPerson    Person?                   @relation(fields: [assignedBy], references: [id], onDelete: SetNull, name: "fundraising_assignment_assigned_by_person")
+  assignedByPerson    Person?                   @relation("fundraising_assignment_assigned_by_person", fields: [assignedBy], references: [id], map: "FundraisingAssignment_assignedBy_Person_id_fk")
+  parentEntry         FundraisingEntry          @relation(fields: [fundraisingId], references: [id], onDelete: Cascade, map: "fundraising_assignment_parent_entry")
+  person              Person                    @relation(fields: [personId], references: [id], onDelete: Cascade, map: "FundraisingAssignment_personId_Person_id_fk")
+  parentEntryWithMeta FundraisingEntryWithMeta? @relation(fields: [fundraisingId], references: [id], onDelete: Cascade, map: "fundraising_assignment_parent_entry_with_meta")
 
-  @@unique([fundraisingId, personId])
-  @@index([uuid])
+  @@unique([personId, fundraisingId], map: "FundraisingAssignment_personId_fundraisingId_unique")
 }
 
 model SolicitationCode {
-  id        Int      @id @default(autoincrement())
-  uuid      String   @unique @default(uuid()) @db.Uuid
-  createdAt DateTime @default(now()) @db.Timestamptz(6)
-  updatedAt DateTime @updatedAt @db.Timestamptz(6)
-  prefix    String
-  code      Int
-  name      String?
-
-  teams                     Team[]
+  id                        Int                           @id @default(autoincrement())
+  uuid                      String                        @unique(map: "SolicitationCode_uuid_unique") @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  createdAt                 DateTime                      @default(now()) @db.Timestamptz(6)
+  updatedAt                 DateTime                      @updatedAt @db.Timestamptz(6)
+  prefix                    String
+  code                      Int
+  name                      String?
   dbFundsTeams              DBFundsTeam[]
   ddns                      DailyDepartmentNotification[]
+  FundraisingEntry          FundraisingEntry[]
+  teams                     Team[]
   fundraisingEntriesWitMeta FundraisingEntryWithMeta[]
-  fundraisingEntries        FundraisingEntry[]
 
-  @@unique([prefix, code])
+  @@unique([prefix, code], map: "SolicitationCode_prefix_code_unique")
+}
+
+view FundraisingEntryWithMeta {
+  id                         Int                          @id
+  uuid                       String                       @unique @default(uuid()) @db.Uuid
+  createdAt                  DateTime                     @db.Timestamptz(6)
+  updatedAt                  DateTime                     @updatedAt @db.Timestamptz(6)
+  unassigned                 Decimal?                     @db.Decimal
+  amount                     Decimal?                     @db.Decimal
+  donatedTo                  String?
+  donatedBy                  String?
+  donatedOn                  DateTime?                    @db.Timestamp(6)
+  notes                      String?
+  enteredByPersonId          Int?
+  solicitationCodeOverrideId Int?
+  batchTypeOverride          BatchType?
+  donatedByOverride          String?
+  donatedOnOverride          DateTime?                    @db.Date
+  donatedToOverride          String?
+  amountOverride             Decimal?                     @db.Decimal(65, 2)
+  solicitationCodeText       String?
+  batchType                  BatchType?
+  enteredByPerson            Person?                      @relation(fields: [enteredByPersonId], references: [id], onDelete: SetNull)
+  assignments                FundraisingAssignment[]
+  ddn                        DailyDepartmentNotification?
+  dbFundsEntry               DBFundsFundraisingEntry?
+  solicitationCodeOverride   SolicitationCode?            @relation(fields: [solicitationCodeOverrideId], references: [id])
+
   @@index([uuid])
 }
 

@@ -1,4 +1,4 @@
-import { eq, sql } from "drizzle-orm";
+import { eq, sql, sum } from "drizzle-orm";
 
 import { danceblue } from "#schema/core.sql.js";
 
@@ -13,6 +13,7 @@ import {
 import {
   fundraisingAssignment,
   fundraisingEntry,
+  solicitationCode,
 } from "./tables/fundraising/entry.sql.js";
 
 export const fundraisingEntryWithMeta = danceblue
@@ -25,9 +26,14 @@ export const fundraisingEntryWithMeta = danceblue
         createdAt: fundraisingEntry.createdAt,
         updatedAt: fundraisingEntry.updatedAt,
         unassigned:
-          sql`COALESCE(${fundraisingEntry.amountOverride}, ${dbFundsFundraisingEntry.amount}, ${dailyDepartmentNotification.combinedAmount}) - COALESCE(( SELECT sum(assignment.amount) AS sum FROM "FundraisingAssignment" assignment WHERE assignment."fundraisingId" = ${fundraisingEntry.id}), 0::numeric(65,30))`.as(
-            "unassigned"
-          ),
+          sql`COALESCE(${fundraisingEntry.amountOverride}, ${dbFundsFundraisingEntry.amount}, ${dailyDepartmentNotification.combinedAmount}) - COALESCE(
+          ${qb
+            .select({ amount: sum(fundraisingAssignment.amount) })
+            .from(fundraisingAssignment)
+            .where(
+              eq(fundraisingAssignment.fundraisingId, fundraisingEntry.id)
+            )}
+          , 0::numeric(65,30))`.as("unassigned"),
         amount:
           sql`COALESCE(${fundraisingEntry.amountOverride}, ${dbFundsFundraisingEntry.amount}, ${dailyDepartmentNotification.combinedAmount})`.as(
             "amount"
@@ -52,21 +58,11 @@ export const fundraisingEntryWithMeta = danceblue
         donatedOnOverride: fundraisingEntry.donatedOnOverride,
         donatedToOverride: fundraisingEntry.donatedToOverride,
         amountOverride: fundraisingEntry.amountOverride,
-        solicitationCodeText: sql`(SELECT format(
-          '%s%4s - %s',
-          "sc"."prefix",
-          to_char(
-              "sc"."code",
-              'fm9999999999999999999999999999999999999999999999990000'
-          ),
-          "sc"."name"
-        )
-        FROM "SolicitationCode" "sc"
-        WHERE "sc"."id" = COALESCE(
-          ${fundraisingEntry.solicitationCodeOverrideId},
-          ${dailyDepartmentNotification.solicitationCodeId},
-          ${dbFundsTeam.solicitationCodeId}
-        ))`.as("solicitationCodeText"),
+        solicitationCodeText: solicitationCode.text,
+        solicitationCodeId: solicitationCode.id
+          .getSQL()
+          .mapWith((v) => solicitationCode.id.mapFromDriverValue(v))
+          .as("solicitationCodeId"),
         batchType: sql`CASE
         WHEN ${fundraisingEntry.batchTypeOverride} IS NOT NULL THEN ${fundraisingEntry.batchTypeOverride}
         WHEN ${dailyDepartmentNotification.id} IS NULL THEN 'DBFunds'::"BatchType"
@@ -103,5 +99,12 @@ export const fundraisingEntryWithMeta = danceblue
       .leftJoin(
         dbFundsTeam,
         eq(dbFundsFundraisingEntry.dbFundsTeamId, dbFundsTeam.id)
+      )
+      .leftJoin(
+        solicitationCode,
+        eq(
+          solicitationCode.id,
+          sql`COALESCE(${fundraisingEntry.solicitationCodeOverrideId}, ${dailyDepartmentNotification.solicitationCodeId}, ${dbFundsTeam.solicitationCodeId})`
+        )
       )
   );

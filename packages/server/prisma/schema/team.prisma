@@ -1,71 +1,51 @@
 model Team {
   id                       Int               @id @default(autoincrement())
-  uuid                     String            @unique() @default(uuid()) @db.Uuid
+  uuid                     String            @unique(map: "Team_uuid_unique") @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  createdAt                DateTime          @default(now()) @db.Timestamptz(6)
+  updatedAt                DateTime          @updatedAt @db.Timestamptz(6)
   name                     String
   type                     TeamType
   legacyStatus             TeamLegacyStatus
-  marathon                 Marathon          @relation(fields: [marathonId], references: [id], onDelete: Cascade)
+  persistentIdentifier     String?           @unique(map: "Team_persistentIdentifier_unique")
   marathonId               Int
-  persistentIdentifier     String?
+  correspondingCommitteeId Int?              @unique(map: "Team_correspondingCommitteeId_unique")
+  dbFundsTeamId            Int?
+  solicitationCodeId       Int?
   memberships              Membership[]
   pointEntries             PointEntry[]
-  correspondingCommittee   Committee?        @relation(fields: [correspondingCommitteeId], references: [id])
-  correspondingCommitteeId Int?
-  dbFundsTeamId            Int?
-  solicitationCode         SolicitationCode? @relation(fields: [solicitationCodeId], references: [id])
-  solicitationCodeId       Int?
-
-  createdAt DateTime @default(now()) @db.Timestamptz(6)
-  updatedAt DateTime @updatedAt @db.Timestamptz(6)
-
-  @@unique([marathonId, persistentIdentifier])
-  @@unique([marathonId, correspondingCommitteeId])
-  @@index([uuid])
+  correspondingCommittee   Committee?        @relation(fields: [correspondingCommitteeId], references: [id], map: "Team_correspondingCommitteeId_Committee_id_fk")
+  marathon                 Marathon          @relation(fields: [marathonId], references: [id], onDelete: Cascade, map: "Team_marathonId_Marathon_id_fk")
+  solicitationCode         SolicitationCode? @relation(fields: [solicitationCodeId], references: [id], map: "Team_solicitationCodeId_SolicitationCode_id_fk")
 }
 
-// SQL code for TeamsWithTotalPoints, must include an updated copy in a migration when changing the view
-// create view "TeamsWithTotalPoints" (
-//   "id",
-//   "uuid",
-//   "name",
-//   "type",
-//   "legacyStatus",
-//   "persistentIdentifier",
-//   "marathonId",
-//   "createdAt",
-//   "updatedAt",
-//   "totalPoints"
-// ) as
-// SELECT "Team"."id",
-//   "Team"."uuid",
-//   "Team"."name",
-//   "Team"."type",
-//   "Team"."legacyStatus",
-//   "Team"."persistentIdentifier",
-//   "Team"."marathonId",
-//   "Team"."createdAt",
-//   "Team"."updatedAt",
-//   COALESCE("points"."totalPoints", 0::bigint) AS "totalPoints"
-// FROM "Team"
-//   LEFT JOIN (
-//     SELECT sum("entry"."points") AS "totalPoints",
-//       "entry"."teamId"
-//     FROM "PointEntry" "entry"
-//     GROUP BY "entry"."teamId"
-//   ) "points" ON "Team"."id" = "points"."teamId";
+model PointEntry {
+  id                 Int              @id @default(autoincrement())
+  uuid               String           @unique(map: "PointEntry_uuid_unique") @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  createdAt          DateTime         @default(now()) @db.Timestamptz(6)
+  updatedAt          DateTime         @updatedAt @db.Timestamptz(6)
+  comment            String?
+  points             Int
+  personFromId       Int?
+  teamId             Int
+  pointOpportunityId Int
+  person             Person?          @relation(fields: [personFromId], references: [id], map: "PointEntry_personFromId_Person_id_fk")
+  pointOpportunity   PointOpportunity @relation(fields: [pointOpportunityId], references: [id], map: "PointEntry_pointOpportunityId_PointOpportunity_id_fk")
+  team               Team             @relation(fields: [teamId], references: [id], onDelete: Cascade, map: "PointEntry_teamId_Team_id_fk")
+}
 
-view TeamsWithTotalPoints {
-  id                   Int              @id @unique
-  uuid                 String           @unique @db.Uuid
-  name                 String
-  type                 TeamType
-  legacyStatus         TeamLegacyStatus
-  persistentIdentifier String?          @unique
-  marathon             Marathon         @relation(fields: [marathonId], references: [id])
-  marathonId           Int
-  createdAt            DateTime         @db.Timestamptz(6)
-  updatedAt            DateTime         @db.Timestamptz(6)
-  totalPoints          BigInt
+model PointOpportunity {
+  id              Int                  @id @default(autoincrement())
+  uuid            String               @unique(map: "PointOpportunity_uuid_unique") @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  createdAt       DateTime             @default(now()) @db.Timestamptz(6)
+  updatedAt       DateTime             @updatedAt @db.Timestamptz(6)
+  name            String
+  opportunityDate DateTime?            @db.Timestamptz(6)
+  type            PointOpportunityType
+  eventId         Int?
+  marathonId      Int
+  pointEntries    PointEntry[]
+  event           Event?               @relation(fields: [eventId], references: [id], map: "PointOpportunity_eventId_Event_id_fk")
+  marathon        Marathon             @relation(fields: [marathonId], references: [id], onDelete: Cascade, map: "PointOpportunity_marathonId_Marathon_id_fk")
 }
 
 enum TeamLegacyStatus {
@@ -80,43 +60,8 @@ enum TeamType {
   Mini
 }
 
-model PointEntry {
-  id                 Int               @id @default(autoincrement())
-  uuid               String            @unique() @default(uuid()) @db.Uuid
-  createdAt          DateTime          @default(now()) @db.Timestamptz(6)
-  updatedAt          DateTime          @updatedAt @db.Timestamptz(6)
-  comment            String?
-  points             Int
-  personFromId       Int?
-  teamId             Int
-  pointOpportunityId Int?
-  person             Person?           @relation(fields: [personFromId], references: [id])
-  pointOpportunity   PointOpportunity? @relation(fields: [pointOpportunityId], references: [id])
-  team               Team              @relation(fields: [teamId], references: [id], onDelete: Cascade)
-
-  @@index([uuid])
-}
-
-model PointOpportunity {
-  id              Int                  @id @default(autoincrement())
-  uuid            String               @unique() @default(uuid()) @db.Uuid
-  createdAt       DateTime             @default(now()) @db.Timestamptz(6)
-  updatedAt       DateTime             @updatedAt @db.Timestamptz(6)
-  name            String
-  opportunityDate DateTime?            @db.Timestamptz(6)
-  type            PointOpportunityType
-  eventId         Int?
-  pointEntries    PointEntry[]
-  event           Event?               @relation(fields: [eventId], references: [id])
-  marathonId      Int
-  marathon        Marathon             @relation(fields: [marathonId], references: [id])
-
-  @@index([uuid])
-}
-
 enum PointOpportunityType {
   Spirit
   Morale
-  // TODO: Get rid of committee type
   Committee
 }

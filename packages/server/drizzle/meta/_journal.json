@@ -15,6 +15,13 @@
       "when": 1734204209281,
       "tag": "0001_wide_ulik",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1734223363757,
+      "tag": "0002_yummy_lady_mastermind",
+      "breakpoints": true
     }
   ]
 }

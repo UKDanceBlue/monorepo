@@ -1,4 +1,5 @@
-import { relations } from "drizzle-orm";
+import type { SQL } from "drizzle-orm";
+import { relations, sql } from "drizzle-orm";
 import {
   date,
   integer,
@@ -46,6 +47,20 @@ export const fundraisingAssignment = danceblue.table(
   (table) => [unique().on(table.personId, table.fundraisingId)]
 );
 
+/*
+CREATE FUNCTION format_solicitation_code(text, integer, text) RETURNS text AS $$
+SELECT format(
+    '%s%4s - %s',
+    $1,
+    to_char(
+      $2,
+      'fmfm9999999999999999999999999999999999999999999999990000'
+    ),
+    $3
+  );
+
+$$ LANGUAGE SQL immutable;
+*/
 export const solicitationCode = danceblue.table(
   "SolicitationCode",
   {
@@ -55,6 +70,9 @@ export const solicitationCode = danceblue.table(
     prefix: text().notNull(),
     code: integer().notNull(),
     name: text(),
+    text: text().generatedAlwaysAs(
+      (): SQL => sql<string>`format_solicitation_code(prefix, code, name)`
+    ),
   },
   (table) => [unique().on(table.prefix, table.code)]
 );
