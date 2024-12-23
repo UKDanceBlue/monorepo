@@ -68,3 +68,15 @@ export const teamRelations = relations(team, ({ one, many }) => ({
     references: [solicitationCode.id],
   }),
 }));
+
+export const committeeRelations = relations(committee, ({ one, many }) => ({
+  committee: one(committee, {
+    fields: [committee.parentCommitteeId],
+    references: [committee.id],
+    relationName: "committee_parentCommitteeId_committee_id",
+  }),
+  committees: many(committee, {
+    relationName: "committee_parentCommitteeId_committee_id",
+  }),
+  teams: many(team),
+}));

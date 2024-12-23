@@ -5,7 +5,6 @@ import { danceblue } from "#schema/core.sql.js";
 import { notificationError } from "#schema/enums.sql.js";
 import { timestamps, uuidField } from "#schema/fields.sql.js";
 import { device } from "#schema/tables/device.sql.js";
-import { committee, team } from "#schema/tables/team.sql.js";
 import { timestamp } from "#schema/types.sql.js";
 
 export const notificationDelivery = danceblue.table("NotificationDelivery", {
@@ -66,16 +65,4 @@ export const notificationDeliveryRelations = relations(
 
 export const notificationRelations = relations(notification, ({ many }) => ({
   notificationDeliveries: many(notificationDelivery),
-}));
-
-export const committeeRelations = relations(committee, ({ one, many }) => ({
-  committee: one(committee, {
-    fields: [committee.parentCommitteeId],
-    references: [committee.id],
-    relationName: "committee_parentCommitteeId_committee_id",
-  }),
-  committees: many(committee, {
-    relationName: "committee_parentCommitteeId_committee_id",
-  }),
-  teams: many(team),
 }));

@@ -13,11 +13,17 @@ import {
   NotFoundError,
   toBasicError,
 } from "@ukdanceblue/common/error";
-import { eq } from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
+import {
+  PgColumn,
+  PgInsertValue,
+  PgTableWithColumns,
+} from "drizzle-orm/pg-core";
+import { DateTime } from "luxon";
 import { AsyncResult, Err, None, Ok, Result } from "ts-results-es";
 
-import type { FilterItems } from "#lib/prisma-utils/gqlFilterToPrismaFilter.js";
 import { FindManyParams, parseFindManyParams } from "#lib/queryFromArgs.js";
+import { buildDefaultRepository } from "#repositories/DefaultRepository.js";
 import type { UniqueMarathonParam } from "#repositories/marathon/MarathonRepository.js";
 import { MarathonRepository } from "#repositories/marathon/MarathonRepository.js";
 import { MembershipRepository } from "#repositories/membership/MembershipRepository.js";
@@ -26,7 +32,7 @@ import {
   RepositoryError,
   SimpleUniqueParam,
 } from "#repositories/shared.js";
-import { committee } from "#schema/tables/team.sql.js";
+import { committee, team } from "#schema/tables/team.sql.js";
 
 import { db } from "../../drizzle.js";
 import * as CommitteeDescriptions from "./committeeDescriptions.js";
@@ -71,17 +77,67 @@ type CommitteeUniqueParam =
   | { identifier: CommitteeIdentifier };
 
 @Service([MembershipRepository, MarathonRepository])
-export class CommitteeRepository {
+export class CommitteeRepository extends buildDefaultRepository(
+  committee,
+  {},
+  {} as CommitteeUniqueParam
+) {
   constructor(
     private readonly membershipRepository: MembershipRepository,
     private readonly marathonRepository: MarathonRepository
-  ) {}
+  ) {
+    super();
+  }
 
   // Finders
+  protected uniqueToWhere(by: CommitteeUniqueParam) {
+    if ("id" in by) {
+      return eq(committee.id, by.id);
+    } else if ("uuid" in by) {
+      return eq(committee.uuid, by.uuid);
+    } else {
+      return eq(committee.identifier, by.identifier);
+    }
+  }
 
-  async findCommittees(
-    params: FindManyParams<CommitteeFields>
-  ): Promise<Result<(typeof committee.$inferSelect)[], RepositoryError>> {
+  public findOne(by: CommitteeUniqueParam) {
+    return this.handleQueryError(
+      db.query.committee.findFirst({
+        where: this.uniqueToWhere(by),
+      }),
+      {
+        where: "CommitteeRepository.findOne",
+        sensitive: false,
+      }
+    );
+  }
+
+  public findOneWithTeam(
+    by: CommitteeUniqueParam,
+    marathon?: UniqueMarathonParam
+  ) {
+    return this.handleQueryError(
+      db.query.committee.findFirst({
+        where: this.uniqueToWhere(by),
+        with: {
+          teams: {
+            with: {
+              marathon: true,
+            },
+            where: marathon
+              ? this.marathonRepository.uniqueToWhere(marathon)
+              : undefined,
+          },
+        },
+      }),
+      {
+        where: "CommitteeRepository.findOne",
+        sensitive: false,
+      }
+    );
+  }
+
+  async findAndCount(params: FindManyParams<CommitteeFields>) {
     try {
       const parsedParams = parseFindManyParams(params, fieldLookup);
       if (parsedParams.isErr()) {
@@ -95,44 +151,49 @@ export class CommitteeRepository {
         offset: parsedParams.value.offset,
       });
 
-      return Ok(committees);
+      const total = await db.$count(committee, parsedParams.value.where);
+
+      return Ok({
+        total,
+        selectedRows: committees,
+      });
     } catch (error) {
       return handleRepositoryError(error);
     }
   }
 
-  async findCommitteeByUnique(
-    param: CommitteeUniqueParam
-  ): Promise<
-    Result<typeof committee.$inferSelect | undefined, RepositoryError>
+  public update(): Promise<
+    Result<typeof committee.$inferSelect, RepositoryError>
   > {
-    try {
-      const row = await db.query.committee.findFirst({
-        where:
-          "identifier" in param
-            ? eq(committee.identifier, param.identifier)
-            : "id" in param
-              ? eq(committee.id, param.id)
-              : eq(committee.uuid, param.uuid),
-      });
-      return Ok(row);
-    } catch (error) {
-      return handleRepositoryError(error);
-    }
+    throw new Error("Method not implemented.");
+  }
+  public delete(
+    by: CommitteeUniqueParam
+  ): Promise<Result<typeof committee.$inferSelect, RepositoryError>> {
+    const where = this.uniqueToWhere(by);
+    return this.handleQueryError(
+      db
+        .delete(committee)
+        .where(where)
+        .returning()
+        .then((result) => result[0]),
+      {
+        where: "CommitteeRepository.delete",
+        sensitive: false,
+      }
+    );
   }
 
   async assignPersonToCommittee(
     personParam: SimpleUniqueParam,
-    committeeParam: CommitteeIdentifier,
+    committeeParam: CommitteeUniqueParam,
     committeeRole: CommitteeRole,
     marathonParam?: UniqueMarathonParam
   ): Promise<Result<None, RepositoryError | CompositeError<RepositoryError>>> {
     try {
-      const person = await this.prisma.person.findUnique({
-        where: personParam,
-      });
-      if (!person) {
-        return Err(new NotFoundError({ what: "Person" }));
+      const person = await this.findOne(personParam);
+      if (person.isErr()) {
+        return person;
       }
 
       if (!marathonParam) {
@@ -153,7 +214,7 @@ export class CommitteeRepository {
         }
       }
 
-      const committee = await this.getCommittee(committeeParam, {
+      const committee = await this.findOneWithTeam(committeeParam, {
         withTeamForMarathon: marathonParam,
       });
 
@@ -170,7 +231,7 @@ export class CommitteeRepository {
       //   });
       // }
       const results = await Promise.allSettled(
-        committee.value.correspondingTeams?.map((team) =>
+        committee.value.teams.map((team) =>
           this.membershipRepository.assignPersonToTeam({
             personParam: { id: person.id },
             teamParam: { id: team.id },
@@ -201,74 +262,7 @@ export class CommitteeRepository {
     }
   }
 
-  // Mutators
-
-  async deleteCommittee(uuid: string): Promise<Result<None, RepositoryError>> {
-    try {
-      await this.prisma.committee.delete({ where: { uuid } });
-      return Ok(None);
-    } catch (error) {
-      if (
-        error instanceof Prisma.PrismaClientKnownRequestError &&
-        error.code === "P2025"
-      ) {
-        return Err(new NotFoundError({ what: "Committee" }));
-      } else {
-        return handleRepositoryError(error);
-      }
-    }
-  }
-
-  // Committee getter
-
-  async getCommittee(
-    identifier: CommitteeIdentifier,
-    opts: {
-      withTeamForMarathon?: UniqueMarathonParam;
-    } = {}
-  ): Promise<
-    Result<
-      Committee & {
-        correspondingTeams?: Team[];
-      },
-      RepositoryError
-    >
-  > {
-    try {
-      let committee:
-        | (Committee & {
-            correspondingTeams?: Team[];
-          })
-        | null = await this.prisma.committee.upsert({
-        ...CommitteeDescriptions[identifier],
-        where: { identifier },
-      });
-
-      await this.ensureCommitteeTeams(committee, [opts.withTeamForMarathon!]);
-
-      committee = await this.prisma.committee.findUnique({
-        where: { identifier },
-        include: {
-          correspondingTeams: opts.withTeamForMarathon
-            ? {
-                where: {
-                  marathon: opts.withTeamForMarathon,
-                },
-              }
-            : undefined,
-        },
-      });
-
-      if (!committee) {
-        return Err(new NotFoundError({ what: "Committee" }));
-      }
-
-      return Ok(committee);
-    } catch (error) {
-      return handleRepositoryError(error);
-    }
-  }
-
+  // Committee getters
   async ensureCommittees(
     marathons?: UniqueMarathonParam[]
   ): Promise<Result<None, RepositoryError>> {

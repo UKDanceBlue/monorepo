@@ -60,12 +60,116 @@ export type UniqueMarathonParam =
   | { uuid: string }
   | { year: string };
 
+import { eq } from "drizzle-orm";
+import { DateTime } from "luxon";
+
+import { db } from "#db";
+import { FindManyParams } from "#lib/queryFromArgs.js";
 import { prismaToken } from "#lib/typediTokens.js";
+import { buildDefaultRepository } from "#repositories/DefaultRepository.js";
+import { marathon } from "#schema/tables/marathon.sql.js";
 
 @Service([prismaToken])
-export class MarathonRepository {
-  constructor(private prisma: PrismaClient) {}
+export class MarathonRepository extends buildDefaultRepository(
+  marathon,
+  {},
+  {} as UniqueMarathonParam
+) {
+  constructor(private prisma: PrismaClient) {
+    super();
+  }
 
+  public uniqueToWhere(by: UniqueMarathonParam) {
+    if ("id" in by) {
+      return eq(marathon.id, by.id);
+    } else if ("uuid" in by) {
+      return eq(marathon.uuid, by.uuid);
+    } else {
+      return eq(marathon.year, by.year);
+    }
+  }
+
+  public findOne(by: UniqueMarathonParam) {
+    return db.select(marathon).where(this.uniqueToWhere(by));
+  }
+
+  public findAndCount(
+    param: FindManyParams<string>,
+    ...args: unknown[]
+  ): Promise<
+    Result<
+      {
+        total: number;
+        selectedRows: {
+          id: number;
+          uuid: string;
+          year: string;
+          startDate: DateTime<true> | null;
+          endDate: DateTime<true> | null;
+          createdAt: DateTime<true>;
+          updatedAt: DateTime<true>;
+        }[];
+      },
+      RepositoryError
+    >
+  > {
+    throw new Error("Method not implemented.");
+  }
+  public update(
+    by: unknown,
+    data: {
+      year: string;
+      id?: number | undefined;
+      uuid?: string | undefined;
+      startDate?: DateTime<true> | null | undefined;
+      endDate?: DateTime<true> | null | undefined;
+      createdAt?: DateTime<true> | undefined;
+      updatedAt?: DateTime<true> | undefined;
+    } & {
+      id: number;
+      uuid: string;
+      year: string;
+      startDate: DateTime<true> | null;
+      endDate: DateTime<true> | null;
+      createdAt: DateTime<true>;
+      updatedAt: DateTime<true>;
+    },
+    ...args: unknown[]
+  ): Promise<
+    Result<
+      {
+        id: number;
+        uuid: string;
+        year: string;
+        startDate: DateTime<true> | null;
+        endDate: DateTime<true> | null;
+        createdAt: DateTime<true>;
+        updatedAt: DateTime<true>;
+      },
+      RepositoryError
+    >
+  > {
+    throw new Error("Method not implemented.");
+  }
+  public delete(
+    by: unknown,
+    ...args: unknown[]
+  ): Promise<
+    Result<
+      {
+        id: number;
+        uuid: string;
+        year: string;
+        startDate: DateTime<true> | null;
+        endDate: DateTime<true> | null;
+        createdAt: DateTime<true>;
+        updatedAt: DateTime<true>;
+      },
+      RepositoryError
+    >
+  > {
+    throw new Error("Method not implemented.");
+  }
   async findMarathonByUnique(
     param: UniqueMarathonParam
   ): Promise<Result<Marathon, RepositoryError>> {
