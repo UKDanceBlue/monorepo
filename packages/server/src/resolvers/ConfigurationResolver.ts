@@ -101,14 +101,16 @@ export class ConfigurationResolver
   async createConfiguration(
     @Arg("input") input: CreateConfigurationInput
   ): Promise<ConcreteResult<ConfigurationNode>> {
-    const row = await this.configurationRepository.createConfiguration({
-      key: input.key,
-      value: input.value,
-      validAfter: dateTimeFromSomething(input.validAfter ?? null),
-      validUntil: dateTimeFromSomething(input.validUntil ?? null),
-    });
-
-    return Ok(configurationModelToResource(row));
+    return this.configurationRepository
+      .create({
+        init: {
+          key: input.key,
+          value: input.value,
+          validAfter: dateTimeFromSomething(input.validAfter ?? null),
+          validUntil: dateTimeFromSomething(input.validUntil ?? null),
+        },
+      })
+      .map(([row]) => configurationModelToResource(row!)).promise;
   }
 
   @AccessControlAuthorized("create")

@@ -89,87 +89,6 @@ export class MarathonRepository extends buildDefaultRepository(
     }
   }
 
-  public findOne(by: UniqueMarathonParam) {
-    return db.select(marathon).where(this.uniqueToWhere(by));
-  }
-
-  public findAndCount(
-    param: FindManyParams<string>,
-    ...args: unknown[]
-  ): Promise<
-    Result<
-      {
-        total: number;
-        selectedRows: {
-          id: number;
-          uuid: string;
-          year: string;
-          startDate: DateTime<true> | null;
-          endDate: DateTime<true> | null;
-          createdAt: DateTime<true>;
-          updatedAt: DateTime<true>;
-        }[];
-      },
-      RepositoryError
-    >
-  > {
-    throw new Error("Method not implemented.");
-  }
-  public update(
-    by: unknown,
-    data: {
-      year: string;
-      id?: number | undefined;
-      uuid?: string | undefined;
-      startDate?: DateTime<true> | null | undefined;
-      endDate?: DateTime<true> | null | undefined;
-      createdAt?: DateTime<true> | undefined;
-      updatedAt?: DateTime<true> | undefined;
-    } & {
-      id: number;
-      uuid: string;
-      year: string;
-      startDate: DateTime<true> | null;
-      endDate: DateTime<true> | null;
-      createdAt: DateTime<true>;
-      updatedAt: DateTime<true>;
-    },
-    ...args: unknown[]
-  ): Promise<
-    Result<
-      {
-        id: number;
-        uuid: string;
-        year: string;
-        startDate: DateTime<true> | null;
-        endDate: DateTime<true> | null;
-        createdAt: DateTime<true>;
-        updatedAt: DateTime<true>;
-      },
-      RepositoryError
-    >
-  > {
-    throw new Error("Method not implemented.");
-  }
-  public delete(
-    by: unknown,
-    ...args: unknown[]
-  ): Promise<
-    Result<
-      {
-        id: number;
-        uuid: string;
-        year: string;
-        startDate: DateTime<true> | null;
-        endDate: DateTime<true> | null;
-        createdAt: DateTime<true>;
-        updatedAt: DateTime<true>;
-      },
-      RepositoryError
-    >
-  > {
-    throw new Error("Method not implemented.");
-  }
   async findMarathonByUnique(
     param: UniqueMarathonParam
   ): Promise<Result<Marathon, RepositoryError>> {
@@ -219,41 +138,6 @@ export class MarathonRepository extends buildDefaultRepository(
     } catch (error) {
       return handleRepositoryError(error);
     }
-  }
-
-  listMarathons({
-    filters,
-    order,
-    skip,
-    take,
-  }: {
-    filters?: readonly MarathonFilters[] | undefined | null;
-    order?:
-      | readonly [key: MarathonOrderKeys, sort: SortDirection][]
-      | undefined
-      | null;
-    skip?: number | undefined | null;
-    take?: number | undefined | null;
-  }) {
-    const where = buildMarathonWhere(filters);
-    const orderBy = buildMarathonOrder(order);
-
-    return this.prisma.marathon.findMany({
-      where,
-      orderBy,
-      skip: skip ?? undefined,
-      take: take ?? undefined,
-    });
-  }
-
-  countMarathons({
-    filters,
-  }: {
-    filters?: readonly MarathonFilters[] | undefined | null;
-  }) {
-    const where = buildMarathonWhere(filters);
-
-    return this.prisma.marathon.count({ where });
   }
 
   async getMarathonHours(

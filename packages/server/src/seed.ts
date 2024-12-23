@@ -87,7 +87,7 @@ try {
 
   await committeeRepository.assignPersonToCommittee(
     { id: techChair.value.id },
-    CommitteeIdentifier.techCommittee,
+    { identifier: CommitteeIdentifier.techCommittee },
     CommitteeRole.Chair,
     { id: marathon.value.id }
   );

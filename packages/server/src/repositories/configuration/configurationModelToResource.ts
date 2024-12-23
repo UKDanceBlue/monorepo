@@ -1,8 +1,10 @@
-import type { Configuration } from "@prisma/client";
 import { ConfigurationNode } from "@ukdanceblue/common";
+import type { InferSelectModel } from "drizzle-orm";
+
+import type { configuration as configurationModel } from "#schema/tables/misc.sql.js";
 
 export function configurationModelToResource(
-  configuration: Configuration
+  configuration: InferSelectModel<typeof configurationModel>
 ): ConfigurationNode {
   return ConfigurationNode.init({
     id: configuration.uuid,

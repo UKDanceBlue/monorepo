@@ -3,7 +3,6 @@ import {
   CommitteeIdentifier,
   committeeNames,
   CommitteeRole,
-  SortDirection,
   TeamLegacyStatus,
   TeamType,
 } from "@ukdanceblue/common";
@@ -13,16 +12,9 @@ import {
   NotFoundError,
   toBasicError,
 } from "@ukdanceblue/common/error";
-import { and, eq } from "drizzle-orm";
-import {
-  PgColumn,
-  PgInsertValue,
-  PgTableWithColumns,
-} from "drizzle-orm/pg-core";
-import { DateTime } from "luxon";
+import { eq } from "drizzle-orm";
 import { AsyncResult, Err, None, Ok, Result } from "ts-results-es";
 
-import { FindManyParams, parseFindManyParams } from "#lib/queryFromArgs.js";
 import { buildDefaultRepository } from "#repositories/DefaultRepository.js";
 import type { UniqueMarathonParam } from "#repositories/marathon/MarathonRepository.js";
 import { MarathonRepository } from "#repositories/marathon/MarathonRepository.js";
@@ -36,10 +28,6 @@ import { committee, team } from "#schema/tables/team.sql.js";
 
 import { db } from "../../drizzle.js";
 import * as CommitteeDescriptions from "./committeeDescriptions.js";
-import {
-  buildCommitteeOrder,
-  buildCommitteeWhere,
-} from "./committeeRepositoryUtils.js";
 
 // Make sure that we are exporting a description for every committee
 "" as unknown as Omit<
@@ -90,7 +78,7 @@ export class CommitteeRepository extends buildDefaultRepository(
   }
 
   // Finders
-  protected uniqueToWhere(by: CommitteeUniqueParam) {
+  uniqueToWhere(by: CommitteeUniqueParam) {
     if ("id" in by) {
       return eq(committee.id, by.id);
     } else if ("uuid" in by) {
@@ -98,18 +86,6 @@ export class CommitteeRepository extends buildDefaultRepository(
     } else {
       return eq(committee.identifier, by.identifier);
     }
-  }
-
-  public findOne(by: CommitteeUniqueParam) {
-    return this.handleQueryError(
-      db.query.committee.findFirst({
-        where: this.uniqueToWhere(by),
-      }),
-      {
-        where: "CommitteeRepository.findOne",
-        sensitive: false,
-      }
-    );
   }
 
   public findOneWithTeam(
@@ -137,53 +113,6 @@ export class CommitteeRepository extends buildDefaultRepository(
     );
   }
 
-  async findAndCount(params: FindManyParams<CommitteeFields>) {
-    try {
-      const parsedParams = parseFindManyParams(params, fieldLookup);
-      if (parsedParams.isErr()) {
-        return Err(parsedParams.error);
-      }
-
-      const committees = await db.query.committee.findMany({
-        orderBy: parsedParams.value.order,
-        where: parsedParams.value.where,
-        limit: parsedParams.value.limit,
-        offset: parsedParams.value.offset,
-      });
-
-      const total = await db.$count(committee, parsedParams.value.where);
-
-      return Ok({
-        total,
-        selectedRows: committees,
-      });
-    } catch (error) {
-      return handleRepositoryError(error);
-    }
-  }
-
-  public update(): Promise<
-    Result<typeof committee.$inferSelect, RepositoryError>
-  > {
-    throw new Error("Method not implemented.");
-  }
-  public delete(
-    by: CommitteeUniqueParam
-  ): Promise<Result<typeof committee.$inferSelect, RepositoryError>> {
-    const where = this.uniqueToWhere(by);
-    return this.handleQueryError(
-      db
-        .delete(committee)
-        .where(where)
-        .returning()
-        .then((result) => result[0]),
-      {
-        where: "CommitteeRepository.delete",
-        sensitive: false,
-      }
-    );
-  }
-
   async assignPersonToCommittee(
     personParam: SimpleUniqueParam,
     committeeParam: CommitteeUniqueParam,
@@ -191,7 +120,7 @@ export class CommitteeRepository extends buildDefaultRepository(
     marathonParam?: UniqueMarathonParam
   ): Promise<Result<None, RepositoryError | CompositeError<RepositoryError>>> {
     try {
-      const person = await this.findOne(personParam);
+      const person = await this.findOne(personParam).promise;
       if (person.isErr()) {
         return person;
       }
@@ -214,9 +143,10 @@ export class CommitteeRepository extends buildDefaultRepository(
         }
       }
 
-      const committee = await this.findOneWithTeam(committeeParam, {
-        withTeamForMarathon: marathonParam,
-      });
+      const committee = await this.findOneWithTeam(
+        committeeParam,
+        marathonParam
+      ).promise;
 
       if (committee.isErr()) {
         return Err(committee.error);
@@ -233,11 +163,11 @@ export class CommitteeRepository extends buildDefaultRepository(
       const results = await Promise.allSettled(
         committee.value.teams.map((team) =>
           this.membershipRepository.assignPersonToTeam({
-            personParam: { id: person.id },
+            personParam: { id: person.value.id },
             teamParam: { id: team.id },
             committeeRole,
           })
-        ) ?? []
+        )
       );
 
       const errors: RepositoryError[] = [];
@@ -269,24 +199,79 @@ export class CommitteeRepository extends buildDefaultRepository(
     try {
       const { overallCommittee, viceCommittee, ...childCommittees } =
         CommitteeDescriptions;
-      const overall = await this.prisma.committee.upsert(overallCommittee);
-      if (marathons) {
-        await this.ensureCommitteeTeams(overall, marathons);
-      }
-      const vice = await this.prisma.committee.upsert(viceCommittee);
-      if (marathons) {
-        await this.ensureCommitteeTeams(vice, marathons);
-      }
-      for (const committee of Object.values(childCommittees)) {
-        // eslint-disable-next-line no-await-in-loop
-        const child = await this.prisma.committee.upsert(committee);
-        if (marathons) {
-          // eslint-disable-next-line no-await-in-loop
-          await this.ensureCommitteeTeams(child, marathons);
-        }
+
+      const overall = await this.handleQueryError(
+        db
+          .insert(committee)
+          .values({
+            identifier: CommitteeIdentifier.overallCommittee,
+          })
+          .onConflictDoNothing()
+          .returning()
+          .then((result) => result[0])
+      ).andThen((committee) => {
+        return committee
+          ? Ok(committee)
+          : this.findOne({ identifier: CommitteeIdentifier.overallCommittee });
+      }).promise;
+      if (overall.isErr()) {
+        return overall;
       }
 
-      return Ok(None);
+      const vice = await this.handleQueryError(
+        db
+          .insert(committee)
+          .values({
+            identifier: CommitteeIdentifier.viceCommittee,
+            parentCommitteeId: overall.value.id,
+          })
+          .onConflictDoNothing()
+          .returning()
+          .then((result) => result[0])
+      ).andThen((committee) => {
+        return committee
+          ? Ok(committee)
+          : this.findOne({ identifier: CommitteeIdentifier.viceCommittee });
+      }).promise;
+      if (vice.isErr()) {
+        return vice;
+      }
+
+      const result = await this.handleQueryError(
+        db
+          .insert(committee)
+          .values(
+            Object.values(childCommittees).map((committee) => ({
+              ...committee,
+              parentCommitteeId:
+                committee.parentIdentifier ===
+                CommitteeIdentifier.overallCommittee
+                  ? overall.value.id
+                  : committee.parentIdentifier ===
+                      CommitteeIdentifier.viceCommittee
+                    ? vice.value.id
+                    : undefined,
+            }))
+          )
+          .onConflictDoNothing()
+          .returning()
+      ).promise;
+
+      if (result.isErr()) {
+        return result;
+      }
+
+      if (marathons) {
+        return Result.all(
+          await Promise.all(
+            [overall.value, vice.value, ...result.value].map((committee) =>
+              this.ensureCommitteeTeams(committee, marathons)
+            )
+          )
+        ).map(() => None);
+      } else {
+        return Ok(None);
+      }
     } catch (error) {
       return handleRepositoryError(error);
     }
@@ -297,6 +282,7 @@ export class CommitteeRepository extends buildDefaultRepository(
     marathons: UniqueMarathonParam[]
   ): Promise<Result<None, RepositoryError>> {
     try {
+      const results: Promise<Result<unknown, RepositoryError>>[] = [];
       for (const marathonParam of marathons) {
         const marathon =
           // eslint-disable-next-line no-await-in-loop
@@ -306,38 +292,23 @@ export class CommitteeRepository extends buildDefaultRepository(
           return Err(marathon.error);
         }
 
-        // eslint-disable-next-line no-await-in-loop
-        await this.prisma.team.upsert({
-          where: {
-            marathonId_correspondingCommitteeId: {
-              marathonId: marathon.value.id,
-              correspondingCommitteeId: committee.id,
-            },
-          },
-          create: {
-            name: committeeNames[committee.identifier],
-            type: TeamType.Spirit,
-            legacyStatus: TeamLegacyStatus.ReturningTeam,
-            correspondingCommittee: {
-              connect: {
-                id: committee.id,
-              },
-            },
-            marathon: {
-              connect: {
-                id: marathon.value.id,
-              },
-            },
-          },
-          update: {
-            name: committeeNames[committee.identifier],
-            type: TeamType.Spirit,
-            legacyStatus: TeamLegacyStatus.ReturningTeam,
-          },
-        });
+        results.push(
+          this.handleQueryError(
+            db
+              .insert(team)
+              .values({
+                name: committeeNames[committee.identifier],
+                type: TeamType.Spirit,
+                legacyStatus: TeamLegacyStatus.ReturningTeam,
+                correspondingCommitteeId: committee.id,
+                marathonId: marathon.value.id,
+              })
+              .onConflictDoNothing()
+          ).promise
+        );
       }
 
-      return Ok(None);
+      return Result.all(await Promise.all(results)).map(() => None);
     } catch (error) {
       return handleRepositoryError(error);
     }

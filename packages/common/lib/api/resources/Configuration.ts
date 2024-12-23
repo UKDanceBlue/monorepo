@@ -52,6 +52,7 @@ export class ConfigurationNode extends TimestampedResource implements Node {
     id: string;
     key: string;
     value: string;
+    // TODO: Convert to DateTime
     validAfter?: Date | undefined | null;
     validUntil?: Date | undefined | null;
     createdAt?: Date | undefined | null;

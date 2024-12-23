@@ -1,4 +1,5 @@
 import type {
+  ActionDeniedError,
   BasicError,
   InvariantError,
   NotFoundError,
@@ -18,6 +19,7 @@ export type SimpleUniqueParam = { id: number } | { uuid: string };
  * The error types that can be returned by most repository functions
  */
 export type RepositoryError =
+  | ActionDeniedError
   | SomePrismaError
   | ParsedDrizzleError
   | BasicError
