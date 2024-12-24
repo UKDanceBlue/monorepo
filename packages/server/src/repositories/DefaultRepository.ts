@@ -45,9 +45,25 @@ export abstract class DatabaseModel<
   T extends Table | View,
   R extends Resource,
 > {
-  protected constructor(public readonly row: T["$inferSelect"]) {}
+  constructor(public readonly row: T["$inferSelect"]) {}
 
   public abstract toResource(): R;
+
+  public static mapToResource<T extends Table | View, R extends Resource>(
+    // eslint-disable-next-line @typescript-eslint/no-invalid-void-type
+    this: void,
+    model: DatabaseModel<T, R>
+  ): R {
+    return model.toResource();
+  }
+
+  public static mapToResources<T extends Table | View, R extends Resource>(
+    // eslint-disable-next-line @typescript-eslint/no-invalid-void-type
+    this: void,
+    models: DatabaseModel<T, R>[]
+  ): R[] {
+    return models.map((model) => model.toResource());
+  }
 }
 
 export function buildDefaultDatabaseModel<
@@ -62,13 +78,12 @@ export function buildDefaultDatabaseModel<
     InstanceType<R>
   > {
     protected repository = Container.get<
-      Repository<T & Table, { uuid: string }, never>
+      Repository<T & Table, DefaultDatabaseModel, { uuid: string }, never>
     >(`${table._.name}Repository`);
 
     public static fromRow(
       this: new (row: T["$inferSelect"]) => DatabaseModel<T, InstanceType<R>>,
-      row: T["$inferSelect"],
-      ..._args: unknown[]
+      row: T["$inferSelect"]
     ): InstanceType<typeof this> {
       return new this(row);
     }
@@ -79,7 +94,12 @@ export function buildDefaultDatabaseModel<
           row: T["$inferSelect"],
           ...args: []
         ) => DatabaseModel<T, InstanceType<R>>;
-        repository: Repository<T & Table, { uuid: string }, never>;
+        repository: Repository<
+          T & Table,
+          DefaultDatabaseModel,
+          { uuid: string },
+          never
+        >;
       },
       resource: R & { id: GlobalId },
       ..._args: unknown[]
@@ -101,7 +121,12 @@ export function buildDefaultDatabaseModel<
   return DefaultDatabaseModel;
 }
 
-interface Repository<T extends Table, UniqueParam, Field extends string> {
+interface Repository<
+  T extends Table,
+  Model extends DatabaseModel<T, Resource>,
+  UniqueParam,
+  Field extends string,
+> {
   uniqueToWhere(by: UniqueParam): ReturnType<typeof eq>;
 
   findOne({
@@ -110,7 +135,7 @@ interface Repository<T extends Table, UniqueParam, Field extends string> {
   }: {
     by: UniqueParam;
     tx?: Transaction;
-  }): AsyncResult<InferSelectModel<T>, RepositoryError>;
+  }): AsyncResult<Model, RepositoryError>;
 
   findAndCount({
     param,
@@ -189,15 +214,17 @@ interface Repository<T extends Table, UniqueParam, Field extends string> {
 
 export function buildDefaultRepository<
   T extends Table,
+  Model extends DatabaseModel<T, Resource>,
   UniqueParam,
   Field extends string,
 >(
   table: T,
+  ModelCls: { fromRow: (row: T["$inferSelect"]) => Model },
   fieldLookup: Record<Field, SQL.Aliased | AnyPgColumn>,
   _dummyUniqueParam: UniqueParam
 ) {
   abstract class DefaultRepository
-    implements Repository<T, UniqueParam, Field>
+    implements Repository<T, Model, UniqueParam, Field>
   {
     constructor() {
       Container.setValue(`${table._.name}Repository`, this);
@@ -313,13 +340,13 @@ export function buildDefaultRepository<
     }: {
       by: UniqueParam;
       tx?: Transaction;
-    }): AsyncResult<InferSelectModel<T>, RepositoryError> {
+    }): AsyncResult<Model, RepositoryError> {
       return this.handleQueryError(
         (tx ?? db).select().from(table).where(this.uniqueToWhere(by)),
         { where: `${table._.name}Repository.findOne` }
       ).andThen((rows) => {
         if (rows.length === 1) {
-          return Ok(rows[0]!);
+          return Ok(ModelCls.fromRow(rows[0]!));
         } else {
           return Err(
             new NotFoundError({
@@ -332,10 +359,9 @@ export function buildDefaultRepository<
     }
 
     public findAndCount({
-      param,
       tx,
-    }: {
-      param: FindManyParams<Field>;
+      ...param
+    }: FindManyParams<Field> & {
       tx?: Transaction;
     }): AsyncResult<
       { total: number; selectedRows: InferSelectModel<T>[] },
@@ -372,10 +398,20 @@ export function buildDefaultRepository<
 
     public findAll({
       tx,
+      sortBy,
     }: {
       tx?: Transaction;
+      sortBy?: FindManyParams<Field>["sortBy"];
     } = {}): AsyncResult<InferSelectModel<T>[], RepositoryError> {
-      return this.handleQueryError((tx ?? db).select().from(table));
+      const parsed = this.parseFindManyParams({ sortBy });
+      if (parsed.isErr()) {
+        return parsed.toAsyncResult();
+      }
+      let query = (tx ?? db).select().from(table).$dynamic();
+      if (parsed.value.order) {
+        query = query.orderBy(...parsed.value.order);
+      }
+      return this.handleQueryError(query);
     }
 
     public create({

@@ -12,10 +12,11 @@ import {
   GetConfigurationResponse,
 } from "@ukdanceblue/common";
 import { ConcreteResult, NotFoundError } from "@ukdanceblue/common/error";
+import { DateTime } from "luxon";
 import { Err, Ok } from "ts-results-es";
 import { Arg, Mutation, Query, Resolver } from "type-graphql";
 
-import { configurationModelToResource } from "#repositories/configuration/configurationModelToResource.js";
+import { ConfigurationModel } from "#repositories/configuration/ConfigurationModel.js";
 import { ConfigurationRepository } from "#repositories/configuration/ConfigurationRepository.js";
 
 @Resolver(() => ConfigurationNode)
@@ -38,7 +39,7 @@ export class ConfigurationResolver
   ): Promise<ConcreteResult<GetConfigurationResponse>> {
     const row = await this.configurationRepository.findConfigurationByKey(
       key,
-      new Date()
+      DateTime.now()
     );
 
     if (row == null) {
@@ -51,7 +52,7 @@ export class ConfigurationResolver
     }
 
     const resp = new GetConfigurationResponse();
-    resp.data = configurationModelToResource(row);
+    resp.data = row.toResource();
     return Ok(resp);
   }
 
@@ -63,20 +64,11 @@ export class ConfigurationResolver
   async configuration(
     @Arg("id", () => GlobalIdScalar) { id }: GlobalId
   ): Promise<ConcreteResult<ConfigurationNode>> {
-    const row = await this.configurationRepository.findConfigurationByUnique({
-      uuid: id,
-    });
-
-    if (row == null) {
-      return Err(
-        new NotFoundError({
-          what: `Configuration with UUID ${id}`,
-          where: "configuration resolver",
-        })
-      );
-    }
-
-    return Ok(configurationModelToResource(row));
+    return this.configurationRepository
+      .findOne({
+        by: { uuid: id },
+      })
+      .map(ConfigurationModel.mapToResource).promise;
   }
 
   @AccessControlAuthorized("list", "ConfigurationNode")
@@ -85,11 +77,11 @@ export class ConfigurationResolver
     description: "Get all configurations, irrespective of time",
   })
   async allConfigurations(): Promise<ConcreteResult<ConfigurationNode[]>> {
-    const rows = await this.configurationRepository.findConfigurations(null, [
-      ["createdAt", SortDirection.desc],
-    ]);
-
-    return Ok(rows.map(configurationModelToResource));
+    return this.configurationRepository
+      .findAll({
+        sortBy: [{ field: "createdAt", direction: SortDirection.desc }],
+      })
+      .map(ConfigurationModel.mapToResources).promise;
   }
 
   @AccessControlAuthorized("create")
@@ -110,7 +102,7 @@ export class ConfigurationResolver
           validUntil: dateTimeFromSomething(input.validUntil ?? null),
         },
       })
-      .map(([row]) => configurationModelToResource(row!)).promise;
+      .map(configurationModelToResource).promise;
   }
 
   @AccessControlAuthorized("create")

@@ -7,9 +7,12 @@ import { buildDefaultRepository } from "#repositories/DefaultRepository.js";
 import { SimpleUniqueParam } from "#repositories/shared.js";
 import { configuration } from "#schema/tables/misc.sql.js";
 
+import { ConfigurationModel } from "./ConfigurationModel.js";
+
 @Service([])
 export class ConfigurationRepository extends buildDefaultRepository(
   configuration,
+  ConfigurationModel,
   {
     key: configuration.key,
     value: configuration.value,
@@ -27,23 +30,25 @@ export class ConfigurationRepository extends buildDefaultRepository(
   }
 
   findConfigurationByKey(key: string, at: DateTime | undefined) {
-    return db.query.configuration.findFirst({
-      where: and(
-        eq(configuration.key, key),
-        ...(at
-          ? [
-              or(
-                isNull(configuration.validAfter),
-                lte(configuration.validAfter, at)
-              ),
-              or(
-                isNull(configuration.validUntil),
-                gte(configuration.validUntil, at)
-              ),
-            ]
-          : [])
-      ),
-      orderBy: desc(configuration.createdAt),
-    });
+    return this.handleQueryError(
+      db.query.configuration.findFirst({
+        where: and(
+          eq(configuration.key, key),
+          ...(at
+            ? [
+                or(
+                  isNull(configuration.validAfter),
+                  lte(configuration.validAfter, at)
+                ),
+                or(
+                  isNull(configuration.validUntil),
+                  gte(configuration.validUntil, at)
+                ),
+              ]
+            : [])
+        ),
+        orderBy: desc(configuration.createdAt),
+      })
+    ).map((row) => row && ConfigurationModel.fromRow(row));
   }
 }
