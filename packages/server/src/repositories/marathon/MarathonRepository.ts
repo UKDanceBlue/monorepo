@@ -1,84 +1,37 @@
 import { Service } from "@freshgum/typedi";
-import { Marathon, MarathonHour, Prisma, PrismaClient } from "@prisma/client";
-import type { SortDirection } from "@ukdanceblue/common";
-import { NotFoundError, optionOf } from "@ukdanceblue/common/error";
-import { Err, Ok, Option, Result } from "ts-results-es";
+import { optionOf } from "@ukdanceblue/common/error";
+import { and, desc, eq, gte, InferSelectModel, lte } from "drizzle-orm";
+import { Ok, Option, Result } from "ts-results-es";
 
-import type { FilterItems } from "#lib/prisma-utils/gqlFilterToPrismaFilter.js";
+import { db } from "#db";
+import { sqlCurrentTimestamp } from "#lib/sqlValues.js";
+import { prismaToken } from "#lib/typediTokens.js";
+import { buildDefaultRepository } from "#repositories/DefaultRepository.js";
 import {
   handleRepositoryError,
   type RepositoryError,
 } from "#repositories/shared.js";
+import { marathon, marathonHour } from "#schema/tables/marathon.sql.js";
 
-import {
-  buildMarathonOrder,
-  buildMarathonWhere,
-} from "./marathonRepositoryUtils.js";
-
-const marathonBooleanKeys = [] as const;
-type MarathonBooleanKey = (typeof marathonBooleanKeys)[number];
-
-const marathonDateKeys = [
-  "startDate",
-  "endDate",
-  "createdAt",
-  "updatedAt",
-] as const;
-type MarathonDateKey = (typeof marathonDateKeys)[number];
-
-const marathonIsNullKeys = [] as const;
-type MarathonIsNullKey = (typeof marathonIsNullKeys)[number];
-
-const marathonNumericKeys = [] as const;
-type MarathonNumericKey = (typeof marathonNumericKeys)[number];
-
-const marathonOneOfKeys = ["year"] as const;
-type MarathonOneOfKey = (typeof marathonOneOfKeys)[number];
-
-const marathonStringKeys = [] as const;
-type MarathonStringKey = (typeof marathonStringKeys)[number];
-
-export type MarathonOrderKeys =
-  | "year"
-  | "startDate"
-  | "endDate"
-  | "createdAt"
-  | "updatedAt";
-
-export type MarathonFilters = FilterItems<
-  MarathonBooleanKey,
-  MarathonDateKey,
-  MarathonIsNullKey,
-  MarathonNumericKey,
-  MarathonOneOfKey,
-  MarathonStringKey
->;
-
-// type UniqueParam = { id: number } | { uuid: string };
 export type UniqueMarathonParam =
   | { id: number }
   | { uuid: string }
   | { year: string };
 
-import { eq } from "drizzle-orm";
-import { DateTime } from "luxon";
-
-import { db } from "#db";
-import { FindManyParams } from "#lib/queryFromArgs.js";
-import { prismaToken } from "#lib/typediTokens.js";
-import { buildDefaultRepository } from "#repositories/DefaultRepository.js";
-import { marathon } from "#schema/tables/marathon.sql.js";
-
 @Service([prismaToken])
 export class MarathonRepository extends buildDefaultRepository(
   marathon,
-  {},
+  {
+    id: marathon.id,
+    uuid: marathon.uuid,
+    year: marathon.year,
+    startDate: marathon.startDate,
+    endDate: marathon.endDate,
+    createdAt: marathon.createdAt,
+    updatedAt: marathon.updatedAt,
+  },
   {} as UniqueMarathonParam
 ) {
-  constructor(private prisma: PrismaClient) {
-    super();
-  }
-
   public uniqueToWhere(by: UniqueMarathonParam) {
     if ("id" in by) {
       return eq(marathon.id, by.id);
@@ -89,34 +42,23 @@ export class MarathonRepository extends buildDefaultRepository(
     }
   }
 
-  async findMarathonByUnique(
-    param: UniqueMarathonParam
-  ): Promise<Result<Marathon, RepositoryError>> {
-    try {
-      const row = await this.prisma.marathon.findUnique({ where: param });
-      if (!row) {
-        return Err(new NotFoundError({ what: "Marathon" }));
-      }
-      return Ok(row);
-    } catch (error) {
-      return handleRepositoryError(error);
-    }
-  }
-
   /**
    * Find the current marathon, if one exists
    *
    * A marathon is considered current if the current date is between the start and end dates
    */
   async findCurrentMarathon(): Promise<
-    Result<Option<Marathon>, RepositoryError>
+    Result<Option<InferSelectModel<typeof marathon>>, RepositoryError>
   > {
     try {
-      const marathon = await this.prisma.marathon.findFirst({
-        orderBy: { year: "desc" },
-        where: { startDate: { lte: new Date() }, endDate: { gte: new Date() } },
+      const row = await db.query.marathon.findFirst({
+        orderBy: desc(marathon.year),
+        where: and(
+          lte(marathon.startDate, sqlCurrentTimestamp),
+          gte(marathon.endDate, sqlCurrentTimestamp)
+        ),
       });
-      return Ok(optionOf(marathon));
+      return Ok(optionOf(row));
     } catch (error) {
       return handleRepositoryError(error);
     }
@@ -128,13 +70,13 @@ export class MarathonRepository extends buildDefaultRepository(
    * A marathon is considered active if it is the most recent marathon by marathon year
    */
   async findActiveMarathon(): Promise<
-    Result<Option<Marathon>, RepositoryError>
+    Result<Option<InferSelectModel<typeof marathon>>, RepositoryError>
   > {
     try {
-      const marathon = await this.prisma.marathon.findFirst({
-        orderBy: { year: "desc" },
+      const row = await db.query.marathon.findFirst({
+        orderBy: desc(marathon.year),
       });
-      return Ok(optionOf(marathon));
+      return Ok(optionOf(row));
     } catch (error) {
       return handleRepositoryError(error);
     }
@@ -142,90 +84,15 @@ export class MarathonRepository extends buildDefaultRepository(
 
   async getMarathonHours(
     param: UniqueMarathonParam
-  ): Promise<Result<MarathonHour[], RepositoryError>> {
+  ): Promise<Result<InferSelectModel<typeof marathonHour>[], RepositoryError>> {
     try {
-      const rows = await this.prisma.marathon.findUnique({
-        where: param,
-        include: { hours: true },
+      const rows = await db.query.marathon.findFirst({
+        where: this.uniqueToWhere(param),
+        with: { marathonHours: true },
       });
-      return Ok(rows?.hours ?? []);
+      return Ok(rows?.marathonHours ?? []);
     } catch (error) {
       return handleRepositoryError(error);
-    }
-  }
-
-  async createMarathon({
-    year,
-    startDate,
-    endDate,
-  }: {
-    year: string;
-    startDate?: Date | undefined | null;
-    endDate?: Date | undefined | null;
-  }): Promise<Result<Marathon, RepositoryError>> {
-    try {
-      const marathon = await this.prisma.marathon.create({
-        data: {
-          year,
-          startDate,
-          endDate,
-        },
-      });
-      return Ok(marathon);
-    } catch (error) {
-      return handleRepositoryError(error);
-    }
-  }
-
-  async updateMarathon(
-    param: UniqueMarathonParam,
-    {
-      year,
-      startDate,
-      endDate,
-    }: {
-      year?: string;
-      startDate?: Date | undefined | null;
-      endDate?: Date | undefined | null;
-    }
-  ): Promise<Result<Marathon, RepositoryError>> {
-    try {
-      const marathon = await this.prisma.marathon.update({
-        where: param,
-        data: {
-          year,
-          startDate,
-          endDate,
-        },
-      });
-      return Ok(marathon);
-    } catch (error) {
-      if (
-        error instanceof Prisma.PrismaClientKnownRequestError &&
-        error.code === "P2025"
-      ) {
-        return Err(new NotFoundError({ what: "Marathon" }));
-      } else {
-        return handleRepositoryError(error);
-      }
-    }
-  }
-
-  async deleteMarathon(
-    param: UniqueMarathonParam
-  ): Promise<Result<Marathon, RepositoryError>> {
-    try {
-      const marathon = await this.prisma.marathon.delete({ where: param });
-      return Ok(marathon);
-    } catch (error) {
-      if (
-        error instanceof Prisma.PrismaClientKnownRequestError &&
-        error.code === "P2025"
-      ) {
-        return Err(new NotFoundError({ what: "Marathon" }));
-      } else {
-        return handleRepositoryError(error);
-      }
     }
   }
 }

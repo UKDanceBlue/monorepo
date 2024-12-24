@@ -16,8 +16,4 @@ export const timestamps = () => ({
     .$onUpdate(() => sql`CURRENT_TIMESTAMP`),
 });
 
-export const uuidField = () =>
-  uuid()
-    .notNull()
-    .default(sql`gen_random_uuid()`)
-    .unique();
+export const uuidField = () => uuid().notNull().defaultRandom().unique();

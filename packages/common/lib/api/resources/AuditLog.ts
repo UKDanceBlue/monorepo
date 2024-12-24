@@ -4,7 +4,7 @@ import { Field, ObjectType } from "type-graphql";
 
 import type { PrimitiveObject } from "../../utility/primitive/TypeUtils.js";
 import { Node } from "../relay.js";
-import { DateTimeISOScalar } from "../scalars/DateTimeISO.js";
+import { DateTimeScalar } from "../scalars/DateTimeISO.js";
 import type { GlobalId } from "../scalars/GlobalId.js";
 import { GlobalIdScalar } from "../scalars/GlobalId.js";
 import { Resource } from "./Resource.js";
@@ -23,7 +23,7 @@ export class AuditLogNode extends Resource implements Node {
   @Field(() => JSONObjectResolver, { nullable: true })
   details?: PrimitiveObject | null | undefined;
 
-  @Field(() => DateTimeISOScalar, { nullable: true })
+  @Field(() => DateTimeScalar, { nullable: true })
   createdAt!: DateTime;
 
   static init(init: {

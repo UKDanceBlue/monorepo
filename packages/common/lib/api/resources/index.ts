@@ -27,8 +27,8 @@ export {
   Connection,
   Edge,
   Node,
+  NodeResource,
   PageInfo,
-  Resource,
   Result,
 } from "../relay.js";
 export * from "../resourceError.js";

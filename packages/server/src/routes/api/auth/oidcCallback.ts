@@ -168,10 +168,7 @@ export const oidcCallback = async (
       return void res.status(500).send("Failed to update database entry");
     }
 
-    const personNode = await personModelToResource(
-      updatedPerson.value,
-      personRepository
-    ).promise;
+    const personNode = personModelToResource(updatedPerson.value);
     if (personNode.isErr()) {
       return void res
         .status(500)

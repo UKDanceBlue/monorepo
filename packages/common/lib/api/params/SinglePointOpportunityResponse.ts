@@ -1,9 +1,11 @@
-import { GraphQLDateTimeISO, GraphQLNonEmptyString } from "graphql-scalars";
+import { GraphQLNonEmptyString } from "graphql-scalars";
+import { DateTime } from "luxon";
 import { ArgsType, Field, InputType, ObjectType } from "type-graphql";
 
 import { FilteredListQueryArgs } from "../filtering/list-query-args/FilteredListQueryArgs.js";
 import { PointOpportunityNode } from "../resources/PointOpportunity.js";
 import { TeamType } from "../resources/Team.js";
+import { DateTimeScalar } from "../scalars/DateTimeISO.js";
 import { type GlobalId, GlobalIdScalar } from "../scalars/GlobalId.js";
 import { AbstractGraphQLPaginatedResponse } from "./ApiResponse.js";
 
@@ -20,8 +22,8 @@ export class CreatePointOpportunityInput {
   @Field(() => GraphQLNonEmptyString)
   name!: string;
 
-  @Field(() => GraphQLDateTimeISO, { nullable: true })
-  opportunityDate!: Date | null;
+  @Field(() => DateTimeScalar, { nullable: true })
+  opportunityDate!: DateTime | null;
 
   @Field(() => TeamType)
   type!: TeamType;
@@ -38,8 +40,8 @@ export class SetPointOpportunityInput {
   @Field(() => GraphQLNonEmptyString, { nullable: true })
   name!: string | null;
 
-  @Field(() => GraphQLDateTimeISO, { nullable: true })
-  opportunityDate!: Date | null;
+  @Field(() => DateTimeScalar, { nullable: true })
+  opportunityDate!: DateTime | null;
 
   @Field(() => TeamType, { nullable: true })
   type!: TeamType | null;

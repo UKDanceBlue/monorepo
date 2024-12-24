@@ -1,7 +1,6 @@
 import { DateTime } from "luxon";
 import { Field, ObjectType } from "type-graphql";
 
-import { DbRole } from "../../authorization/structures.js";
 import { createNodeClasses, Node } from "../relay.js";
 import type { GlobalId } from "../scalars/GlobalId.js";
 import { GlobalIdScalar } from "../scalars/GlobalId.js";
@@ -19,8 +18,6 @@ export class PersonNode extends TimestampedResource implements Node {
   email!: string;
   @Field(() => String, { nullable: true })
   linkblue!: string | null;
-  @Field(() => DbRole)
-  dbRole!: DbRole;
 
   public getUniqueId(): string {
     return this.id.id;
@@ -31,7 +28,6 @@ export class PersonNode extends TimestampedResource implements Node {
     name?: string | undefined | null;
     email: string;
     linkblue?: string | undefined | null;
-    dbRole?: DbRole | undefined | null;
     createdAt?: DateTime | undefined | null;
     updatedAt?: DateTime | undefined | null;
   }) {

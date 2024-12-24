@@ -1,8 +1,8 @@
 import { GraphQLScalarType, Kind } from "graphql";
 import { DateTime } from "luxon";
 
-export const DateTimeISOScalar = new GraphQLScalarType<DateTime<true>, string>({
-  name: "DateTimeISO",
+export const DateTimeScalar = new GraphQLScalarType<DateTime<true>, string>({
+  name: "LuxonDateTime",
   description: "Cursor custom scalar type",
   parseValue(value): DateTime<true> {
     if (typeof value === "string") {

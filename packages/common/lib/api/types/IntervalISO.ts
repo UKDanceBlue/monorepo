@@ -1,7 +1,7 @@
 import { DateTime, Interval } from "luxon";
 import { Field, InputType, ObjectType } from "type-graphql";
 
-import { DateTimeISOScalar } from "../scalars/DateTimeISO.js";
+import { DateTimeScalar } from "../scalars/DateTimeISO.js";
 import {
   IsAfterDateTime,
   IsBeforeDateTime,
@@ -11,11 +11,11 @@ import {
 @InputType("IntervalISOInput")
 export class IntervalISO {
   @IsBeforeDateTime("end", true)
-  @Field(() => DateTimeISOScalar)
+  @Field(() => DateTimeScalar)
   start!: DateTime;
 
   @IsAfterDateTime("start", true)
-  @Field(() => DateTimeISOScalar)
+  @Field(() => DateTimeScalar)
   end!: DateTime;
 
   get interval(): Interval {

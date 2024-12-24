@@ -1,3 +1,5 @@
+import { Container } from "@freshgum/typedi";
+import type { GlobalId, Resource } from "@ukdanceblue/common";
 import type { BasicError } from "@ukdanceblue/common/error";
 import {
   ActionDeniedError,
@@ -5,7 +7,13 @@ import {
   NotFoundError,
   toBasicError,
 } from "@ukdanceblue/common/error";
-import type { eq, InferInsertModel, InferSelectModel, SQL } from "drizzle-orm";
+import type {
+  eq,
+  InferInsertModel,
+  InferSelectModel,
+  SQL,
+  View,
+} from "drizzle-orm";
 import {
   DrizzleError,
   or,
@@ -14,7 +22,6 @@ import {
 } from "drizzle-orm";
 import type { NodePgQueryResultHKT } from "drizzle-orm/node-postgres";
 import type { AnyPgColumn, PgTransaction } from "drizzle-orm/pg-core";
-import type { QueryResult } from "pg";
 import { AsyncResult } from "ts-results-es";
 import { Result } from "ts-results-es";
 import { Err, Ok } from "ts-results-es";
@@ -28,6 +35,158 @@ import {
 
 import type { RepositoryError } from "./shared.js";
 
+export type Transaction = PgTransaction<
+  NodePgQueryResultHKT,
+  (typeof db)["_"]["fullSchema"],
+  NonNullable<(typeof db)["_"]["schema"]>
+>;
+
+export abstract class DatabaseModel<
+  T extends Table | View,
+  R extends Resource,
+> {
+  protected constructor(public readonly row: T["$inferSelect"]) {}
+
+  public abstract toResource(): R;
+}
+
+export function buildDefaultDatabaseModel<
+  T extends Table | View,
+  R extends typeof Resource & {
+    init: (...args: InitParams) => InstanceType<R>;
+  },
+  InitParams extends never[],
+>(table: T, ResourceCls: R) {
+  abstract class DefaultDatabaseModel extends DatabaseModel<
+    T,
+    InstanceType<R>
+  > {
+    protected repository = Container.get<
+      Repository<T & Table, { uuid: string }, never>
+    >(`${table._.name}Repository`);
+
+    public static fromRow(
+      this: new (row: T["$inferSelect"]) => DatabaseModel<T, InstanceType<R>>,
+      row: T["$inferSelect"],
+      ..._args: unknown[]
+    ): InstanceType<typeof this> {
+      return new this(row);
+    }
+
+    public static fromResource(
+      this: {
+        fromRow: (
+          row: T["$inferSelect"],
+          ...args: []
+        ) => DatabaseModel<T, InstanceType<R>>;
+        repository: Repository<T & Table, { uuid: string }, never>;
+      },
+      resource: R & { id: GlobalId },
+      ..._args: unknown[]
+    ): AsyncResult<DatabaseModel<T, InstanceType<R>>, RepositoryError> {
+      return this.repository
+        .findOne({ by: { uuid: resource.id.id } })
+        .map((row) => this.fromRow(row));
+    }
+
+    protected abstract rowToInitParams(
+      row: T["$inferSelect"]
+    ): Parameters<(typeof ResourceCls)["init"]>;
+
+    public toResource(): InstanceType<R> {
+      return ResourceCls.init(...this.rowToInitParams(this.row));
+    }
+  }
+
+  return DefaultDatabaseModel;
+}
+
+interface Repository<T extends Table, UniqueParam, Field extends string> {
+  uniqueToWhere(by: UniqueParam): ReturnType<typeof eq>;
+
+  findOne({
+    by,
+    tx,
+  }: {
+    by: UniqueParam;
+    tx?: Transaction;
+  }): AsyncResult<InferSelectModel<T>, RepositoryError>;
+
+  findAndCount({
+    param,
+    tx,
+  }: {
+    param: FindManyParams<Field>;
+    tx?: Transaction;
+  }): AsyncResult<
+    { total: number; selectedRows: InferSelectModel<T>[] },
+    RepositoryError
+  >;
+
+  findAll({
+    tx,
+  }: {
+    tx?: Transaction;
+  }): AsyncResult<InferSelectModel<T>[], RepositoryError>;
+
+  create({
+    init,
+    tx,
+  }: {
+    init: InferInsertModel<T>;
+    tx?: Transaction;
+  }): AsyncResult<InferSelectModel<T>, RepositoryError>;
+
+  update({
+    by,
+    init,
+    tx,
+  }: {
+    by: UniqueParam;
+    init: Partial<InferInsertModel<T> & InferSelectModel<T>>;
+    tx?: Transaction;
+  }): AsyncResult<InferSelectModel<T>, RepositoryError>;
+
+  delete({
+    by,
+    tx,
+  }: {
+    by: UniqueParam;
+    tx?: Transaction;
+  }): AsyncResult<InferSelectModel<T>, RepositoryError>;
+
+  createMultiple({
+    data,
+    tx,
+  }: {
+    data: {
+      init: InferInsertModel<T>;
+    }[];
+    tx?: Transaction;
+  }): AsyncResult<InferSelectModel<T>[], RepositoryError>;
+
+  updateMultiple({
+    data,
+    tx,
+  }: {
+    data: {
+      by: UniqueParam;
+      init: InferInsertModel<T> & InferSelectModel<T>;
+    }[];
+    tx?: Transaction;
+  }): AsyncResult<InferSelectModel<T>[], RepositoryError>;
+
+  deleteMultiple({
+    data,
+    tx,
+  }: {
+    data: {
+      by: UniqueParam;
+    }[];
+    tx?: Transaction;
+  }): AsyncResult<InferSelectModel<T>[], RepositoryError>;
+}
+
 export function buildDefaultRepository<
   T extends Table,
   UniqueParam,
@@ -37,17 +196,15 @@ export function buildDefaultRepository<
   fieldLookup: Record<Field, SQL.Aliased | AnyPgColumn>,
   _dummyUniqueParam: UniqueParam
 ) {
-  type TableValue =
-    InferSelectModel<T> extends undefined
-      ? QueryResult<never>
-      : InferSelectModel<T>[];
-  type Transaction = PgTransaction<
-    NodePgQueryResultHKT,
-    (typeof db)["_"]["fullSchema"],
-    NonNullable<(typeof db)["_"]["schema"]>
-  >;
+  abstract class DefaultRepository
+    implements Repository<T, UniqueParam, Field>
+  {
+    constructor() {
+      Container.setValue(`${table._.name}Repository`, this);
+    }
+    declare static readonly selectType: InferSelectModel<T>;
+    declare static readonly insertType: InferInsertModel<T>;
 
-  abstract class DefaultRepository {
     protected handleQueryError<D>(
       promise: Promise<D>,
       handleNotFound?: false
@@ -217,7 +374,7 @@ export function buildDefaultRepository<
       tx,
     }: {
       tx?: Transaction;
-    }): AsyncResult<InferSelectModel<T>[], RepositoryError> {
+    } = {}): AsyncResult<InferSelectModel<T>[], RepositoryError> {
       return this.handleQueryError((tx ?? db).select().from(table));
     }
 
@@ -227,13 +384,13 @@ export function buildDefaultRepository<
     }: {
       init: InferInsertModel<T>;
       tx?: Transaction;
-    }): AsyncResult<TableValue, RepositoryError> {
+    }): AsyncResult<InferSelectModel<T>, RepositoryError> {
       return this.handleQueryError(
         (tx ?? db)
           .insert(table)
           .values(init)
           .returning()
-          .then((row) => row[0] as TableValue)
+          .then((row) => (row as InferSelectModel<T>[])[0]!)
       );
     }
 
@@ -243,15 +400,16 @@ export function buildDefaultRepository<
       tx,
     }: {
       by: UniqueParam;
-      init: InferInsertModel<T> & InferSelectModel<T>;
+      init: Partial<InferInsertModel<T> & InferSelectModel<T>>;
       tx?: Transaction;
-    }): AsyncResult<TableValue, RepositoryError> {
+    }): AsyncResult<InferSelectModel<T>, RepositoryError> {
       return this.handleQueryError(
         (tx ?? db)
           .update(table)
           .set(init)
           .where(this.uniqueToWhere(by))
-          .returning(),
+          .returning()
+          .then((row) => (row as InferSelectModel<T>[])[0]),
         { where: `${table._.name}Repository.update` }
       );
     }
@@ -262,9 +420,13 @@ export function buildDefaultRepository<
     }: {
       by: UniqueParam;
       tx?: Transaction;
-    }): AsyncResult<TableValue, RepositoryError> {
+    }): AsyncResult<InferSelectModel<T>, RepositoryError> {
       return this.handleQueryError(
-        (tx ?? db).delete(table).where(this.uniqueToWhere(by)).returning(),
+        (tx ?? db)
+          .delete(table)
+          .where(this.uniqueToWhere(by))
+          .returning()
+          .then((row) => (row as InferSelectModel<T>[])[0]),
         { where: `${table._.name}Repository.delete` }
       );
     }
@@ -283,6 +445,7 @@ export function buildDefaultRepository<
           .insert(table)
           .values(data.map(({ init }) => init))
           .returning()
+          .then((row) => row as InferSelectModel<T>[])
       );
     }
 
@@ -300,13 +463,17 @@ export function buildDefaultRepository<
         return new AsyncResult(
           Promise.all(
             data.map(({ by, init }) => this.update({ by, init, tx }).promise)
-          ).then((val) => Result.all(val))
+          ).then((val) =>
+            Result.all(val as Result<InferSelectModel<T>, RepositoryError>[])
+          )
         );
       };
 
       return tx
         ? func(tx)
-        : this.handleTransactionError((tx) => func(tx).promise);
+        : new AsyncResult(
+            this.handleTransactionError((tx) => func(tx).promise)
+          );
     }
 
     public deleteMultiple({
@@ -317,7 +484,7 @@ export function buildDefaultRepository<
         by: UniqueParam;
       }[];
       tx?: Transaction;
-    }): AsyncResult<TableValue, RepositoryError> {
+    }) {
       if (data.length === 0) {
         return Err(
           new ActionDeniedError("Must pass at least one filter to delete")
@@ -328,6 +495,7 @@ export function buildDefaultRepository<
           .delete(table)
           .where(or(...data.map(({ by }) => this.uniqueToWhere(by))))
           .returning()
+          .then((row) => row as InferSelectModel<T>[])
       );
     }
   }

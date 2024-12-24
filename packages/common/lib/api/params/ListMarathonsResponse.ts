@@ -1,9 +1,11 @@
 import { Matches } from "class-validator";
-import { GraphQLDateTimeISO, GraphQLNonEmptyString } from "graphql-scalars";
+import { GraphQLNonEmptyString } from "graphql-scalars";
+import { DateTime } from "luxon";
 import { ArgsType, Field, InputType, ObjectType } from "type-graphql";
 
 import { FilteredListQueryArgs } from "../filtering/list-query-args/FilteredListQueryArgs.js";
 import { MarathonNode } from "../resources/Marathon.js";
+import { DateTimeScalar } from "../scalars/DateTimeISO.js";
 import {
   IsAfterDateTime,
   IsBeforeDateTime,
@@ -25,12 +27,12 @@ export class CreateMarathonInput {
   year!: string;
 
   @IsBeforeDateTime("endDate")
-  @Field(() => GraphQLDateTimeISO, { nullable: true })
-  startDate?: Date | undefined | null;
+  @Field(() => DateTimeScalar, { nullable: true })
+  startDate?: DateTime | undefined | null;
 
   @IsAfterDateTime("startDate")
-  @Field(() => GraphQLDateTimeISO, { nullable: true })
-  endDate?: Date | undefined | null;
+  @Field(() => DateTimeScalar, { nullable: true })
+  endDate?: DateTime | undefined | null;
 }
 
 @InputType()
@@ -40,12 +42,12 @@ export class SetMarathonInput {
   year!: string;
 
   @IsBeforeDateTime("endDate")
-  @Field(() => GraphQLDateTimeISO, { nullable: true })
-  startDate?: Date | undefined | null;
+  @Field(() => DateTimeScalar, { nullable: true })
+  startDate?: DateTime | undefined | null;
 
   @IsAfterDateTime("startDate")
-  @Field(() => GraphQLDateTimeISO, { nullable: true })
-  endDate?: Date | undefined | null;
+  @Field(() => DateTimeScalar, { nullable: true })
+  endDate?: DateTime | undefined | null;
 }
 
 @ArgsType()

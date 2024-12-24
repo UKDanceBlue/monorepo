@@ -1,8 +1,10 @@
-import { GraphQLDateTimeISO, GraphQLNonEmptyString } from "graphql-scalars";
+import { GraphQLNonEmptyString } from "graphql-scalars";
+import { DateTime } from "luxon";
 import { ArgsType, Field, InputType, ObjectType } from "type-graphql";
 
 import { FilteredListQueryArgs } from "../filtering/list-query-args/FilteredListQueryArgs.js";
 import { MarathonHourNode } from "../resources/MarathonHour.js";
+import { DateTimeScalar } from "../scalars/DateTimeISO.js";
 import { AbstractGraphQLPaginatedResponse } from "./ApiResponse.js";
 
 @ObjectType("ListMarathonHoursResponse", {
@@ -24,8 +26,8 @@ export class CreateMarathonHourInput {
   @Field(() => GraphQLNonEmptyString)
   durationInfo!: string;
 
-  @Field(() => GraphQLDateTimeISO)
-  shownStartingAt!: Date;
+  @Field(() => DateTimeScalar)
+  shownStartingAt!: DateTime;
 }
 
 @InputType()
@@ -39,8 +41,8 @@ export class SetMarathonHourInput {
   @Field(() => GraphQLNonEmptyString)
   durationInfo!: string;
 
-  @Field(() => GraphQLDateTimeISO)
-  shownStartingAt!: Date;
+  @Field(() => DateTimeScalar)
+  shownStartingAt!: DateTime;
 }
 
 @ArgsType()

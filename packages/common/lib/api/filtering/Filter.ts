@@ -1,5 +1,8 @@
-import { GraphQLDateTimeISO } from "graphql-scalars";
+import {} from "graphql-scalars";
+import { DateTime } from "luxon";
 import { Directive, Field, InputType, registerEnumType } from "type-graphql";
+
+import { DateTimeScalar } from "../scalars/DateTimeISO.js";
 
 export const NoTargetOperators = {
   IS_NULL: "IS_NULL",
@@ -65,8 +68,8 @@ export class SingleNumberFilter {
 
 @InputType()
 export class SingleDateFilter {
-  @Field(() => GraphQLDateTimeISO)
-  value!: Date;
+  @Field(() => DateTimeScalar)
+  value!: DateTime;
 
   @Field(() => SingleTargetOperators)
   comparison!: SingleTargetOperators;
@@ -95,11 +98,11 @@ export class TwoNumberFilter {
 
 @InputType()
 export class TwoDateFilter {
-  @Field(() => GraphQLDateTimeISO)
-  lower!: Date;
+  @Field(() => DateTimeScalar)
+  lower!: DateTime;
 
-  @Field(() => GraphQLDateTimeISO)
-  upper!: Date;
+  @Field(() => DateTimeScalar)
+  upper!: DateTime;
 
   @Field(() => TwoTargetOperators)
   comparison!: TwoTargetOperators;
@@ -125,8 +128,8 @@ export class ArrayNumberFilter {
 
 @InputType()
 export class ArrayDateFilter {
-  @Field(() => [GraphQLDateTimeISO])
-  value!: Date[];
+  @Field(() => [DateTimeScalar])
+  value!: DateTime[];
 
   @Field(() => ArrayOperators)
   comparison!: ArrayOperators;

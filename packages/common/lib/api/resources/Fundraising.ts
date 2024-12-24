@@ -2,7 +2,7 @@ import type { DateTime } from "luxon";
 import { Field, Float, ObjectType } from "type-graphql";
 
 import { createNodeClasses, Node } from "../relay.js";
-import { DateTimeISOScalar } from "../scalars/DateTimeISO.js";
+import { DateTimeScalar } from "../scalars/DateTimeISO.js";
 import type { GlobalId } from "../scalars/GlobalId.js";
 import { GlobalIdScalar } from "../scalars/GlobalId.js";
 import { BatchType } from "./DailyDepartmentNotification.js";
@@ -28,10 +28,10 @@ export class FundraisingEntryNode extends TimestampedResource implements Node {
   @Field(() => String, { nullable: true, name: "donatedToOverride" })
   donatedToOverride!: string | null | undefined;
 
-  @Field(() => DateTimeISOScalar, { nullable: true, name: "donatedOn" })
+  @Field(() => DateTimeScalar, { nullable: true, name: "donatedOn" })
   donatedOn!: DateTime | null | undefined;
 
-  @Field(() => DateTimeISOScalar, {
+  @Field(() => DateTimeScalar, {
     nullable: true,
     name: "donatedOnOverride",
   })

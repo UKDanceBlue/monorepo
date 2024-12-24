@@ -4,12 +4,10 @@ import { NotFoundError } from "@ukdanceblue/common/error";
 const jobStateRepository = Container.get(JobStateRepository);
 
 import { Container } from "@freshgum/typedi";
-import type { Marathon } from "@prisma/client";
 import { CompositeError } from "@ukdanceblue/common/error";
 import { Cron } from "croner";
 import { AsyncResult, Err, None, Ok, type Result } from "ts-results-es";
 
-import type { PrismaError } from "#error/prisma.js";
 import {
   DBFundsFundraisingProvider,
   type DBFundsFundraisingProviderError,
@@ -19,11 +17,9 @@ import { logger } from "#logging/standardLogging.js";
 import { DBFundsRepository } from "#repositories/fundraising/DBFundsRepository.js";
 import { JobStateRepository } from "#repositories/JobState.js";
 import { MarathonRepository } from "#repositories/marathon/MarathonRepository.js";
+import type { RepositoryError } from "#repositories/shared.js";
 
-type DoSyncError =
-  | NotFoundError
-  | PrismaError
-  | DBFundsFundraisingProviderError;
+type DoSyncError = RepositoryError | DBFundsFundraisingProviderError;
 
 async function doSyncForActive(): Promise<
   Result<None, DoSyncError | CompositeError<DoSyncError>>
@@ -57,11 +53,11 @@ async function doSyncForPastMarathons(): Promise<
     return activeMarathon;
   }
 
-  const allMarathons = await marathonRepository.listMarathons({});
+  const allMarathons = await marathonRepository.findAll().promise;
 
-  const pastMarathons = allMarathons.filter(
-    (marathon) => marathon.id !== activeMarathon.value.id
-  );
+  const pastMarathons = allMarathons
+    .unwrap()
+    .filter((marathon) => marathon.id !== activeMarathon.value.id);
 
   for (const marathon of pastMarathons) {
     // eslint-disable-next-line no-await-in-loop
@@ -75,7 +71,7 @@ async function doSyncForPastMarathons(): Promise<
 }
 
 async function doSyncForMarathon(
-  marathon: Marathon
+  marathon: typeof MarathonRepository.selectType
 ): Promise<Result<None, DoSyncError | CompositeError<DoSyncError>>> {
   const fundraisingRepository = Container.get(DBFundsRepository);
   const fundraisingProvider = Container.get(DBFundsFundraisingProvider);

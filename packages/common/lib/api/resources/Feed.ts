@@ -3,7 +3,7 @@ import { DateTime } from "luxon";
 import { Field, InterfaceType, ObjectType } from "type-graphql";
 
 import { createNodeClasses, Node } from "../relay.js";
-import { DateTimeISOScalar } from "../scalars/DateTimeISO.js";
+import { DateTimeScalar } from "../scalars/DateTimeISO.js";
 import type { GlobalId } from "../scalars/GlobalId.js";
 import { GlobalIdScalar } from "../scalars/GlobalId.js";
 import { ImageNode } from "./Image.js";
@@ -37,7 +37,7 @@ export class FeedItem {
   @Field(() => GraphQLURL, { nullable: true })
   link?: URL | undefined | null;
 
-  @Field(() => DateTimeISOScalar, { nullable: true })
+  @Field(() => DateTimeScalar, { nullable: true })
   createdAt!: DateTime;
 }
 

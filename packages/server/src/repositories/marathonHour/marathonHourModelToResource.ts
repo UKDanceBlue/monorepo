@@ -1,8 +1,10 @@
-import type { MarathonHour } from "@prisma/client";
 import { MarathonHourNode } from "@ukdanceblue/common";
+import type { InferSelectModel } from "drizzle-orm";
+
+import type { marathonHour } from "#schema/tables/marathon.sql.js";
 
 export function marathonHourModelToResource(
-  marathonHourModel: MarathonHour
+  marathonHourModel: InferSelectModel<typeof marathonHour>
 ): MarathonHourNode {
   return MarathonHourNode.init({
     id: marathonHourModel.uuid,

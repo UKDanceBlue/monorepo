@@ -4,7 +4,7 @@ import { Field, ObjectType } from "type-graphql";
 
 import { AccessControlAuthorized } from "../../authorization/AccessControlParam.js";
 import { createNodeClasses, Node } from "../relay.js";
-import { DateTimeISOScalar } from "../scalars/DateTimeISO.js";
+import { DateTimeScalar } from "../scalars/DateTimeISO.js";
 import type { GlobalId } from "../scalars/GlobalId.js";
 import { GlobalIdScalar } from "../scalars/GlobalId.js";
 import { TimestampedResource } from "./Resource.js";
@@ -29,7 +29,7 @@ export class NotificationNode extends TimestampedResource implements Node {
   @AccessControlAuthorized("get", "NotificationNode", ".deliveryIssue")
   deliveryIssue?: string | undefined | null;
 
-  @Field(() => DateTimeISOScalar, { nullable: true })
+  @Field(() => DateTimeScalar, { nullable: true })
   @AccessControlAuthorized(
     "get",
     "NotificationNode",
@@ -37,14 +37,14 @@ export class NotificationNode extends TimestampedResource implements Node {
   )
   deliveryIssueAcknowledgedAt?: DateTime | undefined | null;
 
-  @Field(() => DateTimeISOScalar, {
+  @Field(() => DateTimeScalar, {
     nullable: true,
     description:
       "The time the notification is scheduled to be sent, if null it is either already sent or unscheduled.",
   })
   sendAt?: DateTime | undefined | null;
 
-  @Field(() => DateTimeISOScalar, {
+  @Field(() => DateTimeScalar, {
     nullable: true,
     description: "The time the server started sending the notification.",
   })
@@ -83,14 +83,14 @@ export class NotificationDeliveryNode
   @Field(() => GlobalIdScalar)
   id!: GlobalId;
 
-  @Field(() => DateTimeISOScalar, {
+  @Field(() => DateTimeScalar, {
     nullable: true,
     description:
       "The time the server sent the notification to Expo for delivery.",
   })
   sentAt?: DateTime | undefined | null;
 
-  @Field(() => DateTimeISOScalar, {
+  @Field(() => DateTimeScalar, {
     nullable: true,
     description:
       "The time the server received a delivery receipt from the user.",

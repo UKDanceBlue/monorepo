@@ -3,7 +3,7 @@ import { DateTime } from "luxon";
 import { Field, InputType, ObjectType } from "type-graphql";
 
 import { ConfigurationNode } from "../resources/Configuration.js";
-import { DateTimeISOScalar } from "../scalars/DateTimeISO.js";
+import { DateTimeScalar } from "../scalars/DateTimeISO.js";
 
 @ObjectType("GetConfigurationByUuidResponse")
 export class GetConfigurationResponse {
@@ -19,10 +19,10 @@ export class CreateConfigurationInput implements Partial<ConfigurationNode> {
   @Field()
   value!: string;
 
-  @Field(() => DateTimeISOScalar, { nullable: true })
+  @Field(() => DateTimeScalar, { nullable: true })
   validAfter!: DateTime | null;
 
   @MinDate(() => new Date())
-  @Field(() => DateTimeISOScalar, { nullable: true })
+  @Field(() => DateTimeScalar, { nullable: true })
   validUntil!: DateTime | null;
 }

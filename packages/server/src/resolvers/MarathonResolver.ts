@@ -6,7 +6,6 @@ import {
   GlobalIdScalar,
   MarathonHourNode,
   MarathonNode,
-  SortDirection,
   TeamNode,
 } from "@ukdanceblue/common";
 import {
@@ -108,46 +107,38 @@ export class MarathonResolver
   @AccessControlAuthorized("get")
   @Query(() => MarathonNode)
   async marathon(@Arg("id", () => GlobalIdScalar) { id }: GlobalId) {
-    const marathon = await this.marathonRepository.findMarathonByUnique({
-      uuid: id,
-    });
+    const marathon = await this.marathonRepository.findOne({
+      by: {
+        uuid: id,
+      },
+    }).promise;
     return marathon.map(marathonModelToResource);
   }
 
   @AccessControlAuthorized("get")
   @Query(() => MarathonNode)
   async marathonForYear(@Arg("year") year: string) {
-    const marathon = await this.marathonRepository.findMarathonByUnique({
-      year,
-    });
+    const marathon = await this.marathonRepository.findOne({
+      by: {
+        year,
+      },
+    }).promise;
     return marathon.map(marathonModelToResource);
   }
 
   @AccessControlAuthorized("list", "MarathonNode")
   @Query(() => ListMarathonsResponse)
   async marathons(@Args() args: ListMarathonsArgs) {
-    const marathons = await this.marathonRepository.listMarathons({
-      filters: args.filters,
-      order:
-        args.sortBy?.map((key, i) => [
-          key,
-          args.sortDirection?.[i] ?? SortDirection.desc,
-        ]) ?? [],
-      skip:
-        args.page != null && args.actualPageSize != null
-          ? (args.page - 1) * args.actualPageSize
-          : null,
-      take: args.actualPageSize,
-    });
-    const marathonCount = await this.marathonRepository.countMarathons({
-      filters: args.filters,
-    });
-    return ListMarathonsResponse.newPaginated({
-      data: marathons.map(marathonModelToResource),
-      total: marathonCount,
-      page: args.page,
-      pageSize: args.actualPageSize,
-    });
+    return this.marathonRepository
+      .findAndCount({
+        param: args,
+      })
+      .map(({ selectedRows, total }) =>
+        ListMarathonsResponse.newPaginated({
+          data: selectedRows.map(marathonModelToResource),
+          total,
+        })
+      ).promise;
   }
 
   @AccessControlAuthorized("readActive")
@@ -175,14 +166,14 @@ export class MarathonResolver
   @AccessControlAuthorized("create")
   @Mutation(() => MarathonNode)
   async createMarathon(@Arg("input") input: CreateMarathonInput) {
-    return new AsyncResult(
-      this.marathonRepository.createMarathon(input)
-    ).andThen(async (marathon) => {
-      const result = await this.committeeRepository.ensureCommittees([
-        { id: marathon.id },
-      ]);
-      return result.map(() => marathonModelToResource(marathon));
-    }).promise;
+    return this.marathonRepository
+      .create({ init: input })
+      .andThen(async (marathon) => {
+        const result = await this.committeeRepository.ensureCommittees([
+          { id: marathon.id },
+        ]);
+        return result.map(() => marathonModelToResource(marathon));
+      }).promise;
   }
 
   @AccessControlAuthorized("update")
@@ -191,27 +182,30 @@ export class MarathonResolver
     @Arg("id", () => GlobalIdScalar) { id }: GlobalId,
     @Arg("input") input: SetMarathonInput
   ) {
-    const marathon = await this.marathonRepository.updateMarathon(
-      { uuid: id },
-      input
-    );
-    return marathon.map(marathonModelToResource);
+    return this.marathonRepository
+      .update({
+        by: { uuid: id },
+        init: input,
+      })
+      .map(marathonModelToResource).promise;
   }
 
   @AccessControlAuthorized("delete")
   @Mutation(() => MarathonNode)
-  async deleteMarathon(@Arg("id", () => GlobalIdScalar) { id }: GlobalId) {
-    const marathon = await this.marathonRepository.deleteMarathon({ uuid: id });
-    return marathon.map(marathonModelToResource);
+  deleteMarathon(@Arg("id", () => GlobalIdScalar) { id }: GlobalId) {
+    return this.marathonRepository
+      .delete({ by: { uuid: id } })
+      .map(marathonModelToResource).promise;
   }
 
   @AccessControlAuthorized("list", "MarathonNode")
   @FieldResolver(() => [MarathonHourNode])
   async hours(@Root() { id: { id } }: MarathonNode) {
-    const rows = await this.marathonRepository.getMarathonHours({
-      uuid: id,
-    });
-    return rows.map((hours) => hours.map(marathonHourModelToResource));
+    return new AsyncResult(
+      this.marathonRepository.getMarathonHours({
+        uuid: id,
+      })
+    ).map((hours) => hours.map(marathonHourModelToResource)).promise;
   }
 
   async #committeeTeam(

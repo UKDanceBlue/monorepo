@@ -1,11 +1,5 @@
 import { Service } from "@freshgum/typedi";
-import { Prisma, PrismaClient } from "@prisma/client";
-import type { SortDirection } from "@ukdanceblue/common";
-
-import {
-  buildMarathonHourOrder,
-  buildMarathonHourWhere,
-} from "./marathonHourRepositoryUtils.js";
+import { Prisma } from "@prisma/client";
 
 const marathonHourBooleanKeys = [] as const;
 type MarathonHourBooleanKey = (typeof marathonHourBooleanKeys)[number];
@@ -49,59 +43,45 @@ export type MarathonHourFilters = FilterItems<
 
 type UniqueParam = { id: number } | { uuid: string };
 
-import { prismaToken } from "#lib/typediTokens.js";
+import { and, desc, eq, gte, lte } from "drizzle-orm";
+import { DateTime } from "luxon";
 
-@Service([prismaToken])
-export class MarathonHourRepository {
-  constructor(private prisma: PrismaClient) {}
+import { db } from "#db";
+import { sqlCurrentTimestamp } from "#lib/sqlValues.js";
+import {
+  buildDefaultRepository,
+  Transaction,
+} from "#repositories/DefaultRepository.js";
+import {
+  MarathonRepository,
+  UniqueMarathonParam,
+} from "#repositories/marathon/MarathonRepository.js";
+import { marathon, marathonHour } from "#schema/tables/marathon.sql.js";
 
-  findMarathonHourByUnique(param: UniqueParam) {
-    return this.prisma.marathonHour.findUnique({ where: param });
+@Service([MarathonRepository])
+export class MarathonHourRepository extends buildDefaultRepository(
+  marathonHour,
+  {},
+  {} as UniqueParam
+) {
+  constructor(private readonly marathonRepository: MarathonRepository) {
+    super();
+  }
+  public uniqueToWhere(by: UniqueParam) {
+    return "id" in by
+      ? eq(marathonHour.id, by.id)
+      : eq(marathonHour.uuid, by.uuid);
   }
 
   findCurrentMarathonHour() {
-    return this.prisma.marathonHour.findFirst({
-      where: {
-        shownStartingAt: { lte: new Date() },
-        marathon: { endDate: { gte: new Date() } },
-      },
-      orderBy: { shownStartingAt: "desc" },
+    return db.query.marathonHour.findFirst({
+      where: and(
+        lte(marathonHour.shownStartingAt, sqlCurrentTimestamp),
+        gte(marathon.endDate, sqlCurrentTimestamp)
+      ),
+      with: { marathon: true },
+      orderBy: desc(marathonHour.shownStartingAt),
     });
-  }
-
-  listMarathonHours({
-    filters,
-    order,
-    skip,
-    take,
-  }: {
-    filters?: readonly MarathonHourFilters[] | undefined | null;
-    order?:
-      | readonly [key: MarathonHourOrderKeys, sort: SortDirection][]
-      | undefined
-      | null;
-    skip?: number | undefined | null;
-    take?: number | undefined | null;
-  }) {
-    const where = buildMarathonHourWhere(filters);
-    const orderBy = buildMarathonHourOrder(order);
-
-    return this.prisma.marathonHour.findMany({
-      where,
-      orderBy,
-      skip: skip ?? undefined,
-      take: take ?? undefined,
-    });
-  }
-
-  countMarathonHours({
-    filters,
-  }: {
-    filters?: readonly MarathonHourFilters[] | undefined | null;
-  }) {
-    const where = buildMarathonHourWhere(filters);
-
-    return this.prisma.marathonHour.count({ where });
   }
 
   async getMaps(param: UniqueParam) {
@@ -115,71 +95,53 @@ export class MarathonHourRepository {
   }
 
   createMarathonHour({
-    title,
-    details,
-    marathon,
-    shownStartingAt,
-    durationInfo,
+    init: { marathon, ...init },
+    tx,
   }: {
-    title: string;
-    details?: string | undefined | null;
-    marathon: UniqueParam;
-    shownStartingAt: Date;
-    durationInfo: string;
-  }) {
-    return this.prisma.marathonHour.create({
-      data: {
-        title,
-        details,
-        marathon: { connect: marathon },
-        shownStartingAt,
-        durationInfo,
-      },
-    });
-  }
-
-  updateMarathonHour(
-    param: UniqueParam,
-    {
-      title,
-      details,
-      marathon,
-      shownStartingAt,
-      durationInfo,
-    }: {
-      title?: string | undefined;
+    init: {
+      title: string;
       details?: string | undefined | null;
-      marathon?: UniqueParam | undefined;
-      shownStartingAt?: Date | undefined;
-      durationInfo?: string | undefined;
-    }
-  ) {
-    try {
-      return this.prisma.marathonHour.update({
-        where: param,
-        data: {
-          title,
-          details,
-          marathon: marathon ? { connect: marathon } : undefined,
-          shownStartingAt,
-          durationInfo,
-        },
-      });
-    } catch (error) {
-      if (
-        error instanceof Prisma.PrismaClientKnownRequestError &&
-        error.code === "P2025"
-      ) {
-        return null;
-      } else {
-        throw error;
-      }
-    }
+      marathon: UniqueMarathonParam;
+      shownStartingAt: DateTime<true>;
+      durationInfo: string;
+    };
+    tx?: Transaction;
+  }) {
+    return this.marathonRepository
+      .findOne({ by: marathon })
+      .andThen(({ id: marathonId }) =>
+        this.create({ init: { marathonId, ...init }, tx })
+      );
   }
 
-  deleteMarathonHour(param: UniqueParam) {
+  updateMarathonHour({
+    by: param,
+    init: { marathon, title, details, shownStartingAt, durationInfo },
+  }: {
+    by: UniqueParam;
+    init: {
+      marathon: UniqueMarathonParam;
+      title: string;
+      details?: string | undefined | null;
+      shownStartingAt: DateTime<true>;
+      durationInfo: string;
+    };
+  }) {
     try {
-      return this.prisma.marathonHour.delete({ where: param });
+      return this.marathonRepository
+        .findOne({ by: marathon })
+        .andThen(({ id: marathonId }) =>
+          this.update({
+            by: param,
+            init: {
+              title,
+              details: details ?? null,
+              marathonId,
+              shownStartingAt,
+              durationInfo,
+            },
+          })
+        );
     } catch (error) {
       if (
         error instanceof Prisma.PrismaClientKnownRequestError &&

@@ -1,31 +1,17 @@
-import type { Person } from "@prisma/client";
 import { PersonNode } from "@ukdanceblue/common";
-import { AsyncResult } from "ts-results-es";
+import type { InferSelectModel } from "drizzle-orm";
 
-import type { RepositoryError } from "#repositories/shared.js";
-
-import type { PersonRepository } from "./PersonRepository.js";
+import type { person } from "#schema/tables/person.sql.js";
 
 export function personModelToResource(
-  person: Person,
-  personRepository: PersonRepository
-): AsyncResult<PersonNode, RepositoryError> {
-  return new AsyncResult(
-    personRepository.getDbRoleOfPerson({
-      uuid: person.uuid,
-    })
-  ).map((dbRole) =>
-    PersonNode.init({
-      id: person.uuid,
-      name: person.name,
-      email: person.email,
-      linkblue: person.linkblue?.toLowerCase(),
-      createdAt: person.createdAt,
-      updatedAt: person.updatedAt,
-
-      // !!! Potential source of issues !!!
-      dbRole,
-      // !!! Potential source of issues !!!
-    })
-  );
+  row: InferSelectModel<typeof person>
+): PersonNode {
+  return PersonNode.init({
+    id: row.uuid,
+    name: row.name,
+    email: row.email,
+    linkblue: row.linkblue?.toLowerCase(),
+    createdAt: row.createdAt,
+    updatedAt: row.updatedAt,
+  });
 }

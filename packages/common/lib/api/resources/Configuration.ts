@@ -2,7 +2,7 @@ import { DateTime } from "luxon";
 import { Field, ObjectType } from "type-graphql";
 
 import { createNodeClasses, Node } from "../relay.js";
-import { DateTimeISOScalar } from "../scalars/DateTimeISO.js";
+import { DateTimeScalar } from "../scalars/DateTimeISO.js";
 import type { GlobalId } from "../scalars/GlobalId.js";
 import { GlobalIdScalar } from "../scalars/GlobalId.js";
 import { TimestampedResource } from "./Resource.js";
@@ -31,10 +31,10 @@ export class ConfigurationNode extends TimestampedResource implements Node {
   @Field(() => String)
   value!: string;
 
-  @Field(() => DateTimeISOScalar, { nullable: true })
+  @Field(() => DateTimeScalar, { nullable: true })
   validAfter?: DateTime | undefined | null;
 
-  @Field(() => DateTimeISOScalar, { nullable: true })
+  @Field(() => DateTimeScalar, { nullable: true })
   validUntil?: DateTime | undefined | null;
 
   public getUniqueId(): string {

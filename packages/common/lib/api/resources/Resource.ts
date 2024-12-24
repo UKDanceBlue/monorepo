@@ -2,7 +2,7 @@ import type { DateTime } from "luxon";
 import { Field, ObjectType } from "type-graphql";
 import type { Class } from "utility-types";
 
-import { DateTimeISOScalar } from "../scalars/DateTimeISO.js";
+import { DateTimeScalar } from "../scalars/DateTimeISO.js";
 import { GlobalId, isGlobalId } from "../scalars/GlobalId.js";
 
 @ObjectType()
@@ -44,9 +44,9 @@ export abstract class Resource {
 
 @ObjectType()
 export abstract class TimestampedResource extends Resource {
-  @Field(() => DateTimeISOScalar, { nullable: true })
+  @Field(() => DateTimeScalar, { nullable: true })
   createdAt!: DateTime;
 
-  @Field(() => DateTimeISOScalar, { nullable: true })
+  @Field(() => DateTimeScalar, { nullable: true })
   updatedAt!: DateTime;
 }

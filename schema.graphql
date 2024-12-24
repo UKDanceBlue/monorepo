@@ -5,12 +5,6 @@
 
 """API response"""
 interface AbstractGraphQLPaginatedResponse {
-  """The current page number (1-indexed)"""
-  page: PositiveInt!
-
-  """The number of items per page"""
-  pageSize: NonNegativeInt!
-
   """The total number of items"""
   total: NonNegativeInt!
 }
@@ -33,7 +27,7 @@ input ArrayBooleanFilter {
 
 input ArrayDateFilter {
   comparison: ArrayOperators!
-  value: [DateTimeISO!]!
+  value: [LuxonDateTime!]!
 }
 
 input ArrayNumberFilter {
@@ -56,7 +50,7 @@ input AssignEntryToPersonInput {
 }
 
 type AuditLogNode implements Node {
-  createdAt: DateTimeISO
+  createdAt: LuxonDateTime
   details: JSONObject
   id: GlobalId!
   subject: Node
@@ -119,21 +113,21 @@ enum CommitteeIdentifier {
 
 type CommitteeMembershipNode implements Node {
   committeeRole: CommitteeRole
-  createdAt: DateTimeISO
+  createdAt: LuxonDateTime
   id: GlobalId!
   identifier: CommitteeIdentifier!
   person: PersonNode!
   position: MembershipPositionType!
   role: CommitteeRole!
   team: TeamNode!
-  updatedAt: DateTimeISO
+  updatedAt: LuxonDateTime
 }
 
 type CommitteeNode implements Node {
-  createdAt: DateTimeISO
+  createdAt: LuxonDateTime
   id: GlobalId!
   identifier: CommitteeIdentifier!
-  updatedAt: DateTimeISO
+  updatedAt: LuxonDateTime
 }
 
 """Roles within a committee"""
@@ -144,19 +138,19 @@ enum CommitteeRole {
 }
 
 type ConfigurationNode implements Node {
-  createdAt: DateTimeISO
+  createdAt: LuxonDateTime
   id: GlobalId!
   key: String!
-  updatedAt: DateTimeISO
-  validAfter: DateTimeISO
-  validUntil: DateTimeISO
+  updatedAt: LuxonDateTime
+  validAfter: LuxonDateTime
+  validUntil: LuxonDateTime
   value: String!
 }
 
 input CreateConfigurationInput {
   key: String!
-  validAfter: DateTimeISO
-  validUntil: DateTimeISO
+  validAfter: LuxonDateTime
+  validUntil: LuxonDateTime
   value: String!
 }
 
@@ -187,13 +181,13 @@ input CreateImageInput {
 input CreateMarathonHourInput {
   details: NonEmptyString
   durationInfo: NonEmptyString!
-  shownStartingAt: DateTimeISO!
+  shownStartingAt: LuxonDateTime!
   title: NonEmptyString!
 }
 
 input CreateMarathonInput {
-  endDate: DateTimeISO
-  startDate: DateTimeISO
+  endDate: LuxonDateTime
+  startDate: LuxonDateTime
   year: NonEmptyString!
 }
 
@@ -218,7 +212,7 @@ input CreatePointOpportunityInput {
   eventUuid: GlobalId
   marathonUuid: GlobalId!
   name: NonEmptyString!
-  opportunityDate: DateTimeISO
+  opportunityDate: LuxonDateTime
   type: TeamType!
 }
 
@@ -387,7 +381,18 @@ input DailyDepartmentNotificationResolverFilterGroup {
 input DailyDepartmentNotificationResolverFilterItem {
   field: DailyDepartmentNotificationResolverFilterFields!
   filter: SomeFilter!
+  negate: Boolean!
 }
+
+input DailyDepartmentNotificationResolverSort {
+  direction: SortDirection! = asc
+  field: DailyDepartmentNotificationResolverFilterFields!
+}
+
+"""
+A date-time string at UTC, such as 2007-12-03T10:15:30Z, compliant with the `date-time` format outlined in section 5.6 of the RFC 3339 profile of the ISO 8601 standard for representation of dates and times using the Gregorian calendar.
+"""
+scalar DateTime
 
 """
 A date-time string at UTC, such as 2007-12-03T10:15:30Z, compliant with the `date-time` format outlined in section 5.6 of the RFC 3339 profile of the ISO 8601 standard for representation of dates and times using the Gregorian calendar.This scalar is serialized to a string in ISO 8601 format and parsed from a string in ISO 8601 format.
@@ -403,10 +408,10 @@ enum DbRole {
 }
 
 type DeviceNode implements Node {
-  createdAt: DateTimeISO
+  createdAt: LuxonDateTime
   id: GlobalId!
   lastLoggedInUser: PersonNode
-  lastLogin: DateTimeISO
+  lastLogin: DateTime
 
   """List all notification deliveries for this device"""
   notificationDeliveries(
@@ -418,7 +423,7 @@ type DeviceNode implements Node {
     """
     verifier: String
   ): [NotificationDeliveryNode!]!
-  updatedAt: DateTimeISO
+  updatedAt: LuxonDateTime
 }
 
 enum DeviceResolverFilterFields {
@@ -437,6 +442,12 @@ input DeviceResolverFilterGroup {
 input DeviceResolverFilterItem {
   field: DeviceResolverFilterFields!
   filter: SomeFilter!
+  negate: Boolean!
+}
+
+input DeviceResolverSort {
+  direction: SortDirection! = asc
+  field: DeviceResolverFilterFields!
 }
 
 type EffectiveCommitteeRole {
@@ -450,7 +461,7 @@ A field whose value conforms to the standard internet email address format as sp
 scalar EmailAddress @specifiedBy(url: "https://html.spec.whatwg.org/multipage/input.html#valid-e-mail-address")
 
 type EventNode implements Node {
-  createdAt: DateTimeISO
+  createdAt: LuxonDateTime
   description: String
   id: GlobalId!
 
@@ -460,7 +471,7 @@ type EventNode implements Node {
   occurrences: [EventOccurrenceNode!]!
   summary: String
   title: String!
-  updatedAt: DateTimeISO
+  updatedAt: LuxonDateTime
 }
 
 type EventOccurrenceNode {
@@ -490,10 +501,16 @@ input EventResolverFilterGroup {
 input EventResolverFilterItem {
   field: EventResolverFilterFields!
   filter: SomeFilter!
+  negate: Boolean!
+}
+
+input EventResolverSort {
+  direction: SortDirection! = asc
+  field: EventResolverFilterFields!
 }
 
 interface FeedItem {
-  createdAt: DateTimeISO
+  createdAt: LuxonDateTime
   id: GlobalId!
   image: ImageNode
   link: URL
@@ -502,7 +519,7 @@ interface FeedItem {
 }
 
 type FeedNode implements FeedItem & Node {
-  createdAt: DateTimeISO
+  createdAt: LuxonDateTime
   id: GlobalId!
 
   """The image associated with this feed item"""
@@ -510,18 +527,17 @@ type FeedNode implements FeedItem & Node {
   link: URL
   textContent: String
   title: String!
-  updatedAt: DateTimeISO
+  updatedAt: LuxonDateTime
 }
 
 enum FilterGroupOperator {
   AND
-  NOT
   OR
 }
 
 type FundraisingAssignmentNode implements Node {
   amount: Float!
-  createdAt: DateTimeISO
+  createdAt: LuxonDateTime
   entry: FundraisingEntryNode!
   id: GlobalId!
 
@@ -529,7 +545,7 @@ type FundraisingAssignmentNode implements Node {
   The person assigned to this assignment, only null when access is denied
   """
   person: PersonNode
-  updatedAt: DateTimeISO
+  updatedAt: LuxonDateTime
 }
 
 type FundraisingEntryNode implements Node {
@@ -539,19 +555,19 @@ type FundraisingEntryNode implements Node {
   assignments: [FundraisingAssignmentNode!]!
   batchType: BatchType!
   batchTypeOverride: BatchType
-  createdAt: DateTimeISO
+  createdAt: LuxonDateTime
   dailyDepartmentNotification: DailyDepartmentNotificationNode
   donatedByOverride: String
   donatedByText: String
-  donatedOn: DateTimeISO
-  donatedOnOverride: DateTimeISO
+  donatedOn: LuxonDateTime
+  donatedOnOverride: LuxonDateTime
   donatedToOverride: String
   donatedToText: String
   id: GlobalId!
   notes: String
   solicitationCode: SolicitationCodeNode!
   solicitationCodeOverride: SolicitationCodeNode
-  updatedAt: DateTimeISO
+  updatedAt: LuxonDateTime
 }
 
 enum FundraisingEntryResolverFilterFields {
@@ -576,6 +592,12 @@ input FundraisingEntryResolverFilterGroup {
 input FundraisingEntryResolverFilterItem {
   field: FundraisingEntryResolverFilterFields!
   filter: SomeFilter!
+  negate: Boolean!
+}
+
+input FundraisingEntryResolverSort {
+  direction: SortDirection! = asc
+  field: FundraisingEntryResolverFilterFields!
 }
 
 type GetConfigurationByUuidResponse {
@@ -591,12 +613,12 @@ scalar GlobalId
 
 type ImageNode implements Node {
   alt: String
-  createdAt: DateTimeISO
+  createdAt: LuxonDateTime
   height: Int!
   id: GlobalId!
   mimeType: String!
   thumbHash: String
-  updatedAt: DateTimeISO
+  updatedAt: LuxonDateTime
   url: URL
   width: Int!
 }
@@ -618,26 +640,32 @@ input ImageResolverFilterGroup {
 input ImageResolverFilterItem {
   field: ImageResolverFilterFields!
   filter: SomeFilter!
+  negate: Boolean!
+}
+
+input ImageResolverSort {
+  direction: SortDirection! = asc
+  field: ImageResolverFilterFields!
 }
 
 type InstagramFeedNode implements FeedItem & Node {
-  createdAt: DateTimeISO
+  createdAt: LuxonDateTime
   id: GlobalId!
   image: ImageNode
   link: URL
   textContent: String
   title: String!
-  updatedAt: DateTimeISO
+  updatedAt: LuxonDateTime
 }
 
 type IntervalISO {
-  end: DateTimeISO!
-  start: DateTimeISO!
+  end: LuxonDateTime!
+  start: LuxonDateTime!
 }
 
 input IntervalISOInput {
-  end: DateTimeISO!
-  start: DateTimeISO!
+  end: LuxonDateTime!
+  start: LuxonDateTime!
 }
 
 """
@@ -653,24 +681,12 @@ scalar JSONObject @specifiedBy(url: "http://www.ecma-international.org/publicati
 type ListAuditLogsResponse implements AbstractGraphQLPaginatedResponse {
   data: AuditLogNode!
 
-  """The current page number (1-indexed)"""
-  page: PositiveInt!
-
-  """The number of items per page"""
-  pageSize: NonNegativeInt!
-
   """The total number of items"""
   total: NonNegativeInt!
 }
 
 type ListDailyDepartmentNotificationsResponse implements AbstractGraphQLPaginatedResponse {
   data: [DailyDepartmentNotificationNode!]!
-
-  """The current page number (1-indexed)"""
-  page: PositiveInt!
-
-  """The number of items per page"""
-  pageSize: NonNegativeInt!
 
   """The total number of items"""
   total: NonNegativeInt!
@@ -679,24 +695,12 @@ type ListDailyDepartmentNotificationsResponse implements AbstractGraphQLPaginate
 type ListDevicesResponse implements AbstractGraphQLPaginatedResponse {
   data: [DeviceNode!]!
 
-  """The current page number (1-indexed)"""
-  page: PositiveInt!
-
-  """The number of items per page"""
-  pageSize: NonNegativeInt!
-
   """The total number of items"""
   total: NonNegativeInt!
 }
 
 type ListEventsResponse implements AbstractGraphQLPaginatedResponse {
   data: [EventNode!]!
-
-  """The current page number (1-indexed)"""
-  page: PositiveInt!
-
-  """The number of items per page"""
-  pageSize: NonNegativeInt!
 
   """The total number of items"""
   total: NonNegativeInt!
@@ -705,24 +709,12 @@ type ListEventsResponse implements AbstractGraphQLPaginatedResponse {
 type ListFundraisingEntriesResponse implements AbstractGraphQLPaginatedResponse {
   data: [FundraisingEntryNode!]!
 
-  """The current page number (1-indexed)"""
-  page: PositiveInt!
-
-  """The number of items per page"""
-  pageSize: NonNegativeInt!
-
   """The total number of items"""
   total: NonNegativeInt!
 }
 
 type ListImagesResponse implements AbstractGraphQLPaginatedResponse {
   data: [ImageNode!]!
-
-  """The current page number (1-indexed)"""
-  page: PositiveInt!
-
-  """The number of items per page"""
-  pageSize: NonNegativeInt!
 
   """The total number of items"""
   total: NonNegativeInt!
@@ -731,24 +723,12 @@ type ListImagesResponse implements AbstractGraphQLPaginatedResponse {
 type ListMarathonHoursResponse implements AbstractGraphQLPaginatedResponse {
   data: [MarathonHourNode!]!
 
-  """The current page number (1-indexed)"""
-  page: PositiveInt!
-
-  """The number of items per page"""
-  pageSize: NonNegativeInt!
-
   """The total number of items"""
   total: NonNegativeInt!
 }
 
 type ListMarathonsResponse implements AbstractGraphQLPaginatedResponse {
   data: [MarathonNode!]!
-
-  """The current page number (1-indexed)"""
-  page: PositiveInt!
-
-  """The number of items per page"""
-  pageSize: NonNegativeInt!
 
   """The total number of items"""
   total: NonNegativeInt!
@@ -757,24 +737,12 @@ type ListMarathonsResponse implements AbstractGraphQLPaginatedResponse {
 type ListNotificationDeliveriesResponse implements AbstractGraphQLPaginatedResponse {
   data: [NotificationDeliveryNode!]!
 
-  """The current page number (1-indexed)"""
-  page: PositiveInt!
-
-  """The number of items per page"""
-  pageSize: NonNegativeInt!
-
   """The total number of items"""
   total: NonNegativeInt!
 }
 
 type ListNotificationsResponse implements AbstractGraphQLPaginatedResponse {
   data: [NotificationNode!]!
-
-  """The current page number (1-indexed)"""
-  page: PositiveInt!
-
-  """The number of items per page"""
-  pageSize: NonNegativeInt!
 
   """The total number of items"""
   total: NonNegativeInt!
@@ -783,24 +751,12 @@ type ListNotificationsResponse implements AbstractGraphQLPaginatedResponse {
 type ListPeopleResponse implements AbstractGraphQLPaginatedResponse {
   data: [PersonNode!]!
 
-  """The current page number (1-indexed)"""
-  page: PositiveInt!
-
-  """The number of items per page"""
-  pageSize: NonNegativeInt!
-
   """The total number of items"""
   total: NonNegativeInt!
 }
 
 type ListPointEntriesResponse implements AbstractGraphQLPaginatedResponse {
   data: [PointEntryNode!]!
-
-  """The current page number (1-indexed)"""
-  page: PositiveInt!
-
-  """The number of items per page"""
-  pageSize: NonNegativeInt!
 
   """The total number of items"""
   total: NonNegativeInt!
@@ -809,12 +765,6 @@ type ListPointEntriesResponse implements AbstractGraphQLPaginatedResponse {
 type ListPointOpportunitiesResponse implements AbstractGraphQLPaginatedResponse {
   data: [PointOpportunityNode!]!
 
-  """The current page number (1-indexed)"""
-  page: PositiveInt!
-
-  """The number of items per page"""
-  pageSize: NonNegativeInt!
-
   """The total number of items"""
   total: NonNegativeInt!
 }
@@ -822,24 +772,12 @@ type ListPointOpportunitiesResponse implements AbstractGraphQLPaginatedResponse 
 type ListSolicitationCodesResponse implements AbstractGraphQLPaginatedResponse {
   data: [SolicitationCodeNode!]!
 
-  """The current page number (1-indexed)"""
-  page: PositiveInt!
-
-  """The number of items per page"""
-  pageSize: NonNegativeInt!
-
   """The total number of items"""
   total: NonNegativeInt!
 }
 
 type ListTeamsResponse implements AbstractGraphQLPaginatedResponse {
   data: [TeamNode!]!
-
-  """The current page number (1-indexed)"""
-  page: PositiveInt!
-
-  """The number of items per page"""
-  pageSize: NonNegativeInt!
 
   """The total number of items"""
   total: NonNegativeInt!
@@ -859,15 +797,18 @@ type LoginState {
   loggedIn: Boolean!
 }
 
+"""Cursor custom scalar type"""
+scalar LuxonDateTime
+
 type MarathonHourNode implements Node {
-  createdAt: DateTimeISO
+  createdAt: LuxonDateTime
   details: String
   durationInfo: String!
   id: GlobalId!
   mapImages: [ImageNode!]!
-  shownStartingAt: DateTimeISO!
+  shownStartingAt: LuxonDateTime!
   title: String!
-  updatedAt: DateTimeISO
+  updatedAt: LuxonDateTime
 }
 
 enum MarathonHourResolverFilterFields {
@@ -889,12 +830,18 @@ input MarathonHourResolverFilterGroup {
 input MarathonHourResolverFilterItem {
   field: MarathonHourResolverFilterFields!
   filter: SomeFilter!
+  negate: Boolean!
+}
+
+input MarathonHourResolverSort {
+  direction: SortDirection! = asc
+  field: MarathonHourResolverFilterFields!
 }
 
 type MarathonNode implements Node {
   communityDevelopmentCommitteeTeam: TeamNode!
   corporateCommitteeTeam: TeamNode!
-  createdAt: DateTimeISO
+  createdAt: LuxonDateTime
   dancerRelationsCommitteeTeam: TeamNode!
   endDate: DateTimeISO
   familyRelationsCommitteeTeam: TeamNode!
@@ -908,7 +855,7 @@ type MarathonNode implements Node {
   programmingCommitteeTeam: TeamNode!
   startDate: DateTimeISO
   techCommitteeTeam: TeamNode!
-  updatedAt: DateTimeISO
+  updatedAt: LuxonDateTime
   viceCommitteeTeam: TeamNode!
   year: String!
 }
@@ -930,6 +877,12 @@ input MarathonResolverFilterGroup {
 input MarathonResolverFilterItem {
   field: MarathonResolverFilterFields!
   filter: SomeFilter!
+  negate: Boolean!
+}
+
+input MarathonResolverSort {
+  direction: SortDirection! = asc
+  field: MarathonResolverFilterFields!
 }
 
 input MemberOf {
@@ -939,12 +892,12 @@ input MemberOf {
 
 type MembershipNode implements Node {
   committeeRole: CommitteeRole
-  createdAt: DateTimeISO
+  createdAt: LuxonDateTime
   id: GlobalId!
   person: PersonNode!
   position: MembershipPositionType!
   team: TeamNode!
-  updatedAt: DateTimeISO
+  updatedAt: LuxonDateTime
 }
 
 """The position of a member on a team"""
@@ -1097,7 +1050,7 @@ type NotificationDeliveryNode implements Node {
   A unique identifier corresponding the group of notifications this was sent to Expo with.
   """
   chunkUuid: String
-  createdAt: DateTimeISO
+  createdAt: LuxonDateTime
 
   """Any error message returned by Expo when sending the notification."""
   deliveryError: String
@@ -1105,11 +1058,11 @@ type NotificationDeliveryNode implements Node {
   notification: NotificationNode!
 
   """The time the server received a delivery receipt from the user."""
-  receiptCheckedAt: DateTimeISO
+  receiptCheckedAt: LuxonDateTime
 
   """The time the server sent the notification to Expo for delivery."""
-  sentAt: DateTimeISO
-  updatedAt: DateTimeISO
+  sentAt: LuxonDateTime
+  updatedAt: LuxonDateTime
 }
 
 enum NotificationDeliveryResolverFilterFields {
@@ -1129,26 +1082,32 @@ input NotificationDeliveryResolverFilterGroup {
 input NotificationDeliveryResolverFilterItem {
   field: NotificationDeliveryResolverFilterFields!
   filter: SomeFilter!
+  negate: Boolean!
+}
+
+input NotificationDeliveryResolverSort {
+  direction: SortDirection! = asc
+  field: NotificationDeliveryResolverFilterFields!
 }
 
 type NotificationNode implements Node {
   body: String!
-  createdAt: DateTimeISO
+  createdAt: LuxonDateTime
   deliveryCount: Int!
   deliveryIssue: String
-  deliveryIssueAcknowledgedAt: DateTimeISO
+  deliveryIssueAcknowledgedAt: LuxonDateTime
   deliveryIssueCount: NotificationDeliveryIssueCount!
   id: GlobalId!
 
   """
   The time the notification is scheduled to be sent, if null it is either already sent or unscheduled.
   """
-  sendAt: DateTimeISO
+  sendAt: LuxonDateTime
 
   """The time the server started sending the notification."""
-  startedSendingAt: DateTimeISO
+  startedSendingAt: LuxonDateTime
   title: String!
-  updatedAt: DateTimeISO
+  updatedAt: LuxonDateTime
   url: URL
 }
 
@@ -1172,6 +1131,12 @@ input NotificationResolverFilterGroup {
 input NotificationResolverFilterItem {
   field: NotificationResolverFilterFields!
   filter: SomeFilter!
+  negate: Boolean!
+}
+
+input NotificationResolverSort {
+  direction: SortDirection! = asc
+  field: NotificationResolverFilterFields!
 }
 
 input NullFilter {
@@ -1180,8 +1145,7 @@ input NullFilter {
 
 type PersonNode implements Node {
   committees: [CommitteeMembershipNode!]!
-  createdAt: DateTimeISO
-  dbRole: DbRole!
+  createdAt: LuxonDateTime
   email: String!
   fundraisingAssignments: [FundraisingAssignmentNode!]!
   fundraisingTotalAmount: Float
@@ -1193,7 +1157,7 @@ type PersonNode implements Node {
   primaryCommittee: CommitteeMembershipNode
   primaryTeam(teamType: TeamType!): MembershipNode
   teams: [MembershipNode!]!
-  updatedAt: DateTimeISO
+  updatedAt: LuxonDateTime
 }
 
 enum PersonResolverFilterFields {
@@ -1214,17 +1178,23 @@ input PersonResolverFilterGroup {
 input PersonResolverFilterItem {
   field: PersonResolverFilterFields!
   filter: SomeFilter!
+  negate: Boolean!
+}
+
+input PersonResolverSort {
+  direction: SortDirection! = asc
+  field: PersonResolverFilterFields!
 }
 
 type PointEntryNode implements Node {
   comment: String
-  createdAt: DateTimeISO
+  createdAt: LuxonDateTime
   id: GlobalId!
   personFrom: PersonNode
   pointOpportunity: PointOpportunityNode
   points: Int!
   team: TeamNode!
-  updatedAt: DateTimeISO
+  updatedAt: LuxonDateTime
 }
 
 enum PointEntryResolverFilterFields {
@@ -1241,16 +1211,22 @@ input PointEntryResolverFilterGroup {
 input PointEntryResolverFilterItem {
   field: PointEntryResolverFilterFields!
   filter: SomeFilter!
+  negate: Boolean!
+}
+
+input PointEntryResolverSort {
+  direction: SortDirection! = asc
+  field: PointEntryResolverFilterFields!
 }
 
 type PointOpportunityNode implements Node {
-  createdAt: DateTimeISO
+  createdAt: LuxonDateTime
   event: EventNode
   id: GlobalId!
   name: String!
-  opportunityDate: DateTimeISO
+  opportunityDate: LuxonDateTime
   type: TeamType!
-  updatedAt: DateTimeISO
+  updatedAt: LuxonDateTime
 }
 
 enum PointOpportunityResolverFilterFields {
@@ -1271,6 +1247,12 @@ input PointOpportunityResolverFilterGroup {
 input PointOpportunityResolverFilterItem {
   field: PointOpportunityResolverFilterFields!
   filter: SomeFilter!
+  negate: Boolean!
+}
+
+input PointOpportunityResolverSort {
+  direction: SortDirection! = asc
+  field: PointOpportunityResolverFilterFields!
 }
 
 """Integers that will have a value greater than 0."""
@@ -1303,10 +1285,10 @@ type Query {
     includeDeleted: Boolean @deprecated(reason: "Soft-deletion is no longer used in this project, this parameter is ignored")
 
     """The page number to return, defaults to 1"""
-    page: Int
+    page: PositiveInt! = 1
 
     """The number of items to return per page, defaults to 10"""
-    pageSize: Int
+    pageSize: NonNegativeInt! = 10
 
     """
     Whether to send all results in a single page, defaults to false (should generally be avoided)
@@ -1316,12 +1298,7 @@ type Query {
     """
     The fields to sort by, in order of priority. If unspecified, the sort order is undefined
     """
-    sortBy: [String!]
-
-    """
-    The direction to sort, if not specified will default to ascending, the order of the values in this array should match the order of the values in the sortBy array, if only one value is specified it will be used for all sortBy values, otherwise the lengths must match
-    """
-    sortDirection: [SortDirection!]
+    sortBy: [DailyDepartmentNotificationResolverSort!]
   ): ListDailyDepartmentNotificationsResponse!
 
   """Get a device by it's UUID"""
@@ -1338,10 +1315,10 @@ type Query {
     includeDeleted: Boolean @deprecated(reason: "Soft-deletion is no longer used in this project, this parameter is ignored")
 
     """The page number to return, defaults to 1"""
-    page: Int
+    page: PositiveInt! = 1
 
     """The number of items to return per page, defaults to 10"""
-    pageSize: Int
+    pageSize: NonNegativeInt! = 10
 
     """
     Whether to send all results in a single page, defaults to false (should generally be avoided)
@@ -1351,12 +1328,7 @@ type Query {
     """
     The fields to sort by, in order of priority. If unspecified, the sort order is undefined
     """
-    sortBy: [String!]
-
-    """
-    The direction to sort, if not specified will default to ascending, the order of the values in this array should match the order of the values in the sortBy array, if only one value is specified it will be used for all sortBy values, otherwise the lengths must match
-    """
-    sortDirection: [SortDirection!]
+    sortBy: [DeviceResolverSort!]
   ): ListDevicesResponse!
 
   """Get an event by UUID"""
@@ -1370,10 +1342,10 @@ type Query {
     includeDeleted: Boolean @deprecated(reason: "Soft-deletion is no longer used in this project, this parameter is ignored")
 
     """The page number to return, defaults to 1"""
-    page: Int
+    page: PositiveInt! = 1
 
     """The number of items to return per page, defaults to 10"""
-    pageSize: Int
+    pageSize: NonNegativeInt! = 10
 
     """
     Whether to send all results in a single page, defaults to false (should generally be avoided)
@@ -1383,12 +1355,7 @@ type Query {
     """
     The fields to sort by, in order of priority. If unspecified, the sort order is undefined
     """
-    sortBy: [String!]
-
-    """
-    The direction to sort, if not specified will default to ascending, the order of the values in this array should match the order of the values in the sortBy array, if only one value is specified it will be used for all sortBy values, otherwise the lengths must match
-    """
-    sortDirection: [SortDirection!]
+    sortBy: [EventResolverSort!]
   ): ListEventsResponse!
 
   """Get the active feed"""
@@ -1404,10 +1371,10 @@ type Query {
     includeDeleted: Boolean @deprecated(reason: "Soft-deletion is no longer used in this project, this parameter is ignored")
 
     """The page number to return, defaults to 1"""
-    page: Int
+    page: PositiveInt! = 1
 
     """The number of items to return per page, defaults to 10"""
-    pageSize: Int
+    pageSize: NonNegativeInt! = 10
 
     """
     Whether to send all results in a single page, defaults to false (should generally be avoided)
@@ -1417,12 +1384,7 @@ type Query {
     """
     The fields to sort by, in order of priority. If unspecified, the sort order is undefined
     """
-    sortBy: [String!]
-
-    """
-    The direction to sort, if not specified will default to ascending, the order of the values in this array should match the order of the values in the sortBy array, if only one value is specified it will be used for all sortBy values, otherwise the lengths must match
-    """
-    sortDirection: [SortDirection!]
+    sortBy: [FundraisingEntryResolverSort!]
   ): ListFundraisingEntriesResponse!
   fundraisingEntry(id: GlobalId!): FundraisingEntryNode!
   image(id: GlobalId!): ImageNode!
@@ -1433,10 +1395,10 @@ type Query {
     includeDeleted: Boolean @deprecated(reason: "Soft-deletion is no longer used in this project, this parameter is ignored")
 
     """The page number to return, defaults to 1"""
-    page: Int
+    page: PositiveInt! = 1
 
     """The number of items to return per page, defaults to 10"""
-    pageSize: Int
+    pageSize: NonNegativeInt! = 10
 
     """
     Whether to send all results in a single page, defaults to false (should generally be avoided)
@@ -1446,12 +1408,7 @@ type Query {
     """
     The fields to sort by, in order of priority. If unspecified, the sort order is undefined
     """
-    sortBy: [String!]
-
-    """
-    The direction to sort, if not specified will default to ascending, the order of the values in this array should match the order of the values in the sortBy array, if only one value is specified it will be used for all sortBy values, otherwise the lengths must match
-    """
-    sortDirection: [SortDirection!]
+    sortBy: [ImageResolverSort!]
   ): ListImagesResponse!
 
   """
@@ -1469,10 +1426,10 @@ type Query {
     includeDeleted: Boolean @deprecated(reason: "Soft-deletion is no longer used in this project, this parameter is ignored")
 
     """The page number to return, defaults to 1"""
-    page: Int
+    page: PositiveInt! = 1
 
     """The number of items to return per page, defaults to 10"""
-    pageSize: Int
+    pageSize: NonNegativeInt! = 10
 
     """
     Whether to send all results in a single page, defaults to false (should generally be avoided)
@@ -1482,12 +1439,7 @@ type Query {
     """
     The fields to sort by, in order of priority. If unspecified, the sort order is undefined
     """
-    sortBy: [String!]
-
-    """
-    The direction to sort, if not specified will default to ascending, the order of the values in this array should match the order of the values in the sortBy array, if only one value is specified it will be used for all sortBy values, otherwise the lengths must match
-    """
-    sortDirection: [SortDirection!]
+    sortBy: [MarathonHourResolverSort!]
   ): ListMarathonHoursResponse!
   marathons(
     filters: MarathonResolverFilterGroup!
@@ -1496,10 +1448,10 @@ type Query {
     includeDeleted: Boolean @deprecated(reason: "Soft-deletion is no longer used in this project, this parameter is ignored")
 
     """The page number to return, defaults to 1"""
-    page: Int
+    page: PositiveInt! = 1
 
     """The number of items to return per page, defaults to 10"""
-    pageSize: Int
+    pageSize: NonNegativeInt! = 10
 
     """
     Whether to send all results in a single page, defaults to false (should generally be avoided)
@@ -1509,12 +1461,7 @@ type Query {
     """
     The fields to sort by, in order of priority. If unspecified, the sort order is undefined
     """
-    sortBy: [String!]
-
-    """
-    The direction to sort, if not specified will default to ascending, the order of the values in this array should match the order of the values in the sortBy array, if only one value is specified it will be used for all sortBy values, otherwise the lengths must match
-    """
-    sortDirection: [SortDirection!]
+    sortBy: [MarathonResolverSort!]
   ): ListMarathonsResponse!
   me: PersonNode
   node(id: GlobalId!): Node!
@@ -1527,10 +1474,10 @@ type Query {
     notificationUuid: GlobalId!
 
     """The page number to return, defaults to 1"""
-    page: Int
+    page: PositiveInt! = 1
 
     """The number of items to return per page, defaults to 10"""
-    pageSize: Int
+    pageSize: NonNegativeInt! = 10
 
     """
     Whether to send all results in a single page, defaults to false (should generally be avoided)
@@ -1540,12 +1487,7 @@ type Query {
     """
     The fields to sort by, in order of priority. If unspecified, the sort order is undefined
     """
-    sortBy: [String!]
-
-    """
-    The direction to sort, if not specified will default to ascending, the order of the values in this array should match the order of the values in the sortBy array, if only one value is specified it will be used for all sortBy values, otherwise the lengths must match
-    """
-    sortDirection: [SortDirection!]
+    sortBy: [NotificationDeliveryResolverSort!]
   ): ListNotificationDeliveriesResponse!
   notifications(
     filters: NotificationResolverFilterGroup!
@@ -1554,10 +1496,10 @@ type Query {
     includeDeleted: Boolean @deprecated(reason: "Soft-deletion is no longer used in this project, this parameter is ignored")
 
     """The page number to return, defaults to 1"""
-    page: Int
+    page: PositiveInt! = 1
 
     """The number of items to return per page, defaults to 10"""
-    pageSize: Int
+    pageSize: NonNegativeInt! = 10
 
     """
     Whether to send all results in a single page, defaults to false (should generally be avoided)
@@ -1567,12 +1509,7 @@ type Query {
     """
     The fields to sort by, in order of priority. If unspecified, the sort order is undefined
     """
-    sortBy: [String!]
-
-    """
-    The direction to sort, if not specified will default to ascending, the order of the values in this array should match the order of the values in the sortBy array, if only one value is specified it will be used for all sortBy values, otherwise the lengths must match
-    """
-    sortDirection: [SortDirection!]
+    sortBy: [NotificationResolverSort!]
   ): ListNotificationsResponse!
   people(
     filters: PersonResolverFilterGroup!
@@ -1581,10 +1518,10 @@ type Query {
     includeDeleted: Boolean @deprecated(reason: "Soft-deletion is no longer used in this project, this parameter is ignored")
 
     """The page number to return, defaults to 1"""
-    page: Int
+    page: PositiveInt! = 1
 
     """The number of items to return per page, defaults to 10"""
-    pageSize: Int
+    pageSize: NonNegativeInt! = 10
 
     """
     Whether to send all results in a single page, defaults to false (should generally be avoided)
@@ -1594,12 +1531,7 @@ type Query {
     """
     The fields to sort by, in order of priority. If unspecified, the sort order is undefined
     """
-    sortBy: [String!]
-
-    """
-    The direction to sort, if not specified will default to ascending, the order of the values in this array should match the order of the values in the sortBy array, if only one value is specified it will be used for all sortBy values, otherwise the lengths must match
-    """
-    sortDirection: [SortDirection!]
+    sortBy: [PersonResolverSort!]
   ): ListPeopleResponse!
   person(id: GlobalId!): PersonNode!
   personByLinkBlue(linkBlueId: String!): PersonNode
@@ -1610,10 +1542,10 @@ type Query {
     includeDeleted: Boolean @deprecated(reason: "Soft-deletion is no longer used in this project, this parameter is ignored")
 
     """The page number to return, defaults to 1"""
-    page: Int
+    page: PositiveInt! = 1
 
     """The number of items to return per page, defaults to 10"""
-    pageSize: Int
+    pageSize: NonNegativeInt! = 10
 
     """
     Whether to send all results in a single page, defaults to false (should generally be avoided)
@@ -1623,12 +1555,7 @@ type Query {
     """
     The fields to sort by, in order of priority. If unspecified, the sort order is undefined
     """
-    sortBy: [String!]
-
-    """
-    The direction to sort, if not specified will default to ascending, the order of the values in this array should match the order of the values in the sortBy array, if only one value is specified it will be used for all sortBy values, otherwise the lengths must match
-    """
-    sortDirection: [SortDirection!]
+    sortBy: [PointEntryResolverSort!]
   ): ListPointEntriesResponse!
   pointEntry(id: GlobalId!): PointEntryNode!
   pointOpportunities(
@@ -1638,10 +1565,10 @@ type Query {
     includeDeleted: Boolean @deprecated(reason: "Soft-deletion is no longer used in this project, this parameter is ignored")
 
     """The page number to return, defaults to 1"""
-    page: Int
+    page: PositiveInt! = 1
 
     """The number of items to return per page, defaults to 10"""
-    pageSize: Int
+    pageSize: NonNegativeInt! = 10
 
     """
     Whether to send all results in a single page, defaults to false (should generally be avoided)
@@ -1651,12 +1578,7 @@ type Query {
     """
     The fields to sort by, in order of priority. If unspecified, the sort order is undefined
     """
-    sortBy: [String!]
-
-    """
-    The direction to sort, if not specified will default to ascending, the order of the values in this array should match the order of the values in the sortBy array, if only one value is specified it will be used for all sortBy values, otherwise the lengths must match
-    """
-    sortDirection: [SortDirection!]
+    sortBy: [PointOpportunityResolverSort!]
   ): ListPointOpportunitiesResponse!
   pointOpportunity(id: GlobalId!): PointOpportunityNode!
   rawFundraisingEntries(identifier: Int!, marathonYear: String!): String!
@@ -1665,7 +1587,7 @@ type Query {
   """
   The output of this query is not stable. Do not rely on an exact format.
   """
-  report(from: DateTimeISO, report: NonEmptyString!, to: DateTimeISO): Report!
+  report(from: LuxonDateTime, report: NonEmptyString!, to: LuxonDateTime): Report!
   searchPeopleByName(name: String!): [PersonNode!]!
   solicitationCode(id: GlobalId!): SolicitationCodeNode!
   solicitationCodes(
@@ -1675,10 +1597,10 @@ type Query {
     includeDeleted: Boolean @deprecated(reason: "Soft-deletion is no longer used in this project, this parameter is ignored")
 
     """The page number to return, defaults to 1"""
-    page: Int
+    page: PositiveInt! = 1
 
     """The number of items to return per page, defaults to 10"""
-    pageSize: Int
+    pageSize: NonNegativeInt! = 10
 
     """
     Whether to send all results in a single page, defaults to false (should generally be avoided)
@@ -1688,12 +1610,7 @@ type Query {
     """
     The fields to sort by, in order of priority. If unspecified, the sort order is undefined
     """
-    sortBy: [String!]
-
-    """
-    The direction to sort, if not specified will default to ascending, the order of the values in this array should match the order of the values in the sortBy array, if only one value is specified it will be used for all sortBy values, otherwise the lengths must match
-    """
-    sortDirection: [SortDirection!]
+    sortBy: [SolicitationCodeSort!]
   ): ListSolicitationCodesResponse!
   team(id: GlobalId!): TeamNode!
   teams(
@@ -1705,10 +1622,10 @@ type Query {
     marathonId: [GlobalId!]
 
     """The page number to return, defaults to 1"""
-    page: Int
+    page: PositiveInt! = 1
 
     """The number of items to return per page, defaults to 10"""
-    pageSize: Int
+    pageSize: NonNegativeInt! = 10
 
     """
     Whether to send all results in a single page, defaults to false (should generally be avoided)
@@ -1718,12 +1635,7 @@ type Query {
     """
     The fields to sort by, in order of priority. If unspecified, the sort order is undefined
     """
-    sortBy: [String!]
-
-    """
-    The direction to sort, if not specified will default to ascending, the order of the values in this array should match the order of the values in the sortBy array, if only one value is specified it will be used for all sortBy values, otherwise the lengths must match
-    """
-    sortDirection: [SortDirection!]
+    sortBy: [TeamResolverSort!]
     type: [TeamType!]
     visibility: [DbRole!] @deprecated(reason: "Use type")
   ): ListTeamsResponse!
@@ -1794,13 +1706,13 @@ input SetFundraisingEntryInput {
 input SetMarathonHourInput {
   details: NonEmptyString
   durationInfo: NonEmptyString!
-  shownStartingAt: DateTimeISO!
+  shownStartingAt: LuxonDateTime!
   title: NonEmptyString!
 }
 
 input SetMarathonInput {
-  endDate: DateTimeISO
-  startDate: DateTimeISO
+  endDate: LuxonDateTime
+  startDate: LuxonDateTime
   year: NonEmptyString!
 }
 
@@ -1822,7 +1734,7 @@ input SetPersonInput {
 input SetPointOpportunityInput {
   eventUuid: GlobalId
   name: NonEmptyString
-  opportunityDate: DateTimeISO
+  opportunityDate: LuxonDateTime
   type: TeamType
 }
 
@@ -1844,7 +1756,7 @@ input SingleBooleanFilter {
 
 input SingleDateFilter {
   comparison: SingleTargetOperators!
-  value: DateTimeISO!
+  value: LuxonDateTime!
 }
 
 input SingleNumberFilter {
@@ -1867,6 +1779,7 @@ enum SingleTargetOperators {
   LIKE
   NOT_EQUALS
   NOT_ILIKE
+  NOT_LIKE
 }
 
 enum SolicitationCodeFilterFields {
@@ -1886,11 +1799,12 @@ input SolicitationCodeFilterGroup {
 input SolicitationCodeFilterItem {
   field: SolicitationCodeFilterFields!
   filter: SomeFilter!
+  negate: Boolean!
 }
 
 type SolicitationCodeNode implements Node {
   code: NonNegativeInt!
-  createdAt: DateTimeISO
+  createdAt: LuxonDateTime
   entries(
     filters: FundraisingEntryResolverFilterGroup!
 
@@ -1898,10 +1812,10 @@ type SolicitationCodeNode implements Node {
     includeDeleted: Boolean @deprecated(reason: "Soft-deletion is no longer used in this project, this parameter is ignored")
 
     """The page number to return, defaults to 1"""
-    page: Int
+    page: PositiveInt! = 1
 
     """The number of items to return per page, defaults to 10"""
-    pageSize: Int
+    pageSize: NonNegativeInt! = 10
 
     """
     Whether to send all results in a single page, defaults to false (should generally be avoided)
@@ -1911,19 +1825,19 @@ type SolicitationCodeNode implements Node {
     """
     The fields to sort by, in order of priority. If unspecified, the sort order is undefined
     """
-    sortBy: [String!]
-
-    """
-    The direction to sort, if not specified will default to ascending, the order of the values in this array should match the order of the values in the sortBy array, if only one value is specified it will be used for all sortBy values, otherwise the lengths must match
-    """
-    sortDirection: [SortDirection!]
+    sortBy: [FundraisingEntryResolverSort!]
   ): ListFundraisingEntriesResponse!
   id: GlobalId!
   name: String
   prefix: String!
   teams(marathonId: GlobalId): [TeamNode!]!
   text: String!
-  updatedAt: DateTimeISO
+  updatedAt: LuxonDateTime
+}
+
+input SolicitationCodeSort {
+  direction: SortDirection! = asc
+  field: SolicitationCodeFilterFields!
 }
 
 input SomeFilter {
@@ -1954,7 +1868,7 @@ enum TeamLegacyStatus {
 
 type TeamNode implements Node {
   committeeIdentifier: CommitteeIdentifier
-  createdAt: DateTimeISO
+  createdAt: LuxonDateTime
   fundraisingEntries(
     filters: FundraisingEntryResolverFilterGroup!
 
@@ -1962,10 +1876,10 @@ type TeamNode implements Node {
     includeDeleted: Boolean @deprecated(reason: "Soft-deletion is no longer used in this project, this parameter is ignored")
 
     """The page number to return, defaults to 1"""
-    page: Int
+    page: PositiveInt! = 1
 
     """The number of items to return per page, defaults to 10"""
-    pageSize: Int
+    pageSize: NonNegativeInt! = 10
 
     """
     Whether to send all results in a single page, defaults to false (should generally be avoided)
@@ -1975,12 +1889,7 @@ type TeamNode implements Node {
     """
     The fields to sort by, in order of priority. If unspecified, the sort order is undefined
     """
-    sortBy: [String!]
-
-    """
-    The direction to sort, if not specified will default to ascending, the order of the values in this array should match the order of the values in the sortBy array, if only one value is specified it will be used for all sortBy values, otherwise the lengths must match
-    """
-    sortDirection: [SortDirection!]
+    sortBy: [FundraisingEntryResolverSort!]
   ): ListFundraisingEntriesResponse!
   fundraisingTotalAmount: Float
   id: GlobalId!
@@ -1992,7 +1901,7 @@ type TeamNode implements Node {
   solicitationCode: SolicitationCodeNode
   totalPoints: Int!
   type: TeamType!
-  updatedAt: DateTimeISO
+  updatedAt: LuxonDateTime
 }
 
 enum TeamResolverFilterFields {
@@ -2011,6 +1920,12 @@ input TeamResolverFilterGroup {
 input TeamResolverFilterItem {
   field: TeamResolverFilterFields!
   filter: SomeFilter!
+  negate: Boolean!
+}
+
+input TeamResolverSort {
+  direction: SortDirection! = asc
+  field: TeamResolverFilterFields!
 }
 
 """Types of teams"""
@@ -2022,12 +1937,14 @@ enum TeamType {
 
 input TwoDateFilter {
   comparison: TwoTargetOperators!
-  value: [DateTimeISO!]!
+  lower: LuxonDateTime!
+  upper: LuxonDateTime!
 }
 
 input TwoNumberFilter {
   comparison: TwoTargetOperators!
-  value: [Float!]!
+  lower: Float!
+  upper: Float!
 }
 
 enum TwoTargetOperators {
