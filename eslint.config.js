@@ -380,8 +380,14 @@ export default eslintTs.config(
       "node/no-unpublished-require": "error",
       "node/process-exit-as-throw": "error",
       // "node/no-unpublished-import": "off",
-      "drizzle/enforce-delete-with-where": "error",
-      "drizzle/enforce-update-with-where": "error",
+      "drizzle/enforce-delete-with-where": [
+        "error",
+        { drizzleObjectName: "db" },
+      ],
+      "drizzle/enforce-update-with-where": [
+        "error",
+        { drizzleObjectName: "db" },
+      ],
     },
   },
   {

@@ -12,7 +12,7 @@ import {
   GraphQLObjectType,
   type GraphQLResolveInfo,
 } from "graphql";
-import { Err, Option, Result } from "ts-results-es";
+import { AsyncResult, Err, Option, Result } from "ts-results-es";
 import type { ArgsDictionary, MiddlewareFn } from "type-graphql";
 import { buildSchema } from "type-graphql";
 import { fileURLToPath } from "url";
@@ -43,6 +43,9 @@ const errorHandlingMiddleware: MiddlewareFn = async ({ info }, next) => {
     throw error;
   }
 
+  if (result instanceof AsyncResult) {
+    result = await result.promise;
+  }
   if (Result.isResult(result)) {
     if (result.isErr()) {
       let concreteError: Err<ConcreteError>;

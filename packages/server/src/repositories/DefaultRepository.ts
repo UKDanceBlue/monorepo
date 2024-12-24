@@ -5,7 +5,6 @@ import {
   ActionDeniedError,
   InvariantError,
   NotFoundError,
-  toBasicError,
 } from "@ukdanceblue/common/error";
 import type {
   eq,
@@ -14,12 +13,7 @@ import type {
   SQL,
   View,
 } from "drizzle-orm";
-import {
-  DrizzleError,
-  or,
-  type Table,
-  TransactionRollbackError,
-} from "drizzle-orm";
+import { or, type Table, TransactionRollbackError } from "drizzle-orm";
 import type { NodePgQueryResultHKT } from "drizzle-orm/node-postgres";
 import type { AnyPgColumn, PgTransaction } from "drizzle-orm/pg-core";
 import { AsyncResult } from "ts-results-es";
@@ -27,7 +21,7 @@ import { Result } from "ts-results-es";
 import { Err, Ok } from "ts-results-es";
 
 import { db } from "#db";
-import { ParsedDrizzleError } from "#error/drizzle.js";
+import { PostgresError } from "#error/postgres.js";
 import {
   type FindManyParams,
   parseFindManyParams,
@@ -48,22 +42,22 @@ export abstract class DatabaseModel<
   constructor(public readonly row: T["$inferSelect"]) {}
 
   public abstract toResource(): R;
+}
 
-  public static mapToResource<T extends Table | View, R extends Resource>(
-    // eslint-disable-next-line @typescript-eslint/no-invalid-void-type
-    this: void,
-    model: DatabaseModel<T, R>
-  ): R {
-    return model.toResource();
-  }
+export function mapToResource<T extends Table | View, R extends Resource>(
+  // eslint-disable-next-line @typescript-eslint/no-invalid-void-type
+  this: void,
+  model: DatabaseModel<T, R>
+): R {
+  return model.toResource();
+}
 
-  public static mapToResources<T extends Table | View, R extends Resource>(
-    // eslint-disable-next-line @typescript-eslint/no-invalid-void-type
-    this: void,
-    models: DatabaseModel<T, R>[]
-  ): R[] {
-    return models.map((model) => model.toResource());
-  }
+export function mapToResources<T extends Table | View, R extends Resource>(
+  // eslint-disable-next-line @typescript-eslint/no-invalid-void-type
+  this: void,
+  models: DatabaseModel<T, R>[]
+): R[] {
+  return models.map((model) => model.toResource());
 }
 
 export function buildDefaultDatabaseModel<
@@ -72,14 +66,14 @@ export function buildDefaultDatabaseModel<
     init: (...args: InitParams) => InstanceType<R>;
   },
   InitParams extends never[],
->(table: T, ResourceCls: R) {
+>(_table: T, ResourceCls: R) {
   abstract class DefaultDatabaseModel extends DatabaseModel<
     T,
     InstanceType<R>
   > {
     protected repository = Container.get<
       Repository<T & Table, DefaultDatabaseModel, { uuid: string }, never>
-    >(`${table._.name}Repository`);
+    >(`${this.constructor.name}Repository`);
 
     public static fromRow(
       this: new (row: T["$inferSelect"]) => DatabaseModel<T, InstanceType<R>>,
@@ -143,16 +137,9 @@ interface Repository<
   }: {
     param: FindManyParams<Field>;
     tx?: Transaction;
-  }): AsyncResult<
-    { total: number; selectedRows: InferSelectModel<T>[] },
-    RepositoryError
-  >;
+  }): AsyncResult<{ total: number; selectedRows: Model[] }, RepositoryError>;
 
-  findAll({
-    tx,
-  }: {
-    tx?: Transaction;
-  }): AsyncResult<InferSelectModel<T>[], RepositoryError>;
+  findAll({ tx }: { tx?: Transaction }): AsyncResult<Model[], RepositoryError>;
 
   create({
     init,
@@ -160,7 +147,7 @@ interface Repository<
   }: {
     init: InferInsertModel<T>;
     tx?: Transaction;
-  }): AsyncResult<InferSelectModel<T>, RepositoryError>;
+  }): AsyncResult<Model, RepositoryError>;
 
   update({
     by,
@@ -170,7 +157,7 @@ interface Repository<
     by: UniqueParam;
     init: Partial<InferInsertModel<T> & InferSelectModel<T>>;
     tx?: Transaction;
-  }): AsyncResult<InferSelectModel<T>, RepositoryError>;
+  }): AsyncResult<Model, RepositoryError>;
 
   delete({
     by,
@@ -178,7 +165,7 @@ interface Repository<
   }: {
     by: UniqueParam;
     tx?: Transaction;
-  }): AsyncResult<InferSelectModel<T>, RepositoryError>;
+  }): AsyncResult<Model, RepositoryError>;
 
   createMultiple({
     data,
@@ -188,7 +175,7 @@ interface Repository<
       init: InferInsertModel<T>;
     }[];
     tx?: Transaction;
-  }): AsyncResult<InferSelectModel<T>[], RepositoryError>;
+  }): AsyncResult<Model[], RepositoryError>;
 
   updateMultiple({
     data,
@@ -199,7 +186,7 @@ interface Repository<
       init: InferInsertModel<T> & InferSelectModel<T>;
     }[];
     tx?: Transaction;
-  }): AsyncResult<InferSelectModel<T>[], RepositoryError>;
+  }): AsyncResult<Model[], RepositoryError>;
 
   deleteMultiple({
     data,
@@ -209,7 +196,7 @@ interface Repository<
       by: UniqueParam;
     }[];
     tx?: Transaction;
-  }): AsyncResult<InferSelectModel<T>[], RepositoryError>;
+  }): AsyncResult<Model[], RepositoryError>;
 }
 
 export function buildDefaultRepository<
@@ -223,32 +210,34 @@ export function buildDefaultRepository<
   fieldLookup: Record<Field, SQL.Aliased | AnyPgColumn>,
   _dummyUniqueParam: UniqueParam
 ) {
+  type SelectType = InferSelectModel<T>;
+  type InsertType = InferInsertModel<T>;
+  type UpdateType = Partial<InferInsertModel<T> & InferSelectModel<T>>;
+
   abstract class DefaultRepository
     implements Repository<T, Model, UniqueParam, Field>
   {
     constructor() {
-      Container.setValue(`${table._.name}Repository`, this);
+      if (ModelCls.constructor.name)
+        Container.setValue(`${ModelCls.constructor.name}Repository`, this);
     }
-    declare static readonly selectType: InferSelectModel<T>;
-    declare static readonly insertType: InferInsertModel<T>;
+    declare static readonly selectType: SelectType;
+    declare static readonly insertType: InsertType;
 
     protected handleQueryError<D>(
       promise: Promise<D>,
       handleNotFound?: false
-    ): AsyncResult<D, ParsedDrizzleError | BasicError>;
+    ): AsyncResult<D, PostgresError | BasicError>;
     protected handleQueryError<D>(
       promise: Promise<D>,
       handleNotFound: ConstructorParameters<typeof NotFoundError>[0]
-    ): AsyncResult<
-      NonNullable<D>,
-      ParsedDrizzleError | BasicError | NotFoundError
-    >;
+    ): AsyncResult<NonNullable<D>, PostgresError | BasicError | NotFoundError>;
     protected handleQueryError<D>(
       promise: Promise<D>,
       handleNotFound:
         | false
         | ConstructorParameters<typeof NotFoundError>[0] = false
-    ): AsyncResult<D, ParsedDrizzleError | BasicError | NotFoundError> {
+    ): AsyncResult<D, PostgresError | BasicError | NotFoundError> {
       return handleNotFound
         ? this.mapToNotFound(this.promiseToAsyncResult(promise), handleNotFound)
         : this.promiseToAsyncResult(promise);
@@ -267,10 +256,7 @@ export function buildDefaultRepository<
             tx.rollback();
           }
         } catch (error) {
-          result =
-            error instanceof DrizzleError
-              ? Err(new ParsedDrizzleError(error))
-              : Err(toBasicError(error));
+          result = Err(PostgresError.fromUnknown(error));
           if (!(error instanceof TransactionRollbackError)) {
             tx.rollback();
           } else {
@@ -283,14 +269,11 @@ export function buildDefaultRepository<
 
     protected promiseToAsyncResult<T>(
       promise: Promise<T>
-    ): AsyncResult<T, ParsedDrizzleError | BasicError> {
-      return new AsyncResult<T, ParsedDrizzleError | BasicError>(
+    ): AsyncResult<T, PostgresError | BasicError> {
+      return new AsyncResult<T, PostgresError | BasicError>(
         promise.then(
           (v) => Ok(v),
-          (error) =>
-            error instanceof DrizzleError
-              ? Err(new ParsedDrizzleError(error))
-              : Err(toBasicError(error))
+          (error) => Err(PostgresError.fromUnknown(error))
         )
       );
     }
@@ -320,7 +303,7 @@ export function buildDefaultRepository<
           : Err(
               new NotFoundError({
                 what: "field",
-                where: `${table._.name}Repository`,
+                where: `${ModelCls.constructor.name}Repository`,
                 sensitive: false,
                 ...params,
               })
@@ -343,7 +326,7 @@ export function buildDefaultRepository<
     }): AsyncResult<Model, RepositoryError> {
       return this.handleQueryError(
         (tx ?? db).select().from(table).where(this.uniqueToWhere(by)),
-        { where: `${table._.name}Repository.findOne` }
+        { where: `${ModelCls.constructor.name}Repository.findOne` }
       ).andThen((rows) => {
         if (rows.length === 1) {
           return Ok(ModelCls.fromRow(rows[0]!));
@@ -351,7 +334,7 @@ export function buildDefaultRepository<
           return Err(
             new NotFoundError({
               what: "field",
-              where: `${table._.name}Repository.findOne`,
+              where: `${ModelCls.constructor.name}Repository.findOne`,
             })
           );
         }
@@ -363,10 +346,7 @@ export function buildDefaultRepository<
       ...param
     }: FindManyParams<Field> & {
       tx?: Transaction;
-    }): AsyncResult<
-      { total: number; selectedRows: InferSelectModel<T>[] },
-      RepositoryError
-    > {
+    }): AsyncResult<{ total: number; selectedRows: Model[] }, RepositoryError> {
       const parsed = this.parseFindManyParams(param);
       if (parsed.isErr()) {
         return parsed.toAsyncResult();
@@ -386,14 +366,16 @@ export function buildDefaultRepository<
         query = query.offset(offset);
       }
       const rows = this.handleQueryError(query, {
-        where: `${table._.name}Repository.findAndCount`,
+        where: `${ModelCls.constructor.name}Repository.findAndCount`,
       });
       const count = this.handleQueryError((tx ?? db).$count(table, where), {
-        where: `${table._.name}Repository.findAndCount`,
+        where: `${ModelCls.constructor.name}Repository.findAndCount`,
       });
-      return rows.andThen((selectedRows) =>
-        count.andThen((total) => Ok({ total, selectedRows }))
-      );
+      return rows
+        .map((rows) => rows.map((row) => ModelCls.fromRow(row)))
+        .andThen((selectedRows) =>
+          count.andThen((total) => Ok({ total, selectedRows }))
+        );
     }
 
     public findAll({
@@ -402,7 +384,7 @@ export function buildDefaultRepository<
     }: {
       tx?: Transaction;
       sortBy?: FindManyParams<Field>["sortBy"];
-    } = {}): AsyncResult<InferSelectModel<T>[], RepositoryError> {
+    } = {}): AsyncResult<Model[], RepositoryError> {
       const parsed = this.parseFindManyParams({ sortBy });
       if (parsed.isErr()) {
         return parsed.toAsyncResult();
@@ -411,23 +393,21 @@ export function buildDefaultRepository<
       if (parsed.value.order) {
         query = query.orderBy(...parsed.value.order);
       }
-      return this.handleQueryError(query);
+      return this.handleQueryError(query).map((rows) =>
+        rows.map(ModelCls.fromRow)
+      );
     }
 
     public create({
       init,
       tx,
     }: {
-      init: InferInsertModel<T>;
+      init: InsertType;
       tx?: Transaction;
-    }): AsyncResult<InferSelectModel<T>, RepositoryError> {
+    }): AsyncResult<Model, RepositoryError> {
       return this.handleQueryError(
-        (tx ?? db)
-          .insert(table)
-          .values(init)
-          .returning()
-          .then((row) => (row as InferSelectModel<T>[])[0]!)
-      );
+        (tx ?? db).insert(table).values(init).returning()
+      ).map(([row]) => ModelCls.fromRow(row as SelectType));
     }
 
     public update({
@@ -436,18 +416,17 @@ export function buildDefaultRepository<
       tx,
     }: {
       by: UniqueParam;
-      init: Partial<InferInsertModel<T> & InferSelectModel<T>>;
+      init: UpdateType;
       tx?: Transaction;
-    }): AsyncResult<InferSelectModel<T>, RepositoryError> {
+    }): AsyncResult<Model, RepositoryError> {
       return this.handleQueryError(
         (tx ?? db)
           .update(table)
           .set(init)
           .where(this.uniqueToWhere(by))
-          .returning()
-          .then((row) => (row as InferSelectModel<T>[])[0]),
-        { where: `${table._.name}Repository.update` }
-      );
+          .returning(),
+        { where: `${ModelCls.constructor.name}Repository.update` }
+      ).map((rows) => ModelCls.fromRow((rows as [SelectType])[0]));
     }
 
     public delete({
@@ -456,15 +435,11 @@ export function buildDefaultRepository<
     }: {
       by: UniqueParam;
       tx?: Transaction;
-    }): AsyncResult<InferSelectModel<T>, RepositoryError> {
+    }): AsyncResult<Model, RepositoryError> {
       return this.handleQueryError(
-        (tx ?? db)
-          .delete(table)
-          .where(this.uniqueToWhere(by))
-          .returning()
-          .then((row) => (row as InferSelectModel<T>[])[0]),
-        { where: `${table._.name}Repository.delete` }
-      );
+        (tx ?? db).delete(table).where(this.uniqueToWhere(by)).returning(),
+        { where: `${ModelCls.constructor.name}Repository.delete` }
+      ).map(([row]) => ModelCls.fromRow(row as SelectType));
     }
 
     public createMultiple({
@@ -472,7 +447,7 @@ export function buildDefaultRepository<
       tx,
     }: {
       data: {
-        init: InferInsertModel<T>;
+        init: InsertType;
       }[];
       tx?: Transaction;
     }) {
@@ -481,8 +456,7 @@ export function buildDefaultRepository<
           .insert(table)
           .values(data.map(({ init }) => init))
           .returning()
-          .then((row) => row as InferSelectModel<T>[])
-      );
+      ).map((rows) => rows.map((row) => ModelCls.fromRow(row as SelectType)));
     }
 
     public updateMultiple({
@@ -491,7 +465,7 @@ export function buildDefaultRepository<
     }: {
       data: {
         by: UniqueParam;
-        init: InferInsertModel<T> & InferSelectModel<T>;
+        init: UpdateType;
       }[];
       tx?: Transaction;
     }) {
@@ -499,9 +473,7 @@ export function buildDefaultRepository<
         return new AsyncResult(
           Promise.all(
             data.map(({ by, init }) => this.update({ by, init, tx }).promise)
-          ).then((val) =>
-            Result.all(val as Result<InferSelectModel<T>, RepositoryError>[])
-          )
+          ).then((val) => Result.all(val))
         );
       };
 
@@ -531,8 +503,7 @@ export function buildDefaultRepository<
           .delete(table)
           .where(or(...data.map(({ by }) => this.uniqueToWhere(by))))
           .returning()
-          .then((row) => row as InferSelectModel<T>[])
-      );
+      ).map((rows) => rows.map((row) => ModelCls.fromRow(row as SelectType)));
     }
   }
 

@@ -147,6 +147,15 @@ export function getAuthorizationFor({
     createMongoAbility
   );
 
+  allow(
+    "manage",
+    "all",
+    Object.values(extraFieldsByResource).reduce<string[]>(
+      (acc, fields) => acc.concat(Object.keys(fields)),
+      ["."]
+    )
+  );
+
   // All users may read active configurations and get device information (with that device's uuid)
   allow("readActive", ["ConfigurationNode"], ".");
   allow("get", ["DeviceNode"], ".");

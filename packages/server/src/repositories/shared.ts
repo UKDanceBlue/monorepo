@@ -7,7 +7,7 @@ import type {
 import { toBasicError } from "@ukdanceblue/common/error";
 import { Err, Some } from "ts-results-es";
 
-import type { ParsedDrizzleError } from "#error/drizzle.js";
+import type { PostgresError } from "#error/postgres.js";
 import type { SomePrismaError } from "#error/prisma.js";
 import { toPrismaError } from "#error/prisma.js";
 
@@ -21,7 +21,7 @@ export type SimpleUniqueParam = { id: number } | { uuid: string };
 export type RepositoryError =
   | ActionDeniedError
   | SomePrismaError
-  | ParsedDrizzleError
+  | PostgresError
   | BasicError
   | NotFoundError
   | InvariantError;

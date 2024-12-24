@@ -4,20 +4,22 @@ import type {
   AbstractGraphQLPaginatedResponse,
   GlobalId,
 } from "@ukdanceblue/common";
-import type { ConcreteResult } from "@ukdanceblue/common/error";
-import type { Option } from "ts-results-es";
+import type { ConcreteError, ConcreteResult } from "@ukdanceblue/common/error";
+import type { AsyncResult, Option } from "ts-results-es";
 
 type ResolverReturnType<N> =
   | Promise<N>
   | Promise<ConcreteResult<N>>
   | N
-  | ConcreteResult<N>;
+  | ConcreteResult<N>
+  | AsyncResult<N, ConcreteError>;
 type OptionalResolverReturnType<N> =
   | ResolverReturnType<N>
   | Promise<Option<N>>
   | Promise<ConcreteResult<Option<N>>>
   | Option<N>
-  | ConcreteResult<Option<N>>;
+  | ConcreteResult<Option<N>>
+  | AsyncResult<N, ConcreteError>;
 
 interface CrudOperations<NodeType> {
   getOne: (

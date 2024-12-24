@@ -11,13 +11,16 @@ import {
   CreateConfigurationInput,
   GetConfigurationResponse,
 } from "@ukdanceblue/common";
-import { ConcreteResult, NotFoundError } from "@ukdanceblue/common/error";
+import { ConcreteError } from "@ukdanceblue/common/error";
 import { DateTime } from "luxon";
-import { Err, Ok } from "ts-results-es";
+import { AsyncResult } from "ts-results-es";
 import { Arg, Mutation, Query, Resolver } from "type-graphql";
 
-import { ConfigurationModel } from "#repositories/configuration/ConfigurationModel.js";
 import { ConfigurationRepository } from "#repositories/configuration/ConfigurationRepository.js";
+import {
+  mapToResource,
+  mapToResources,
+} from "#repositories/DefaultRepository.js";
 
 @Resolver(() => ConfigurationNode)
 @Service([ConfigurationRepository])
@@ -34,26 +37,16 @@ export class ConfigurationResolver
     description:
       "Get the active configuration for a given key at the current time",
   })
-  async activeConfiguration(
+  activeConfiguration(
     @Arg("key") key: string
-  ): Promise<ConcreteResult<GetConfigurationResponse>> {
-    const row = await this.configurationRepository.findConfigurationByKey(
-      key,
-      DateTime.now()
-    );
-
-    if (row == null) {
-      return Err(
-        new NotFoundError({
-          what: `Configuration with key ${key}`,
-          where: "activeConfiguration resolver",
-        })
-      );
-    }
-
-    const resp = new GetConfigurationResponse();
-    resp.data = row.toResource();
-    return Ok(resp);
+  ): AsyncResult<GetConfigurationResponse, ConcreteError> {
+    return this.configurationRepository
+      .findConfigurationByKey(key, DateTime.now())
+      .map((row) => {
+        const resp = new GetConfigurationResponse();
+        resp.data = row.toResource();
+        return resp;
+      });
   }
 
   @AccessControlAuthorized("get", "ConfigurationNode")
@@ -61,14 +54,14 @@ export class ConfigurationResolver
     name: "configuration",
     description: "Get a particular configuration entry by UUID",
   })
-  async configuration(
+  configuration(
     @Arg("id", () => GlobalIdScalar) { id }: GlobalId
-  ): Promise<ConcreteResult<ConfigurationNode>> {
+  ): AsyncResult<ConfigurationNode, ConcreteError> {
     return this.configurationRepository
       .findOne({
         by: { uuid: id },
       })
-      .map(ConfigurationModel.mapToResource).promise;
+      .map(mapToResource);
   }
 
   @AccessControlAuthorized("list", "ConfigurationNode")
@@ -76,12 +69,12 @@ export class ConfigurationResolver
     name: "allConfigurations",
     description: "Get all configurations, irrespective of time",
   })
-  async allConfigurations(): Promise<ConcreteResult<ConfigurationNode[]>> {
+  allConfigurations(): AsyncResult<ConfigurationNode[], ConcreteError> {
     return this.configurationRepository
       .findAll({
         sortBy: [{ field: "createdAt", direction: SortDirection.desc }],
       })
-      .map(ConfigurationModel.mapToResources).promise;
+      .map(mapToResources);
   }
 
   @AccessControlAuthorized("create")
@@ -90,9 +83,9 @@ export class ConfigurationResolver
     description:
       "Create a new configuration, superseding existing configurations with the same key (depending on the validAfter and validUntil fields)",
   })
-  async createConfiguration(
+  createConfiguration(
     @Arg("input") input: CreateConfigurationInput
-  ): Promise<ConcreteResult<ConfigurationNode>> {
+  ): AsyncResult<ConfigurationNode, ConcreteError> {
     return this.configurationRepository
       .create({
         init: {
@@ -102,7 +95,7 @@ export class ConfigurationResolver
           validUntil: dateTimeFromSomething(input.validUntil ?? null),
         },
       })
-      .map(configurationModelToResource).promise;
+      .map(mapToResource);
   }
 
   @AccessControlAuthorized("create")
@@ -111,20 +104,22 @@ export class ConfigurationResolver
     description:
       "Create multiple configurations, superseding existing configurations with the same key (depending on the validAfter and validUntil fields)",
   })
-  async batchCreate(
+  batchCreate(
     @Arg("input", () => [CreateConfigurationInput])
     input: CreateConfigurationInput[]
-  ): Promise<ConcreteResult<ConfigurationNode[]>> {
-    const rows = await this.configurationRepository.bulkCreateConfigurations(
-      input.map((i) => ({
-        key: i.key,
-        value: i.value,
-        validAfter: dateTimeFromSomething(i.validAfter ?? null),
-        validUntil: dateTimeFromSomething(i.validUntil ?? null),
-      }))
-    );
-
-    return Ok(rows.map(configurationModelToResource));
+  ): AsyncResult<ConfigurationNode[], ConcreteError> {
+    return this.configurationRepository
+      .createMultiple({
+        data: input.map((i) => ({
+          init: {
+            key: i.key,
+            value: i.value,
+            validAfter: dateTimeFromSomething(i.validAfter ?? null),
+            validUntil: dateTimeFromSomething(i.validUntil ?? null),
+          },
+        })),
+      })
+      .map(mapToResources);
   }
 
   @AccessControlAuthorized("delete")
@@ -132,20 +127,11 @@ export class ConfigurationResolver
     name: "deleteConfiguration",
     description: "Delete a configuration by UUID",
   })
-  async deleteConfiguration(
+  deleteConfiguration(
     @Arg("id", () => GlobalIdScalar) { id }: GlobalId
-  ): Promise<ConcreteResult<ConfigurationNode>> {
-    const row = await this.configurationRepository.deleteConfiguration(id);
-
-    if (row == null) {
-      return Err(
-        new NotFoundError({
-          what: `Configuration with UUID ${id}`,
-          where: "deleteConfiguration resolver",
-        })
-      );
-    }
-
-    return Ok(configurationModelToResource(row));
+  ): AsyncResult<ConfigurationNode, ConcreteError> {
+    return this.configurationRepository
+      .delete({ by: { uuid: id } })
+      .map(mapToResource);
   }
 }
