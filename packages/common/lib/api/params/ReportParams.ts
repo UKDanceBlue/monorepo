@@ -2,6 +2,10 @@ import { GraphQLDateTimeISO, GraphQLNonEmptyString } from "graphql-scalars";
 import { ArgsType, Field, ObjectType } from "type-graphql";
 
 import { Primitive } from "../../utility/primitive/TypeUtils.js";
+import {
+  IsAfterDateTime,
+  IsBeforeDateTime,
+} from "../validation/beforeAfter.js";
 
 @ObjectType()
 export class ReportPage {
@@ -61,9 +65,11 @@ export class Report {
 
 @ArgsType()
 export class ReportArgs {
+  @IsBeforeDateTime("to")
   @Field(() => GraphQLDateTimeISO, { nullable: true })
   from?: Date | null | undefined;
 
+  @IsAfterDateTime("from")
   @Field(() => GraphQLDateTimeISO, { nullable: true })
   to?: Date | null | undefined;
 

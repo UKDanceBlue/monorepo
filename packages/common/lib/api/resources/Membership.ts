@@ -1,3 +1,4 @@
+import { DateTime } from "luxon";
 import { Field, ObjectType, registerEnumType } from "type-graphql";
 
 import {
@@ -38,8 +39,8 @@ export class MembershipNode extends TimestampedResource implements Node {
   public static init(init: {
     id: string;
     position: MembershipPositionType;
-    createdAt?: Date | undefined | null;
-    updatedAt?: Date | undefined | null;
+    createdAt?: DateTime | undefined | null;
+    updatedAt?: DateTime | undefined | null;
   }) {
     return MembershipNode.createInstance().withValues(init);
   }
@@ -60,8 +61,8 @@ export class CommitteeMembershipNode extends MembershipNode implements Node {
     position: MembershipPositionType;
     identifier: CommitteeIdentifier;
     role: CommitteeRole;
-    createdAt?: Date | undefined | null;
-    updatedAt?: Date | undefined | null;
+    createdAt?: DateTime | undefined | null;
+    updatedAt?: DateTime | undefined | null;
   }) {
     return CommitteeMembershipNode.createInstance().withValues(init);
   }

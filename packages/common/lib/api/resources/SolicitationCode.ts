@@ -1,4 +1,5 @@
 import { NonNegativeIntResolver } from "graphql-scalars";
+import { DateTime } from "luxon";
 import { Field, ObjectType } from "type-graphql";
 
 import { createNodeClasses, Node } from "../relay.js";
@@ -42,8 +43,8 @@ export class SolicitationCodeNode extends TimestampedResource implements Node {
     prefix: string;
     code: number;
     name?: string | undefined | null;
-    createdAt: Date;
-    updatedAt: Date;
+    createdAt: DateTime;
+    updatedAt: DateTime;
   }) {
     return SolicitationCodeNode.createInstance().withValues(init);
   }

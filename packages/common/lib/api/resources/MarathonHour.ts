@@ -1,9 +1,8 @@
-import { GraphQLDateTimeISO } from "graphql-scalars";
 import type { DateTime } from "luxon";
 import { Field, ObjectType } from "type-graphql";
 
-import { dateTimeFromSomething } from "../../utility/time/intervalTools.js";
 import { createNodeClasses, Node } from "../relay.js";
+import { DateTimeISOScalar } from "../scalars/DateTimeISO.js";
 import type { GlobalId } from "../scalars/GlobalId.js";
 import { GlobalIdScalar } from "../scalars/GlobalId.js";
 import { TimestampedResource } from "./Resource.js";
@@ -18,11 +17,8 @@ export class MarathonHourNode extends TimestampedResource implements Node {
   title!: string;
   @Field(() => String, { nullable: true })
   details?: string | undefined | null;
-  @Field(() => GraphQLDateTimeISO)
-  shownStartingAt!: Date;
-  get shownStartingAtDateTime(): DateTime {
-    return dateTimeFromSomething(this.shownStartingAt);
-  }
+  @Field(() => DateTimeISOScalar)
+  shownStartingAt!: DateTime;
   @Field(() => String)
   durationInfo!: string;
 
@@ -38,10 +34,10 @@ export class MarathonHourNode extends TimestampedResource implements Node {
     id: string;
     title: string;
     details?: string | undefined | null;
-    shownStartingAt: Date;
+    shownStartingAt: DateTime;
     durationInfo: string;
-    createdAt?: Date | undefined | null;
-    updatedAt?: Date | undefined | null;
+    createdAt?: DateTime | undefined | null;
+    updatedAt?: DateTime | undefined | null;
   }): MarathonHourNode {
     return this.createInstance().withValues({
       id,

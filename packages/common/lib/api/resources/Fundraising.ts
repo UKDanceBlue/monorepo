@@ -1,9 +1,8 @@
-import { GraphQLDateTimeISO } from "graphql-scalars";
 import type { DateTime } from "luxon";
 import { Field, Float, ObjectType } from "type-graphql";
 
-import { dateTimeFromSomething } from "../../utility/time/intervalTools.js";
 import { createNodeClasses, Node } from "../relay.js";
+import { DateTimeISOScalar } from "../scalars/DateTimeISO.js";
 import type { GlobalId } from "../scalars/GlobalId.js";
 import { GlobalIdScalar } from "../scalars/GlobalId.js";
 import { BatchType } from "./DailyDepartmentNotification.js";
@@ -29,20 +28,14 @@ export class FundraisingEntryNode extends TimestampedResource implements Node {
   @Field(() => String, { nullable: true, name: "donatedToOverride" })
   donatedToOverride!: string | null | undefined;
 
-  @Field(() => GraphQLDateTimeISO, { nullable: true, name: "donatedOn" })
-  donatedOn!: Date | null | undefined;
-  get donatedOnDateTime(): DateTime | null | undefined {
-    return dateTimeFromSomething(this.donatedOn);
-  }
+  @Field(() => DateTimeISOScalar, { nullable: true, name: "donatedOn" })
+  donatedOn!: DateTime | null | undefined;
 
-  @Field(() => GraphQLDateTimeISO, {
+  @Field(() => DateTimeISOScalar, {
     nullable: true,
     name: "donatedOnOverride",
   })
-  donatedOnOverride!: Date | null | undefined;
-  get donatedOnOverrideDateTime(): DateTime | null | undefined {
-    return dateTimeFromSomething(this.donatedOnOverride);
-  }
+  donatedOnOverride!: DateTime | null | undefined;
 
   @Field(() => Float)
   amount!: number;
@@ -75,13 +68,13 @@ export class FundraisingEntryNode extends TimestampedResource implements Node {
     donatedByOverride: string | null;
     donatedToText: string | null;
     donatedToOverride: string | null;
-    donatedOn: Date | null;
-    donatedOnOverride: Date | null;
+    donatedOn: DateTime | null;
+    donatedOnOverride: DateTime | null;
     amount: number;
     amountOverride: number | null;
     amountUnassigned: number;
-    createdAt: Date;
-    updatedAt: Date;
+    createdAt: DateTime;
+    updatedAt: DateTime;
     notes?: string | null;
     solicitationCodeOverride?: SolicitationCodeNode | null;
     batchType: BatchType;
@@ -116,8 +109,8 @@ export class FundraisingAssignmentNode
   public static init(init: {
     id: string;
     amount: number;
-    createdAt: Date;
-    updatedAt: Date;
+    createdAt: DateTime;
+    updatedAt: DateTime;
   }) {
     return FundraisingAssignmentNode.createInstance().withValues(init);
   }

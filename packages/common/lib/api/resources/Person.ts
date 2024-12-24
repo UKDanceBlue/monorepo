@@ -1,3 +1,4 @@
+import { DateTime } from "luxon";
 import { Field, ObjectType } from "type-graphql";
 
 import { DbRole } from "../../authorization/structures.js";
@@ -31,8 +32,8 @@ export class PersonNode extends TimestampedResource implements Node {
     email: string;
     linkblue?: string | undefined | null;
     dbRole?: DbRole | undefined | null;
-    createdAt?: Date | undefined | null;
-    updatedAt?: Date | undefined | null;
+    createdAt?: DateTime | undefined | null;
+    updatedAt?: DateTime | undefined | null;
   }) {
     return this.createInstance().withValues(init);
   }

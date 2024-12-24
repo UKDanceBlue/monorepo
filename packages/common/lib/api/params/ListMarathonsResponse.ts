@@ -4,6 +4,10 @@ import { ArgsType, Field, InputType, ObjectType } from "type-graphql";
 
 import { FilteredListQueryArgs } from "../filtering/list-query-args/FilteredListQueryArgs.js";
 import { MarathonNode } from "../resources/Marathon.js";
+import {
+  IsAfterDateTime,
+  IsBeforeDateTime,
+} from "../validation/beforeAfter.js";
 import { AbstractGraphQLPaginatedResponse } from "./ApiResponse.js";
 
 @ObjectType("ListMarathonsResponse", {
@@ -20,9 +24,11 @@ export class CreateMarathonInput {
   @Field(() => GraphQLNonEmptyString)
   year!: string;
 
+  @IsBeforeDateTime("endDate")
   @Field(() => GraphQLDateTimeISO, { nullable: true })
   startDate?: Date | undefined | null;
 
+  @IsAfterDateTime("startDate")
   @Field(() => GraphQLDateTimeISO, { nullable: true })
   endDate?: Date | undefined | null;
 }
@@ -33,9 +39,11 @@ export class SetMarathonInput {
   @Field(() => GraphQLNonEmptyString)
   year!: string;
 
+  @IsBeforeDateTime("endDate")
   @Field(() => GraphQLDateTimeISO, { nullable: true })
   startDate?: Date | undefined | null;
 
+  @IsAfterDateTime("startDate")
   @Field(() => GraphQLDateTimeISO, { nullable: true })
   endDate?: Date | undefined | null;
 }

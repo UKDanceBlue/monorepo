@@ -1,10 +1,10 @@
-import { GraphQLDateTimeISO, GraphQLURL } from "graphql-scalars";
+import { GraphQLURL } from "graphql-scalars";
 import type { DateTime } from "luxon";
 import { Field, ObjectType } from "type-graphql";
 
 import { AccessControlAuthorized } from "../../authorization/AccessControlParam.js";
-import { dateTimeFromSomething } from "../../utility/time/intervalTools.js";
 import { createNodeClasses, Node } from "../relay.js";
+import { DateTimeISOScalar } from "../scalars/DateTimeISO.js";
 import type { GlobalId } from "../scalars/GlobalId.js";
 import { GlobalIdScalar } from "../scalars/GlobalId.js";
 import { TimestampedResource } from "./Resource.js";
@@ -29,35 +29,26 @@ export class NotificationNode extends TimestampedResource implements Node {
   @AccessControlAuthorized("get", "NotificationNode", ".deliveryIssue")
   deliveryIssue?: string | undefined | null;
 
-  @Field(() => GraphQLDateTimeISO, { nullable: true })
+  @Field(() => DateTimeISOScalar, { nullable: true })
   @AccessControlAuthorized(
     "get",
     "NotificationNode",
     ".deliveryIssueAcknowledgedAt"
   )
-  deliveryIssueAcknowledgedAt?: Date | undefined | null;
-  get deliveryIssueAcknowledgedAtDateTime(): DateTime | null {
-    return dateTimeFromSomething(this.deliveryIssueAcknowledgedAt ?? null);
-  }
+  deliveryIssueAcknowledgedAt?: DateTime | undefined | null;
 
-  @Field(() => GraphQLDateTimeISO, {
+  @Field(() => DateTimeISOScalar, {
     nullable: true,
     description:
       "The time the notification is scheduled to be sent, if null it is either already sent or unscheduled.",
   })
-  sendAt?: Date | undefined | null;
-  get sendAtDateTime(): DateTime | null {
-    return dateTimeFromSomething(this.sendAt ?? null);
-  }
+  sendAt?: DateTime | undefined | null;
 
-  @Field(() => GraphQLDateTimeISO, {
+  @Field(() => DateTimeISOScalar, {
     nullable: true,
     description: "The time the server started sending the notification.",
   })
-  startedSendingAt?: Date | undefined | null;
-  get startedSendingAtDateTime(): DateTime | null {
-    return dateTimeFromSomething(this.startedSendingAt ?? null);
-  }
+  startedSendingAt?: DateTime | undefined | null;
 
   public getUniqueId(): string {
     return this.id.id;
@@ -69,11 +60,11 @@ export class NotificationNode extends TimestampedResource implements Node {
     body: string;
     url?: URL | undefined | null;
     deliveryIssue?: string | undefined | null;
-    deliveryIssueAcknowledgedAt?: Date | undefined | null;
-    sendAt?: Date | undefined | null;
-    startedSendingAt?: Date | undefined | null;
-    createdAt: Date;
-    updatedAt: Date;
+    deliveryIssueAcknowledgedAt?: DateTime | undefined | null;
+    sendAt?: DateTime | undefined | null;
+    startedSendingAt?: DateTime | undefined | null;
+    createdAt: DateTime;
+    updatedAt: DateTime;
   }) {
     return NotificationNode.createInstance().withValues(init);
   }
@@ -92,14 +83,14 @@ export class NotificationDeliveryNode
   @Field(() => GlobalIdScalar)
   id!: GlobalId;
 
-  @Field(() => Date, {
+  @Field(() => DateTimeISOScalar, {
     nullable: true,
     description:
       "The time the server sent the notification to Expo for delivery.",
   })
-  sentAt?: Date | undefined | null;
+  sentAt?: DateTime | undefined | null;
 
-  @Field(() => Date, {
+  @Field(() => DateTimeISOScalar, {
     nullable: true,
     description:
       "The time the server received a delivery receipt from the user.",
@@ -109,7 +100,7 @@ export class NotificationDeliveryNode
     "NotificationDeliveryNode",
     ".receiptCheckedAt"
   )
-  receiptCheckedAt?: Date | undefined | null;
+  receiptCheckedAt?: DateTime | undefined | null;
 
   @Field(() => String, {
     nullable: true,
@@ -133,12 +124,12 @@ export class NotificationDeliveryNode
 
   public static init(init: {
     id: string;
-    sentAt?: Date | undefined | null;
-    receiptCheckedAt?: Date | undefined | null;
+    sentAt?: DateTime | undefined | null;
+    receiptCheckedAt?: DateTime | undefined | null;
     chunkUuid?: string | undefined | null;
     deliveryError?: string | undefined | null;
-    createdAt: Date;
-    updatedAt: Date;
+    createdAt: DateTime;
+    updatedAt: DateTime;
   }) {
     return NotificationDeliveryNode.createInstance().withValues(init);
   }

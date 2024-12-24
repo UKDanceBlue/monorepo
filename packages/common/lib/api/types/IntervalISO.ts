@@ -1,40 +1,35 @@
-import { GraphQLDateTimeISO } from "graphql-scalars";
 import { DateTime, Interval } from "luxon";
 import { Field, InputType, ObjectType } from "type-graphql";
 
-import { dateTimeFromSomething } from "../../utility/time/intervalTools.js";
+import { DateTimeISOScalar } from "../scalars/DateTimeISO.js";
+import {
+  IsAfterDateTime,
+  IsBeforeDateTime,
+} from "../validation/beforeAfter.js";
 
 @ObjectType()
 @InputType("IntervalISOInput")
 export class IntervalISO {
-  @Field(() => GraphQLDateTimeISO)
-  start!: Date;
-  get startDateTime(): DateTime {
-    return dateTimeFromSomething(this.start);
-  }
+  @IsBeforeDateTime("end", true)
+  @Field(() => DateTimeISOScalar)
+  start!: DateTime;
 
-  @Field(() => GraphQLDateTimeISO)
-  end!: Date;
-  get endDateTime(): DateTime {
-    return dateTimeFromSomething(this.end);
-  }
+  @IsAfterDateTime("start", true)
+  @Field(() => DateTimeISOScalar)
+  end!: DateTime;
 
   get interval(): Interval {
-    return Interval.fromDateTimes(this.startDateTime, this.endDateTime);
+    return Interval.fromDateTimes(this.start, this.end);
   }
 
-  static init(start: Date, end: Date): IntervalISO {
+  static init(start: DateTime, end: DateTime): IntervalISO {
     const self = new IntervalISO();
     self.start = start;
     self.end = end;
     return self;
   }
 
-  static fromDateTimes(start: DateTime, end: DateTime): IntervalISO {
-    return this.init(start.toJSDate(), end.toJSDate());
-  }
-
   static fromInterval(interval: Interval<true>): IntervalISO {
-    return this.fromDateTimes(interval.start, interval.end);
+    return this.init(interval.start, interval.end);
   }
 }
