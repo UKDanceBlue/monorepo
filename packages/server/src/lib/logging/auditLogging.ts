@@ -17,7 +17,7 @@ import type { LeveledLogMethod, Logger } from "winston";
 import { createLogger, format, transports } from "winston";
 
 import type { GraphQLContext } from "#auth/context.js";
-import { logDirToken, prismaToken } from "#lib/typediTokens.js";
+import { logDirToken, drizzleToken } from "#lib/typediTokens.js";
 import { isDevelopmentToken } from "#lib/typediTokens.js";
 
 import { logger } from "./standardLogging.js";
@@ -68,7 +68,7 @@ const writeAuditLog = (
   userId?: string | number,
   subjectGlobalId?: string | GlobalId
 ) =>
-  Container.get(prismaToken).auditLog.create({
+  Container.get(drizzleToken).auditLog.create({
     data: {
       summary: message,
       details: details ? (details as JsonObject) : {},

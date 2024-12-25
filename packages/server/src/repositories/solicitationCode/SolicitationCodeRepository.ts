@@ -1,16 +1,10 @@
 import { Service } from "@freshgum/typedi";
-import type {
-  FundraisingEntry,
-  PrismaClient,
-  SolicitationCode,
-  Team,
-} from "@prisma/client";
 import type { InvariantError } from "@ukdanceblue/common/error";
 import { ActionDeniedError, NotFoundError } from "@ukdanceblue/common/error";
 import type { Result } from "ts-results-es";
 import { Err, None, Ok } from "ts-results-es";
 
-import { prismaToken } from "#lib/typediTokens.js";
+import { drizzleToken } from "#lib/typediTokens.js";
 import type {
   FundraisingEntryUniqueParam,
   WideFundraisingEntryWithMeta,
@@ -30,9 +24,9 @@ export type SolicitationCodeUniqueParam =
       prefix: string;
     };
 
-@Service([prismaToken])
+@Service([drizzleToken])
 export class SolicitationCodeRepository {
-  constructor(private readonly prisma: PrismaClient) {}
+  constructor(protected readonly db: Drizzle) {}
   async createSolicitationCode({
     prefix,
     code,

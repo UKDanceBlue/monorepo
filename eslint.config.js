@@ -4,7 +4,6 @@ import eslintJs from "@eslint/js";
 import graphqlPlugin from "@graphql-eslint/eslint-plugin";
 import eslintPluginVitest from "@vitest/eslint-plugin";
 import eslintConfigPrettier from "eslint-config-prettier";
-import eslintPluginDrizzle from "eslint-plugin-drizzle";
 import eslintPluginNode from "eslint-plugin-n";
 import eslintPluginReact from "eslint-plugin-react";
 import eslintPluginReactHooks from "eslint-plugin-react-hooks";
@@ -364,7 +363,7 @@ export default eslintTs.config(
   {
     name: "Server-specific",
     files: ["packages/server/**/*.ts"],
-    plugins: { node: eslintPluginNode, drizzle: eslintPluginDrizzle },
+    plugins: { node: eslintPluginNode },
     languageOptions: {
       ecmaVersion: 2022,
       sourceType: "module",
@@ -380,14 +379,6 @@ export default eslintTs.config(
       "node/no-unpublished-require": "error",
       "node/process-exit-as-throw": "error",
       // "node/no-unpublished-import": "off",
-      "drizzle/enforce-delete-with-where": [
-        "error",
-        { drizzleObjectName: "db" },
-      ],
-      "drizzle/enforce-update-with-where": [
-        "error",
-        { drizzleObjectName: "db" },
-      ],
     },
   },
   {

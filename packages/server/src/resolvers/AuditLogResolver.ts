@@ -1,5 +1,4 @@
 import { Service } from "@freshgum/typedi";
-import { PrismaClient } from "@prisma/client";
 import {
   AbstractGraphQLPaginatedResponse,
   AccessControlAuthorized,
@@ -30,7 +29,7 @@ import {
 } from "type-graphql";
 
 import type { GraphQLContext } from "#auth/context.js";
-import { prismaToken } from "#lib/typediTokens.js";
+import { drizzleToken } from "#lib/typediTokens.js";
 import { personModelToResource } from "#repositories/person/personModelToResource.js";
 import { PersonRepository } from "#repositories/person/PersonRepository.js";
 import { RepositoryError } from "#repositories/shared.js";
@@ -46,10 +45,10 @@ export class ListAuditLogsResponse extends AbstractGraphQLPaginatedResponse<Audi
 }
 
 @Resolver(() => AuditLogNode)
-@Service([prismaToken, PersonRepository, NodeResolver])
+@Service([drizzleToken, PersonRepository, NodeResolver])
 export class AuditLogResolver {
   constructor(
-    private readonly prisma: PrismaClient,
+    protected readonly db: Drizzle,
     private readonly personRepository: PersonRepository,
     private readonly nodeResolver: NodeResolver
   ) {}

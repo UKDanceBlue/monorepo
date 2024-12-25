@@ -1,5 +1,4 @@
 import { Service } from "@freshgum/typedi";
-import { BatchType, PrismaClient } from "@prisma/client";
 import {
   AccessControlAuthorized,
   Report,
@@ -14,15 +13,15 @@ import { DateTime } from "luxon";
 import { Err, Ok } from "ts-results-es";
 import { Args, Query, Resolver } from "type-graphql";
 
-import { prismaToken } from "#lib/typediTokens.js";
+import { drizzleToken } from "#lib/typediTokens.js";
 
 /**
  * This resolver makes direct queries to the database to generate reports, it is the exception to the rule of using repositories.
  */
 @Resolver(() => Report)
-@Service([prismaToken])
+@Service([drizzleToken])
 export class ReportResolver {
-  constructor(private readonly prisma: PrismaClient) {}
+  constructor(protected readonly db: Drizzle) {}
 
   @AccessControlAuthorized("list", "FundraisingEntryNode")
   @Query(() => Report, {

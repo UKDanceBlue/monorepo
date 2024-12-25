@@ -2,14 +2,14 @@ import { Service } from "@freshgum/typedi";
 import { and, desc, eq, gte, isNull, lte, or } from "drizzle-orm";
 import type { DateTime } from "luxon";
 
-import { db } from "#db";
+import { drizzleToken } from "#lib/typediTokens.js";
 import { buildDefaultRepository } from "#repositories/DefaultRepository.js";
 import { SimpleUniqueParam } from "#repositories/shared.js";
 import { configuration } from "#schema/tables/misc.sql.js";
 
 import { ConfigurationModel } from "./ConfigurationModel.js";
 
-@Service([])
+@Service([drizzleToken])
 export class ConfigurationRepository extends buildDefaultRepository(
   configuration,
   ConfigurationModel,
@@ -31,7 +31,7 @@ export class ConfigurationRepository extends buildDefaultRepository(
 
   findConfigurationByKey(key: string, at: DateTime | undefined) {
     return this.handleQueryError(
-      db.query.configuration.findFirst({
+      this.db.query.configuration.findFirst({
         where: and(
           eq(configuration.key, key),
           ...(at

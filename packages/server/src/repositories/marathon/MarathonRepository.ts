@@ -5,7 +5,7 @@ import { Ok, Option, Result } from "ts-results-es";
 
 import { db } from "#db";
 import { sqlCurrentTimestamp } from "#lib/sqlValues.js";
-import { prismaToken } from "#lib/typediTokens.js";
+import { drizzleToken } from "#lib/typediTokens.js";
 import { buildDefaultRepository } from "#repositories/DefaultRepository.js";
 import {
   handleRepositoryError,
@@ -18,7 +18,7 @@ export type UniqueMarathonParam =
   | { uuid: string }
   | { year: string };
 
-@Service([prismaToken])
+@Service([drizzleToken])
 export class MarathonRepository extends buildDefaultRepository(
   marathon,
   {

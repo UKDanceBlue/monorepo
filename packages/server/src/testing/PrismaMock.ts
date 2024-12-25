@@ -1,4 +1,3 @@
-import type { PrismaClient } from "@prisma/client";
 import type { Mock } from "vitest";
 import { vi } from "vitest";
 

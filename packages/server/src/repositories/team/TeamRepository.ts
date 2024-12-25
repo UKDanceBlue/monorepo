@@ -1,5 +1,4 @@
 import { Service } from "@freshgum/typedi";
-import { Prisma, PrismaClient, SolicitationCode, Team } from "@prisma/client";
 import type {
   BulkTeamInput,
   MarathonYearString,
@@ -82,11 +81,11 @@ function makeMarathonWhere(param: MarathonParam[]) {
   };
 }
 
-import { prismaToken } from "#lib/typediTokens.js";
+import { drizzleToken } from "#lib/typediTokens.js";
 
-@Service([prismaToken])
+@Service([drizzleToken])
 export class TeamRepository {
-  constructor(private prisma: PrismaClient) {}
+  constructor(protected readonly db: Drizzle) {}
 
   /**
    * Find a team by its unique identifier

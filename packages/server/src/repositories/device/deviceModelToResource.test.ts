@@ -1,4 +1,3 @@
-import type { Device } from "@prisma/client";
 import { DeviceNode } from "@ukdanceblue/common";
 import { describe, expect, it } from "vitest";
 

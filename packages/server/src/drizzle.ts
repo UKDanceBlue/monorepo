@@ -1,5 +1,7 @@
+import { Container } from "@freshgum/typedi";
 import { drizzle } from "drizzle-orm/node-postgres";
 
+import { drizzleToken } from "#lib/typediTokens.js";
 import { sqlLogger } from "#logging/sqlLogging.js";
 import * as core from "#schema/core.sql.js";
 import * as enums from "#schema/enums.sql.js";
@@ -43,7 +45,7 @@ export const schema = {
   ...core,
 };
 
-export const db = drizzle(process.env.DATABASE_URL!, {
+const db = drizzle(process.env.DATABASE_URL!, {
   schema,
   logger: {
     logQuery(query, params) {
@@ -51,6 +53,9 @@ export const db = drizzle(process.env.DATABASE_URL!, {
     },
   },
 });
+
+export type Drizzle = typeof db;
+Container.setValue(drizzleToken, db);
 
 // console.log(await db.select().from(views.fundraisingEntryWithMeta).limit(4));
 

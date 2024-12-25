@@ -1,15 +1,14 @@
 import { Service } from "@freshgum/typedi";
-import { PrismaClient } from "@prisma/client";
 import { DateTime } from "luxon";
 import { randomPKCECodeVerifier } from "openid-client";
 
 type LoginFlowSessionUniqueParam = { id: number } | { uuid: string };
 
-import { prismaToken } from "#lib/typediTokens.js";
+import { drizzleToken } from "#lib/typediTokens.js";
 
-@Service([prismaToken])
+@Service([drizzleToken])
 export class LoginFlowSessionRepository {
-  constructor(private prisma: PrismaClient) {}
+  constructor(protected readonly db: Drizzle) {}
 
   // Finders
 

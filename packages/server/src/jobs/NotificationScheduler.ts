@@ -1,5 +1,4 @@
 import { Service } from "@freshgum/typedi";
-import type { Notification } from "@prisma/client";
 import { ConcreteResult, ErrorCode } from "@ukdanceblue/common/error";
 import { Cron, scheduledJobs } from "croner";
 

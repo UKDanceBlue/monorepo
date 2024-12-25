@@ -1,5 +1,4 @@
 import { Service } from "@freshgum/typedi";
-import { Membership, Person, PrismaClient, Team } from "@prisma/client";
 import { CommitteeRole, MembershipPositionType } from "@ukdanceblue/common";
 import { NotFoundError } from "@ukdanceblue/common/error";
 import { Err, Ok, Result } from "ts-results-es";
@@ -40,11 +39,11 @@ export type MembershipFilters = FilterItems<
 
 type UniqueMembershipParam = { id: number } | { uuid: string };
 
-import { prismaToken } from "#lib/typediTokens.js";
+import { drizzleToken } from "#lib/typediTokens.js";
 
-@Service([prismaToken])
+@Service([drizzleToken])
 export class MembershipRepository {
-  constructor(private prisma: PrismaClient) {}
+  constructor(protected readonly db: Drizzle) {}
 
   async findMembershipByUnique(
     param: UniqueMembershipParam,

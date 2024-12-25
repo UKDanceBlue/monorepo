@@ -1,5 +1,4 @@
 import { Service } from "@freshgum/typedi";
-import { NotificationError, Prisma, PrismaClient } from "@prisma/client";
 import type { SortDirection } from "@ukdanceblue/common";
 import type { ExpoPushReceipt, ExpoPushTicket } from "expo-server-sdk";
 import type { DateTime } from "luxon";
@@ -90,11 +89,11 @@ function normalizeReceiptErrorCode(
   return normalizedCode;
 }
 
-import { prismaToken } from "#lib/typediTokens.js";
+import { drizzleToken } from "#lib/typediTokens.js";
 
-@Service([prismaToken])
+@Service([drizzleToken])
 export class NotificationDeliveryRepository {
-  constructor(private prisma: PrismaClient) {}
+  constructor(protected readonly db: Drizzle) {}
 
   findNotificationDeliveryByUnique(param: UniqueParam) {
     return this.prisma.notificationDelivery.findUnique({ where: param });

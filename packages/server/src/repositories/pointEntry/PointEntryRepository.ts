@@ -1,5 +1,4 @@
 import { Service } from "@freshgum/typedi";
-import { Prisma, PrismaClient } from "@prisma/client";
 import type { SortDirection } from "@ukdanceblue/common";
 
 import type { FilterItems } from "#lib/prisma-utils/gqlFilterToPrismaFilter.js";
@@ -38,11 +37,11 @@ export type PointEntryFilters = FilterItems<
 
 type UniquePointEntryParam = { id: number } | { uuid: string };
 
-import { prismaToken } from "#lib/typediTokens.js";
+import { drizzleToken } from "#lib/typediTokens.js";
 
-@Service([prismaToken])
+@Service([drizzleToken])
 export class PointEntryRepository {
-  constructor(private prisma: PrismaClient) {}
+  constructor(protected readonly db: Drizzle) {}
 
   findPointEntryByUnique(param: UniquePointEntryParam) {
     return this.prisma.pointEntry.findUnique({ where: param });

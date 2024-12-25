@@ -1,10 +1,3 @@
-import type {
-  DailyDepartmentNotification,
-  DailyDepartmentNotificationBatch,
-  DDNDonor,
-  DDNDonorLink,
-  SolicitationCode,
-} from "@prisma/client";
 import {
   DailyDepartmentNotificationBatchNode,
   DailyDepartmentNotificationNode,

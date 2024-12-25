@@ -1,6 +1,4 @@
 import { Service } from "@freshgum/typedi";
-import type { Prisma } from "@prisma/client";
-import { PrismaClient } from "@prisma/client";
 import { LegacyError, LegacyErrorCode } from "@ukdanceblue/common";
 
 type UniqueParam =
@@ -27,7 +25,7 @@ type BasicUniqueParam = { id: number } | { uuid: string };
 
 // @Service([prismaToken])
 // export class EventOccurrenceRepository {
-//   constructor(private prisma: PrismaClient) {}
+//   constructor(protected readonly db: Drizzle) {}
 
 //   findEventOccurrenceByUnique(param: UniqueParam) {
 //     return this.prisma.eventOccurrence.findUnique({ where: param });
@@ -42,11 +40,11 @@ type BasicUniqueParam = { id: number } | { uuid: string };
 //   }
 // }
 
-import { prismaToken } from "#lib/typediTokens.js";
+import { drizzleToken } from "#lib/typediTokens.js";
 
-@Service([prismaToken])
+@Service([drizzleToken])
 export class EventImagesRepository {
-  constructor(private prisma: PrismaClient) {}
+  constructor(protected readonly db: Drizzle) {}
 
   findEventImageByUnique(param: UniqueParam) {
     return this.prisma.eventImage.findFirst({

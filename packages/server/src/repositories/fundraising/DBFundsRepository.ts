@@ -1,12 +1,5 @@
 import { Service } from "@freshgum/typedi";
 import {
-  DBFundsTeam,
-  Prisma,
-  PrismaClient,
-  SolicitationCode,
-  Team,
-} from "@prisma/client";
-import {
   BasicError,
   CompositeError,
   NotFoundError,
@@ -35,12 +28,12 @@ export type UniqueDbFundsTeamParam =
       marathon: { id: number };
     };
 
-import { prismaToken } from "#lib/typediTokens.js";
+import { drizzleToken } from "#lib/typediTokens.js";
 
-@Service([prismaToken, MarathonRepository])
+@Service([drizzleToken, MarathonRepository])
 export class DBFundsRepository {
   constructor(
-    private readonly prisma: PrismaClient,
+    protected readonly db: Drizzle,
     private readonly marathonRepository: MarathonRepository
   ) {}
 

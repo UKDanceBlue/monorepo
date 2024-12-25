@@ -1,5 +1,4 @@
 import { Container, Service } from "@freshgum/typedi";
-import type { File } from "@prisma/client";
 import { open } from "fs/promises";
 import multer from "multer";
 

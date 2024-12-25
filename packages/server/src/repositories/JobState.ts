@@ -1,12 +1,12 @@
 import { Service } from "@freshgum/typedi";
-import { PrismaClient } from "@prisma/client";
 import { Cron } from "croner";
 
-import { prismaToken } from "#lib/typediTokens.js";
+import type { Drizzle } from "#db";
+import { drizzleToken } from "#lib/typediTokens.js";
 
-@Service([prismaToken])
+@Service([drizzleToken])
 export class JobStateRepository {
-  constructor(private readonly prisma: PrismaClient) {}
+  constructor(protected readonly db: Drizzle) {}
 
   /**
    * Log a new completion of a given job

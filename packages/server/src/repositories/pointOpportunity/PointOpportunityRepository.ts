@@ -1,6 +1,4 @@
 import { Service } from "@freshgum/typedi";
-import type { PointOpportunityType } from "@prisma/client";
-import { Prisma, PrismaClient } from "@prisma/client";
 import type { SortDirection } from "@ukdanceblue/common";
 
 import type { FilterItems } from "#lib/prisma-utils/gqlFilterToPrismaFilter.js";
@@ -51,13 +49,13 @@ export type PointOpportunityFilters = FilterItems<
 
 type UniquePointOpportunityParam = { id: number } | { uuid: string };
 
-import { prismaToken } from "#lib/typediTokens.js";
+import { drizzleToken } from "#lib/typediTokens.js";
 import { UniqueMarathonParam } from "#repositories/marathon/MarathonRepository.js";
 import { SimpleUniqueParam } from "#repositories/shared.js";
 
-@Service([prismaToken])
+@Service([drizzleToken])
 export class PointOpportunityRepository {
-  constructor(private prisma: PrismaClient) {}
+  constructor(protected readonly db: Drizzle) {}
 
   findPointOpportunityByUnique(param: UniquePointOpportunityParam) {
     return this.prisma.pointOpportunity.findUnique({ where: param });

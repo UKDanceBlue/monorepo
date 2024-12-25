@@ -46,7 +46,6 @@
     "@casl/ability": "^6.7.2",
     "@faker-js/faker": "^9.3.0",
     "@freshgum/typedi": "^0.7.2",
-    "@prisma/client": "^5.22.0",
     "@sentry/cli": "^2.38.2",
     "@sentry/node": "^8.38.0",
     "@sentry/profiling-node": "^8.38.0",
@@ -109,7 +108,6 @@
     "@types/turndown": "^5.0.5",
     "drizzle-kit": "^0.30.0",
     "nodemon": "^3.1.7",
-    "prisma": "^5.22.0",
     "tsx": "^4.19.2",
     "vitest": "^2.1.8"
   },

@@ -1,4 +1,3 @@
-import type { FeedItem } from "@prisma/client";
 import { FeedNode } from "@ukdanceblue/common";
 
 export function feedItemModelToResource(feedItem: FeedItem): FeedNode {

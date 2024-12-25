@@ -1,13 +1,4 @@
 import { Service } from "@freshgum/typedi";
-import {
-  DailyDepartmentNotification,
-  DailyDepartmentNotificationBatch,
-  DDNDonor,
-  DDNDonorLink,
-  Prisma,
-  PrismaClient,
-  SolicitationCode,
-} from "@prisma/client";
 import { DDNInit, localDateToJs, SortDirection } from "@ukdanceblue/common";
 
 const dailyDepartmentNotificationBooleanKeys = [] as const;
@@ -67,7 +58,7 @@ type UniqueDailyDepartmentNotificationBatchParam =
 import { InvalidArgumentError, NotFoundError } from "@ukdanceblue/common/error";
 import { Err, None, Ok, Option, Result, Some } from "ts-results-es";
 
-import { prismaToken } from "#lib/typediTokens.js";
+import { drizzleToken } from "#lib/typediTokens.js";
 import { UniquePersonParam } from "#repositories/person/PersonRepository.js";
 import {
   handleRepositoryError,
@@ -145,9 +136,9 @@ interface ParsedDDNInit<
   solicitation: string | undefined;
 }
 
-@Service([prismaToken])
+@Service([drizzleToken])
 export class DailyDepartmentNotificationRepository {
-  constructor(private prisma: PrismaClient) {}
+  constructor(protected readonly db: Drizzle) {}
 
   async findDDNByUnique(param: UniqueDailyDepartmentNotificationParam): Promise<
     Result<

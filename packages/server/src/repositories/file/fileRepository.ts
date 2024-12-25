@@ -1,17 +1,16 @@
 import { Service } from "@freshgum/typedi";
-import { Prisma, PrismaClient } from "@prisma/client";
 import type { MIMEType } from "util";
 
 type UniqueParam = { id: number } | { uuid: string };
 
-import { prismaToken } from "#lib/typediTokens.js";
+import { drizzleToken } from "#lib/typediTokens.js";
 
-@Service([prismaToken])
+@Service([drizzleToken])
 /**
  * This class should not be directly accessed by API routes, but rather by the FileManager class which keeps track of the storage provider.
  */
 export class FileRepository {
-  constructor(private prisma: PrismaClient) {}
+  constructor(protected readonly db: Drizzle) {}
 
   findFileByUnique(param: UniqueParam) {
     return this.prisma.file.findUnique({ where: param });

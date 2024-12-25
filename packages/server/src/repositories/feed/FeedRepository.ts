@@ -1,13 +1,12 @@
 import { Service } from "@freshgum/typedi";
-import { FeedItem, Prisma, PrismaClient } from "@prisma/client";
 
 type UniqueParam = { id: number } | { uuid: string };
 
-import { prismaToken } from "#lib/typediTokens.js";
+import { drizzleToken } from "#lib/typediTokens.js";
 
-@Service([prismaToken])
+@Service([drizzleToken])
 export class FeedRepository {
-  constructor(private prisma: PrismaClient) {}
+  constructor(protected readonly db: Drizzle) {}
 
   async getCompleteFeed({ limit }: { limit: number | null | undefined }) {
     return this.prisma.feedItem.findMany({

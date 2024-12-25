@@ -2,7 +2,6 @@
 
 import { Service } from "@freshgum/typedi";
 import { Container } from "@freshgum/typedi";
-import type { Notification, Prisma } from "@prisma/client";
 import {
   ActionDeniedError,
   CompositeError,

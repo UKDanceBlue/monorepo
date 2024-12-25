@@ -1,9 +1,8 @@
 /* eslint-disable no-await-in-loop */
 import { Container } from "@freshgum/typedi";
-import type { PrismaClient } from "@prisma/client";
 import { Cron } from "croner";
 
-import { prismaToken } from "#lib/typediTokens.js";
+import { drizzleToken } from "#lib/typediTokens.js";
 import { logger } from "#logging/standardLogging.js";
 import { JobStateRepository } from "#repositories/JobState.js";
 
@@ -19,7 +18,7 @@ export const housekeeping = new Cron(
     },
   },
   async () => {
-    const prisma = Container.get(prismaToken);
+    const prisma = Container.get(drizzleToken);
     await userHousekeeping(prisma);
     await fundraisingHousekeeping(prisma);
   }
@@ -29,7 +28,7 @@ housekeeping.options.startAt =
   await jobStateRepository.getNextJobDate(housekeeping);
 housekeeping.resume();
 
-async function userHousekeeping(prisma: PrismaClient) {
+async function userHousekeeping(db: Drizzle) {
   try {
     logger.info("Cleaning up user data");
     const badLinkblues = await prisma.person.findMany({
@@ -101,7 +100,7 @@ async function userHousekeeping(prisma: PrismaClient) {
   }
 }
 
-async function fundraisingHousekeeping(prisma: PrismaClient) {
+async function fundraisingHousekeeping(db: Drizzle) {
   const orphanEntries = await prisma.fundraisingEntry.deleteMany({
     where: {
       AND: [

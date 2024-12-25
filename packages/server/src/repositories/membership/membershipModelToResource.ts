@@ -1,4 +1,3 @@
-import type { Membership } from "@prisma/client";
 import type { CommitteeIdentifier } from "@ukdanceblue/common";
 import {
   CommitteeMembershipNode,

@@ -1,5 +1,4 @@
 import { Service } from "@freshgum/typedi";
-import type { File } from "@prisma/client";
 import { MIMEType } from "util";
 
 import { FileRepository } from "#repositories/file/fileRepository.js";

@@ -1,5 +1,4 @@
 import { Service } from "@freshgum/typedi";
-import { Prisma } from "@prisma/client";
 
 const marathonHourBooleanKeys = [] as const;
 type MarathonHourBooleanKey = (typeof marathonHourBooleanKeys)[number];

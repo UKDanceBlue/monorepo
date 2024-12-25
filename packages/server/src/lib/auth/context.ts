@@ -1,7 +1,6 @@
 import type { ContextFunction } from "@apollo/server";
 import type { ExpressContextFunctionArgument } from "@apollo/server/express4";
 import { Container } from "@freshgum/typedi";
-import { CommitteeRole } from "@prisma/client";
 import type {
   AppAbility,
   AuthorizationContext,

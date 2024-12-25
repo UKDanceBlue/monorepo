@@ -1,6 +1,4 @@
 import { Service } from "@freshgum/typedi";
-import { Notification, Prisma, PrismaClient } from "@prisma/client";
-import { NotificationError } from "@prisma/client";
 import type { SortDirection } from "@ukdanceblue/common";
 
 import type { FilterItems } from "#lib/prisma-utils/gqlFilterToPrismaFilter.js";
@@ -64,15 +62,15 @@ export type NotificationFilters = FilterItems<
 import { NotFoundError } from "@ukdanceblue/common/error";
 import { AsyncResult, Err, Ok, Result } from "ts-results-es";
 
-import { prismaToken } from "#lib/typediTokens.js";
+import { drizzleToken } from "#lib/typediTokens.js";
 import {
   handleRepositoryError,
   RepositoryError,
 } from "#repositories/shared.js";
 
-@Service([prismaToken])
+@Service([drizzleToken])
 export class NotificationRepository {
-  constructor(private prisma: PrismaClient) {}
+  constructor(protected readonly db: Drizzle) {}
 
   findNotificationByUnique(param: Prisma.NotificationWhereUniqueInput) {
     return new AsyncResult(

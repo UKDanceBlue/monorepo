@@ -1,14 +1,6 @@
 import crypto from "node:crypto";
 
 import { Service } from "@freshgum/typedi";
-import type {
-  Committee,
-  Marathon,
-  Membership,
-  Person,
-  Team,
-} from "@prisma/client";
-import { Prisma, PrismaClient } from "@prisma/client";
 import {
   AuthSource,
   CommitteeIdentifier,
@@ -100,18 +92,18 @@ export type UniquePersonParam =
 
 import { promisify } from "node:util";
 
-import { prismaToken } from "#lib/typediTokens.js";
+import { drizzleToken } from "#lib/typediTokens.js";
 import { CommitteeRepository } from "#repositories/committee/CommitteeRepository.js";
 
 @Service([
-  prismaToken,
+  drizzleToken,
   MembershipRepository,
   CommitteeRepository,
   MarathonRepository,
 ])
 export class PersonRepository {
   constructor(
-    private prisma: PrismaClient,
+    protected readonly db: Drizzle,
     private membershipRepository: MembershipRepository,
     private committeeRepository: CommitteeRepository,
     private marathonRepository: MarathonRepository

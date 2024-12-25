@@ -6,21 +6,23 @@ import {
   InvariantError,
   NotFoundError,
 } from "@ukdanceblue/common/error";
-import type {
-  eq,
-  InferInsertModel,
-  InferSelectModel,
-  SQL,
-  View,
-} from "drizzle-orm";
-import { or, type Table, TransactionRollbackError } from "drizzle-orm";
+import type { eq, SQL } from "drizzle-orm";
+import { is, View } from "drizzle-orm";
+import { or, Table, TransactionRollbackError } from "drizzle-orm";
 import type { NodePgQueryResultHKT } from "drizzle-orm/node-postgres";
-import type { AnyPgColumn, PgTransaction } from "drizzle-orm/pg-core";
+import type { PgTable, PgView } from "drizzle-orm/pg-core";
+import {
+  type AnyPgColumn,
+  getTableConfig,
+  getViewConfig,
+  type PgTransaction,
+} from "drizzle-orm/pg-core";
 import { AsyncResult } from "ts-results-es";
 import { Result } from "ts-results-es";
 import { Err, Ok } from "ts-results-es";
+import { isPromise } from "util/types";
 
-import { db } from "#db";
+import type { Drizzle } from "#db";
 import { PostgresError } from "#error/postgres.js";
 import {
   type FindManyParams,
@@ -31,12 +33,12 @@ import type { RepositoryError } from "./shared.js";
 
 export type Transaction = PgTransaction<
   NodePgQueryResultHKT,
-  (typeof db)["_"]["fullSchema"],
-  NonNullable<(typeof db)["_"]["schema"]>
+  Drizzle["_"]["fullSchema"],
+  NonNullable<Drizzle["_"]["schema"]>
 >;
 
 export abstract class DatabaseModel<
-  T extends Table | View,
+  T extends PgTable | PgView,
   R extends Resource,
 > {
   constructor(public readonly row: T["$inferSelect"]) {}
@@ -44,7 +46,7 @@ export abstract class DatabaseModel<
   public abstract toResource(): R;
 }
 
-export function mapToResource<T extends Table | View, R extends Resource>(
+export function mapToResource<T extends PgTable | PgView, R extends Resource>(
   // eslint-disable-next-line @typescript-eslint/no-invalid-void-type
   this: void,
   model: DatabaseModel<T, R>
@@ -52,7 +54,7 @@ export function mapToResource<T extends Table | View, R extends Resource>(
   return model.toResource();
 }
 
-export function mapToResources<T extends Table | View, R extends Resource>(
+export function mapToResources<T extends PgTable | PgView, R extends Resource>(
   // eslint-disable-next-line @typescript-eslint/no-invalid-void-type
   this: void,
   models: DatabaseModel<T, R>[]
@@ -60,24 +62,35 @@ export function mapToResources<T extends Table | View, R extends Resource>(
   return models.map((model) => model.toResource());
 }
 
+type SelectType<T extends Table | View> = T["$inferSelect"];
+type InsertType<T extends Table | View> = T extends Table
+  ? T["$inferInsert"]
+  : never;
+type UpdateType<T extends Table | View> = T extends Table
+  ? Partial<T["$inferSelect"] & T["$inferInsert"]>
+  : never;
+
 export function buildDefaultDatabaseModel<
-  T extends Table | View,
+  T extends PgTable | PgView,
   R extends typeof Resource & {
     init: (...args: InitParams) => InstanceType<R>;
   },
   InitParams extends never[],
->(_table: T, ResourceCls: R) {
+>(table: T, ResourceCls: R) {
+  type SelectType = T["$inferSelect"];
+  const tableName = getTableOrViewName(table);
+
   abstract class DefaultDatabaseModel extends DatabaseModel<
     T,
     InstanceType<R>
   > {
     protected repository = Container.get<
       Repository<T & Table, DefaultDatabaseModel, { uuid: string }, never>
-    >(`${this.constructor.name}Repository`);
+    >(`${tableName}Repository`);
 
     public static fromRow(
-      this: new (row: T["$inferSelect"]) => DatabaseModel<T, InstanceType<R>>,
-      row: T["$inferSelect"]
+      this: new (row: SelectType) => DatabaseModel<T, InstanceType<R>>,
+      row: SelectType
     ): InstanceType<typeof this> {
       return new this(row);
     }
@@ -85,7 +98,7 @@ export function buildDefaultDatabaseModel<
     public static fromResource(
       this: {
         fromRow: (
-          row: T["$inferSelect"],
+          row: SelectType,
           ...args: []
         ) => DatabaseModel<T, InstanceType<R>>;
         repository: Repository<
@@ -98,13 +111,11 @@ export function buildDefaultDatabaseModel<
       resource: R & { id: GlobalId },
       ..._args: unknown[]
     ): AsyncResult<DatabaseModel<T, InstanceType<R>>, RepositoryError> {
-      return this.repository
-        .findOne({ by: { uuid: resource.id.id } })
-        .map((row) => this.fromRow(row));
+      return this.repository.findOne({ by: { uuid: resource.id.id } });
     }
 
     protected abstract rowToInitParams(
-      row: T["$inferSelect"]
+      row: SelectType
     ): Parameters<(typeof ResourceCls)["init"]>;
 
     public toResource(): InstanceType<R> {
@@ -116,7 +127,7 @@ export function buildDefaultDatabaseModel<
 }
 
 interface Repository<
-  T extends Table,
+  T extends PgTable | PgView,
   Model extends DatabaseModel<T, Resource>,
   UniqueParam,
   Field extends string,
@@ -145,7 +156,7 @@ interface Repository<
     init,
     tx,
   }: {
-    init: InferInsertModel<T>;
+    init: InsertType<T>;
     tx?: Transaction;
   }): AsyncResult<Model, RepositoryError>;
 
@@ -155,7 +166,7 @@ interface Repository<
     tx,
   }: {
     by: UniqueParam;
-    init: Partial<InferInsertModel<T> & InferSelectModel<T>>;
+    init: UpdateType<T>;
     tx?: Transaction;
   }): AsyncResult<Model, RepositoryError>;
 
@@ -172,7 +183,7 @@ interface Repository<
     tx,
   }: {
     data: {
-      init: InferInsertModel<T>;
+      init: InsertType<T>;
     }[];
     tx?: Transaction;
   }): AsyncResult<Model[], RepositoryError>;
@@ -183,7 +194,7 @@ interface Repository<
   }: {
     data: {
       by: UniqueParam;
-      init: InferInsertModel<T> & InferSelectModel<T>;
+      init: UpdateType<T>;
     }[];
     tx?: Transaction;
   }): AsyncResult<Model[], RepositoryError>;
@@ -200,7 +211,7 @@ interface Repository<
 }
 
 export function buildDefaultRepository<
-  T extends Table,
+  T extends PgTable | PgView,
   Model extends DatabaseModel<T, Resource>,
   UniqueParam,
   Field extends string,
@@ -210,19 +221,16 @@ export function buildDefaultRepository<
   fieldLookup: Record<Field, SQL.Aliased | AnyPgColumn>,
   _dummyUniqueParam: UniqueParam
 ) {
-  type SelectType = InferSelectModel<T>;
-  type InsertType = InferInsertModel<T>;
-  type UpdateType = Partial<InferInsertModel<T> & InferSelectModel<T>>;
+  const tableName = getTableOrViewName(table);
 
   abstract class DefaultRepository
     implements Repository<T, Model, UniqueParam, Field>
   {
-    constructor() {
-      if (ModelCls.constructor.name)
-        Container.setValue(`${ModelCls.constructor.name}Repository`, this);
+    constructor(protected readonly db: Drizzle) {
+      Container.setValue(`${tableName}Repository`, this);
     }
-    declare static readonly selectType: SelectType;
-    declare static readonly insertType: InsertType;
+    declare static readonly selectType: SelectType<T>;
+    declare static readonly insertType: InsertType<T>;
 
     protected handleQueryError<D>(
       promise: Promise<D>,
@@ -249,7 +257,7 @@ export function buildDefaultRepository<
       let result: Result<D, RepositoryError> = Err(
         new InvariantError("Transaction not completed")
       );
-      await db.transaction(async (tx) => {
+      await this.db.transaction(async (tx) => {
         try {
           result = await callback(tx);
           if (result.isErr()) {
@@ -257,7 +265,7 @@ export function buildDefaultRepository<
           }
         } catch (error) {
           result = Err(PostgresError.fromUnknown(error));
-          if (!(error instanceof TransactionRollbackError)) {
+          if (!is(error, TransactionRollbackError)) {
             tx.rollback();
           } else {
             throw error;
@@ -281,7 +289,7 @@ export function buildDefaultRepository<
     protected resultToAsyncResult<T, E>(
       val: Result<T, E> | Promise<Result<T, E>> | AsyncResult<T, E>
     ): AsyncResult<T, E> {
-      if (val instanceof Promise) {
+      if (isPromise(val)) {
         val = new AsyncResult(val);
       }
       if (Result.isResult(val)) {
@@ -303,7 +311,7 @@ export function buildDefaultRepository<
           : Err(
               new NotFoundError({
                 what: "field",
-                where: `${ModelCls.constructor.name}Repository`,
+                where: `${tableName}Repository`,
                 sensitive: false,
                 ...params,
               })
@@ -325,8 +333,8 @@ export function buildDefaultRepository<
       tx?: Transaction;
     }): AsyncResult<Model, RepositoryError> {
       return this.handleQueryError(
-        (tx ?? db).select().from(table).where(this.uniqueToWhere(by)),
-        { where: `${ModelCls.constructor.name}Repository.findOne` }
+        (tx ?? this.db).select().from(table).where(this.uniqueToWhere(by)),
+        { where: `${tableName}Repository.findOne` }
       ).andThen((rows) => {
         if (rows.length === 1) {
           return Ok(ModelCls.fromRow(rows[0]!));
@@ -334,7 +342,7 @@ export function buildDefaultRepository<
           return Err(
             new NotFoundError({
               what: "field",
-              where: `${ModelCls.constructor.name}Repository.findOne`,
+              where: `${tableName}Repository.findOne`,
             })
           );
         }
@@ -352,7 +360,7 @@ export function buildDefaultRepository<
         return parsed.toAsyncResult();
       }
       const { limit, offset, order, where } = parsed.value;
-      let query = (tx ?? db).select().from(table).$dynamic();
+      let query = (tx ?? this.db).select().from(table).$dynamic();
       if (where) {
         query = query.where(where);
       }
@@ -366,11 +374,14 @@ export function buildDefaultRepository<
         query = query.offset(offset);
       }
       const rows = this.handleQueryError(query, {
-        where: `${ModelCls.constructor.name}Repository.findAndCount`,
+        where: `${tableName}Repository.findAndCount`,
       });
-      const count = this.handleQueryError((tx ?? db).$count(table, where), {
-        where: `${ModelCls.constructor.name}Repository.findAndCount`,
-      });
+      const count = this.handleQueryError(
+        (tx ?? this.db).$count(table, where),
+        {
+          where: `${tableName}Repository.findAndCount`,
+        }
+      );
       return rows
         .map((rows) => rows.map((row) => ModelCls.fromRow(row)))
         .andThen((selectedRows) =>
@@ -389,7 +400,7 @@ export function buildDefaultRepository<
       if (parsed.isErr()) {
         return parsed.toAsyncResult();
       }
-      let query = (tx ?? db).select().from(table).$dynamic();
+      let query = (tx ?? this.db).select().from(table).$dynamic();
       if (parsed.value.order) {
         query = query.orderBy(...parsed.value.order);
       }
@@ -402,12 +413,17 @@ export function buildDefaultRepository<
       init,
       tx,
     }: {
-      init: InsertType;
+      init: InsertType<T>;
       tx?: Transaction;
     }): AsyncResult<Model, RepositoryError> {
+      if (is(table, View)) {
+        return Err(
+          new ActionDeniedError("Cannot create a record in a view")
+        ).toAsyncResult();
+      }
       return this.handleQueryError(
-        (tx ?? db).insert(table).values(init).returning()
-      ).map(([row]) => ModelCls.fromRow(row as SelectType));
+        (tx ?? this.db).insert(table).values(init).returning()
+      ).map(([row]) => ModelCls.fromRow(row as SelectType<T>));
     }
 
     public update({
@@ -416,17 +432,22 @@ export function buildDefaultRepository<
       tx,
     }: {
       by: UniqueParam;
-      init: UpdateType;
+      init: UpdateType<T>;
       tx?: Transaction;
     }): AsyncResult<Model, RepositoryError> {
+      if (is(table, View)) {
+        return Err(
+          new ActionDeniedError("Cannot update a record in a view")
+        ).toAsyncResult();
+      }
       return this.handleQueryError(
-        (tx ?? db)
+        (tx ?? this.db)
           .update(table)
           .set(init)
           .where(this.uniqueToWhere(by))
           .returning(),
-        { where: `${ModelCls.constructor.name}Repository.update` }
-      ).map((rows) => ModelCls.fromRow((rows as [SelectType])[0]));
+        { where: `${tableName}Repository.update` }
+      ).map((rows) => ModelCls.fromRow((rows as [SelectType<T>])[0]));
     }
 
     public delete({
@@ -436,10 +457,15 @@ export function buildDefaultRepository<
       by: UniqueParam;
       tx?: Transaction;
     }): AsyncResult<Model, RepositoryError> {
+      if (is(table, View)) {
+        return Err(
+          new ActionDeniedError("Cannot delete a record in a view")
+        ).toAsyncResult();
+      }
       return this.handleQueryError(
-        (tx ?? db).delete(table).where(this.uniqueToWhere(by)).returning(),
-        { where: `${ModelCls.constructor.name}Repository.delete` }
-      ).map(([row]) => ModelCls.fromRow(row as SelectType));
+        (tx ?? this.db).delete(table).where(this.uniqueToWhere(by)).returning(),
+        { where: `${tableName}Repository.delete` }
+      ).map(([row]) => ModelCls.fromRow(row as SelectType<T>));
     }
 
     public createMultiple({
@@ -447,16 +473,23 @@ export function buildDefaultRepository<
       tx,
     }: {
       data: {
-        init: InsertType;
+        init: InsertType<T>;
       }[];
       tx?: Transaction;
     }) {
+      if (is(table, View)) {
+        return Err(
+          new ActionDeniedError("Cannot create a record in a view")
+        ).toAsyncResult();
+      }
       return this.handleQueryError(
-        (tx ?? db)
+        (tx ?? this.db)
           .insert(table)
           .values(data.map(({ init }) => init))
           .returning()
-      ).map((rows) => rows.map((row) => ModelCls.fromRow(row as SelectType)));
+      ).map((rows) =>
+        rows.map((row) => ModelCls.fromRow(row as SelectType<T>))
+      );
     }
 
     public updateMultiple({
@@ -465,10 +498,15 @@ export function buildDefaultRepository<
     }: {
       data: {
         by: UniqueParam;
-        init: UpdateType;
+        init: UpdateType<T>;
       }[];
       tx?: Transaction;
     }) {
+      if (is(table, View)) {
+        return Err(
+          new ActionDeniedError("Cannot update a record in a view")
+        ).toAsyncResult();
+      }
       const func = (tx: Transaction) => {
         return new AsyncResult(
           Promise.all(
@@ -493,19 +531,32 @@ export function buildDefaultRepository<
       }[];
       tx?: Transaction;
     }) {
+      if (is(table, View)) {
+        return Err(
+          new ActionDeniedError("Cannot delete a record in a view")
+        ).toAsyncResult();
+      }
       if (data.length === 0) {
         return Err(
           new ActionDeniedError("Must pass at least one filter to delete")
         ).toAsyncResult();
       }
       return this.handleQueryError(
-        (tx ?? db)
+        (tx ?? this.db)
           .delete(table)
           .where(or(...data.map(({ by }) => this.uniqueToWhere(by))))
           .returning()
-      ).map((rows) => rows.map((row) => ModelCls.fromRow(row as SelectType)));
+      ).map((rows) =>
+        rows.map((row) => ModelCls.fromRow(row as SelectType<T>))
+      );
     }
   }
 
   return DefaultRepository;
+}
+
+function getTableOrViewName(table: PgTable | PgView) {
+  return is(table, Table)
+    ? getTableConfig(table).name
+    : getViewConfig(table).name;
 }

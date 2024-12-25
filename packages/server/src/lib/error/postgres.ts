@@ -1,7 +1,7 @@
 import type { BasicError } from "@ukdanceblue/common/error";
 import { ErrorCode, toBasicError } from "@ukdanceblue/common/error";
 import { ConcreteError } from "@ukdanceblue/common/error";
-import { DatabaseError } from "pg";
+import pg from "pg";
 
 import type { PostgresErrorCode } from "./postgresCodes.js";
 import { postgresErrorCodes } from "./postgresCodes.js";
@@ -9,7 +9,7 @@ import { postgresErrorCodes } from "./postgresCodes.js";
 export class PostgresError extends ConcreteError {
   public readonly target: string;
 
-  constructor(private readonly error: DatabaseError) {
+  constructor(private readonly error: pg.DatabaseError) {
     super();
     this.target = `${error.schema === "danceblue" ? "" : `${error.schema}.`}${error.table ?? "unknown"}${error.column ? `.${error.column}` : ""}`;
   }
@@ -31,7 +31,7 @@ export class PostgresError extends ConcreteError {
   readonly tag: ErrorCode.PostgresError = ErrorCode.PostgresError;
 
   static fromUnknown(error: unknown): PostgresError | BasicError {
-    if (error instanceof DatabaseError) {
+    if (error instanceof pg.DatabaseError) {
       return new PostgresError(error);
     }
     return toBasicError(error);

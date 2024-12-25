@@ -1,4 +1,3 @@
-import type { SolicitationCode } from "@prisma/client";
 import {
   BatchType,
   FundraisingEntryNode,

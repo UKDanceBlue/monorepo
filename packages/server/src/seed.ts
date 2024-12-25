@@ -1,7 +1,6 @@
 /* eslint-disable no-await-in-loop */
 import { faker } from "@faker-js/faker";
 import { Container } from "@freshgum/typedi";
-import type { Prisma } from "@prisma/client";
 import {
   CommitteeIdentifier,
   CommitteeRole,

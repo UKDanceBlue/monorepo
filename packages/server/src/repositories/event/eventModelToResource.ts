@@ -1,4 +1,3 @@
-import type { Event, EventOccurrence } from "@prisma/client";
 import {
   EventNode,
   EventOccurrenceNode,

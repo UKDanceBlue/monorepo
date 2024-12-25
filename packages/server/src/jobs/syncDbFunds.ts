@@ -12,7 +12,7 @@ import {
   DBFundsFundraisingProvider,
   type DBFundsFundraisingProviderError,
 } from "#lib/fundraising/DbFundsProvider.js";
-import { prismaToken } from "#lib/typediTokens.js";
+import { drizzleToken } from "#lib/typediTokens.js";
 import { logger } from "#logging/standardLogging.js";
 import { DBFundsRepository } from "#repositories/fundraising/DBFundsRepository.js";
 import { JobStateRepository } from "#repositories/JobState.js";
@@ -75,7 +75,7 @@ async function doSyncForMarathon(
 ): Promise<Result<None, DoSyncError | CompositeError<DoSyncError>>> {
   const fundraisingRepository = Container.get(DBFundsRepository);
   const fundraisingProvider = Container.get(DBFundsFundraisingProvider);
-  const prisma = Container.get(prismaToken);
+  const prisma = Container.get(drizzleToken);
 
   const teams = await fundraisingProvider.getTeams(
     marathon.year as MarathonYearString

@@ -7,7 +7,7 @@ import {
   isReplToken,
   logDirToken,
   loggingLevelToken,
-  prismaToken,
+  drizzleToken,
 } from "#lib/typediTokens.js";
 
 // No top level imports that cause side effects should be used in this file
@@ -44,7 +44,7 @@ for (const resolver of resolversList) {
 
 replServer.context.getService = Container.get.bind(Container);
 
-replServer.context.prisma = Container.get(prismaToken);
+replServer.context.prisma = Container.get(drizzleToken);
 
 replServer.context.env = getEnvironment();
 

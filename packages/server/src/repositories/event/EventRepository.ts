@@ -1,5 +1,4 @@
 import { Service } from "@freshgum/typedi";
-import { Event, EventOccurrence, Prisma, PrismaClient } from "@prisma/client";
 import { SortDirection } from "@ukdanceblue/common";
 
 import type { FilterItems } from "#lib/prisma-utils/gqlFilterToPrismaFilter.js";
@@ -61,7 +60,7 @@ import { ConcreteError } from "@ukdanceblue/common/error";
 import { Ok, Result } from "ts-results-es";
 
 import { externalUrlToImage } from "#lib/external-apis/externalUrlToImage.js";
-import { prismaToken } from "#lib/typediTokens.js";
+import { drizzleToken } from "#lib/typediTokens.js";
 import {
   handleRepositoryError,
   RepositoryError,
@@ -78,9 +77,9 @@ export interface ForeignEvent {
   imageUrls: URL[];
 }
 
-@Service([prismaToken])
+@Service([drizzleToken])
 export class EventRepository {
-  constructor(private prisma: PrismaClient) {}
+  constructor(protected readonly db: Drizzle) {}
 
   findEventByUnique(param: UniqueEventParam) {
     return this.prisma.event.findUnique({

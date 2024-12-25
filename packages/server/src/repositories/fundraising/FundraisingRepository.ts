@@ -1,20 +1,4 @@
 import { Service } from "@freshgum/typedi";
-import {
-  BatchType,
-  DailyDepartmentNotification,
-  DailyDepartmentNotificationBatch,
-  DDNDonor,
-  DDNDonorLink,
-  FundraisingAssignment,
-  FundraisingEntry,
-  FundraisingEntryWithMeta,
-  Membership,
-  Person,
-  Prisma,
-  PrismaClient,
-  SolicitationCode,
-  Team,
-} from "@prisma/client";
 import { Decimal } from "@prisma/client/runtime/library";
 import {
   LocalDate,
@@ -31,7 +15,7 @@ import {
 import { Err, None, Ok, Option, Result, Some } from "ts-results-es";
 
 import type { FilterItems } from "#lib/prisma-utils/gqlFilterToPrismaFilter.js";
-import { prismaToken } from "#lib/typediTokens.js";
+import { drizzleToken } from "#lib/typediTokens.js";
 import { UniquePersonParam } from "#repositories/person/PersonRepository.js";
 import {
   handleRepositoryError,
@@ -103,9 +87,9 @@ export type WideFundraisingEntryWithMeta = FundraisingEntryWithMeta & {
 export type FundraisingEntryUniqueParam = SimpleUniqueParam;
 export type FundraisingAssignmentUniqueParam = SimpleUniqueParam;
 
-@Service([prismaToken])
+@Service([drizzleToken])
 export class FundraisingEntryRepository {
-  constructor(private readonly prisma: PrismaClient) {}
+  constructor(protected readonly db: Drizzle) {}
 
   async findEntryByUnique(
     param: FundraisingEntryUniqueParam

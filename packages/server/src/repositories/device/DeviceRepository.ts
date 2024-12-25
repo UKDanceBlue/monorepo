@@ -1,6 +1,4 @@
 import { Service } from "@freshgum/typedi";
-import type { Person } from "@prisma/client";
-import { PrismaClient } from "@prisma/client";
 import type { SortDirection } from "@ukdanceblue/common";
 import { NotFoundError } from "@ukdanceblue/common/error";
 import { Err, Ok, Result } from "ts-results-es";
@@ -27,12 +25,12 @@ export type DeviceFilters = FilterItems<
   DeviceStringKey
 >;
 
-import { prismaToken } from "#lib/typediTokens.js";
+import { drizzleToken } from "#lib/typediTokens.js";
 
-@Service([prismaToken, PersonRepository])
+@Service([drizzleToken, PersonRepository])
 export class DeviceRepository {
   constructor(
-    private prisma: PrismaClient,
+    protected readonly db: Drizzle,
     private personRepository: PersonRepository
   ) {}
 

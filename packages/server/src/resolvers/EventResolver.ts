@@ -1,5 +1,4 @@
 import { Service } from "@freshgum/typedi";
-import type { Prisma } from "@prisma/client";
 import type { CrudResolver, GlobalId } from "@ukdanceblue/common";
 import {
   AccessControlAuthorized,

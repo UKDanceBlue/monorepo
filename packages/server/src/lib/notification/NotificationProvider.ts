@@ -1,4 +1,3 @@
-import type { Notification, Prisma } from "@prisma/client";
 import type { TeamType } from "@ukdanceblue/common";
 import type { ConcreteError } from "@ukdanceblue/common/error";
 import type { AsyncResult } from "ts-results-es";

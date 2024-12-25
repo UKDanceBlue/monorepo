@@ -6,14 +6,14 @@ import { timestamp } from "#schema/types.sql.js";
 export const timestamps = () => ({
   createdAt: timestamp({ precision: 6, withTimezone: true })
     .notNull()
-    .default(sql`CURRENT_TIMESTAMP`),
+    .default(sql`now()`),
   updatedAt: timestamp({
     precision: 6,
     withTimezone: true,
   })
     .notNull()
-    .default(sql`CURRENT_TIMESTAMP`)
-    .$onUpdate(() => sql`CURRENT_TIMESTAMP`),
+    .default(sql`now()`)
+    .$onUpdate(() => sql`now()`),
 });
 
 export const uuidField = () => uuid().notNull().defaultRandom().unique();
