@@ -18,6 +18,7 @@ import type {
   Application as ExpressApplication,
   NextFunction,
   Request,
+  Response,
 } from "express";
 import express from "express";
 
@@ -140,7 +141,7 @@ export async function startHttpServer(httpServer: http.Server) {
  * Start the Apollo Server
  *
  * @param apolloServer The Apollo Server instance
- * @param app The Koa app instance
+ * @param app The Express app instance
  */
 export async function startServer(
   apolloServer: ApolloServer<GraphQLContext>,
@@ -190,7 +191,20 @@ export async function startServer(
   Container.get(fileRouter).mount(apiRouter);
   Container.get(uploadRouter).mount(apiRouter);
 
-  app.use("/api", apiRouter);
+  app.use(
+    "/api",
+    apiRouter,
+    (err: unknown, _: Request, res: Response, next: NextFunction) => {
+      if (typeof err === "object" && err !== null && "message" in err) {
+        const { message, ...errorData } = err;
+        logger.error(String(message), { error: errorData });
+        res.status(500).send(String(message));
+      } else {
+        logger.error("Unknown Error in API", { error: err });
+        next(err);
+      }
+    }
+  );
 
   const portalIndex = await (
     readFile(
