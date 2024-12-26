@@ -1,3 +1,5 @@
+import type { Prisma, PrismaClient } from "@prisma/client";
+import type { Args } from "@prisma/client/runtime/library";
 import type {
   AbstractFilterGroup,
   AbstractFilterItem,
@@ -12,40 +14,35 @@ import {
   TwoTargetOperators,
 } from "@ukdanceblue/common";
 import { InvariantError } from "@ukdanceblue/common/error";
-import type { SQL } from "drizzle-orm";
-import {
-  and,
-  asc,
-  between,
-  desc,
-  eq,
-  gt,
-  gte,
-  ilike,
-  inArray,
-  isNotNull,
-  isNull,
-  like,
-  lt,
-  lte,
-  ne,
-  not,
-  notBetween,
-  notIlike,
-  notInArray,
-  notLike,
-  or,
-} from "drizzle-orm";
-import type { AnyPgColumn } from "drizzle-orm/pg-core";
 import { Result } from "ts-results-es";
 import { Err, Ok } from "ts-results-es";
 
-function buildWhereFromItemWithoutNegate<Field extends string>(
-  filter: AbstractFilterItem<Field>,
-  fieldLookup: Record<Field, SQL.Aliased | AnyPgColumn>
-): Result<SQL, InvariantError> {
-  const field = fieldLookup[filter.field];
+export type GetWhereFn<T> = (
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  placeholder: any
+) => Args<T, "findMany">["where"];
 
+function buildWhereFromItemWithoutNegate<T, Field extends string>(
+  filter: AbstractFilterItem<Field>,
+  fieldLookup: Record<
+    Field,
+    { getWhere: GetWhereFn<T>; orderBy: Args<T, "findMany">["orderBy"] }
+  >
+): Result<
+  {
+    where: Args<T, "findMany">["where"];
+    orderObj: Args<T, "findMany">["orderBy"];
+  },
+  InvariantError
+> {
+  return getPrismaFilterFor(filter).map((prismaFilter) =>
+    fieldLookup[filter.field].getWhere(prismaFilter)
+  );
+}
+
+function getPrismaFilterFor<Field extends string>(
+  filter: AbstractFilterItem<Field>
+): Result<unknown, InvariantError> {
   const {
     arrayBooleanFilter,
     arrayDateFilter,
@@ -63,10 +60,12 @@ function buildWhereFromItemWithoutNegate<Field extends string>(
   if (nullFilter) {
     switch (nullFilter.comparison) {
       case NoTargetOperators.IS_NULL: {
-        return Ok(isNull(field));
+        return Ok(null);
       }
       case NoTargetOperators.IS_NOT_NULL: {
-        return Ok(isNotNull(field));
+        return Ok({
+          not: null,
+        } satisfies Prisma.IntNullableFilter);
       }
       default: {
         nullFilter.comparison satisfies never;
@@ -80,34 +79,112 @@ function buildWhereFromItemWithoutNegate<Field extends string>(
   } else if (singleStringFilter) {
     switch (singleStringFilter.comparison) {
       case SingleTargetOperators.EQUALS: {
-        return Ok(eq(field as AnyPgColumn, singleStringFilter.value));
+        return Ok({
+          equals: singleStringFilter.value,
+        } satisfies Prisma.StringFilter);
       }
       case SingleTargetOperators.NOT_EQUALS: {
-        return Ok(ne(field as AnyPgColumn, singleStringFilter.value));
+        return Ok({
+          not: singleStringFilter.value,
+        } satisfies Prisma.StringFilter);
       }
       case SingleTargetOperators.GREATER_THAN: {
-        return Ok(gt(field as AnyPgColumn, singleStringFilter.value));
+        return Ok({
+          gt: singleStringFilter.value,
+        } satisfies Prisma.StringFilter);
       }
       case SingleTargetOperators.GREATER_THAN_OR_EQUAL_TO: {
-        return Ok(gte(field as AnyPgColumn, singleStringFilter.value));
+        return Ok({
+          gte: singleStringFilter.value,
+        } satisfies Prisma.StringFilter);
       }
       case SingleTargetOperators.LESS_THAN: {
-        return Ok(lt(field as AnyPgColumn, singleStringFilter.value));
+        return Ok({
+          lt: singleStringFilter.value,
+        } satisfies Prisma.StringFilter);
       }
       case SingleTargetOperators.LESS_THAN_OR_EQUAL_TO: {
-        return Ok(lte(field as AnyPgColumn, singleStringFilter.value));
+        return Ok({
+          lte: singleStringFilter.value,
+        } satisfies Prisma.StringFilter);
       }
-      case SingleTargetOperators.LIKE: {
-        return Ok(like(field, singleStringFilter.value));
+      case SingleTargetOperators.CONTAINS: {
+        return Ok({
+          contains: singleStringFilter.value,
+        } satisfies Prisma.StringFilter);
       }
-      case SingleTargetOperators.NOT_LIKE: {
-        return Ok(notLike(field, singleStringFilter.value));
+      case SingleTargetOperators.NOT_CONTAINS: {
+        return Ok({
+          not: {
+            contains: singleStringFilter.value,
+          },
+        } satisfies Prisma.StringFilter);
       }
-      case SingleTargetOperators.ILIKE: {
-        return Ok(ilike(field, singleStringFilter.value));
+      case SingleTargetOperators.INSENSITIVE_CONTAINS: {
+        return Ok({
+          contains: singleStringFilter.value,
+          mode: "insensitive",
+        } satisfies Prisma.StringFilter);
       }
-      case SingleTargetOperators.NOT_ILIKE: {
-        return Ok(notIlike(field, singleStringFilter.value));
+      case SingleTargetOperators.INSENSITIVE_NOT_CONTAINS: {
+        return Ok({
+          not: {
+            contains: singleStringFilter.value,
+          },
+          mode: "insensitive",
+        } satisfies Prisma.StringFilter);
+      }
+      case SingleTargetOperators.STARTS_WITH: {
+        return Ok({
+          startsWith: singleStringFilter.value,
+        } satisfies Prisma.StringFilter);
+      }
+      case SingleTargetOperators.NOT_STARTS_WITH: {
+        return Ok({
+          not: {
+            startsWith: singleStringFilter.value,
+          },
+        } satisfies Prisma.StringFilter);
+      }
+      case SingleTargetOperators.INSENSITIVE_STARTS_WITH: {
+        return Ok({
+          startsWith: singleStringFilter.value,
+          mode: "insensitive",
+        } satisfies Prisma.StringFilter);
+      }
+      case SingleTargetOperators.INSENSITIVE_NOT_STARTS_WITH: {
+        return Ok({
+          not: {
+            startsWith: singleStringFilter.value,
+          },
+          mode: "insensitive",
+        } satisfies Prisma.StringFilter);
+      }
+      case SingleTargetOperators.ENDS_WITH: {
+        return Ok({
+          endsWith: singleStringFilter.value,
+        } satisfies Prisma.StringFilter);
+      }
+      case SingleTargetOperators.NOT_ENDS_WITH: {
+        return Ok({
+          not: {
+            endsWith: singleStringFilter.value,
+          },
+        } satisfies Prisma.StringFilter);
+      }
+      case SingleTargetOperators.INSENSITIVE_ENDS_WITH: {
+        return Ok({
+          endsWith: singleStringFilter.value,
+          mode: "insensitive",
+        } satisfies Prisma.StringFilter);
+      }
+      case SingleTargetOperators.INSENSITIVE_NOT_ENDS_WITH: {
+        return Ok({
+          not: {
+            endsWith: singleStringFilter.value,
+          },
+          mode: "insensitive",
+        } satisfies Prisma.StringFilter);
       }
       default: {
         singleStringFilter.comparison satisfies never;
@@ -121,27 +198,47 @@ function buildWhereFromItemWithoutNegate<Field extends string>(
   } else if (singleNumberFilter) {
     switch (singleNumberFilter.comparison) {
       case SingleTargetOperators.EQUALS: {
-        return Ok(eq(field as AnyPgColumn, singleNumberFilter.value));
+        return Ok({
+          equals: singleNumberFilter.value,
+        } satisfies Prisma.FloatFilter);
       }
       case SingleTargetOperators.NOT_EQUALS: {
-        return Ok(ne(field as AnyPgColumn, singleNumberFilter.value));
+        return Ok({
+          not: singleNumberFilter.value,
+        } satisfies Prisma.FloatFilter);
       }
       case SingleTargetOperators.GREATER_THAN: {
-        return Ok(gt(field as AnyPgColumn, singleNumberFilter.value));
+        return Ok({
+          gt: singleNumberFilter.value,
+        } satisfies Prisma.FloatFilter);
       }
       case SingleTargetOperators.GREATER_THAN_OR_EQUAL_TO: {
-        return Ok(gte(field as AnyPgColumn, singleNumberFilter.value));
+        return Ok({
+          gte: singleNumberFilter.value,
+        } satisfies Prisma.FloatFilter);
       }
       case SingleTargetOperators.LESS_THAN: {
-        return Ok(lt(field as AnyPgColumn, singleNumberFilter.value));
+        return Ok({
+          lt: singleNumberFilter.value,
+        } satisfies Prisma.FloatFilter);
       }
       case SingleTargetOperators.LESS_THAN_OR_EQUAL_TO: {
-        return Ok(lte(field as AnyPgColumn, singleNumberFilter.value));
+        return Ok({
+          lte: singleNumberFilter.value,
+        } satisfies Prisma.FloatFilter);
       }
-      case SingleTargetOperators.LIKE:
-      case SingleTargetOperators.NOT_LIKE:
-      case SingleTargetOperators.ILIKE:
-      case SingleTargetOperators.NOT_ILIKE: {
+      case SingleTargetOperators.CONTAINS:
+      case SingleTargetOperators.NOT_CONTAINS:
+      case SingleTargetOperators.INSENSITIVE_CONTAINS:
+      case SingleTargetOperators.INSENSITIVE_NOT_CONTAINS:
+      case SingleTargetOperators.STARTS_WITH:
+      case SingleTargetOperators.NOT_STARTS_WITH:
+      case SingleTargetOperators.INSENSITIVE_STARTS_WITH:
+      case SingleTargetOperators.INSENSITIVE_NOT_STARTS_WITH:
+      case SingleTargetOperators.ENDS_WITH:
+      case SingleTargetOperators.NOT_ENDS_WITH:
+      case SingleTargetOperators.INSENSITIVE_ENDS_WITH:
+      case SingleTargetOperators.INSENSITIVE_NOT_ENDS_WITH: {
         return Err(
           new InvariantError(
             `Unsupported single number filter comparison: ${String(singleNumberFilter.comparison)}`
@@ -160,19 +257,31 @@ function buildWhereFromItemWithoutNegate<Field extends string>(
   } else if (singleBooleanFilter) {
     switch (singleBooleanFilter.comparison) {
       case SingleTargetOperators.EQUALS: {
-        return Ok(eq(field as AnyPgColumn, singleBooleanFilter.value));
+        return Ok({
+          equals: singleBooleanFilter.value,
+        } satisfies Prisma.BoolFilter);
       }
       case SingleTargetOperators.NOT_EQUALS: {
-        return Ok(ne(field as AnyPgColumn, singleBooleanFilter.value));
+        return Ok({
+          not: singleBooleanFilter.value,
+        } satisfies Prisma.BoolFilter);
       }
       case SingleTargetOperators.GREATER_THAN:
       case SingleTargetOperators.GREATER_THAN_OR_EQUAL_TO:
       case SingleTargetOperators.LESS_THAN:
       case SingleTargetOperators.LESS_THAN_OR_EQUAL_TO:
-      case SingleTargetOperators.LIKE:
-      case SingleTargetOperators.NOT_LIKE:
-      case SingleTargetOperators.ILIKE:
-      case SingleTargetOperators.NOT_ILIKE: {
+      case SingleTargetOperators.CONTAINS:
+      case SingleTargetOperators.NOT_CONTAINS:
+      case SingleTargetOperators.INSENSITIVE_CONTAINS:
+      case SingleTargetOperators.INSENSITIVE_NOT_CONTAINS:
+      case SingleTargetOperators.STARTS_WITH:
+      case SingleTargetOperators.NOT_STARTS_WITH:
+      case SingleTargetOperators.INSENSITIVE_STARTS_WITH:
+      case SingleTargetOperators.INSENSITIVE_NOT_STARTS_WITH:
+      case SingleTargetOperators.ENDS_WITH:
+      case SingleTargetOperators.NOT_ENDS_WITH:
+      case SingleTargetOperators.INSENSITIVE_ENDS_WITH:
+      case SingleTargetOperators.INSENSITIVE_NOT_ENDS_WITH: {
         return Err(
           new InvariantError(
             `Unsupported single boolean filter comparison: ${String(singleBooleanFilter.comparison)}`
@@ -191,10 +300,16 @@ function buildWhereFromItemWithoutNegate<Field extends string>(
   } else if (arrayStringFilter) {
     switch (arrayStringFilter.comparison) {
       case ArrayOperators.IN: {
-        return Ok(inArray(field as AnyPgColumn, arrayStringFilter.value));
+        return Ok({
+          in: arrayStringFilter.value,
+        } satisfies Prisma.StringFilter);
       }
       case ArrayOperators.NOT_IN: {
-        return Ok(notInArray(field as AnyPgColumn, arrayStringFilter.value));
+        return Ok({
+          not: {
+            in: arrayStringFilter.value,
+          },
+        } satisfies Prisma.StringFilter);
       }
       default: {
         arrayStringFilter.comparison satisfies never;
@@ -208,10 +323,16 @@ function buildWhereFromItemWithoutNegate<Field extends string>(
   } else if (arrayNumberFilter) {
     switch (arrayNumberFilter.comparison) {
       case ArrayOperators.IN: {
-        return Ok(inArray(field as AnyPgColumn, arrayNumberFilter.value));
+        return Ok({
+          in: arrayNumberFilter.value,
+        } satisfies Prisma.FloatFilter);
       }
       case ArrayOperators.NOT_IN: {
-        return Ok(notInArray(field as AnyPgColumn, arrayNumberFilter.value));
+        return Ok({
+          not: {
+            in: arrayNumberFilter.value,
+          },
+        } satisfies Prisma.FloatFilter);
       }
       default: {
         arrayNumberFilter.comparison satisfies never;
@@ -223,29 +344,20 @@ function buildWhereFromItemWithoutNegate<Field extends string>(
       }
     }
   } else if (arrayBooleanFilter) {
-    switch (arrayBooleanFilter.comparison) {
-      case ArrayOperators.IN: {
-        return Ok(inArray(field as AnyPgColumn, arrayBooleanFilter.value));
-      }
-      case ArrayOperators.NOT_IN: {
-        return Ok(notInArray(field as AnyPgColumn, arrayBooleanFilter.value));
-      }
-      default: {
-        arrayBooleanFilter.comparison satisfies never;
-        return Err(
-          new InvariantError(
-            `Unsupported array boolean filter comparison: ${String(arrayBooleanFilter.comparison)}`
-          )
-        );
-      }
-    }
+    throw new InvariantError("Array boolean filters are not supported"); // Why would you even want this?
   } else if (arrayDateFilter) {
     switch (arrayDateFilter.comparison) {
       case ArrayOperators.IN: {
-        return Ok(inArray(field as AnyPgColumn, arrayDateFilter.value));
+        return Ok({
+          in: arrayDateFilter.value.map((v) => v.toJSDate()),
+        } satisfies Prisma.DateTimeFilter);
       }
       case ArrayOperators.NOT_IN: {
-        return Ok(notInArray(field as AnyPgColumn, arrayDateFilter.value));
+        return Ok({
+          not: {
+            in: arrayDateFilter.value.map((v) => v.toJSDate()),
+          },
+        } satisfies Prisma.DateTimeFilter);
       }
       default: {
         arrayDateFilter.comparison satisfies never;
@@ -259,27 +371,49 @@ function buildWhereFromItemWithoutNegate<Field extends string>(
   } else if (singleDateFilter) {
     switch (singleDateFilter.comparison) {
       case SingleTargetOperators.EQUALS: {
-        return Ok(eq(field as AnyPgColumn, singleDateFilter.value));
+        return Ok({
+          equals: singleDateFilter.value.toJSDate(),
+        } satisfies Prisma.DateTimeFilter);
       }
       case SingleTargetOperators.NOT_EQUALS: {
-        return Ok(ne(field as AnyPgColumn, singleDateFilter.value));
+        return Ok({
+          not: {
+            equals: singleDateFilter.value.toJSDate(),
+          },
+        } satisfies Prisma.DateTimeFilter);
       }
       case SingleTargetOperators.GREATER_THAN: {
-        return Ok(gt(field as AnyPgColumn, singleDateFilter.value));
+        return Ok({
+          gt: singleDateFilter.value.toJSDate(),
+        } satisfies Prisma.DateTimeFilter);
       }
       case SingleTargetOperators.GREATER_THAN_OR_EQUAL_TO: {
-        return Ok(gte(field as AnyPgColumn, singleDateFilter.value));
+        return Ok({
+          gte: singleDateFilter.value.toJSDate(),
+        } satisfies Prisma.DateTimeFilter);
       }
       case SingleTargetOperators.LESS_THAN: {
-        return Ok(lt(field as AnyPgColumn, singleDateFilter.value));
+        return Ok({
+          lt: singleDateFilter.value.toJSDate(),
+        } satisfies Prisma.DateTimeFilter);
       }
       case SingleTargetOperators.LESS_THAN_OR_EQUAL_TO: {
-        return Ok(lte(field as AnyPgColumn, singleDateFilter.value));
+        return Ok({
+          lte: singleDateFilter.value.toJSDate(),
+        } satisfies Prisma.DateTimeFilter);
       }
-      case SingleTargetOperators.LIKE:
-      case SingleTargetOperators.NOT_LIKE:
-      case SingleTargetOperators.ILIKE:
-      case SingleTargetOperators.NOT_ILIKE: {
+      case SingleTargetOperators.CONTAINS:
+      case SingleTargetOperators.NOT_CONTAINS:
+      case SingleTargetOperators.INSENSITIVE_CONTAINS:
+      case SingleTargetOperators.INSENSITIVE_NOT_CONTAINS:
+      case SingleTargetOperators.STARTS_WITH:
+      case SingleTargetOperators.NOT_STARTS_WITH:
+      case SingleTargetOperators.INSENSITIVE_STARTS_WITH:
+      case SingleTargetOperators.INSENSITIVE_NOT_STARTS_WITH:
+      case SingleTargetOperators.ENDS_WITH:
+      case SingleTargetOperators.NOT_ENDS_WITH:
+      case SingleTargetOperators.INSENSITIVE_ENDS_WITH:
+      case SingleTargetOperators.INSENSITIVE_NOT_ENDS_WITH: {
         return Err(
           new InvariantError(
             `Unsupported single date filter comparison: ${String(singleDateFilter.comparison)}`
@@ -298,22 +432,18 @@ function buildWhereFromItemWithoutNegate<Field extends string>(
   } else if (twoNumberFilter) {
     switch (twoNumberFilter.comparison) {
       case TwoTargetOperators.BETWEEN: {
-        return Ok(
-          between(
-            field as AnyPgColumn,
-            twoNumberFilter.lower,
-            twoNumberFilter.upper
-          )
-        );
+        return Ok({
+          gte: twoNumberFilter.lower,
+          lte: twoNumberFilter.upper,
+        } satisfies Prisma.FloatFilter);
       }
       case TwoTargetOperators.NOT_BETWEEN: {
-        return Ok(
-          notBetween(
-            field as AnyPgColumn,
-            twoNumberFilter.lower,
-            twoNumberFilter.upper
-          )
-        );
+        return Ok({
+          not: {
+            gt: twoNumberFilter.lower,
+            lt: twoNumberFilter.upper,
+          },
+        } satisfies Prisma.FloatFilter);
       }
       default: {
         twoNumberFilter.comparison satisfies never;
@@ -327,22 +457,18 @@ function buildWhereFromItemWithoutNegate<Field extends string>(
   } else if (twoDateFilter) {
     switch (twoDateFilter.comparison) {
       case TwoTargetOperators.BETWEEN: {
-        return Ok(
-          between(
-            field as AnyPgColumn,
-            twoDateFilter.lower,
-            twoDateFilter.upper
-          )
-        );
+        return Ok({
+          gte: twoDateFilter.lower.toJSDate(),
+          lte: twoDateFilter.upper.toJSDate(),
+        } satisfies Prisma.DateTimeFilter);
       }
       case TwoTargetOperators.NOT_BETWEEN: {
-        return Ok(
-          notBetween(
-            field as AnyPgColumn,
-            twoDateFilter.lower,
-            twoDateFilter.upper
-          )
-        );
+        return Ok({
+          not: {
+            gte: twoDateFilter.lower.toJSDate(),
+            lte: twoDateFilter.upper.toJSDate(),
+          },
+        } satisfies Prisma.DateTimeFilter);
       }
       default: {
         twoDateFilter.comparison satisfies never;
@@ -358,13 +484,18 @@ function buildWhereFromItemWithoutNegate<Field extends string>(
   }
 }
 
-export function buildWhereFromGroup<Field extends string>(
+export function buildWhereFromGroup<T, Field extends string>(
   group: AbstractFilterGroup<Field>,
-  fieldLookup: Record<Field, SQL.Aliased | AnyPgColumn>
-): Result<SQL, InvariantError> {
+  fieldLookup: Record<
+    Field,
+    { getWhere: GetWhereFn<T>; orderBy: Args<T, "findMany">["orderBy"] }
+  >
+): Result<Args<T, "findMany">["where"], InvariantError> {
   return Result.all(
     group.filters.map((filter) =>
-      buildWhereFromItemWithoutNegate(filter, fieldLookup).map(not)
+      buildWhereFromItemWithoutNegate(filter, fieldLookup).map((where) => ({
+        NOT: where,
+      }))
     )
   )
     .andThen((filters) => {
@@ -373,10 +504,10 @@ export function buildWhereFromGroup<Field extends string>(
       ).andThen((children) => {
         switch (group.operator) {
           case FilterGroupOperator.AND: {
-            return Ok(and(...filters, ...children));
+            return Ok({ AND: [...filters, ...children] });
           }
           case FilterGroupOperator.OR: {
-            return Ok(or(...filters, ...children));
+            return Ok({ OR: [...filters, ...children] });
           }
           default: {
             group.operator satisfies never;
