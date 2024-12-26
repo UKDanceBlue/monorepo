@@ -1,7 +1,9 @@
 import { GraphQLURL } from "graphql-scalars";
+import { DateTime } from "luxon";
 import { Field, InterfaceType, ObjectType } from "type-graphql";
 
 import { createNodeClasses, Node } from "../relay.js";
+import { DateTimeScalar } from "../scalars/DateTimeISO.js";
 import type { GlobalId } from "../scalars/GlobalId.js";
 import { GlobalIdScalar } from "../scalars/GlobalId.js";
 import { ImageNode } from "./Image.js";
@@ -35,8 +37,8 @@ export class FeedItem {
   @Field(() => GraphQLURL, { nullable: true })
   link?: URL | undefined | null;
 
-  @Field(() => Date, { nullable: true })
-  createdAt!: Date;
+  @Field(() => DateTimeScalar, { nullable: true })
+  createdAt!: DateTime;
 }
 
 @ObjectType({
@@ -71,8 +73,8 @@ export class InstagramFeedNode
     textContent?: string | undefined | null;
     image?: ImageNode | undefined | null;
     link?: URL | undefined | null;
-    createdAt?: Date;
-    updatedAt?: Date;
+    createdAt?: DateTime;
+    updatedAt?: DateTime;
   }) {
     return InstagramFeedNode.createInstance().withValues(init);
   }
@@ -99,8 +101,8 @@ export class FeedNode extends TimestampedResource implements Node, FeedItem {
     id: string;
     title: string;
     textContent?: string | undefined | null;
-    createdAt?: Date;
-    updatedAt?: Date;
+    createdAt?: DateTime;
+    updatedAt?: DateTime;
   }) {
     return FeedNode.createInstance().withValues(init);
   }

@@ -1,3 +1,4 @@
+import { DateTime } from "luxon";
 import { Field, ObjectType, registerEnumType } from "type-graphql";
 
 import { createNodeClasses, Node } from "../relay.js";
@@ -58,8 +59,8 @@ export class TeamNode extends TimestampedResource implements Node {
     name: string;
     type: TeamType;
     legacyStatus: TeamLegacyStatus;
-    createdAt?: Date | undefined | null;
-    updatedAt?: Date | undefined | null;
+    createdAt?: DateTime | undefined | null;
+    updatedAt?: DateTime | undefined | null;
   }) {
     return TeamNode.createInstance().withValues(init);
   }

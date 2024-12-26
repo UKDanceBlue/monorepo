@@ -65,7 +65,7 @@ export abstract class Connection<E extends Edge = Edge> implements Errorable {
   errors!: ResourceError[];
 }
 @InterfaceType({ implements: [Errorable] })
-export abstract class Resource<N extends Node = Node> implements Errorable {
+export abstract class NodeResource<N extends Node = Node> implements Errorable {
   @Field(() => Node, { name: "node" })
   node!: N;
 

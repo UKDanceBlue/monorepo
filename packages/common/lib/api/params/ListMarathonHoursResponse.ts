@@ -1,8 +1,10 @@
-import { GraphQLDateTimeISO, GraphQLNonEmptyString } from "graphql-scalars";
+import { GraphQLNonEmptyString } from "graphql-scalars";
+import { DateTime } from "luxon";
 import { ArgsType, Field, InputType, ObjectType } from "type-graphql";
 
 import { FilteredListQueryArgs } from "../filtering/list-query-args/FilteredListQueryArgs.js";
 import { MarathonHourNode } from "../resources/MarathonHour.js";
+import { DateTimeScalar } from "../scalars/DateTimeISO.js";
 import { AbstractGraphQLPaginatedResponse } from "./ApiResponse.js";
 
 @ObjectType("ListMarathonHoursResponse", {
@@ -24,8 +26,8 @@ export class CreateMarathonHourInput {
   @Field(() => GraphQLNonEmptyString)
   durationInfo!: string;
 
-  @Field(() => GraphQLDateTimeISO)
-  shownStartingAt!: Date;
+  @Field(() => DateTimeScalar)
+  shownStartingAt!: DateTime;
 }
 
 @InputType()
@@ -39,26 +41,14 @@ export class SetMarathonHourInput {
   @Field(() => GraphQLNonEmptyString)
   durationInfo!: string;
 
-  @Field(() => GraphQLDateTimeISO)
-  shownStartingAt!: Date;
+  @Field(() => DateTimeScalar)
+  shownStartingAt!: DateTime;
 }
 
 @ArgsType()
-export class ListMarathonHoursArgs extends FilteredListQueryArgs<
-  | "title"
-  | "details"
-  | "durationInfo"
-  | "marathonYear"
-  | "shownStartingAt"
-  | "createdAt"
-  | "updatedAt",
-  "title" | "details" | "durationInfo",
-  "marathonYear",
-  never,
-  "shownStartingAt" | "createdAt" | "updatedAt",
-  never
->("MarathonHourResolver", {
-  all: [
+export class ListMarathonHoursArgs extends FilteredListQueryArgs(
+  "MarathonHourResolver",
+  [
     "title",
     "details",
     "durationInfo",
@@ -66,8 +56,5 @@ export class ListMarathonHoursArgs extends FilteredListQueryArgs<
     "shownStartingAt",
     "createdAt",
     "updatedAt",
-  ],
-  string: ["title", "details", "durationInfo"],
-  oneOf: ["marathonYear"],
-  date: ["shownStartingAt", "createdAt", "updatedAt"],
-}) {}
+  ]
+) {}

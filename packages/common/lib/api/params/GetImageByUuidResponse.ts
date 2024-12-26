@@ -15,19 +15,13 @@ export class CreateImageInput implements Partial<ImageNode> {
 }
 
 @ArgsType()
-export class ListImagesArgs extends FilteredListQueryArgs<
-  "alt" | "width" | "height" | "createdAt" | "updatedAt",
+export class ListImagesArgs extends FilteredListQueryArgs("ImageResolver", [
   "alt",
-  never,
-  "width" | "height",
-  "createdAt" | "updatedAt",
-  never
->("ImageResolver", {
-  all: ["alt", "width", "height", "createdAt", "updatedAt"],
-  string: ["alt"],
-  numeric: ["width", "height"],
-  date: ["createdAt", "updatedAt"],
-}) {}
+  "width",
+  "height",
+  "createdAt",
+  "updatedAt",
+]) {}
 
 @ObjectType("ListImagesResponse", {
   implements: AbstractGraphQLPaginatedResponse<ImageNode[]>,

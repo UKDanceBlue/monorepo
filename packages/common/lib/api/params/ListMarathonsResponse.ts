@@ -1,9 +1,15 @@
 import { Matches } from "class-validator";
-import { GraphQLDateTimeISO, GraphQLNonEmptyString } from "graphql-scalars";
+import { GraphQLNonEmptyString } from "graphql-scalars";
+import { DateTime } from "luxon";
 import { ArgsType, Field, InputType, ObjectType } from "type-graphql";
 
 import { FilteredListQueryArgs } from "../filtering/list-query-args/FilteredListQueryArgs.js";
 import { MarathonNode } from "../resources/Marathon.js";
+import { DateTimeScalar } from "../scalars/DateTimeISO.js";
+import {
+  IsAfterDateTime,
+  IsBeforeDateTime,
+} from "../validation/beforeAfter.js";
 import { AbstractGraphQLPaginatedResponse } from "./ApiResponse.js";
 
 @ObjectType("ListMarathonsResponse", {
@@ -20,11 +26,13 @@ export class CreateMarathonInput {
   @Field(() => GraphQLNonEmptyString)
   year!: string;
 
-  @Field(() => GraphQLDateTimeISO, { nullable: true })
-  startDate?: Date | undefined | null;
+  @IsBeforeDateTime("endDate")
+  @Field(() => DateTimeScalar, { nullable: true })
+  startDate?: DateTime | undefined | null;
 
-  @Field(() => GraphQLDateTimeISO, { nullable: true })
-  endDate?: Date | undefined | null;
+  @IsAfterDateTime("startDate")
+  @Field(() => DateTimeScalar, { nullable: true })
+  endDate?: DateTime | undefined | null;
 }
 
 @InputType()
@@ -33,23 +41,17 @@ export class SetMarathonInput {
   @Field(() => GraphQLNonEmptyString)
   year!: string;
 
-  @Field(() => GraphQLDateTimeISO, { nullable: true })
-  startDate?: Date | undefined | null;
+  @IsBeforeDateTime("endDate")
+  @Field(() => DateTimeScalar, { nullable: true })
+  startDate?: DateTime | undefined | null;
 
-  @Field(() => GraphQLDateTimeISO, { nullable: true })
-  endDate?: Date | undefined | null;
+  @IsAfterDateTime("startDate")
+  @Field(() => DateTimeScalar, { nullable: true })
+  endDate?: DateTime | undefined | null;
 }
 
 @ArgsType()
-export class ListMarathonsArgs extends FilteredListQueryArgs<
-  "year" | "startDate" | "endDate" | "createdAt" | "updatedAt",
-  never,
-  "year",
-  never,
-  "startDate" | "endDate" | "createdAt" | "updatedAt",
-  never
->("MarathonResolver", {
-  all: ["year", "startDate", "endDate", "createdAt", "updatedAt"],
-  oneOf: ["year"],
-  date: ["startDate", "endDate", "createdAt", "updatedAt"],
-}) {}
+export class ListMarathonsArgs extends FilteredListQueryArgs(
+  "MarathonResolver",
+  ["year", "startDate", "endDate", "createdAt", "updatedAt"]
+) {}

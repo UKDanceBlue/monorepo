@@ -1,8 +1,9 @@
 import { MinDate } from "class-validator";
-import { GraphQLDateTimeISO } from "graphql-scalars";
+import { DateTime } from "luxon";
 import { Field, InputType, ObjectType } from "type-graphql";
 
 import { ConfigurationNode } from "../resources/Configuration.js";
+import { DateTimeScalar } from "../scalars/DateTimeISO.js";
 
 @ObjectType("GetConfigurationByUuidResponse")
 export class GetConfigurationResponse {
@@ -18,10 +19,10 @@ export class CreateConfigurationInput implements Partial<ConfigurationNode> {
   @Field()
   value!: string;
 
-  @Field(() => GraphQLDateTimeISO, { nullable: true })
-  validAfter!: Date | null;
+  @Field(() => DateTimeScalar, { nullable: true })
+  validAfter!: DateTime | null;
 
   @MinDate(() => new Date())
-  @Field(() => GraphQLDateTimeISO, { nullable: true })
-  validUntil!: Date | null;
+  @Field(() => DateTimeScalar, { nullable: true })
+  validUntil!: DateTime | null;
 }

@@ -10,24 +10,9 @@ import { type GlobalId, GlobalIdScalar } from "../scalars/GlobalId.js";
 import { AbstractGraphQLPaginatedResponse } from "./ApiResponse.js";
 
 @ArgsType()
-export class ListFundraisingEntriesArgs extends FilteredListQueryArgs<
-  | "donatedOn"
-  | "amount"
-  | "amountUnassigned"
-  | "donatedTo"
-  | "donatedBy"
-  | "teamId"
-  | "batchType"
-  | "createdAt"
-  | "updatedAt"
-  | "solicitationCode",
-  "donatedTo" | "donatedBy" | "solicitationCode",
-  "teamId" | "batchType",
-  "amount" | "amountUnassigned",
-  "donatedOn" | "createdAt" | "updatedAt",
-  never
->("FundraisingEntryResolver", {
-  all: [
+export class ListFundraisingEntriesArgs extends FilteredListQueryArgs(
+  "FundraisingEntryResolver",
+  [
     "donatedOn",
     "amount",
     "amountUnassigned",
@@ -38,12 +23,8 @@ export class ListFundraisingEntriesArgs extends FilteredListQueryArgs<
     "createdAt",
     "updatedAt",
     "solicitationCode",
-  ],
-  string: ["donatedTo", "donatedBy", "solicitationCode"],
-  numeric: ["amount", "amountUnassigned"],
-  oneOf: ["teamId", "batchType"],
-  date: ["donatedOn", "createdAt", "updatedAt"],
-}) {}
+  ]
+) {}
 
 @ObjectType("ListFundraisingEntriesResponse", {
   implements: AbstractGraphQLPaginatedResponse<FundraisingEntryNode[]>,

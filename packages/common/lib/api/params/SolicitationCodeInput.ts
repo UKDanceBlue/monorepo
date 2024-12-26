@@ -7,19 +7,10 @@ import { SolicitationCodeNode } from "../resources/SolicitationCode.js";
 import { AbstractGraphQLPaginatedResponse } from "./ApiResponse.js";
 
 @ArgsType()
-export class ListSolicitationCodesArgs extends FilteredListQueryArgs<
-  "name" | "prefix" | "code" | "createdAt" | "updatedAt",
-  "name" | "prefix",
-  never,
-  "code",
-  "createdAt" | "updatedAt",
-  never
->("SolicitationCode", {
-  all: ["name", "prefix", "code", "createdAt", "updatedAt"],
-  string: ["name", "prefix"],
-  numeric: ["code"],
-  date: ["createdAt", "updatedAt"],
-}) {}
+export class ListSolicitationCodesArgs extends FilteredListQueryArgs(
+  "SolicitationCode",
+  ["name", "prefix", "code", "createdAt", "updatedAt"]
+) {}
 
 @ObjectType("ListSolicitationCodesResponse", {
   implements: AbstractGraphQLPaginatedResponse<SolicitationCodeNode[]>,

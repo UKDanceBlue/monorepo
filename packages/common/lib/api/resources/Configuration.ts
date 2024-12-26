@@ -1,9 +1,8 @@
-import { GraphQLDateTimeISO } from "graphql-scalars";
 import { DateTime } from "luxon";
 import { Field, ObjectType } from "type-graphql";
 
-import { dateTimeFromSomething } from "../../utility/time/intervalTools.js";
 import { createNodeClasses, Node } from "../relay.js";
+import { DateTimeScalar } from "../scalars/DateTimeISO.js";
 import type { GlobalId } from "../scalars/GlobalId.js";
 import { GlobalIdScalar } from "../scalars/GlobalId.js";
 import { TimestampedResource } from "./Resource.js";
@@ -32,17 +31,11 @@ export class ConfigurationNode extends TimestampedResource implements Node {
   @Field(() => String)
   value!: string;
 
-  @Field(() => GraphQLDateTimeISO, { nullable: true })
-  validAfter?: Date | undefined | null;
-  get validAfterDateTime(): DateTime | null {
-    return dateTimeFromSomething(this.validAfter ?? null);
-  }
+  @Field(() => DateTimeScalar, { nullable: true })
+  validAfter?: DateTime | undefined | null;
 
-  @Field(() => GraphQLDateTimeISO, { nullable: true })
-  validUntil?: Date | undefined | null;
-  get validUntilDateTime(): DateTime | null {
-    return dateTimeFromSomething(this.validUntil ?? null);
-  }
+  @Field(() => DateTimeScalar, { nullable: true })
+  validUntil?: DateTime | undefined | null;
 
   public getUniqueId(): string {
     return this.key;
@@ -52,10 +45,10 @@ export class ConfigurationNode extends TimestampedResource implements Node {
     id: string;
     key: string;
     value: string;
-    validAfter?: Date | undefined | null;
-    validUntil?: Date | undefined | null;
-    createdAt?: Date | undefined | null;
-    updatedAt?: Date | undefined | null;
+    validAfter?: DateTime | undefined | null;
+    validUntil?: DateTime | undefined | null;
+    createdAt?: DateTime | undefined | null;
+    updatedAt?: DateTime | undefined | null;
   }) {
     return this.createInstance().withValues(init);
   }

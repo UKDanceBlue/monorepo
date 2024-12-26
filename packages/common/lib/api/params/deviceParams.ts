@@ -52,18 +52,12 @@ export class RegisterDeviceInput {
 }
 
 @ArgsType()
-export class ListDevicesArgs extends FilteredListQueryArgs<
-  "expoPushToken" | "lastSeen" | "createdAt" | "updatedAt",
+export class ListDevicesArgs extends FilteredListQueryArgs("DeviceResolver", [
   "expoPushToken",
-  never,
-  never,
-  "lastSeen" | "createdAt" | "updatedAt",
-  never
->("DeviceResolver", {
-  all: ["expoPushToken", "lastSeen", "createdAt", "updatedAt"],
-  string: ["expoPushToken"],
-  date: ["lastSeen", "createdAt", "updatedAt"],
-}) {}
+  "lastSeen",
+  "createdAt",
+  "updatedAt",
+]) {}
 
 @ArgsType()
 export class NotificationDeliveriesArgs {

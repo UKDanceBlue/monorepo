@@ -1,208 +1,107 @@
-import { VoidResolver } from "graphql-scalars";
-import { ArgsType, Field, InputType } from "type-graphql";
+import { GraphQLNonNegativeInt, GraphQLPositiveInt } from "graphql-scalars";
+import { ArgsType, Field, InputType, registerEnumType } from "type-graphql";
 
-import type {
-  AbstractBooleanFilterItem,
-  AbstractDateFilterItem,
-  AbstractIsNullFilterItem,
-  AbstractNumericFilterItem,
-  AbstractOneOfFilterItem,
-  AbstractStringFilterItem,
-} from "./FilterItem.js";
+import { AbstractFilterGroup, createFilterGroup } from "../Filter.js";
 import {
-  BooleanFilterItem,
-  DateFilterItem,
-  IsNullFilterItem,
-  NumericFilterItem,
-  OneOfFilterItem,
-  StringFilterItem,
-} from "./FilterItem.js";
-import { registerFilterKeyEnums } from "./registerFilterKeyEnums.js";
-import { UnfilteredListQueryArgs } from "./UnfilteredListQueryArgs.js";
+  DEFAULT_PAGE_SIZE,
+  FIRST_PAGE,
+  SortDirection,
+} from "../ListQueryTypes.js";
 
-export abstract class AbstractFilteredListQueryArgs<
-  AllKeys extends string,
-  StringFilterKeys extends string,
-  OneOfFilterKeys extends string,
-  NumericFilterKeys extends string,
-  DateFilterKeys extends string,
-  BooleanFilterKeys extends string,
-> extends UnfilteredListQueryArgs<AllKeys> {
-  stringFilters!: AbstractStringFilterItem<StringFilterKeys>[] | null;
-  numericFilters!: AbstractNumericFilterItem<NumericFilterKeys>[] | null;
-  dateFilters!: AbstractDateFilterItem<DateFilterKeys>[] | null;
-  booleanFilters!: AbstractBooleanFilterItem<BooleanFilterKeys>[] | null;
-  isNullFilters!: AbstractIsNullFilterItem<AllKeys>[] | null;
-  oneOfFilters!: AbstractOneOfFilterItem<OneOfFilterKeys>[] | null;
+@InputType()
+// eslint-disable-next-line @typescript-eslint/no-unnecessary-type-parameters
+export abstract class AbstractSortItem<Field extends string> {
+  field!: Field;
 
-  get filters(): (
-    | AbstractStringFilterItem<StringFilterKeys>
-    | AbstractNumericFilterItem<NumericFilterKeys>
-    | AbstractDateFilterItem<DateFilterKeys>
-    | AbstractBooleanFilterItem<BooleanFilterKeys>
-    | AbstractIsNullFilterItem<AllKeys>
-    | AbstractOneOfFilterItem<OneOfFilterKeys>
-  )[] {
-    return [
-      ...(this.stringFilters ?? []),
-      ...(this.numericFilters ?? []),
-      ...(this.dateFilters ?? []),
-      ...(this.booleanFilters ?? []),
-      ...(this.isNullFilters ?? []),
-      ...(this.oneOfFilters ?? []),
-    ];
+  @Field(() => SortDirection, { defaultValue: SortDirection.asc })
+  direction!: SortDirection;
+}
+
+export function SortItem<Fields extends string>(
+  resolverName: string,
+  fieldsEnum: Record<string, Fields>
+) {
+  @InputType(`${resolverName}Sort`)
+  class Sort extends AbstractSortItem<Fields> {
+    @Field(() => fieldsEnum)
+    field!: Fields;
+  }
+
+  return Sort;
+}
+
+@ArgsType()
+export abstract class AbstractFilteredListQueryArgs<Fields extends string> {
+  filters!: AbstractFilterGroup<Fields> | null;
+  sortBy!: AbstractSortItem<Fields>[] | null;
+
+  @Field(() => Boolean, {
+    nullable: true,
+    description: "Whether to include deleted items in the results",
+    deprecationReason:
+      "Soft-deletion is no longer used in this project, this parameter is ignored",
+  })
+  includeDeleted!: boolean | null;
+
+  @Field(() => Boolean, {
+    nullable: true,
+    description:
+      "Whether to send all results in a single page, defaults to false (should generally be avoided)",
+    defaultValue: false,
+  })
+  sendAll = false;
+
+  @Field(() => GraphQLNonNegativeInt, {
+    description: `The number of items to return per page, defaults to ${String(
+      DEFAULT_PAGE_SIZE
+    )}`,
+    defaultValue: DEFAULT_PAGE_SIZE,
+  })
+  pageSize!: number;
+
+  @Field(() => GraphQLPositiveInt, {
+    description: `The page number to return, defaults to ${String(FIRST_PAGE)}`,
+    defaultValue: FIRST_PAGE,
+  })
+  page!: number;
+
+  get offset() {
+    if (this.sendAll) {
+      return 0;
+    }
+    return (this.page - 1) * this.pageSize;
+  }
+  get limit() {
+    if (this.sendAll) {
+      return undefined;
+    }
+    return this.pageSize;
   }
 }
 
-export function FilteredListQueryArgs<
-  AllKeys extends string,
-  StringFilterKeys extends string,
-  OneOfFilterKeys extends string,
-  NumericFilterKeys extends string,
-  DateFilterKeys extends string,
-  BooleanFilterKeys extends string,
->(
+export function FilteredListQueryArgs<Fields extends string>(
   resolverName: string,
-  {
-    all: allKeys = [],
-    string: stringFilterKeys = [],
-    oneOf: oneOfFilterKeys = [],
-    numeric: numericFilterKeys = [],
-    date: dateFilterKeys = [],
-    boolean: booleanFilterKeys = [],
-  }: {
-    all?: AllKeys[];
-    string?: StringFilterKeys[];
-    oneOf?: OneOfFilterKeys[];
-    numeric?: NumericFilterKeys[];
-    date?: DateFilterKeys[];
-    boolean?: BooleanFilterKeys[];
-  }
+  fields: Fields[] = []
 ) {
-  const allSet = new Set<string>(allKeys);
-  const otherSet = new Set();
-  for (const key of [
-    ...stringFilterKeys,
-    ...oneOfFilterKeys,
-    ...numericFilterKeys,
-    ...dateFilterKeys,
-    ...booleanFilterKeys,
-  ]) {
-    if (!allSet.has(key)) {
-      throw new Error(`Filter key ${key} not in all keys`);
-    }
-    if (otherSet.has(key)) {
-      throw new Error(`Duplicate filter key ${key}`);
-    }
-  }
+  const FilterKeysEnum = Object.fromEntries(fields.map((v) => [v, v]));
+  registerEnumType(FilterKeysEnum, {
+    name: `${resolverName}FilterFields`,
+  });
 
-  const {
-    StringFilterKeysEnum,
-    OneOfFilterKeysEnum,
-    NumericFilterKeysEnum,
-    DateFilterKeysEnum,
-    BooleanFilterKeysEnum,
-    AllKeysEnum,
-  } = registerFilterKeyEnums<
-    AllKeys,
-    StringFilterKeys,
-    OneOfFilterKeys,
-    NumericFilterKeys,
-    DateFilterKeys,
-    BooleanFilterKeys
-  >(
-    allKeys,
-    resolverName,
-    stringFilterKeys,
-    oneOfFilterKeys,
-    numericFilterKeys,
-    dateFilterKeys,
-    booleanFilterKeys
-  );
-
-  @InputType(`${resolverName}KeyedStringFilterItem`)
-  class KeyedStringFilterItem extends StringFilterItem(StringFilterKeysEnum) {}
-  @InputType(`${resolverName}KeyedNumericFilterItem`)
-  class KeyedNumericFilterItem extends NumericFilterItem(
-    NumericFilterKeysEnum
-  ) {}
-  @InputType(`${resolverName}KeyedDateFilterItem`)
-  class KeyedDateFilterItem extends DateFilterItem(DateFilterKeysEnum) {}
-  @InputType(`${resolverName}KeyedBooleanFilterItem`)
-  class KeyedBooleanFilterItem extends BooleanFilterItem(
-    BooleanFilterKeysEnum
-  ) {}
-  @InputType(`${resolverName}KeyedOneOfFilterItem`)
-  class KeyedOneOfFilterItem extends OneOfFilterItem(OneOfFilterKeysEnum) {}
-  @InputType(`${resolverName}KeyedIsNullFilterItem`)
-  class KeyedIsNullFilterItem extends IsNullFilterItem(AllKeysEnum) {}
+  const FilterGroup = createFilterGroup(FilterKeysEnum, resolverName);
+  const Sort = SortItem(resolverName, FilterKeysEnum);
 
   @ArgsType()
-  abstract class FilteredListQueryArgs extends AbstractFilteredListQueryArgs<
-    AllKeys,
-    StringFilterKeys,
-    OneOfFilterKeys,
-    NumericFilterKeys,
-    DateFilterKeys,
-    BooleanFilterKeys
-  > {
-    @Field(
-      () =>
-        stringFilterKeys.length > 0 ? [KeyedStringFilterItem] : VoidResolver,
-      {
-        nullable: true,
-        description: "The string filters to apply to the query",
-      }
-    )
-    stringFilters!: KeyedStringFilterItem[] | null;
+  abstract class FilteredListQueryArgs extends AbstractFilteredListQueryArgs<Fields> {
+    @Field(() => FilterGroup)
+    filters!: InstanceType<typeof FilterGroup> | null;
 
-    @Field(
-      () =>
-        numericFilterKeys.length > 0 ? [KeyedNumericFilterItem] : VoidResolver,
-      {
-        nullable: true,
-        description: "The numeric filters to apply to the query",
-      }
-    )
-    numericFilters!: KeyedNumericFilterItem[] | null;
-
-    @Field(
-      () => (dateFilterKeys.length > 0 ? [KeyedDateFilterItem] : VoidResolver),
-      {
-        nullable: true,
-        description: "The date filters to apply to the query",
-      }
-    )
-    dateFilters!: KeyedDateFilterItem[] | null;
-
-    @Field(
-      () =>
-        booleanFilterKeys.length > 0 ? [KeyedBooleanFilterItem] : VoidResolver,
-      {
-        nullable: true,
-        description: "The boolean filters to apply to the query",
-      }
-    )
-    booleanFilters!: KeyedBooleanFilterItem[] | null;
-
-    @Field(
-      () => (allKeys.length > 0 ? [KeyedIsNullFilterItem] : VoidResolver),
-      {
-        nullable: true,
-        description: "The is-null filters to apply to the query",
-      }
-    )
-    isNullFilters!: KeyedIsNullFilterItem[] | null;
-
-    @Field(
-      () =>
-        stringFilterKeys.length > 0 ? [KeyedOneOfFilterItem] : VoidResolver,
-      {
-        nullable: true,
-        description: "The one-of filters to apply to the query",
-      }
-    )
-    oneOfFilters!: KeyedOneOfFilterItem[] | null;
+    @Field(() => [Sort], {
+      nullable: true,
+      description:
+        "The fields to sort by, in order of priority. If unspecified, the sort order is undefined",
+    })
+    sortBy!: InstanceType<typeof Sort>[] | null;
   }
 
   return FilteredListQueryArgs;

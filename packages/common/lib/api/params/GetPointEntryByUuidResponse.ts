@@ -33,14 +33,7 @@ export class CreatePointEntryInput implements Partial<PointEntryNode> {
 }
 
 @ArgsType()
-export class ListPointEntriesArgs extends FilteredListQueryArgs<
-  "createdAt" | "updatedAt",
-  never,
-  never,
-  never,
-  "createdAt" | "updatedAt",
-  never
->("PointEntryResolver", {
-  all: ["createdAt", "updatedAt"],
-  date: ["createdAt", "updatedAt"],
-}) {}
+export class ListPointEntriesArgs extends FilteredListQueryArgs(
+  "PointEntryResolver",
+  ["createdAt", "updatedAt"]
+) {}

@@ -1,3 +1,4 @@
+import { DateTime } from "luxon";
 import { Field, ObjectType } from "type-graphql";
 
 import { createNodeClasses, Node } from "../relay.js";
@@ -33,8 +34,8 @@ export class EventNode extends TimestampedResource implements Node {
     summary?: string | undefined | null;
     description?: string | undefined | null;
     location?: string | undefined | null;
-    updatedAt?: Date | undefined | null;
-    createdAt?: Date | undefined | null;
+    updatedAt?: DateTime | undefined | null;
+    createdAt?: DateTime | undefined | null;
     occurrences: EventOccurrenceNode[];
   }) {
     return this.createInstance().withValues(init);

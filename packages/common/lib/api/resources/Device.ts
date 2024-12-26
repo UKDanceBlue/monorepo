@@ -1,8 +1,7 @@
-import { GraphQLDateTimeISO } from "graphql-scalars";
+import { DateTimeResolver } from "graphql-scalars";
 import type { DateTime } from "luxon";
 import { Field, ObjectType } from "type-graphql";
 
-import { dateTimeFromSomething } from "../../utility/time/intervalTools.js";
 import { createNodeClasses, Node } from "../relay.js";
 import type { GlobalId } from "../scalars/GlobalId.js";
 import { GlobalIdScalar } from "../scalars/GlobalId.js";
@@ -13,11 +12,8 @@ export class DeviceNode extends TimestampedResource implements Node {
   @Field(() => GlobalIdScalar)
   id!: GlobalId;
 
-  @Field(() => GraphQLDateTimeISO, { nullable: true })
-  public lastLogin?: Date | undefined | null;
-  get lastLoginDateTime(): DateTime | null {
-    return dateTimeFromSomething(this.lastLogin ?? null);
-  }
+  @Field(() => DateTimeResolver, { nullable: true })
+  public lastLogin?: DateTime | undefined | null;
 
   public getUniqueId(): string {
     return this.id.id;
@@ -25,9 +21,9 @@ export class DeviceNode extends TimestampedResource implements Node {
 
   public static init(init: {
     id: string;
-    lastLogin?: Date | undefined | null;
-    createdAt: Date;
-    updatedAt: Date;
+    lastLogin?: DateTime | undefined | null;
+    createdAt: DateTime;
+    updatedAt: DateTime;
   }) {
     return this.createInstance().withValues(init);
   }

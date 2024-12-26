@@ -43,11 +43,22 @@ export const BatchType = {
    */
   Unknown: "Unknown",
 } as const;
-export type BatchType = keyof typeof BatchType;
+export type BatchType = (typeof BatchType)[keyof typeof BatchType];
 
 registerEnumType(BatchType, {
   name: "BatchType",
 });
+
+export const BatchTypeCodes = {
+  [BatchType.Check]: "C",
+  [BatchType.Transmittal]: "T",
+  [BatchType.CreditCard]: "D",
+  [BatchType.ACH]: "A",
+  [BatchType.NonCash]: "N",
+  [BatchType.PayrollDeduction]: "X",
+} as const;
+export type BatchTypeCode =
+  (typeof BatchTypeCodes)[keyof typeof BatchTypeCodes];
 
 export function extractDDNBatchType(
   batchId: string

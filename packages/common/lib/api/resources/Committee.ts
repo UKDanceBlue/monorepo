@@ -1,3 +1,4 @@
+import { DateTime } from "luxon";
 import { Field, ObjectType } from "type-graphql";
 
 import { CommitteeIdentifier } from "../../authorization/structures.js";
@@ -17,8 +18,8 @@ export class CommitteeNode extends TimestampedResource implements Node {
   static init(init: {
     id: string;
     identifier: CommitteeIdentifier;
-    updatedAt?: Date | undefined | null;
-    createdAt?: Date | undefined | null;
+    updatedAt?: DateTime | undefined | null;
+    createdAt?: DateTime | undefined | null;
   }) {
     return this.createInstance().withValues(init);
   }

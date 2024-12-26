@@ -1,10 +1,10 @@
-import { GraphQLDateTimeISO, JSONObjectResolver } from "graphql-scalars";
+import { JSONObjectResolver } from "graphql-scalars";
 import type { DateTime } from "luxon";
 import { Field, ObjectType } from "type-graphql";
 
 import type { PrimitiveObject } from "../../utility/primitive/TypeUtils.js";
-import { dateTimeFromSomething } from "../../utility/time/intervalTools.js";
 import { Node } from "../relay.js";
+import { DateTimeScalar } from "../scalars/DateTimeISO.js";
 import type { GlobalId } from "../scalars/GlobalId.js";
 import { GlobalIdScalar } from "../scalars/GlobalId.js";
 import { Resource } from "./Resource.js";
@@ -23,17 +23,14 @@ export class AuditLogNode extends Resource implements Node {
   @Field(() => JSONObjectResolver, { nullable: true })
   details?: PrimitiveObject | null | undefined;
 
-  @Field(() => GraphQLDateTimeISO, { nullable: true })
-  createdAt!: Date;
-  get createdAtDateTime(): DateTime {
-    return dateTimeFromSomething(this.createdAt);
-  }
+  @Field(() => DateTimeScalar, { nullable: true })
+  createdAt!: DateTime;
 
   static init(init: {
     id: string;
     summary: string;
     details?: PrimitiveObject | null | undefined;
-    createdAt: Date;
+    createdAt: DateTime;
     userId?: number | null | undefined;
     subjectGlobalId?: string | null | undefined;
   }): AuditLogNode {

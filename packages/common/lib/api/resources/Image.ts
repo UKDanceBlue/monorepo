@@ -1,4 +1,5 @@
 import { GraphQLURL } from "graphql-scalars";
+import { DateTime } from "luxon";
 import { Field, Int, ObjectType } from "type-graphql";
 
 import { createNodeClasses, Node } from "../relay.js";
@@ -43,8 +44,8 @@ export class ImageNode extends TimestampedResource implements Node {
     alt?: string | undefined | null;
     width: number;
     height: number;
-    updatedAt?: Date | undefined | null;
-    createdAt?: Date | undefined | null;
+    updatedAt?: DateTime | undefined | null;
+    createdAt?: DateTime | undefined | null;
   }) {
     return this.createInstance().withValues(init);
   }

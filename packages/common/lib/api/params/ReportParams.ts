@@ -1,7 +1,13 @@
-import { GraphQLDateTimeISO, GraphQLNonEmptyString } from "graphql-scalars";
+import { GraphQLNonEmptyString } from "graphql-scalars";
+import { DateTime } from "luxon";
 import { ArgsType, Field, ObjectType } from "type-graphql";
 
 import { Primitive } from "../../utility/primitive/TypeUtils.js";
+import { DateTimeScalar } from "../scalars/DateTimeISO.js";
+import {
+  IsAfterDateTime,
+  IsBeforeDateTime,
+} from "../validation/beforeAfter.js";
 
 @ObjectType()
 export class ReportPage {
@@ -61,11 +67,13 @@ export class Report {
 
 @ArgsType()
 export class ReportArgs {
-  @Field(() => GraphQLDateTimeISO, { nullable: true })
-  from?: Date | null | undefined;
+  @IsBeforeDateTime("to")
+  @Field(() => DateTimeScalar, { nullable: true })
+  from?: DateTime | null | undefined;
 
-  @Field(() => GraphQLDateTimeISO, { nullable: true })
-  to?: Date | null | undefined;
+  @IsAfterDateTime("from")
+  @Field(() => DateTimeScalar, { nullable: true })
+  to?: DateTime | null | undefined;
 
   @Field(() => GraphQLNonEmptyString)
   report!: string;

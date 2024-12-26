@@ -49,26 +49,9 @@ export class StageNotificationArgs {
 }
 
 @ArgsType()
-export class ListNotificationsArgs extends FilteredListQueryArgs<
-  | "createdAt"
-  | "updatedAt"
-  | "title"
-  | "body"
-  | "deliveryIssue"
-  | "sendAt"
-  | "startedSendingAt"
-  | "deliveryIssueAcknowledgedAt",
-  "title" | "body",
-  "deliveryIssue",
-  never,
-  | "createdAt"
-  | "updatedAt"
-  | "sendAt"
-  | "startedSendingAt"
-  | "deliveryIssueAcknowledgedAt",
-  never
->("NotificationResolver", {
-  all: [
+export class ListNotificationsArgs extends FilteredListQueryArgs(
+  "NotificationResolver",
+  [
     "createdAt",
     "updatedAt",
     "title",
@@ -77,37 +60,14 @@ export class ListNotificationsArgs extends FilteredListQueryArgs<
     "sendAt",
     "startedSendingAt",
     "deliveryIssueAcknowledgedAt",
-  ],
-  date: [
-    "createdAt",
-    "updatedAt",
-    "sendAt",
-    "startedSendingAt",
-    "deliveryIssueAcknowledgedAt",
-  ],
-  string: ["title", "body"],
-  oneOf: ["deliveryIssue"],
-}) {}
+  ]
+) {}
 
 @ArgsType()
-export class ListNotificationDeliveriesArgs extends FilteredListQueryArgs<
-  "createdAt" | "updatedAt" | "sentAt" | "receiptCheckedAt" | "deliveryError",
-  never,
-  "deliveryError",
-  never,
-  "createdAt" | "updatedAt" | "sentAt" | "receiptCheckedAt",
-  never
->("NotificationDeliveryResolver", {
-  all: [
-    "createdAt",
-    "updatedAt",
-    "sentAt",
-    "receiptCheckedAt",
-    "deliveryError",
-  ],
-  date: ["createdAt", "updatedAt", "sentAt", "receiptCheckedAt"],
-  oneOf: ["deliveryError"],
-}) {
+export class ListNotificationDeliveriesArgs extends FilteredListQueryArgs(
+  "NotificationDeliveryResolver",
+  ["createdAt", "updatedAt", "sentAt", "receiptCheckedAt", "deliveryError"]
+) {
   @Field(() => GlobalIdScalar)
   notificationUuid!: GlobalId;
 }

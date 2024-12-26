@@ -1,3 +1,4 @@
+import { DateTime } from "luxon";
 import { Field, Int, ObjectType } from "type-graphql";
 
 import { createNodeClasses, Node } from "../relay.js";
@@ -24,8 +25,8 @@ export class PointEntryNode extends TimestampedResource implements Node {
     id: string;
     comment?: string | undefined | null;
     points: number;
-    createdAt?: Date | undefined | null;
-    updatedAt?: Date | undefined | null;
+    createdAt?: DateTime | undefined | null;
+    updatedAt?: DateTime | undefined | null;
   }) {
     return this.createInstance().withValues(init);
   }

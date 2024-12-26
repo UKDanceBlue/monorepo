@@ -61,19 +61,12 @@ export class BulkTeamInput {
 }
 
 @ArgsType()
-export class ListTeamsArgs extends FilteredListQueryArgs<
-  "name" | "type" | "legacyStatus" | "marathonId",
+export class ListTeamsArgs extends FilteredListQueryArgs("TeamResolver", [
   "name",
-  "type" | "legacyStatus" | "marathonId",
-  never,
-  never,
-  never
->("TeamResolver", {
-  all: ["name", "type", "legacyStatus", "marathonId"],
-  string: ["name"],
-  numeric: [],
-  oneOf: ["type", "marathonId", "legacyStatus"],
-}) {
+  "type",
+  "legacyStatus",
+  "marathonId",
+]) {
   @Field(() => [TeamType], { nullable: true })
   type!: [TeamType] | null;
 

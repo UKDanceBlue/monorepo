@@ -76,43 +76,14 @@ export class SetEventInput {
 }
 
 @ArgsType()
-export class ListEventsArgs extends FilteredListQueryArgs<
-  | "title"
-  | "description"
-  | "summary"
-  | "location"
-  | "occurrence"
-  | "occurrenceStart"
-  | "occurrenceEnd"
-  | "createdAt"
-  | "updatedAt",
-  "title" | "description" | "summary" | "location",
-  never,
-  never,
-  | "occurrence"
-  | "occurrenceStart"
-  | "occurrenceEnd"
-  | "createdAt"
-  | "updatedAt",
-  never
->("EventResolver", {
-  all: [
-    "title",
-    "description",
-    "summary",
-    "location",
-    "occurrence",
-    "occurrenceStart",
-    "occurrenceEnd",
-    "createdAt",
-    "updatedAt",
-  ],
-  string: ["title", "summary", "description", "location"],
-  date: [
-    "occurrence",
-    "createdAt",
-    "updatedAt",
-    "occurrenceStart",
-    "occurrenceEnd",
-  ],
-}) {}
+export class ListEventsArgs extends FilteredListQueryArgs("EventResolver", [
+  "title",
+  "description",
+  "summary",
+  "location",
+  "occurrence",
+  "occurrenceStart",
+  "occurrenceEnd",
+  "createdAt",
+  "updatedAt",
+]) {}

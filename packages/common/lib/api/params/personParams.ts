@@ -30,25 +30,13 @@ class MemberOf {
 }
 
 @ArgsType()
-export class ListPeopleArgs extends FilteredListQueryArgs<
-  "name" | "email" | "linkblue" | "committeeRole" | "committeeName" | "dbRole",
-  "name" | "email" | "linkblue",
-  "committeeRole" | "committeeName" | "dbRole",
-  never,
-  never,
-  never
->("PersonResolver", {
-  all: [
-    "name",
-    "email",
-    "linkblue",
-    "committeeRole",
-    "committeeName",
-    "dbRole",
-  ],
-  string: ["name", "email", "linkblue"],
-  oneOf: ["committeeRole", "committeeName", "dbRole"],
-}) {}
+export class ListPeopleArgs extends FilteredListQueryArgs("PersonResolver", [
+  "name",
+  "email",
+  "linkblue",
+  "committeeRole",
+  "committeeName",
+]) {}
 @InputType()
 export class CreatePersonInput {
   @Field(() => GraphQLNonEmptyString, { nullable: true })
