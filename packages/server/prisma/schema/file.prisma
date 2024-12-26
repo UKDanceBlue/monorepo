@@ -1,41 +1,31 @@
 model Image {
-  id        Int      @id @default(autoincrement())
-  uuid      String   @unique() @default(uuid()) @db.Uuid
-  createdAt DateTime @default(now()) @db.Timestamptz(6)
-  updatedAt DateTime @updatedAt @db.Timestamptz(6)
-  thumbHash Bytes?
-  alt       String?
-  width     Int
-  height    Int
-
-  file   File? @relation(fields: [fileId], references: [id], onDelete: Cascade)
-  fileId Int?
-
+  id                    Int                    @id @default(autoincrement())
+  uuid                  String                 @unique() @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  createdAt             DateTime               @default(now()) @db.Timestamptz(6)
+  updatedAt             DateTime               @updatedAt @db.Timestamptz(6)
+  thumbHash             Bytes?
+  alt                   String?
+  width                 Int
+  height                Int
+  fileId                Int?
   eventImages           EventImage[]
-  marathonHourMapImages MarathonHourMapImage[]
   feedItems             FeedItem[]
-
-  @@index([uuid])
+  file                  File?                  @relation(fields: [fileId], references: [id])
+  marathonHourMapImages MarathonHourMapImage[]
 }
 
 model File {
-  id   Int    @id @default(autoincrement())
-  uuid String @unique() @default(uuid()) @db.Uuid
-
+  id              Int      @id @default(autoincrement())
+  uuid            String   @unique() @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   filename        String
   mimeTypeName    String   @db.VarChar(127)
   mimeSubtypeName String   @db.VarChar(127)
   mimeParameters  String[]
   locationUrl     String
-
-  requiresLogin Boolean @default(false)
-
-  owner   Person? @relation(fields: [ownedBy], references: [id])
-  ownedBy Int?
-
-  createdAt DateTime @default(now()) @db.Timestamptz(6)
-  updatedAt DateTime @updatedAt @db.Timestamptz(6)
-  images    Image[]
-
-  @@index([uuid])
+  requiresLogin   Boolean  @default(false)
+  ownedBy         Int?
+  createdAt       DateTime @default(now()) @db.Timestamptz(6)
+  updatedAt       DateTime @updatedAt @db.Timestamptz(6)
+  owner           Person?  @relation(fields: [ownedBy], references: [id])
+  images          Image[]
 }

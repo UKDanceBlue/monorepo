@@ -1,27 +1,23 @@
 model Person {
   id                                Int                        @id @default(autoincrement())
-  uuid                              String                     @unique() @default(uuid()) @db.Uuid
+  uuid                              String                     @unique() @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   createdAt                         DateTime                   @default(now()) @db.Timestamptz(6)
   updatedAt                         DateTime                   @updatedAt @db.Timestamptz(6)
   name                              String?                    @db.Citext
   email                             String                     @unique() @db.Citext
   linkblue                          String?                    @unique() @db.Citext
+  hashedPassword                    Bytes?
+  salt                              Bytes?
+  edits                             AuditLog[]
   authIdPairs                       AuthIdPair[]
   devices                           Device[]
+  ownedFiles                        File[]
+  assignedFundraisingEntries        FundraisingAssignment[]    @relation("fundraising_assignment_assigned_by_person")
+  fundraisingAssignment             FundraisingAssignment[]
+  createdFundraisingEntries         FundraisingEntry[]
   memberships                       Membership[]
   pointEntries                      PointEntry[]
-  ownedFiles                        File[]
   createdFundraisingEntriesWithMeta FundraisingEntryWithMeta[]
-  createdFundraisingEntries         FundraisingEntry[]
-  fundraisingAssignment             FundraisingAssignment[]
-  assignedFundraisingEntries        FundraisingAssignment[]    @relation("fundraising_assignment_assigned_by_person")
-
-  hashedPassword Bytes?
-  salt           Bytes?
-
-  edits AuditLog[]
-
-  @@index([uuid])
 }
 
 model AuthIdPair {
@@ -30,7 +26,33 @@ model AuthIdPair {
   personId Int
   person   Person     @relation(fields: [personId], references: [id], onDelete: Cascade)
 
-  @@id([personId, source])
+  @@id([source, personId])
+}
+
+model Membership {
+  id            Int                @id @default(autoincrement())
+  uuid          String             @unique() @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  createdAt     DateTime           @default(now()) @db.Timestamptz(6)
+  updatedAt     DateTime           @updatedAt @db.Timestamptz(6)
+  personId      Int
+  teamId        Int
+  position      MembershipPosition
+  committeeRole CommitteeRole?
+  person        Person             @relation(fields: [personId], references: [id], onDelete: Cascade)
+  team          Team               @relation(fields: [teamId], references: [id], onDelete: Cascade)
+
+  @@unique([personId, teamId])
+}
+
+model LoginFlowSession {
+  id                   Int      @id @default(autoincrement())
+  uuid                 String   @unique() @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  createdAt            DateTime @default(now()) @db.Timestamptz(6)
+  updatedAt            DateTime @updatedAt @db.Timestamptz(6)
+  codeVerifier         String
+  redirectToAfterLogin String
+  setCookie            Boolean  @default(false)
+  sendToken            Boolean  @default(false)
 }
 
 enum AuthSource {
@@ -40,36 +62,7 @@ enum AuthSource {
   Password
 }
 
-model Membership {
-  id            Int                @id @default(autoincrement())
-  uuid          String             @unique() @default(uuid()) @db.Uuid
-  createdAt     DateTime           @default(now()) @db.Timestamptz(6)
-  updatedAt     DateTime           @updatedAt @db.Timestamptz(6)
-  personId      Int
-  teamId        Int
-  committeeRole CommitteeRole?
-  position      MembershipPosition
-  person        Person             @relation(fields: [personId], references: [id], onDelete: Cascade)
-  team          Team               @relation(fields: [teamId], references: [id], onDelete: Cascade)
-
-  @@unique([personId, teamId])
-  @@index([uuid])
-}
-
 enum MembershipPosition {
   Member
   Captain
-}
-
-model LoginFlowSession {
-  id                   Int      @id @default(autoincrement())
-  uuid                 String   @unique() @default(uuid()) @db.Uuid
-  createdAt            DateTime @default(now()) @db.Timestamptz(6)
-  updatedAt            DateTime @updatedAt @db.Timestamptz(6)
-  codeVerifier         String
-  redirectToAfterLogin String
-  setCookie            Boolean  @default(false)
-  sendToken            Boolean  @default(false)
-
-  @@index([uuid])
 }

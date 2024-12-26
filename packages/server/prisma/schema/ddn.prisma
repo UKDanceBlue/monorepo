@@ -1,66 +1,60 @@
 model DailyDepartmentNotification {
-  id   Int    @id @default(autoincrement())
-  uuid String @unique @default(uuid()) @db.Uuid
-
-  division                String?
-  department              String?
-  effectiveDate           DateTime?                        @db.Date
-  processDate             DateTime                         @db.Date
-  pledgedDate             DateTime?                        @db.Date
-  transactionDate         DateTime?                        @db.Date
-  transactionType         String
-  combinedAmount          Decimal
-  pledgedAmount           Decimal
-  accountNumber           String
-  accountName             String
-  holdingDestination      String?
-  comment                 String?
-  secShares               String?
-  secType                 String?
-  gikType                 String?
-  gikDescription          String?
-  onlineGift              Boolean
-  solicitationCodeId      Int
-  solicitationCode        SolicitationCode                 @relation(fields: [solicitationCodeId], references: [id])
-  solicitation            String?
-  behalfHonorMemorial     String?
-  matchingGift            String?
-  batchId                 Int
-  batch                   DailyDepartmentNotificationBatch @relation(fields: [batchId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  ukFirstGift             Boolean
-  divFirstGift            Boolean
-  idSorter                String
-  combinedDonorName       String
-  combinedDonorSalutation String
-  combinedDonorSort       String?
-
-  donors DDNDonorLink[]
-
-  transmittalSn String?
-  sapDocNum     String?
-  sapDocDate    DateTime? @db.Date
-  jvDocNum      String?
-  jvDocDate     DateTime? @db.Date
-  advFeeCcPhil  String?
-  advFeeAmtPhil Decimal?
-  advFeeCcUnit  String?
-  advFeeAmtUnit Decimal?
-  advFeeStatus  String?
-  hcUnit        String?
-
-  fundraisingEntryWithMeta FundraisingEntryWithMeta? @relation(fields: [fundraisingEntryId], references: [id], map: "DailyDepartmentNotification_fundraisingEntryWithMeta")
-  fundraisingEntry         FundraisingEntry          @relation(fields: [fundraisingEntryId], references: [id], map: "DailyDepartmentNotification_fundraisingEntry", onDelete: Cascade)
-  fundraisingEntryId       Int                       @unique
-
-  @@unique([idSorter, processDate, batchId, solicitationCodeId, combinedAmount])
-  @@index([uuid])
+  division                 String?
+  department               String?
+  effectiveDate            DateTime?                        @db.Date
+  processDate              DateTime                         @db.Date
+  pledgedDate              DateTime?                        @db.Date
+  transactionDate          DateTime?                        @db.Date
+  transactionType          String
+  combinedAmount           Decimal
+  pledgedAmount            Decimal
+  accountNumber            String
+  accountName              String
+  holdingDestination       String?
+  comment                  String?
+  secShares                String?
+  secType                  String?
+  gikType                  String?
+  gikDescription           String?
+  onlineGift               Boolean
+  solicitation             String?
+  behalfHonorMemorial      String?
+  matchingGift             String?
+  ukFirstGift              Boolean
+  divFirstGift             Boolean
+  idSorter                 String
+  combinedDonorName        String
+  combinedDonorSalutation  String
+  combinedDonorSort        String?
+  transmittalSn            String?
+  sapDocNum                String?
+  sapDocDate               DateTime?                        @db.Date
+  jvDocNum                 String?
+  jvDocDate                DateTime?                        @db.Date
+  advFeeCcPhil             String?
+  advFeeAmtPhil            Decimal?
+  advFeeCcUnit             String?
+  advFeeAmtUnit            Decimal?
+  advFeeStatus             String?
+  hcUnit                   String?
+  id                       Int                              @id @default(autoincrement())
+  solicitationCodeId       Int
+  fundraisingEntryId       Int                              @unique()
+  uuid                     String                           @unique() @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  batchId                  Int
+  createdAt                DateTime                         @default(now()) @db.Timestamptz(6)
+  updatedAt                DateTime                         @default(now()) @db.Timestamptz(6)
+  donors                   DDNDonorLink[]
+  batch                    DailyDepartmentNotificationBatch @relation(fields: [batchId], references: [id], onDelete: Cascade)
+  fundraisingEntry         FundraisingEntry                 @relation(fields: [fundraisingEntryId], references: [id], onDelete: Cascade, map: "DailyDepartmentNotification_fundraisingEntry")
+  solicitationCode         SolicitationCode                 @relation(fields: [solicitationCodeId], references: [id])
+  fundraisingEntryWithMeta FundraisingEntryWithMeta?        @relation(fields: [fundraisingEntryId], references: [id], map: "DailyDepartmentNotification_fundraisingEntryWithMeta")
 }
 
 model DDNDonor {
-  id   Int    @id @default(autoincrement())
-  uuid String @unique @default(uuid()) @db.Uuid
-
-  donorId      String   @unique
+  id           Int            @id @default(autoincrement())
+  uuid         String         @unique() @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  donorId      String         @unique()
   giftKey      String?
   name         String?
   deceased     Boolean
@@ -69,31 +63,29 @@ model DDNDonor {
   pm           String?
   degrees      String[]
   emails       String[]
-
-  donations DDNDonorLink[]
-
-  @@index([uuid])
+  createdAt    DateTime       @default(now()) @db.Timestamptz(6)
+  updatedAt    DateTime       @default(now()) @db.Timestamptz(6)
+  donations    DDNDonorLink[]
 }
 
 model DDNDonorLink {
-  donorId Int
-  ddnId   Int
-
-  amount   Decimal
-  relation String?
-
-  donor DDNDonor                    @relation(fields: [donorId], references: [id])
-  ddn   DailyDepartmentNotification @relation(fields: [ddnId], references: [id])
+  donorId   Int
+  ddnId     Int
+  amount    Decimal
+  relation  String?
+  createdAt DateTime                    @default(now()) @db.Timestamptz(6)
+  updatedAt DateTime                    @default(now()) @db.Timestamptz(6)
+  ddn       DailyDepartmentNotification @relation(fields: [ddnId], references: [id])
+  donor     DDNDonor                    @relation(fields: [donorId], references: [id])
 
   @@id([donorId, ddnId])
 }
 
 model DailyDepartmentNotificationBatch {
-  id   Int    @id @default(autoincrement())
-  uuid String @unique @default(uuid()) @db.Uuid
-
-  batchId    String                        @unique
+  batchId    String                        @unique()
+  id         Int                           @id @default(autoincrement())
+  uuid       String                        @unique() @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  createdAt  DateTime                      @default(now()) @db.Timestamptz(6)
+  updatedAt  DateTime                      @default(now()) @db.Timestamptz(6)
   memberDDNs DailyDepartmentNotification[]
-
-  @@index([uuid])
 }

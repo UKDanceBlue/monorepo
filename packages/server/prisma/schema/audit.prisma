@@ -1,13 +1,10 @@
 model AuditLog {
-  id   Int    @id @default(autoincrement())
-  uuid String @unique() @default(uuid()) @db.Uuid
-
-  summary String
-  details Json
-
-  userId          Int?    @map("editingUserId")
-  user            Person? @relation(fields: [userId], references: [id])
+  id              Int      @id @default(autoincrement())
+  uuid            String   @unique() @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  summary         String
+  details         Json
+  userId          Int?     @map("editingUserId")
   subjectGlobalId String?
-
-  createdAt DateTime @default(now()) @db.Timestamptz(6)
+  createdAt       DateTime @default(now()) @db.Timestamptz(6)
+  user            Person?  @relation(fields: [userId], references: [id])
 }

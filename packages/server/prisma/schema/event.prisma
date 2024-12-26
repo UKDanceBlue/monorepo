@@ -11,7 +11,7 @@ model EventImage {
 
 model EventOccurrence {
   id        Int      @id @default(autoincrement())
-  uuid      String   @unique() @default(uuid()) @db.Uuid
+  uuid      String   @unique() @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   createdAt DateTime @default(now()) @db.Timestamptz(6)
   updatedAt DateTime @updatedAt @db.Timestamptz(6)
   fullDay   Boolean  @default(false)
@@ -19,23 +19,19 @@ model EventOccurrence {
   endDate   DateTime @db.Timestamptz(6)
   eventId   Int
   event     Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
-
-  @@index([uuid])
 }
 
 model Event {
   id                 Int                @id @default(autoincrement())
-  uuid               String             @unique() @default(uuid()) @db.Uuid
+  uuid               String             @unique() @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   createdAt          DateTime           @default(now()) @db.Timestamptz(6)
   updatedAt          DateTime           @updatedAt @db.Timestamptz(6)
   title              String
   summary            String?
   description        String?
   location           String?
-  remoteId           String?            @unique
+  remoteId           String?            @unique()
   eventImages        EventImage[]
   eventOccurrences   EventOccurrence[]
   pointOpportunities PointOpportunity[]
-
-  @@index([uuid])
 }
