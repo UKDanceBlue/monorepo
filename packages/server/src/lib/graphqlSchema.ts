@@ -12,7 +12,8 @@ import {
   GraphQLObjectType,
   type GraphQLResolveInfo,
 } from "graphql";
-import { Err, Option, Result } from "ts-results-es";
+import type { Err } from "ts-results-es";
+import { AsyncResult, Option, Result } from "ts-results-es";
 import type { ArgsDictionary, MiddlewareFn } from "type-graphql";
 import { buildSchema } from "type-graphql";
 import { fileURLToPath } from "url";
@@ -32,9 +33,16 @@ const schemaPath = fileURLToPath(
  * NOTE: be careful working in this function as the types are mostly 'any', meaning you won't get much type checking
  */
 const errorHandlingMiddleware: MiddlewareFn = async ({ info }, next) => {
-  let result: unknown;
+  let result: // eslint-disable-next-line @typescript-eslint/no-empty-object-type
+  | {}
+    | AsyncResult<unknown, unknown>
+    | Result<unknown, unknown>
+    | Option<unknown>
+    | Result<Option<unknown>, unknown>
+    | AsyncResult<Option<unknown>, unknown>
+    | null;
   try {
-    result = (await next()) as unknown;
+    result = await next();
   } catch (error) {
     logger.error(
       "An error occurred in a resolver",
@@ -43,16 +51,20 @@ const errorHandlingMiddleware: MiddlewareFn = async ({ info }, next) => {
     throw error;
   }
 
+  if (result instanceof AsyncResult) {
+    result = await result.promise;
+  }
+
   if (Result.isResult(result)) {
     if (result.isErr()) {
       let concreteError: Err<ConcreteError>;
       let stack: string | undefined;
       if (result.error instanceof ConcreteError) {
-        concreteError = result;
+        concreteError = result as Err<ConcreteError>;
         stack = result.stack;
       } else {
-        concreteError = Err(toBasicError(result.error));
-        stack = concreteError.error.stack;
+        concreteError = result.mapErr(toBasicError);
+        stack = concreteError.stack;
       }
 
       const error = new FormattedConcreteError(concreteError, info);
@@ -61,7 +73,7 @@ const errorHandlingMiddleware: MiddlewareFn = async ({ info }, next) => {
       );
       throw error;
     } else {
-      result = result.value as unknown;
+      result = result.value;
     }
   }
 
