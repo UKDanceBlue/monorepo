@@ -47,5 +47,10 @@
   "react-native-tools.projectRoot": "./packages/mobile",
   "cSpell.workspaceRootPath": "${workspaceFolder}",
   "dependi.npm.lockFileEnabled": true,
-  "workbench.editor.alwaysShowEditorActions": true
+  "workbench.editor.alwaysShowEditorActions": true,
+  "javascript.experimental.updateImportsOnPaste": true,
+  "typescript.disableAutomaticTypeAcquisition": true,
+  "typescript.experimental.updateImportsOnPaste": true,
+  "typescript.experimental.expandableHover": true,
+  "typescript.preferences.preferTypeOnlyAutoImports": true
 }
