@@ -104,7 +104,7 @@ export class NodeResolver {
   async node(
     @Arg("id", () => GlobalIdScalar) id: GlobalId,
     @Ctx() ctx: GraphQLContext
-  ): Promise<ConcreteResult<Node | Option<Node>>> {
+  ): AsyncResult<Node | Option<Node>, ConcreteError> {
     switch (id.typename) {
       case DailyDepartmentNotificationNode.name: {
         return this.dailyDepartmentNotificationResolver.dailyDepartmentNotification(

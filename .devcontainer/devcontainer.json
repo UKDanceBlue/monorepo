@@ -62,11 +62,9 @@
       "extensions": [
         "dbaeumer.vscode-eslint",
         "msjsdiag.vscode-react-native",
-        "Prisma.prisma",
         "esbenp.prettier-vscode",
         "christian-kohler.npm-intellisense",
         "VisualStudioExptTeam.vscodeintellicode",
-        "VisualStudioExptTeam.intellicode-api-usage-examples",
         "ecmel.vscode-html-css",
         "GraphQL.vscode-graphql-syntax",
         "eamodio.gitlens",
@@ -80,7 +78,6 @@
         "mtxr.sqltools",
         "mtxr.sqltools-driver-pg",
         "fill-labs.dependi",
-        "yoavbls.pretty-ts-errors"
       ]
     }
   },

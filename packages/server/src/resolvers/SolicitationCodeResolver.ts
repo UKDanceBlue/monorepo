@@ -28,7 +28,6 @@ import {
 } from "type-graphql";
 
 import { SolicitationCodeRepository } from "#repositories/solicitationCode/SolicitationCodeRepository.js";
-import { teamModelToResource } from "#repositories/team/teamModelToResource.js";
 
 import { FundraisingEntryResolver } from "./FundraisingEntryResolver.js";
 
@@ -46,7 +45,7 @@ export class SolicitationCodeResolver
   @Query(() => SolicitationCodeNode)
   async solicitationCode(
     @Arg("id", () => GlobalIdScalar) { id }: GlobalId
-  ): Promise<ConcreteResult<SolicitationCodeNode>> {
+  ): AsyncResult<SolicitationCodeNode, ConcreteError> {
     const code =
       await this.solicitationCodeRepository.findSolicitationCodeByUnique({
         uuid: id,
@@ -63,7 +62,7 @@ export class SolicitationCodeResolver
   @Query(() => ListSolicitationCodesResponse)
   async solicitationCodes(
     @Args(() => ListSolicitationCodesArgs) _query: ListSolicitationCodesArgs
-  ): Promise<ConcreteResult<ListSolicitationCodesResponse>> {
+  ): AsyncResult<ListSolicitationCodesResponse, ConcreteError> {
     const codes =
       await this.solicitationCodeRepository.findAllSolicitationCodes();
     return codes.toAsyncResult().map((codes) =>
@@ -83,7 +82,7 @@ export class SolicitationCodeResolver
   @Mutation(() => SolicitationCodeNode)
   createSolicitationCode(
     @Arg("input") { prefix, code, name }: CreateSolicitationCodeInput
-  ): Promise<ConcreteResult<SolicitationCodeNode>> {
+  ): AsyncResult<SolicitationCodeNode, ConcreteError> {
     return new AsyncResult(
       this.solicitationCodeRepository.createSolicitationCode({
         prefix,
@@ -103,7 +102,7 @@ export class SolicitationCodeResolver
   setSolicitationCode(
     @Arg("id", () => GlobalIdScalar) { id }: GlobalId,
     @Arg("input") { name }: SetSolicitationCodeInput
-  ): Promise<ConcreteResult<SolicitationCodeNode>> {
+  ): AsyncResult<SolicitationCodeNode, ConcreteError> {
     return new AsyncResult(
       this.solicitationCodeRepository.setSolicitationCode(
         { uuid: id },
@@ -122,7 +121,7 @@ export class SolicitationCodeResolver
   async entries(
     @Root() { id }: SolicitationCodeNode,
     @Args(() => ListFundraisingEntriesArgs) args: ListFundraisingEntriesArgs
-  ): Promise<ConcreteResult<ListFundraisingEntriesResponse>> {
+  ): AsyncResult<ListFundraisingEntriesResponse, ConcreteError> {
     return this.fundraisingEntryResolver.fundraisingEntries(args, id);
   }
 
@@ -132,7 +131,7 @@ export class SolicitationCodeResolver
     @Root() { id: { id } }: SolicitationCodeNode,
     @Arg("marathonId", () => GlobalIdScalar, { nullable: true })
     marathonId: GlobalId | null
-  ): Promise<ConcreteResult<TeamNode[]>> {
+  ): AsyncResult<TeamNode[], ConcreteError> {
     const teams =
       await this.solicitationCodeRepository.getTeamsForSolitationCode(
         {
@@ -153,7 +152,7 @@ export class SolicitationCodeResolver
     @Arg("teamId", () => GlobalIdScalar) { id: teamId }: GlobalId,
     @Arg("solicitationCode", () => GlobalIdScalar)
     { id: solicitationCodeId }: GlobalId
-  ): Promise<ConcreteResult<typeof VoidScalar>> {
+  ): AsyncResult<typeof VoidScalar, ConcreteError> {
     const result =
       await this.solicitationCodeRepository.assignSolitationCodeToTeam(
         { uuid: teamId },
@@ -169,7 +168,7 @@ export class SolicitationCodeResolver
   @Mutation(() => VoidResolver, { name: "removeSolicitationCodeFromTeam" })
   async removeSolicitationCodeFromTeam(
     @Arg("teamId", () => GlobalIdScalar) { id: teamId }: GlobalId
-  ): Promise<ConcreteResult<typeof VoidScalar>> {
+  ): AsyncResult<typeof VoidScalar, ConcreteError> {
     const result =
       await this.solicitationCodeRepository.removeSolicitationCodeFromTeam({
         uuid: teamId,

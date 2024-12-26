@@ -38,9 +38,9 @@ import {
 import { NotificationScheduler } from "#jobs/NotificationScheduler.js";
 import { ExpoNotificationProvider } from "#notification/ExpoNotificationProvider.js";
 import * as NotificationProviderJs from "#notification/NotificationProvider.js";
-import { notificationModelToResource } from "#repositories/notification/notificationModelToResource.js";
+
 import { NotificationRepository } from "#repositories/notification/NotificationRepository.js";
-import { notificationDeliveryModelToResource } from "#repositories/notificationDelivery/notificationDeliveryModelToResource.js";
+
 import { NotificationDeliveryRepository } from "#repositories/notificationDelivery/NotificationDeliveryRepository.js";
 import { handleRepositoryError } from "#repositories/shared.js";
 
@@ -65,7 +65,7 @@ export class NotificationResolver
   @Query(() => NotificationNode, { name: "notification" })
   async notification(
     @Arg("id", () => GlobalIdScalar) { id }: GlobalId
-  ): Promise<ConcreteResult<NotificationNode>> {
+  ): AsyncResult<NotificationNode, ConcreteError> {
     return this.notificationRepository
       .findNotificationByUnique({
         uuid: id,
@@ -148,7 +148,7 @@ export class NotificationResolver
   @Mutation(() => NotificationNode, { name: "stageNotification" })
   async stage(
     @Args(() => StageNotificationArgs) args: StageNotificationArgs
-  ): Promise<ConcreteResult<NotificationNode>> {
+  ): AsyncResult<NotificationNode, ConcreteError> {
     if (Object.keys(args.audience).length === 0) {
       return Err(new InvalidArgumentError("Audience must be specified."));
     }
@@ -186,7 +186,7 @@ export class NotificationResolver
   })
   async send(
     @Arg("id", () => GlobalIdScalar) { id }: GlobalId
-  ): Promise<ConcreteResult<void>> {
+  ): AsyncResult<void, ConcreteError> {
     return this.notificationRepository
       .findNotificationByUnique({ uuid: id })
       .andThen((notification) =>
@@ -212,7 +212,7 @@ export class NotificationResolver
   async schedule(
     @Arg("id", () => GlobalIdScalar) { id }: GlobalId,
     @Arg("sendAt") sendAt: Date
-  ): Promise<ConcreteResult<NotificationNode>> {
+  ): AsyncResult<NotificationNode, ConcreteError> {
     this.notificationScheduler.ensureNotificationScheduler();
 
     return this.notificationRepository
@@ -237,7 +237,7 @@ export class NotificationResolver
   })
   async acknowledgeDeliveryIssue(
     @Arg("id", () => GlobalIdScalar) { id }: GlobalId
-  ): Promise<ConcreteResult<NotificationNode>> {
+  ): AsyncResult<NotificationNode, ConcreteError> {
     const notification =
       await this.notificationRepository.findNotificationByUnique({ uuid: id })
         .promise;
@@ -267,7 +267,7 @@ export class NotificationResolver
   })
   async abortScheduled(
     @Arg("id", () => GlobalIdScalar) { id }: GlobalId
-  ): Promise<ConcreteResult<NotificationNode>> {
+  ): AsyncResult<NotificationNode, ConcreteError> {
     return this.notificationRepository
       .findNotificationByUnique({ uuid: id })
       .andThen((notification) =>
@@ -299,7 +299,7 @@ export class NotificationResolver
         "If true, the notification will be deleted even if it has already been sent, which will also delete the delivery records.",
     })
     force?: boolean
-  ): Promise<ConcreteResult<NotificationNode>> {
+  ): AsyncResult<NotificationNode, ConcreteError> {
     return this.notificationRepository
       .findNotificationByUnique({ uuid: id })
       .andThen((notification) =>

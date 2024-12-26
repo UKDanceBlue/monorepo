@@ -26,7 +26,6 @@ import {
 } from "#repositories/shared.js";
 import { committee, team } from "#schema/tables/team.sql.js";
 
-import { db } from "../../drizzle.js";
 import * as CommitteeDescriptions from "./committeeDescriptions.js";
 
 // Make sure that we are exporting a description for every committee
@@ -201,7 +200,7 @@ export class CommitteeRepository extends buildDefaultRepository(
         CommitteeDescriptions;
 
       const overall = await this.handleQueryError(
-        db
+        this.db
           .insert(committee)
           .values({
             identifier: CommitteeIdentifier.overallCommittee,
@@ -219,7 +218,7 @@ export class CommitteeRepository extends buildDefaultRepository(
       }
 
       const vice = await this.handleQueryError(
-        db
+        this.db
           .insert(committee)
           .values({
             identifier: CommitteeIdentifier.viceCommittee,
@@ -238,7 +237,7 @@ export class CommitteeRepository extends buildDefaultRepository(
       }
 
       const result = await this.handleQueryError(
-        db
+        this.db
           .insert(committee)
           .values(
             Object.values(childCommittees).map((committee) => ({

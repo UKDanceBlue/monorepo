@@ -1,5 +1,4 @@
 import { Service } from "@freshgum/typedi";
-import { Decimal } from "@prisma/client/runtime/library";
 import {
   LocalDate,
   localDateToLuxon,
@@ -14,7 +13,6 @@ import {
 } from "@ukdanceblue/common/error";
 import { Err, None, Ok, Option, Result, Some } from "ts-results-es";
 
-import type { FilterItems } from "#lib/prisma-utils/gqlFilterToPrismaFilter.js";
 import { drizzleToken } from "#lib/typediTokens.js";
 import { UniquePersonParam } from "#repositories/person/PersonRepository.js";
 import {
@@ -23,11 +21,6 @@ import {
   SimpleUniqueParam,
 } from "#repositories/shared.js";
 import { SolicitationCodeUniqueParam } from "#repositories/solicitationCode/SolicitationCodeRepository.js";
-
-import {
-  buildFundraisingEntryOrder,
-  buildFundraisingEntryWhere,
-} from "./fundraisingEntryRepositoryUtils.js";
 
 const fundraisingEntryBooleanKeys = [] as const;
 type FundraisingEntryBooleanKey = (typeof fundraisingEntryBooleanKeys)[number];

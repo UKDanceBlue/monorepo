@@ -31,7 +31,7 @@ export class ReportResolver {
   })
   async fundraisingReport(
     @Args(() => ReportArgs) args: ReportArgs
-  ): Promise<ConcreteResult<Report>> {
+  ): AsyncResult<Report, ConcreteError> {
     switch (args.report) {
       case "summary": {
         const data = await this.prisma.fundraisingEntryWithMeta.findMany({

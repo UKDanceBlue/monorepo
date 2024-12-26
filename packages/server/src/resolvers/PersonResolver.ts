@@ -4,13 +4,16 @@ import {
   AccessControlAuthorized,
   AccessLevel,
   CommitteeMembershipNode,
+  FilterGroupOperator,
   FundraisingAssignmentNode,
   GlobalIdScalar,
   MembershipNode,
   MembershipPositionType,
   PersonNode,
   SetPasswordInput,
-  SortDirection,
+  SingleStringFilter,
+  SingleTargetOperators,
+  SomeFilter,
   TeamType,
 } from "@ukdanceblue/common";
 import {
@@ -23,19 +26,11 @@ import {
 import {
   ActionDeniedError,
   ConcreteError,
-  ConcreteResult,
+  ErrorCode,
   extractNotFound,
   NotFoundError,
 } from "@ukdanceblue/common/error";
-import {
-  AsyncResult,
-  Err,
-  None,
-  Ok,
-  Option,
-  Result,
-  Some,
-} from "ts-results-es";
+import { AsyncResult, Err, None, Ok, Option, Some } from "ts-results-es";
 import {
   Arg,
   Args,
@@ -50,14 +45,13 @@ import {
 
 import type { GraphQLContext } from "#auth/context.js";
 import { WithAuditLogging } from "#lib/logging/auditLogging.js";
+import {
+  mapToResource,
+  mapToResources,
+} from "#repositories/DefaultRepository.js";
 import { fundraisingAssignmentModelToNode } from "#repositories/fundraising/fundraisingAssignmentModelToNode.js";
 import { FundraisingEntryRepository } from "#repositories/fundraising/FundraisingRepository.js";
-import {
-  committeeMembershipModelToResource,
-  membershipModelToResource,
-} from "#repositories/membership/membershipModelToResource.js";
 import { MembershipRepository } from "#repositories/membership/MembershipRepository.js";
-import { personModelToResource } from "#repositories/person/personModelToResource.js";
 import { PersonRepository } from "#repositories/person/PersonRepository.js";
 
 @Resolver(() => PersonNode)
@@ -74,83 +68,39 @@ export class PersonResolver
   @WithAuditLogging()
   @AccessControlAuthorized("get")
   @Query(() => PersonNode, { name: "person" })
-  async person(
+  person(
     @Arg("id", () => GlobalIdScalar) { id }: GlobalId
-  ): Promise<ConcreteResult<PersonNode>> {
-    return new AsyncResult(
-      await this.personRepository.findPersonByUnique({ uuid: id })
-    )
-      .andThen((row) => row.toResult(new NotFoundError({ what: "Person" })))
-      .andThen((row) => personModelToResource(row, this.personRepository))
-      .promise;
+  ): AsyncResult<PersonNode, ConcreteError> {
+    return this.personRepository
+      .findOne({ by: { uuid: id } })
+      .map(mapToResource);
   }
 
   @AccessControlAuthorized("get")
   @Query(() => PersonNode, { name: "personByLinkBlue", nullable: true })
-  async getByLinkBlueId(
+  getByLinkBlueId(
     @Arg("linkBlueId") linkBlueId: string
-  ): Promise<ConcreteResult<Option<PersonNode>>> {
-    const row = await this.personRepository.findPersonByUnique({
-      linkblue: linkBlueId.toLowerCase(),
-    });
-
-    if (row.isErr()) {
-      return Err(row.error);
-    }
-    if (row.value.isNone()) {
-      return Ok(None);
-    }
-    return personModelToResource(row.value.value, this.personRepository).map(
-      (val) => Some(val)
-    ).promise;
+  ): AsyncResult<Option<PersonNode>, ConcreteError> {
+    return this.personRepository
+      .findOne({ by: { linkblue: linkBlueId.toLowerCase() } })
+      .map(mapToResource)
+      .map<Option<PersonNode>>((val) => Some(val))
+      .orElse((err) => (err.tag === ErrorCode.NotFound ? Ok(None) : Err(err)));
   }
 
   @AccessControlAuthorized("list")
   @Query(() => ListPeopleResponse, { name: "people" })
-  async people(
+  people(
     @Args(() => ListPeopleArgs) args: ListPeopleArgs
-  ): Promise<ConcreteResult<ListPeopleResponse>> {
-    const [rows, total] = await Promise.all([
-      this.personRepository.listPeople({
-        filters: args.filters,
-        order:
-          args.sortBy?.map((key, i) => [
-            key,
-            args.sortDirection?.[i] ?? SortDirection.desc,
-          ]) ?? [],
-        skip:
-          args.page != null && args.actualPageSize != null
-            ? (args.page - 1) * args.actualPageSize
-            : null,
-        take: args.actualPageSize,
-      }),
-      this.personRepository.countPeople({ filters: args.filters }),
-    ]);
-
-    return Result.all([
-      await rows
-        .toAsyncResult()
-        .andThen(async (rows) =>
-          Result.all(
-            await Promise.all(
-              rows.map(
-                (row) =>
-                  personModelToResource(row, this.personRepository).promise
-              )
-            )
-          )
-        ).promise,
-      total,
-    ]).andThen<ListPeopleResponse, ConcreteError>(([rows, total]) => {
-      return Ok(
+  ): AsyncResult<ListPeopleResponse, ConcreteError> {
+    return this.personRepository
+      .findAndCount({ param: args })
+      .map(({ total, selectedRows }) =>
         ListPeopleResponse.newPaginated({
-          data: rows,
           total,
-          page: args.page,
-          pageSize: args.actualPageSize,
+          data: mapToResources(selectedRows),
         })
       );
-    });
   }
 
   @Query(() => PersonNode, { name: "me", nullable: true })
@@ -160,27 +110,39 @@ export class PersonResolver
 
   @AccessControlAuthorized("list")
   @Query(() => [PersonNode], { name: "searchPeopleByName" })
-  async searchByName(
+  searchByName(
     @Arg("name") name: string
-  ): Promise<ConcreteResult<PersonNode[]>> {
-    return new AsyncResult(this.personRepository.searchByName(name)).andThen(
-      async (rows) =>
-        Result.all(
-          await Promise.all(
-            rows.map(
-              (row) => personModelToResource(row, this.personRepository).promise
-            )
-          )
-        )
-    ).promise;
+  ): AsyncResult<PersonNode[], ConcreteError> {
+    return this.personRepository
+      .findAndCount({
+        param: {
+          filters: {
+            operator: FilterGroupOperator.AND,
+            children: [],
+            filters: [
+              {
+                field: "name",
+                filter: SomeFilter.from(
+                  SingleStringFilter.from(
+                    `%${name}%`,
+                    SingleTargetOperators.LIKE
+                  )
+                ),
+                negate: false,
+              },
+            ],
+          },
+        },
+      })
+      .map(({ selectedRows }) => mapToResources(selectedRows));
   }
 
   @AccessControlAuthorized("create")
   @Mutation(() => PersonNode, { name: "createPerson" })
-  async createPerson(
+  createPerson(
     @Arg("input") input: CreatePersonInput,
     @Ctx() { accessLevel }: GraphQLContext
-  ): Promise<ConcreteResult<PersonNode>> {
+  ): AsyncResult<PersonNode, ConcreteError> {
     if (
       (input.memberOf ?? []).some(
         ({ committeeRole }) => committeeRole != null
@@ -191,7 +153,7 @@ export class PersonResolver
         new ActionDeniedError(
           "Only tech committee can create committee members"
         )
-      );
+      ).toAsyncResult();
     } else if (
       (input.captainOf ?? []).some(
         ({ committeeRole }) => committeeRole != null
@@ -202,36 +164,35 @@ export class PersonResolver
         new ActionDeniedError(
           "Only tech committee can create committee members"
         )
-      );
+      ).toAsyncResult();
     }
 
-    const person = await this.personRepository.createPerson({
-      name: input.name,
-      email: input.email,
-      linkblue: input.linkblue?.toLowerCase(),
-      memberOf: input.memberOf?.map(({ id: { id }, committeeRole }) => ({
-        uuid: id,
-        committeeRole,
-      })),
-      captainOf: input.captainOf?.map(({ id: { id }, committeeRole }) => ({
-        uuid: id,
-        committeeRole,
-      })),
+    const person = this.personRepository.create({
+      init: {
+        name: input.name,
+        email: input.email,
+        linkblue: input.linkblue?.toLowerCase(),
+        memberOf: input.memberOf?.map(({ id: { id }, committeeRole }) => ({
+          uuid: id,
+          committeeRole,
+        })),
+        captainOf: input.captainOf?.map(({ id: { id }, committeeRole }) => ({
+          uuid: id,
+          committeeRole,
+        })),
+      },
     });
 
-    return person
-      .toAsyncResult()
-      .andThen((person) => personModelToResource(person, this.personRepository))
-      .promise;
+    return person.map(mapToResource);
   }
 
   @AccessControlAuthorized("modify")
   @Mutation(() => PersonNode, { name: "setPerson" })
-  async setPerson(
+  setPerson(
     @Arg("id", () => GlobalIdScalar) { id }: GlobalId,
     @Arg("input") input: SetPersonInput,
     @Ctx() { accessLevel }: GraphQLContext
-  ): Promise<ConcreteResult<PersonNode>> {
+  ): AsyncResult<PersonNode, ConcreteError> {
     if (
       (input.memberOf ?? []).some(
         ({ committeeRole }) => committeeRole != null
@@ -242,7 +203,7 @@ export class PersonResolver
         new ActionDeniedError(
           "Only tech committee can modify committee members"
         )
-      );
+      ).toAsyncResult();
     } else if (
       (input.captainOf ?? []).some(
         ({ committeeRole }) => committeeRole != null
@@ -253,72 +214,62 @@ export class PersonResolver
         new ActionDeniedError(
           "Only tech committee can modify committee members"
         )
-      );
+      ).toAsyncResult();
     }
 
-    return new AsyncResult(
-      this.personRepository.updatePerson(
-        {
+    return this.personRepository
+      .update({
+        by: {
           uuid: id,
         },
-        {
+        init: {
           name: input.name,
           email: input.email,
           linkblue: input.linkblue?.toLowerCase(),
           memberOf: input.memberOf?.map(({ id: { id }, committeeRole }) => ({
-            id,
+            uuid: id,
             committeeRole,
           })),
           captainOf: input.captainOf?.map(({ id: { id }, committeeRole }) => ({
-            id,
+            uuid: id,
             committeeRole,
           })),
-        }
-      )
-    ).andThen((row) => personModelToResource(row, this.personRepository))
-      .promise;
+        },
+      })
+      .map(mapToResource);
   }
 
   @AccessControlAuthorized("create")
   @Mutation(() => [PersonNode], { name: "bulkLoadPeople" })
-  async bulkLoad(
+  bulkLoad(
     @Arg("people", () => [BulkPersonInput]) people: BulkPersonInput[],
     @Arg("marathonId", () => GlobalIdScalar) marathonId: GlobalId
-  ): Promise<ConcreteResult<PersonNode[]>> {
+  ): AsyncResult<PersonNode[], ConcreteError> {
     for (const person of people) {
       if (person.committee || person.role) {
         return Err(
           new ActionDeniedError(
             "Only tech committee can create committee members"
           )
-        );
+        ).toAsyncResult();
       }
     }
-    return new AsyncResult(
-      this.personRepository.bulkLoadPeople(people, {
-        uuid: marathonId.id,
-      })
-    ).andThen(async (rows) =>
-      Result.all(
-        await Promise.all(
-          rows.map(
-            (row) => personModelToResource(row, this.personRepository).promise
-          )
-        )
-      )
-    ).promise;
+
+    return this.personRepository
+      .createMultiple({ data: people, marathonId: marathonId.id })
+      .map(mapToResources);
   }
 
   @AccessControlAuthorized("update", "TeamNode", ".members")
   @Mutation(() => MembershipNode, { name: "addPersonToTeam" })
-  async assignPersonToTeam(
+  assignPersonToTeam(
     @Arg("personUuid", () => GlobalIdScalar) personUuid: GlobalId,
     @Arg("teamUuid", () => GlobalIdScalar) teamUuid: GlobalId,
     @Arg("position", () => MembershipPositionType, {
       defaultValue: MembershipPositionType.Member,
     })
     position: MembershipPositionType
-  ): Promise<ConcreteResult<MembershipNode>> {
+  ): AsyncResult<MembershipNode, ConcreteError> {
     return new AsyncResult(
       this.membershipRepository.assignPersonToTeam({
         personParam: {
@@ -329,15 +280,15 @@ export class PersonResolver
         },
         position,
       })
-    ).map(membershipModelToResource).promise;
+    ).map(membershipModelToResource);
   }
 
   @AccessControlAuthorized("update", "TeamNode", ".members")
   @Mutation(() => MembershipNode, { name: "removePersonFromTeam" })
-  async unassignPersonFromTeam(
+  unassignPersonFromTeam(
     @Arg("personUuid", () => GlobalIdScalar) personUuid: GlobalId,
     @Arg("teamUuid", () => GlobalIdScalar) teamUuid: GlobalId
-  ): Promise<ConcreteResult<MembershipNode>> {
+  ): AsyncResult<MembershipNode, ConcreteError> {
     return new AsyncResult(
       this.membershipRepository.removePersonFromTeam(
         {
@@ -347,25 +298,24 @@ export class PersonResolver
           uuid: teamUuid.id,
         }
       )
-    ).map(membershipModelToResource).promise;
+    ).map(membershipModelToResource);
   }
 
   @AccessControlAuthorized("delete")
   @Mutation(() => PersonNode, { name: "deletePerson" })
-  async deletePerson(
+  deletePerson(
     @Arg("id", () => GlobalIdScalar) { id }: GlobalId
-  ): Promise<ConcreteResult<PersonNode>> {
-    return new AsyncResult(
-      this.personRepository.deletePerson({ uuid: id })
-    ).andThen((row) => personModelToResource(row, this.personRepository))
-      .promise;
+  ): AsyncResult<PersonNode, ConcreteError> {
+    return this.personRepository
+      .delete({ by: { uuid: id } })
+      .map(mapToResource);
   }
 
   @AccessControlAuthorized("get", "PersonNode", ".memberships")
   @FieldResolver(() => [CommitteeMembershipNode])
-  async committees(
+  committees(
     @Root() { id: { id } }: PersonNode
-  ): Promise<ConcreteResult<CommitteeMembershipNode[]>> {
+  ): AsyncResult<CommitteeMembershipNode[], ConcreteError> {
     return new AsyncResult(
       this.personRepository.findCommitteeMembershipsOfPerson({
         uuid: id,
@@ -377,26 +327,26 @@ export class PersonResolver
           membership.team.correspondingCommittee.identifier
         );
       })
-    ).promise;
+    );
   }
 
   @AccessControlAuthorized("get", "PersonNode", ".memberships")
   @FieldResolver(() => [MembershipNode])
-  async teams(
+  teams(
     @Root() { id: { id } }: PersonNode
-  ): Promise<ConcreteResult<MembershipNode[]>> {
+  ): AsyncResult<MembershipNode[], ConcreteError> {
     return new AsyncResult(
       this.personRepository.findMembershipsOfPerson({
         uuid: id,
       })
-    ).map((models) => models.map(membershipModelToResource)).promise;
+    ).map((models) => models.map(membershipModelToResource));
   }
 
   @AccessControlAuthorized("get", "PersonNode", ".memberships")
   @FieldResolver(() => [MembershipNode])
-  async moraleTeams(
+  moraleTeams(
     @Root() { id: { id } }: PersonNode
-  ): Promise<ConcreteResult<MembershipNode[]>> {
+  ): AsyncResult<MembershipNode[], ConcreteError> {
     return new AsyncResult(
       this.personRepository.findMembershipsOfPerson(
         {
@@ -405,23 +355,24 @@ export class PersonResolver
         {},
         [TeamType.Morale]
       )
-    ).map((models) => models.map(membershipModelToResource)).promise;
+    ).map((models) => models.map(membershipModelToResource));
   }
 
   @AccessControlAuthorized("get", "PersonNode", ".memberships")
   @FieldResolver(() => CommitteeMembershipNode, { nullable: true })
   async primaryCommittee(
     @Root() { id: { id } }: PersonNode
-  ): Promise<ConcreteResult<Option<CommitteeMembershipNode>>> {
-    return extractNotFound(
-      await new AsyncResult(
-        this.personRepository.getPrimaryCommitteeOfPerson({
-          uuid: id,
-        })
-      ).map(([membership, committee]) =>
-        committeeMembershipModelToResource(membership, committee.identifier)
-      ).promise
-    );
+  ): Promise<AsyncResult<Option<CommitteeMembershipNode>, ConcreteError>> {
+    // return extractNotFound(
+    //   await new AsyncResult(
+    //     this.personRepository.getPrimaryCommitteeOfPerson({
+    //       uuid: id,
+    //     })
+    //   ).map(([membership, committee]) =>
+    //     committeeMembershipModelToResource(membership, committee.identifier)
+    //   ).promise
+    // );
+    return new AsyncResult(Ok(None));
   }
 
   @AccessControlAuthorized("get", "PersonNode", ".memberships")
@@ -429,7 +380,7 @@ export class PersonResolver
   async primaryTeam(
     @Arg("teamType", () => TeamType) teamType: TeamType,
     @Root() { id: { id } }: PersonNode
-  ): Promise<ConcreteResult<Option<MembershipNode>>> {
+  ): Promise<AsyncResult<Option<MembershipNode>, ConcreteError>> {
     const model = await this.personRepository.getPrimaryTeamOfPerson(
       {
         uuid: id,
@@ -442,9 +393,9 @@ export class PersonResolver
 
   @AccessControlAuthorized("list", "PersonNode", ".fundraisingAssignments")
   @FieldResolver(() => Float, { nullable: true })
-  async fundraisingTotalAmount(
+  fundraisingTotalAmount(
     @Root() { id: { id } }: PersonNode
-  ): Promise<ConcreteResult<Option<number>>> {
+  ): AsyncResult<Option<number>, ConcreteError> {
     return this.personRepository.getTotalFundraisingAmount({
       uuid: id,
     });
@@ -455,37 +406,37 @@ export class PersonResolver
   // shallow access to the entry itself
   @AccessControlAuthorized("list", "PersonNode", ".fundraisingAssignments")
   @FieldResolver(() => [FundraisingAssignmentNode])
-  async fundraisingAssignments(
+  fundraisingAssignments(
     @Root() { id: { id } }: PersonNode
-  ): Promise<Result<FundraisingAssignmentNode[], ConcreteError>> {
+  ): AsyncResult<FundraisingAssignmentNode[], ConcreteError> {
     return new AsyncResult(
       this.fundraisingEntryRepository.getAssignmentsForPerson({
         uuid: id,
       })
     ).map((models) =>
       Promise.all(models.map((row) => fundraisingAssignmentModelToNode(row)))
-    ).promise;
+    );
   }
 
   @AccessControlAuthorized("get", "PersonNode", ".password")
   @FieldResolver(() => Boolean, { name: "hasPassword" })
   async hasPassword(
     @Root() { id: { id } }: PersonNode
-  ): Promise<ConcreteResult<boolean>> {
+  ): Promise<AsyncResult<boolean, ConcreteError>> {
     return new AsyncResult(
       await this.personRepository.findPersonByUnique({ uuid: id })
     )
       .andThen((row) => row.toResult(new NotFoundError({ what: "Person" })))
-      .map((row) => row.hashedPassword != null).promise;
+      .map((row) => row.hashedPassword != null);
   }
 
   @AccessControlAuthorized("update", "PersonNode", ".password")
   @Mutation(() => PersonNode, { name: "setPersonPassword" })
-  async setPassword(
+  setPassword(
     @Arg("id", () => GlobalIdScalar) { id }: GlobalId,
     @Arg("password", () => SetPasswordInput)
     { password }: SetPasswordInput
-  ): Promise<ConcreteResult<PersonNode>> {
+  ): AsyncResult<PersonNode, ConcreteError> {
     return new AsyncResult(
       this.personRepository.setPassword(
         {
@@ -493,7 +444,6 @@ export class PersonResolver
         },
         password ?? null
       )
-    ).andThen((row) => personModelToResource(row, this.personRepository))
-      .promise;
+    ).andThen((row) => personModelToResource(row, this.personRepository));
   }
 }

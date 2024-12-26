@@ -11,7 +11,8 @@
     "allowJs": true,
     "checkJs": true,
     "emitDecoratorMetadata": true,
-    "experimentalDecorators": true
+    "experimentalDecorators": true,
+    "noErrorTruncation": true
   },
   "include": ["src", "drizzle.config.ts"],
   "extends": "../../tsconfig.json"

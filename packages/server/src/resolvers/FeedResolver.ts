@@ -27,9 +27,8 @@ import {
 import { FileManager } from "#files/FileManager.js";
 import { InsagramApi } from "#lib/external-apis/feed/instagramfeed.js";
 import { logger } from "#lib/logging/standardLogging.js";
-import { feedItemModelToResource } from "#repositories/feed/feedModelToResource.js";
+
 import { FeedRepository } from "#repositories/feed/FeedRepository.js";
-import { imageModelToResource } from "#repositories/image/imageModelToResource.js";
 
 import type { GraphQLContext } from "../lib/auth/context.js";
 
@@ -46,7 +45,7 @@ export class FeedResolver {
   @AccessControlAuthorized("get")
   async feedItem(
     @Arg("feedItemId", () => GlobalIdScalar) { id }: GlobalId
-  ): Promise<ConcreteResult<FeedNode>> {
+  ): AsyncResult<FeedNode, ConcreteError> {
     const feedItem = await this.feedRepository.getFeedItemByUnique({
       uuid: id,
     });
@@ -61,7 +60,7 @@ export class FeedResolver {
   async feed(
     @Arg("limit", () => Int, { defaultValue: 10, nullable: true })
     limit: number
-  ): Promise<ConcreteResult<FeedItem[]>> {
+  ): AsyncResult<FeedItem[], ConcreteError> {
     const appFeed = await this.feedRepository.getCompleteFeed({ limit });
 
     const instagramFeedResult = await this.instagramApi.getFeed(limit).promise;

@@ -48,6 +48,12 @@ registerEnumType(ArrayOperators, { name: "ArrayOperators" });
 export class NullFilter {
   @Field(() => NoTargetOperators)
   comparison!: NoTargetOperators;
+
+  static from(comparison: NoTargetOperators): NullFilter {
+    const val = new NullFilter();
+    val.comparison = comparison;
+    return val;
+  }
 }
 @InputType()
 export class SingleStringFilter {
@@ -56,6 +62,16 @@ export class SingleStringFilter {
 
   @Field(() => SingleTargetOperators)
   comparison!: SingleTargetOperators;
+
+  static from(
+    value: string,
+    comparison: SingleTargetOperators
+  ): SingleStringFilter {
+    const val = new SingleStringFilter();
+    val.value = value;
+    val.comparison = comparison;
+    return val;
+  }
 }
 @InputType()
 export class SingleNumberFilter {
@@ -64,6 +80,16 @@ export class SingleNumberFilter {
 
   @Field(() => SingleTargetOperators)
   comparison!: SingleTargetOperators;
+
+  static from(
+    value: number,
+    comparison: SingleTargetOperators
+  ): SingleNumberFilter {
+    const val = new SingleNumberFilter();
+    val.value = value;
+    val.comparison = comparison;
+    return val;
+  }
 }
 
 @InputType()
@@ -73,6 +99,16 @@ export class SingleDateFilter {
 
   @Field(() => SingleTargetOperators)
   comparison!: SingleTargetOperators;
+
+  static from(
+    value: DateTime,
+    comparison: SingleTargetOperators
+  ): SingleDateFilter {
+    const val = new SingleDateFilter();
+    val.value = value;
+    val.comparison = comparison;
+    return val;
+  }
 }
 
 @InputType()
@@ -82,6 +118,16 @@ export class SingleBooleanFilter {
 
   @Field(() => SingleTargetOperators)
   comparison!: SingleTargetOperators;
+
+  static from(
+    value: boolean,
+    comparison: SingleTargetOperators
+  ): SingleBooleanFilter {
+    const val = new SingleBooleanFilter();
+    val.value = value;
+    val.comparison = comparison;
+    return val;
+  }
 }
 
 @InputType()
@@ -94,6 +140,18 @@ export class TwoNumberFilter {
 
   @Field(() => TwoTargetOperators)
   comparison!: TwoTargetOperators;
+
+  static from(
+    lower: number,
+    upper: number,
+    comparison: TwoTargetOperators
+  ): TwoNumberFilter {
+    const val = new TwoNumberFilter();
+    val.lower = lower;
+    val.upper = upper;
+    val.comparison = comparison;
+    return val;
+  }
 }
 
 @InputType()
@@ -106,6 +164,18 @@ export class TwoDateFilter {
 
   @Field(() => TwoTargetOperators)
   comparison!: TwoTargetOperators;
+
+  static from(
+    lower: DateTime,
+    upper: DateTime,
+    comparison: TwoTargetOperators
+  ): TwoDateFilter {
+    const val = new TwoDateFilter();
+    val.lower = lower;
+    val.upper = upper;
+    val.comparison = comparison;
+    return val;
+  }
 }
 
 @InputType()
@@ -115,6 +185,13 @@ export class ArrayStringFilter {
 
   @Field(() => ArrayOperators)
   comparison!: ArrayOperators;
+
+  static from(value: string[], comparison: ArrayOperators): ArrayStringFilter {
+    const val = new ArrayStringFilter();
+    val.value = value;
+    val.comparison = comparison;
+    return val;
+  }
 }
 
 @InputType()
@@ -124,6 +201,13 @@ export class ArrayNumberFilter {
 
   @Field(() => ArrayOperators)
   comparison!: ArrayOperators;
+
+  static from(value: number[], comparison: ArrayOperators): ArrayNumberFilter {
+    const val = new ArrayNumberFilter();
+    val.value = value;
+    val.comparison = comparison;
+    return val;
+  }
 }
 
 @InputType()
@@ -133,6 +217,13 @@ export class ArrayDateFilter {
 
   @Field(() => ArrayOperators)
   comparison!: ArrayOperators;
+
+  static from(value: DateTime[], comparison: ArrayOperators): ArrayDateFilter {
+    const val = new ArrayDateFilter();
+    val.value = value;
+    val.comparison = comparison;
+    return val;
+  }
 }
 
 @InputType()
@@ -142,6 +233,16 @@ export class ArrayBooleanFilter {
 
   @Field(() => ArrayOperators)
   comparison!: ArrayOperators;
+
+  static from(
+    value: boolean[],
+    comparison: ArrayOperators
+  ): ArrayBooleanFilter {
+    const val = new ArrayBooleanFilter();
+    val.value = value;
+    val.comparison = comparison;
+    return val;
+  }
 }
 
 export type SomeFilterType =
@@ -210,6 +311,38 @@ export class SomeFilter {
       arrayDateFilter ??
       arrayBooleanFilter)!;
   }
+
+  static from(filter: SomeFilterType): SomeFilter {
+    const val = new SomeFilter();
+
+    if (filter instanceof NullFilter) {
+      val.nullFilter = filter;
+    } else if (filter instanceof SingleStringFilter) {
+      val.singleStringFilter = filter;
+    } else if (filter instanceof SingleNumberFilter) {
+      val.singleNumberFilter = filter;
+    } else if (filter instanceof SingleDateFilter) {
+      val.singleDateFilter = filter;
+    } else if (filter instanceof SingleBooleanFilter) {
+      val.singleBooleanFilter = filter;
+    } else if (filter instanceof TwoNumberFilter) {
+      val.twoNumberFilter = filter;
+    } else if (filter instanceof TwoDateFilter) {
+      val.twoDateFilter = filter;
+    } else if (filter instanceof ArrayStringFilter) {
+      val.arrayStringFilter = filter;
+    } else if (filter instanceof ArrayNumberFilter) {
+      val.arrayNumberFilter = filter;
+    } else if (filter instanceof ArrayDateFilter) {
+      val.arrayDateFilter = filter;
+    } else if (filter instanceof ArrayBooleanFilter) {
+      val.arrayBooleanFilter = filter;
+    } else {
+      throw new TypeError("Invalid filter type");
+    }
+
+    return val;
+  }
 }
 
 export const FilterGroupOperator = {
@@ -247,9 +380,9 @@ export function createFilterItem<Field extends string>(
 
 @InputType()
 export abstract class AbstractFilterGroup<Field extends string> {
-  filters!: AbstractFilterItem<Field>[];
+  filters: AbstractFilterItem<Field>[] = [];
 
-  children!: AbstractFilterGroup<Field>[];
+  children: AbstractFilterGroup<Field>[] = [];
 
   @Field(() => FilterGroupOperator)
   operator!: FilterGroupOperator;
@@ -264,10 +397,10 @@ export function createFilterGroup<Field extends string>(
   @InputType(`${resolverName}FilterGroup`)
   class FilterGroup extends AbstractFilterGroup<Field> {
     @Field(() => [FilterItem])
-    filters!: AbstractFilterItem<Field>[];
+    filters: AbstractFilterItem<Field>[] = [];
 
     @Field(() => [FilterGroup])
-    children!: AbstractFilterGroup<Field>[];
+    children: AbstractFilterGroup<Field>[] = [];
   }
 
   return FilterGroup;

@@ -45,7 +45,6 @@ type UniqueParam = { id: number } | { uuid: string };
 import { and, desc, eq, gte, lte } from "drizzle-orm";
 import { DateTime } from "luxon";
 
-import { db } from "#db";
 import { sqlCurrentTimestamp } from "#lib/sqlValues.js";
 import {
   buildDefaultRepository,

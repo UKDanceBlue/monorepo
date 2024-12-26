@@ -439,7 +439,7 @@ export function parseFindManyParams<Field extends string>(
 ): Result<
   {
     where: SQL | undefined;
-    order: SQL[] | undefined;
+    orderBy: SQL[] | undefined;
     offset: number | undefined;
     limit: number | undefined;
   },
@@ -465,7 +465,7 @@ export function parseFindManyParams<Field extends string>(
 
   return Ok({
     where: where?.value,
-    order: order?.value,
+    orderBy: order?.value,
     offset: params.offset ?? undefined,
     limit: params.limit ?? undefined,
   });

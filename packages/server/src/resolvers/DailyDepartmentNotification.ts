@@ -25,10 +25,6 @@ import {
   Root,
 } from "type-graphql";
 
-import {
-  dailyDepartmentNotificationBatchModelToResource,
-  dailyDepartmentNotificationModelToResource,
-} from "#repositories/dailyDepartmentNotification/ddnModelToResource.js";
 import { DailyDepartmentNotificationRepository } from "#repositories/dailyDepartmentNotification/DDNRepository.js";
 
 import type { GraphQLContext } from "../lib/auth/context.js";
@@ -47,7 +43,7 @@ export class DailyDepartmentNotificationResolver
   @Query(() => DailyDepartmentNotificationNode)
   async dailyDepartmentNotification(
     @Arg("id", () => GlobalIdScalar) { id }: GlobalId
-  ): Promise<ConcreteResult<Option<DailyDepartmentNotificationNode>>> {
+  ): AsyncResult<Option<DailyDepartmentNotificationNode>, ConcreteError> {
     const dailyDepartmentNotification =
       await this.dailyDepartmentNotificationRepository.findDDNByUnique({
         uuid: id,
@@ -63,7 +59,7 @@ export class DailyDepartmentNotificationResolver
   @Query(() => ListDailyDepartmentNotificationsResponse)
   async dailyDepartmentNotifications(
     @Args() args: ListDailyDepartmentNotificationsArgs
-  ): Promise<ConcreteResult<ListDailyDepartmentNotificationsResponse>> {
+  ): AsyncResult<ListDailyDepartmentNotificationsResponse, ConcreteError> {
     const dailyDepartmentNotificationsResult =
       await this.dailyDepartmentNotificationRepository.listDDNs({
         filters: args.filters,
@@ -124,7 +120,7 @@ export class DailyDepartmentNotificationResolver
   async setDailyDepartmentNotification(
     @Arg("id", () => GlobalIdScalar) { id }: GlobalId,
     @Arg("input") input: DailyDepartmentNotificationInput
-  ): Promise<ConcreteResult<DailyDepartmentNotificationNode>> {
+  ): AsyncResult<DailyDepartmentNotificationNode, ConcreteError> {
     const dailyDepartmentNotification =
       await this.dailyDepartmentNotificationRepository.updateDDN(
         { uuid: id },
@@ -172,7 +168,7 @@ export class DailyDepartmentNotificationResolver
   @FieldResolver(() => DailyDepartmentNotificationBatchNode)
   async batch(
     @Root() dailyDepartmentNotification: DailyDepartmentNotificationNode
-  ): Promise<Result<DailyDepartmentNotificationBatchNode, ConcreteError>> {
+  ): AsyncResult<DailyDepartmentNotificationBatchNode, ConcreteError> {
     return new AsyncResult(
       this.dailyDepartmentNotificationRepository.findBatchForDDN({
         uuid: dailyDepartmentNotification.id.id,
@@ -192,7 +188,7 @@ export class DailyDepartmentNotificationBatchResolver {
   @Query(() => DailyDepartmentNotificationBatchNode)
   async dailyDepartmentNotificationBatch(
     @Arg("id", () => GlobalIdScalar) { id }: GlobalId
-  ): Promise<ConcreteResult<DailyDepartmentNotificationBatchNode>> {
+  ): AsyncResult<DailyDepartmentNotificationBatchNode, ConcreteError> {
     const dailyDepartmentNotificationBatch =
       await this.dailyDepartmentNotificationRepository.findBatchByUnique({
         uuid: id,
@@ -223,7 +219,7 @@ export class DailyDepartmentNotificationBatchResolver {
   async dailyDepartmentNotifications(
     @Root()
     dailyDepartmentNotificationBatch: DailyDepartmentNotificationBatchNode
-  ): Promise<Result<DailyDepartmentNotificationNode[], ConcreteError>> {
+  ): AsyncResult<DailyDepartmentNotificationNode[], ConcreteError> {
     return new AsyncResult(
       this.dailyDepartmentNotificationRepository.findDDNsByBatch({
         uuid: dailyDepartmentNotificationBatch.id.id,

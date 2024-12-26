@@ -373,8 +373,8 @@ enum DailyDepartmentNotificationResolverFilterFields {
 }
 
 input DailyDepartmentNotificationResolverFilterGroup {
-  children: [DailyDepartmentNotificationResolverFilterGroup!]!
-  filters: [DailyDepartmentNotificationResolverFilterItem!]!
+  children: [DailyDepartmentNotificationResolverFilterGroup!]! = []
+  filters: [DailyDepartmentNotificationResolverFilterItem!]! = []
   operator: FilterGroupOperator!
 }
 
@@ -434,8 +434,8 @@ enum DeviceResolverFilterFields {
 }
 
 input DeviceResolverFilterGroup {
-  children: [DeviceResolverFilterGroup!]!
-  filters: [DeviceResolverFilterItem!]!
+  children: [DeviceResolverFilterGroup!]! = []
+  filters: [DeviceResolverFilterItem!]! = []
   operator: FilterGroupOperator!
 }
 
@@ -493,8 +493,8 @@ enum EventResolverFilterFields {
 }
 
 input EventResolverFilterGroup {
-  children: [EventResolverFilterGroup!]!
-  filters: [EventResolverFilterItem!]!
+  children: [EventResolverFilterGroup!]! = []
+  filters: [EventResolverFilterItem!]! = []
   operator: FilterGroupOperator!
 }
 
@@ -584,8 +584,8 @@ enum FundraisingEntryResolverFilterFields {
 }
 
 input FundraisingEntryResolverFilterGroup {
-  children: [FundraisingEntryResolverFilterGroup!]!
-  filters: [FundraisingEntryResolverFilterItem!]!
+  children: [FundraisingEntryResolverFilterGroup!]! = []
+  filters: [FundraisingEntryResolverFilterItem!]! = []
   operator: FilterGroupOperator!
 }
 
@@ -632,8 +632,8 @@ enum ImageResolverFilterFields {
 }
 
 input ImageResolverFilterGroup {
-  children: [ImageResolverFilterGroup!]!
-  filters: [ImageResolverFilterItem!]!
+  children: [ImageResolverFilterGroup!]! = []
+  filters: [ImageResolverFilterItem!]! = []
   operator: FilterGroupOperator!
 }
 
@@ -822,8 +822,8 @@ enum MarathonHourResolverFilterFields {
 }
 
 input MarathonHourResolverFilterGroup {
-  children: [MarathonHourResolverFilterGroup!]!
-  filters: [MarathonHourResolverFilterItem!]!
+  children: [MarathonHourResolverFilterGroup!]! = []
+  filters: [MarathonHourResolverFilterItem!]! = []
   operator: FilterGroupOperator!
 }
 
@@ -869,8 +869,8 @@ enum MarathonResolverFilterFields {
 }
 
 input MarathonResolverFilterGroup {
-  children: [MarathonResolverFilterGroup!]!
-  filters: [MarathonResolverFilterItem!]!
+  children: [MarathonResolverFilterGroup!]! = []
+  filters: [MarathonResolverFilterItem!]! = []
   operator: FilterGroupOperator!
 }
 
@@ -1074,8 +1074,8 @@ enum NotificationDeliveryResolverFilterFields {
 }
 
 input NotificationDeliveryResolverFilterGroup {
-  children: [NotificationDeliveryResolverFilterGroup!]!
-  filters: [NotificationDeliveryResolverFilterItem!]!
+  children: [NotificationDeliveryResolverFilterGroup!]! = []
+  filters: [NotificationDeliveryResolverFilterItem!]! = []
   operator: FilterGroupOperator!
 }
 
@@ -1123,8 +1123,8 @@ enum NotificationResolverFilterFields {
 }
 
 input NotificationResolverFilterGroup {
-  children: [NotificationResolverFilterGroup!]!
-  filters: [NotificationResolverFilterItem!]!
+  children: [NotificationResolverFilterGroup!]! = []
+  filters: [NotificationResolverFilterItem!]! = []
   operator: FilterGroupOperator!
 }
 
@@ -1163,15 +1163,14 @@ type PersonNode implements Node {
 enum PersonResolverFilterFields {
   committeeName
   committeeRole
-  dbRole
   email
   linkblue
   name
 }
 
 input PersonResolverFilterGroup {
-  children: [PersonResolverFilterGroup!]!
-  filters: [PersonResolverFilterItem!]!
+  children: [PersonResolverFilterGroup!]! = []
+  filters: [PersonResolverFilterItem!]! = []
   operator: FilterGroupOperator!
 }
 
@@ -1203,8 +1202,8 @@ enum PointEntryResolverFilterFields {
 }
 
 input PointEntryResolverFilterGroup {
-  children: [PointEntryResolverFilterGroup!]!
-  filters: [PointEntryResolverFilterItem!]!
+  children: [PointEntryResolverFilterGroup!]! = []
+  filters: [PointEntryResolverFilterItem!]! = []
   operator: FilterGroupOperator!
 }
 
@@ -1239,8 +1238,8 @@ enum PointOpportunityResolverFilterFields {
 }
 
 input PointOpportunityResolverFilterGroup {
-  children: [PointOpportunityResolverFilterGroup!]!
-  filters: [PointOpportunityResolverFilterItem!]!
+  children: [PointOpportunityResolverFilterGroup!]! = []
+  filters: [PointOpportunityResolverFilterItem!]! = []
   operator: FilterGroupOperator!
 }
 
@@ -1791,8 +1790,8 @@ enum SolicitationCodeFilterFields {
 }
 
 input SolicitationCodeFilterGroup {
-  children: [SolicitationCodeFilterGroup!]!
-  filters: [SolicitationCodeFilterItem!]!
+  children: [SolicitationCodeFilterGroup!]! = []
+  filters: [SolicitationCodeFilterItem!]! = []
   operator: FilterGroupOperator!
 }
 
@@ -1912,8 +1911,8 @@ enum TeamResolverFilterFields {
 }
 
 input TeamResolverFilterGroup {
-  children: [TeamResolverFilterGroup!]!
-  filters: [TeamResolverFilterItem!]!
+  children: [TeamResolverFilterGroup!]! = []
+  filters: [TeamResolverFilterItem!]! = []
   operator: FilterGroupOperator!
 }
 

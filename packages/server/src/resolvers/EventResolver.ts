@@ -30,13 +30,8 @@ import {
 
 import type { GraphQLContext } from "#auth/context.js";
 import { FileManager } from "#files/FileManager.js";
-import {
-  eventModelToResource,
-  eventOccurrenceModelToResource,
-} from "#repositories/event/eventModelToResource.js";
 import { EventRepository } from "#repositories/event/EventRepository.js";
 import { EventImagesRepository } from "#repositories/event/images/EventImagesRepository.js";
-import { imageModelToResource } from "#repositories/image/imageModelToResource.js";
 
 @Service([EventRepository, EventImagesRepository, FileManager])
 @Resolver(() => EventNode)
@@ -158,7 +153,7 @@ export class EventResolver implements CrudResolver<EventNode, "event"> {
   async setEvent(
     @Arg("id", () => GlobalIdScalar) { id }: GlobalId,
     @Arg("input") input: SetEventInput
-  ): Promise<ConcreteResult<EventNode>> {
+  ): AsyncResult<EventNode, ConcreteError> {
     const row = await this.eventRepository.updateEvent(
       { uuid: id },
       {

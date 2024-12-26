@@ -3,11 +3,11 @@ import "reflect-metadata";
 import repl from "repl";
 
 import {
+  drizzleToken,
   getEnvironment,
   isReplToken,
   logDirToken,
   loggingLevelToken,
-  drizzleToken,
 } from "#lib/typediTokens.js";
 
 // No top level imports that cause side effects should be used in this file
@@ -25,8 +25,6 @@ const { logger } = await import("#logging/logger.js");
 logger.info(
   `Logger initialized with level "${loggingLevel}", writing log files to "${logDir}"`
 );
-
-await import("./prisma.js");
 
 const { resolversList } = await import("#lib/resolversList.js");
 

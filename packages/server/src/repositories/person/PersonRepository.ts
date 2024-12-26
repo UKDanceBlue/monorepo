@@ -1,4 +1,5 @@
 import crypto from "node:crypto";
+import { promisify } from "node:util";
 
 import { Service } from "@freshgum/typedi";
 import {
@@ -22,6 +23,7 @@ import {
   optionOf,
   UnauthenticatedError,
 } from "@ukdanceblue/common/error";
+import { and, eq, getTableColumns, isNotNull, or, sql } from "drizzle-orm";
 import {
   AsyncResult,
   Err,
@@ -33,7 +35,14 @@ import {
 } from "ts-results-es";
 
 import { findPersonForLogin } from "#auth/findPersonForLogin.js";
-import type { FilterItems } from "#lib/prisma-utils/gqlFilterToPrismaFilter.js";
+import type { Drizzle } from "#db";
+import type { FindManyParams } from "#lib/queryFromArgs.js";
+import { drizzleToken } from "#lib/typediTokens.js";
+import { CommitteeRepository } from "#repositories/committee/CommitteeRepository.js";
+import {
+  buildDefaultRepository,
+  Transaction,
+} from "#repositories/DefaultRepository.js";
 import {
   MarathonRepository,
   UniqueMarathonParam,
@@ -42,39 +51,11 @@ import { MembershipRepository } from "#repositories/membership/MembershipReposit
 import {
   handleRepositoryError,
   type RepositoryError,
-  type SimpleUniqueParam,
-  unwrapRepositoryError,
 } from "#repositories/shared.js";
+import { membership, person } from "#schema/tables/person.sql.js";
+import { committee, team } from "#schema/tables/team.sql.js";
 
-import { buildPersonOrder, buildPersonWhere } from "./personRepositoryUtils.js";
-
-const personStringKeys = ["name", "email", "linkblue"] as const;
-type PersonStringKey = (typeof personStringKeys)[number];
-
-const personOneOfKeys = ["committeeRole", "committeeName", "dbRole"] as const;
-type PersonOneOfKey = (typeof personOneOfKeys)[number];
-
-const personDateKeys = ["createdAt", "updatedAt"] as const;
-type PersonDateKey = (typeof personDateKeys)[number];
-
-export type PersonFilters = FilterItems<
-  never,
-  PersonDateKey,
-  never,
-  never,
-  PersonOneOfKey,
-  PersonStringKey
->;
-
-export type PersonOrderKeys =
-  | "name"
-  | "email"
-  | "linkblue"
-  | "committeeRole"
-  | "committeeName"
-  | "dbRole"
-  | "createdAt"
-  | "updatedAt";
+import { PersonModel } from "./PersonModel.js";
 
 export type UniquePersonParam =
   | {
@@ -90,10 +71,10 @@ export type UniquePersonParam =
       linkblue: string;
     };
 
-import { promisify } from "node:util";
-
-import { drizzleToken } from "#lib/typediTokens.js";
-import { CommitteeRepository } from "#repositories/committee/CommitteeRepository.js";
+interface MembershipInput {
+  uuid: string;
+  committeeRole?: CommitteeRole | null | undefined;
+}
 
 @Service([
   drizzleToken,
@@ -101,13 +82,43 @@ import { CommitteeRepository } from "#repositories/committee/CommitteeRepository
   CommitteeRepository,
   MarathonRepository,
 ])
-export class PersonRepository {
+export class PersonRepository extends buildDefaultRepository(
+  person,
+  PersonModel,
+  {
+    name: person.name,
+    email: person.email,
+    linkblue: person.linkblue,
+    createdAt: person.createdAt,
+    updatedAt: person.updatedAt,
+    committeeRole: membership.committeeRole,
+    committeeName: committee.identifier,
+  },
+  {} as UniquePersonParam
+) {
   constructor(
     protected readonly db: Drizzle,
-    private membershipRepository: MembershipRepository,
-    private committeeRepository: CommitteeRepository,
-    private marathonRepository: MarathonRepository
-  ) {}
+    private readonly membershipRepository: MembershipRepository,
+    private readonly committeeRepository: CommitteeRepository,
+    private readonly marathonRepository: MarathonRepository
+  ) {
+    super(db);
+  }
+
+  public uniqueToWhere(by: UniquePersonParam) {
+    if ("id" in by) {
+      return eq(person.id, by.id);
+    } else if ("uuid" in by) {
+      return eq(person.uuid, by.uuid);
+    } else if ("email" in by) {
+      return eq(person.email, by.email);
+    } else if ("linkblue" in by) {
+      return eq(person.linkblue, by.linkblue);
+    } else {
+      by satisfies never;
+      throw new Error("Invalid unique person param");
+    }
+  }
 
   // Finders
 
@@ -124,50 +135,249 @@ export class PersonRepository {
     Result<Awaited<ReturnType<typeof findPersonForLogin>>, RepositoryError>
   > {
     try {
-      const row = await findPersonForLogin(this.prisma, authIds, userInfo);
+      const row = await findPersonForLogin(this.db, authIds, userInfo);
       return Ok(row);
     } catch (error) {
       return handleRepositoryError(error);
     }
   }
 
-  async findPersonByUnique(
-    param: UniquePersonParam
-  ): Promise<Result<Option<Person>, RepositoryError>> {
-    try {
-      const row = await this.prisma.person.findUnique({ where: param });
-      return Ok(optionOf(row));
-    } catch (error) {
-      return handleRepositoryError(error);
-    }
-  }
-
-  async findPersonAndTeamsByUnique(
-    param: UniquePersonParam
-  ): Promise<
-    Result<
-      Person & { memberships: (Membership & { team: Team })[] },
-      RepositoryError
-    >
-  > {
-    try {
-      const row = await this.prisma.person.findUnique({
-        where: param,
-        include: {
+  findOne({
+    by,
+    tx,
+  }: {
+    by: UniquePersonParam;
+    tx?: Transaction;
+  }): AsyncResult<PersonModel<true>, RepositoryError> {
+    return this.handleQueryError(
+      (tx ?? this.db).query.person.findFirst({
+        where: this.uniqueToWhere(by),
+        with: {
           memberships: {
-            include: {
-              team: true,
+            with: {
+              team: {
+                with: {
+                  correspondingCommittee: true,
+                },
+              },
             },
           },
         },
-      });
-      if (!row) {
-        return Err(new NotFoundError({ what: "Person" }));
-      }
-      return Ok(row);
-    } catch (error) {
-      return handleRepositoryError(error);
-    }
+      }),
+      { what: "Person", where: "findOne" }
+    ).map((row) => new PersonModel<true>(row));
+  }
+
+  findAll({
+    tx,
+  }: {
+    tx?: Transaction;
+  }): AsyncResult<PersonModel<true>[], RepositoryError> {
+    return this.handleQueryError(
+      (tx ?? this.db).query.person.findMany({
+        with: {
+          memberships: {
+            with: {
+              team: {
+                with: {
+                  correspondingCommittee: true,
+                },
+              },
+            },
+          },
+        },
+      })
+    ).map((rows) => rows.map((row) => new PersonModel<true>(row)));
+  }
+
+  findAndCount({
+    param,
+    tx,
+  }: {
+    param: FindManyParams<(typeof PersonRepository.fields)[number]>;
+    tx?: Transaction;
+  }): AsyncResult<
+    { total: number; selectedRows: PersonModel<true>[] },
+    RepositoryError
+  > {
+    return this.parseFindManyParams(param)
+      .toAsyncResult()
+      .andThen((param) => {
+        let query = (tx ?? this.db)
+          .select()
+          .from(person)
+          .leftJoin(membership, eq(person.id, membership.personId))
+          .leftJoin(team, eq(membership.teamId, team.id))
+          .leftJoin(committee, eq(team.correspondingCommitteeId, committee.id))
+          .$dynamic();
+        const countQuery = (tx ?? this.db).$count(person, param.where);
+        if (param.where) {
+          query = query.where(param.where);
+        }
+        if (param.orderBy) {
+          query = query.orderBy(...param.orderBy);
+        }
+        if (param.limit) {
+          query = query.limit(param.limit);
+        }
+        if (param.offset) {
+          query = query.offset(param.offset);
+        }
+        return new AsyncResult(
+          Promise.all([
+            this.handleQueryError(query, {
+              what: "Person",
+              where: "findAndCount",
+            }).promise,
+            this.handleQueryError(countQuery, {
+              what: "Person",
+              where: "findAndCount",
+            }).promise,
+          ]).then(([rows, total]) => Result.all([rows, total]))
+        );
+      })
+      .map(
+        ([rows, total]): {
+          total: number;
+          selectedRows: PersonModel<true>[];
+        } => {
+          const records: ConstructorParameters<typeof PersonModel<true>>[0][] =
+            [];
+          for (const row of rows) {
+            const existing = records.find((r) => r.id === row.Person.id);
+            if (existing) {
+              const existingMembership = existing.memberships.find(
+                (m) => m.team.id === row.Membership?.id
+              );
+              if (!existingMembership) {
+                existing.memberships.push({
+                  ...row.Membership!,
+                  team: {
+                    ...row.Team!,
+                    correspondingCommittee: row.Committee,
+                  },
+                });
+              }
+            } else {
+              records.push({
+                ...row.Person,
+                memberships: row.Membership
+                  ? [
+                      {
+                        ...row.Membership,
+                        team: {
+                          ...row.Team!,
+                          correspondingCommittee: row.Committee,
+                        },
+                      },
+                    ]
+                  : [],
+              });
+            }
+          }
+          return {
+            total,
+            selectedRows: records.map((row) => new PersonModel<true>(row)),
+          };
+        }
+      );
+  }
+
+  update({
+    by,
+    init,
+    tx,
+  }: {
+    by: UniquePersonParam;
+    init: Partial<{
+      email: string;
+      name?: string | null | undefined;
+      linkblue?: string | null | undefined;
+      memberOf?: MembershipInput[] | undefined | null;
+      captainOf?: MembershipInput[] | undefined | null;
+      authIds?:
+        | { source: Exclude<AuthSource, "None">; value: string }[]
+        | undefined
+        | null;
+    }>;
+    tx?: Transaction;
+  }): AsyncResult<PersonModel, RepositoryError> {
+    // TODO: Implement memberOf, captainOf, and authIds
+    return this.handleQueryError(
+      (tx ?? this.db)
+        .update(person)
+        .set(init)
+        .where(this.uniqueToWhere(by))
+        .returning()
+        .then((rows) => rows[0]),
+      { what: "Person", where: "update" }
+    ).map((row) => new PersonModel(row));
+  }
+
+  create({
+    init,
+    tx,
+  }: {
+    init: {
+      email: string;
+      name?: string | null | undefined;
+      linkblue?: string | null | undefined;
+      memberOf?: MembershipInput[] | undefined | null;
+      captainOf?: MembershipInput[] | undefined | null;
+    };
+    tx?: Transaction;
+  }): AsyncResult<PersonModel, RepositoryError> {
+    // TODO: Implement memberOf and captainOf
+    return this.handleQueryError(
+      (tx ?? this.db)
+        .insert(person)
+        .values(init)
+        .returning()
+        .then((rows) => rows[0]),
+      { what: "Person", where: "create" }
+    ).map((row) => new PersonModel(row));
+  }
+
+  delete({
+    by,
+    tx,
+  }: {
+    by: UniquePersonParam;
+    tx?: Transaction;
+  }): AsyncResult<PersonModel, RepositoryError> {
+    return this.handleQueryError(
+      (tx ?? this.db)
+        .delete(person)
+        .where(this.uniqueToWhere(by))
+        .returning()
+        .then((rows) => rows[0]),
+      { what: "Person", where: "delete" }
+    ).map((row) => new PersonModel(row));
+  }
+
+  createMultiple({
+    data,
+    tx,
+  }: {
+    data: {
+      init: {
+        email: string;
+        name?: string | null | undefined;
+        linkblue?: string | null | undefined;
+        memberOf?: MembershipInput[] | undefined | null;
+        captainOf?: MembershipInput[] | undefined | null;
+      };
+    }[];
+    tx?: Transaction;
+  }): AsyncResult<PersonModel[], RepositoryError> {
+    return this.handleQueryError(
+      (tx ?? this.db)
+        .insert(person)
+        .values(data.map((d) => d.init))
+        .returning()
+        .then((rows) => rows.map((row) => new PersonModel(row))),
+      { what: "Person", where: "createMultiple" }
+    );
   }
 
   private readonly PASSWORD_ITERATIONS = 100_000;
@@ -175,168 +385,120 @@ export class PersonRepository {
   private readonly PASSWORD_DIGEST = "sha512";
   private readonly PASSWORD_SALTLEN = 16;
 
-  async passwordLogin(
+  passwordLogin(
     email: string,
     password: string
-  ): Promise<Result<Person, RepositoryError | UnauthenticatedError>> {
-    try {
-      const person = await this.findPersonByUnique({ email });
-      if (person.isErr()) {
-        return person;
-      }
+  ): AsyncResult<PersonModel, RepositoryError | UnauthenticatedError> {
+    // Things are a little weird here because we want to avoid timing attacks
+    // This means that no matter what, the function should take about the same amount of time
+    // TODO: Test that behavior
+
+    return this.findOne({ by: { email } }).andThen((person) => {
+      const { hashedPassword, salt } = person.row;
+
+      const fallbackSalt = Buffer.alloc(this.PASSWORD_SALTLEN);
+      const fallbackHashedPassword = Buffer.alloc(this.PASSWORD_KEYLEN);
+
+      const hashToCompare = crypto.pbkdf2Sync(
+        Buffer.from(password, "utf8"),
+        // eslint-disable-next-line unicorn/prefer-logical-operator-over-ternary
+        salt ? salt : fallbackSalt,
+        this.PASSWORD_ITERATIONS,
+        this.PASSWORD_KEYLEN,
+        this.PASSWORD_DIGEST
+      );
+
       if (
-        person.value.isNone() ||
-        !person.value.value.hashedPassword ||
-        !person.value.value.salt
+        !crypto.timingSafeEqual(
+          hashToCompare,
+          // eslint-disable-next-line unicorn/prefer-logical-operator-over-ternary
+          hashedPassword ? hashedPassword : fallbackHashedPassword
+        )
       ) {
-        return Err(new NotFoundError({ what: "Person" }));
+        return Err(new UnauthenticatedError());
       }
-
-      const { hashedPassword, salt } = person.value.value;
-
-      const hashToCompare = await promisify(crypto.pbkdf2)(
-        Buffer.from(password, "utf8"),
-        salt,
-        this.PASSWORD_ITERATIONS,
-        this.PASSWORD_KEYLEN,
-        this.PASSWORD_DIGEST
-      );
-
-      return crypto.timingSafeEqual(hashToCompare, hashedPassword)
-        ? Ok(person.value.value)
-        : Err(new UnauthenticatedError());
-    } catch (error) {
-      return handleRepositoryError(error);
-    }
-  }
-
-  async setPassword(
-    param: UniquePersonParam,
-    password: string | null
-  ): Promise<Result<Person, RepositoryError | NotFoundError>> {
-    try {
-      if (password === null) {
-        const person = await this.prisma.person.update({
-          where: param,
-          data: {
-            salt: null,
-            hashedPassword: null,
-          },
-        });
-
-        return Ok(person);
-      }
-      const salt = crypto.randomBytes(this.PASSWORD_SALTLEN);
-      const hashedPassword = await promisify(crypto.pbkdf2)(
-        Buffer.from(password, "utf8"),
-        salt,
-        this.PASSWORD_ITERATIONS,
-        this.PASSWORD_KEYLEN,
-        this.PASSWORD_DIGEST
-      );
-
-      const person = await this.prisma.person.update({
-        where: param,
-        data: {
-          salt,
-          hashedPassword,
-        },
-      });
 
       return Ok(person);
-    } catch (error) {
-      if (
-        error instanceof Prisma.PrismaClientKnownRequestError &&
-        error.code === "P2025"
-      ) {
-        return Err(new NotFoundError({ what: "Person" }));
-      } else {
-        return handleRepositoryError(error);
-      }
-    }
+    });
   }
 
-  async getDbRoleOfPerson(
-    param: UniquePersonParam
-  ): Promise<Result<DbRole, RepositoryError>> {
-    try {
-      const person = await this.prisma.person.findUnique({
-        where: param,
-        select: {
-          linkblue: true,
-          memberships: {
-            select: {
-              committeeRole: true,
-            },
-          },
-        },
-      });
-
-      if (!person) {
-        return Ok(DbRole.None);
-      }
-      if (person.memberships.some((m) => m.committeeRole != null)) {
-        return Ok(DbRole.Committee);
-      }
-      if (person.linkblue) {
-        return Ok(DbRole.UKY);
-      }
-      return Ok(DbRole.Public);
-    } catch (error) {
-      return handleRepositoryError(error);
+  setPassword(
+    param: UniquePersonParam,
+    password: string | null
+  ): AsyncResult<PersonModel, RepositoryError> {
+    if (password === null) {
+      return this.handleQueryError(
+        this.db
+          .update(person)
+          .set({
+            salt: null,
+            hashedPassword: null,
+          })
+          .where(this.uniqueToWhere(param))
+          .returning()
+          .then((rows) => rows[0]),
+        { what: "Person", where: "setPassword" }
+      ).map((row) => new PersonModel(row));
     }
+    const salt = crypto.randomBytes(this.PASSWORD_SALTLEN);
+    return this.promiseToAsyncResult(
+      promisify(crypto.pbkdf2)(
+        Buffer.from(password, "utf8"),
+        salt,
+        this.PASSWORD_ITERATIONS,
+        this.PASSWORD_KEYLEN,
+        this.PASSWORD_DIGEST
+      )
+    ).andThen((hashedPassword) =>
+      this.handleQueryError(
+        this.db
+          .update(person)
+          .set({
+            salt,
+            hashedPassword,
+          })
+          .where(this.uniqueToWhere(param))
+          .returning()
+          .then((rows) => rows[0]),
+        { what: "Person", where: "setPassword" }
+      ).map((row) => new PersonModel(row))
+    );
   }
 
-  async getEffectiveCommitteeRolesOfPerson(
+  getEffectiveCommitteeRolesOfPerson(
     param: UniquePersonParam
-  ): Promise<
-    Result<EffectiveCommitteeRole[], RepositoryError | InvariantError>
-  > {
-    try {
-      const marathon = await new AsyncResult(
-        this.marathonRepository.findActiveMarathon()
-      ).andThen((option) =>
-        option.toResult(new NotFoundError({ what: "active marathon" }))
-      ).promise;
-      if (marathon.isErr()) {
-        return Err(marathon.error);
-      }
-
-      const committees = await this.prisma.membership.findMany({
-        where: {
-          person: param,
-          team: {
-            correspondingCommittee: {
-              isNot: null,
-            },
-            marathonId: marathon.value.id,
-          },
-          committeeRole: {
-            not: null,
-          },
-        },
-        select: {
-          team: {
-            select: {
-              correspondingCommittee: {
-                select: {
-                  identifier: true,
-                  parentCommittee: {
-                    select: {
-                      identifier: true,
+  ): AsyncResult<EffectiveCommitteeRole[], RepositoryError | InvariantError> {
+    return this.marathonRepository
+      .findActiveMarathon()
+      .andThen((marathon) =>
+        this.handleQueryError(
+          this.db.query.membership.findMany({
+            where: and(
+              this.uniqueToWhere(param),
+              isNotNull(team.correspondingCommitteeId),
+              eq(team.marathonId, marathon.row.id),
+              isNotNull(membership.committeeRole)
+            ),
+            with: {
+              team: {
+                with: {
+                  correspondingCommittee: {
+                    columns: { identifier: true },
+                    with: {
                       parentCommittee: {
-                        select: {
-                          identifier: true,
+                        columns: { identifier: true },
+                        with: {
+                          parentCommittee: {
+                            columns: { identifier: true },
+                          },
                         },
                       },
-                    },
-                  },
-                  childCommittees: {
-                    select: {
-                      identifier: true,
                       childCommittees: {
-                        select: {
-                          identifier: true,
+                        columns: { identifier: true },
+                        with: {
+                          childCommittees: {
+                            columns: { identifier: true },
+                          },
                         },
                       },
                     },
@@ -344,165 +506,80 @@ export class PersonRepository {
                 },
               },
             },
-          },
-          committeeRole: true,
-        },
-      });
-
-      const effectiveCommitteeRoles: Partial<
-        Record<CommitteeIdentifier, EffectiveCommitteeRole>
-      > = {};
-      function addRole(identifier: CommitteeIdentifier, role: CommitteeRole) {
-        const existing = effectiveCommitteeRoles[identifier];
-        if (existing) {
-          if (role > existing.role) {
-            existing.role = role;
+            columns: {
+              committeeRole: true,
+            },
+          })
+        )
+      )
+      .andThen((committees) => {
+        const effectiveCommitteeRoles: Partial<
+          Record<CommitteeIdentifier, EffectiveCommitteeRole>
+        > = {};
+        function addRole(identifier: CommitteeIdentifier, role: CommitteeRole) {
+          const existing = effectiveCommitteeRoles[identifier];
+          if (existing) {
+            if (role > existing.role) {
+              existing.role = role;
+            }
+          } else {
+            effectiveCommitteeRoles[identifier] = EffectiveCommitteeRole.init(
+              identifier,
+              role
+            );
           }
-        } else {
-          effectiveCommitteeRoles[identifier] = EffectiveCommitteeRole.init(
-            identifier,
-            role
-          );
         }
-      }
-      for (const { team, committeeRole } of committees) {
-        if (team.correspondingCommittee) {
-          addRole(
-            team.correspondingCommittee.identifier,
-            committeeRole ?? CommitteeRole.Member
-          );
-          if (team.correspondingCommittee.parentCommittee) {
-            switch (team.correspondingCommittee.parentCommittee.identifier) {
-              case CommitteeIdentifier.viceCommittee: {
-                addRole(
-                  CommitteeIdentifier.viceCommittee,
-                  committeeRole ?? CommitteeRole.Member
-                );
-                // fallthrough
+        for (const { team, committeeRole } of committees) {
+          if (team.correspondingCommittee) {
+            addRole(
+              team.correspondingCommittee.identifier,
+              committeeRole ?? CommitteeRole.Member
+            );
+            if (team.correspondingCommittee.parentCommittee) {
+              switch (team.correspondingCommittee.parentCommittee.identifier) {
+                case CommitteeIdentifier.viceCommittee: {
+                  addRole(
+                    CommitteeIdentifier.viceCommittee,
+                    committeeRole ?? CommitteeRole.Member
+                  );
+                  // fallthrough
+                }
+                case CommitteeIdentifier.overallCommittee: {
+                  addRole(
+                    CommitteeIdentifier.overallCommittee,
+                    CommitteeRole.Member
+                  );
+                  break;
+                }
+                default: {
+                  return Err(
+                    new InvariantError(
+                      `Unexpected parent committee ${team.correspondingCommittee.parentCommittee.identifier}`
+                    )
+                  );
+                }
               }
-              case CommitteeIdentifier.overallCommittee: {
-                addRole(
-                  CommitteeIdentifier.overallCommittee,
-                  CommitteeRole.Member
-                );
-                break;
-              }
-              default: {
-                return Err(
-                  new InvariantError(
-                    `Unexpected parent committee ${team.correspondingCommittee.parentCommittee.identifier}`
-                  )
-                );
+            }
+
+            if (
+              (committeeRole === CommitteeRole.Chair ||
+                committeeRole === CommitteeRole.Coordinator) &&
+              (team.correspondingCommittee.identifier ===
+                CommitteeIdentifier.overallCommittee ||
+                team.correspondingCommittee.identifier ===
+                  CommitteeIdentifier.viceCommittee)
+            ) {
+              for (const child of team.correspondingCommittee.childCommittees) {
+                addRole(child.identifier, committeeRole);
+                for (const grandchild of child.childCommittees) {
+                  addRole(grandchild.identifier, committeeRole);
+                }
               }
             }
           }
-
-          if (
-            (committeeRole === CommitteeRole.Chair ||
-              committeeRole === CommitteeRole.Coordinator) &&
-            (team.correspondingCommittee.identifier ===
-              CommitteeIdentifier.overallCommittee ||
-              team.correspondingCommittee.identifier ===
-                CommitteeIdentifier.viceCommittee)
-          ) {
-            for (const child of team.correspondingCommittee.childCommittees) {
-              addRole(child.identifier, committeeRole);
-              for (const grandchild of child.childCommittees) {
-                addRole(grandchild.identifier, committeeRole);
-              }
-            }
-          }
         }
-      }
-
-      return Ok(Object.values(effectiveCommitteeRoles));
-    } catch (error) {
-      return handleRepositoryError(error);
-    }
-  }
-
-  async listPeople({
-    filters,
-    order,
-    skip,
-    take,
-  }: {
-    filters?: readonly PersonFilters[] | undefined | null;
-    order?:
-      | readonly [key: PersonOrderKeys, sort: SortDirection][]
-      | undefined
-      | null;
-    skip?: number | undefined | null;
-    take?: number | undefined | null;
-  }): Promise<Result<Person[], RepositoryError | ActionDeniedError>> {
-    try {
-      const where: Prisma.PersonWhereInput = buildPersonWhere(filters);
-      const orderBy = buildPersonOrder(order);
-      if (orderBy.isErr()) {
-        return Err(orderBy.error);
-      }
-
-      const rows = await this.prisma.person.findMany({
-        where,
-        orderBy: orderBy.value,
-        skip: skip ?? undefined,
-        take: take ?? undefined,
+        return Ok(Object.values(effectiveCommitteeRoles));
       });
-
-      return Ok(rows);
-    } catch (error) {
-      return handleRepositoryError(error);
-    }
-  }
-
-  async countPeople({
-    filters,
-  }: {
-    filters?: readonly PersonFilters[] | undefined | null;
-  }): Promise<Result<number, RepositoryError>> {
-    try {
-      const where: Prisma.PersonWhereInput = buildPersonWhere(filters);
-
-      return Ok(await this.prisma.person.count({ where }));
-    } catch (error) {
-      return handleRepositoryError(error);
-    }
-  }
-
-  async searchByName(name: string): Promise<Result<Person[], RepositoryError>> {
-    try {
-      return Ok(
-        await this.prisma.person.findMany({
-          where: {
-            name: {
-              contains: name,
-              mode: "insensitive",
-            },
-          },
-        })
-      );
-    } catch (error) {
-      return handleRepositoryError(error);
-    }
-  }
-
-  async searchByLinkblue(
-    linkblue: string
-  ): Promise<Result<Person[], RepositoryError>> {
-    try {
-      return Ok(
-        await this.prisma.person.findMany({
-          where: {
-            linkblue: {
-              contains: linkblue.toLowerCase(),
-              mode: "insensitive",
-            },
-          },
-        })
-      );
-    } catch (error) {
-      return handleRepositoryError(error);
-    }
   }
 
   async findCommitteeMembershipsOfPerson(
@@ -601,582 +678,6 @@ export class PersonRepository {
       return Ok(rows);
     } catch (error) {
       return handleRepositoryError(error);
-    }
-  }
-
-  // Mutators
-
-  async createPerson({
-    name,
-    email,
-    linkblue,
-    authIds,
-    memberOf,
-    captainOf,
-  }: {
-    name?: string | undefined | null;
-    email: string;
-    linkblue?: string | undefined | null;
-    authIds?:
-      | { source: Exclude<AuthSource, "None">; value: string }[]
-      | undefined
-      | null;
-    memberOf?: SimpleUniqueParam[] | undefined | null;
-    captainOf?: SimpleUniqueParam[] | undefined | null;
-  }): Promise<
-    Result<Person, RepositoryError | CompositeError<RepositoryError>>
-  > {
-    try {
-      const [memberOfIds, captainOfIds] = await Promise.all([
-        memberOf
-          ? Promise.all(
-              memberOf.map((team) =>
-                this.prisma.team
-                  .findUnique({
-                    where: team,
-                    select: { id: true },
-                  })
-                  .then((team) => team?.id)
-              )
-            )
-          : Promise.resolve(null),
-        captainOf
-          ? Promise.all(
-              captainOf.map((team) =>
-                this.prisma.team
-                  .findUnique({
-                    where: team,
-                    select: { id: true },
-                  })
-                  .then((team) => team?.id)
-              )
-            )
-          : Promise.resolve(null),
-      ]);
-
-      const person = await this.prisma.person.create({
-        data: {
-          name,
-          email,
-          linkblue: linkblue?.toLowerCase(),
-          authIdPairs: authIds
-            ? {
-                createMany: {
-                  data: authIds.map((authId): Prisma.AuthIdPairCreateInput => {
-                    return {
-                      source: authId.source,
-                      value: authId.value,
-                      person: { connect: { email } },
-                    };
-                  }),
-                },
-              }
-            : undefined,
-        },
-      });
-
-      if (memberOfIds) {
-        const result = await Promise.allSettled(
-          memberOfIds.map(async (teamId) => {
-            if (teamId) {
-              await this.membershipRepository.assignPersonToTeam({
-                personParam: {
-                  id: person.id,
-                },
-                teamParam: {
-                  id: teamId,
-                },
-                position: MembershipPositionType.Member,
-              });
-            }
-          })
-        );
-        const errors = result.filter((r) => r.status === "rejected");
-        if (errors.length > 0) {
-          return Err(
-            new CompositeError(
-              errors.map((e) => unwrapRepositoryError(e.reason))
-            )
-          );
-        }
-      }
-      if (captainOfIds) {
-        const result = await Promise.allSettled(
-          captainOfIds.map(async (teamId) => {
-            if (teamId) {
-              await this.membershipRepository.assignPersonToTeam({
-                personParam: {
-                  id: person.id,
-                },
-                teamParam: {
-                  id: teamId,
-                },
-                position: MembershipPositionType.Captain,
-              });
-            }
-          })
-        );
-        const errors = result.filter((r) => r.status === "rejected");
-        if (errors.length > 0) {
-          return Err(
-            new CompositeError(
-              errors.map((e) => unwrapRepositoryError(e.reason))
-            )
-          );
-        }
-      }
-
-      return Ok(person);
-    } catch (error) {
-      return handleRepositoryError(error);
-    }
-  }
-
-  async updatePerson(
-    param: UniquePersonParam,
-    {
-      name,
-      email,
-      linkblue,
-      authIds,
-      memberOf,
-      captainOf,
-    }: {
-      name?: string | undefined | null;
-      email?: string | undefined;
-      linkblue?: string | undefined | null;
-      authIds?:
-        | { source: Exclude<AuthSource, "None">; value: string }[]
-        | undefined
-        | null;
-      memberOf?:
-        | {
-            id: string | number;
-            committeeRole?: CommitteeRole | undefined | null;
-          }[]
-        | undefined
-        | null;
-      captainOf?:
-        | {
-            id: string | number;
-            committeeRole?: CommitteeRole | undefined | null;
-          }[]
-        | undefined
-        | null;
-    }
-  ): Promise<
-    Result<
-      Person,
-      | RepositoryError
-      | InvalidArgumentError
-      | CompositeError<NotFoundError | ActionDeniedError>
-    >
-  > {
-    try {
-      let personId: number;
-      if ("id" in param) {
-        personId = param.id;
-      } else if ("uuid" in param) {
-        const found = await this.prisma.person.findUnique({
-          where: { uuid: param.uuid },
-          select: { id: true },
-        });
-        if (found == null) {
-          return Err(new NotFoundError({ what: "Person" }));
-        }
-        personId = found.id;
-      } else {
-        return Err(new InvalidArgumentError("Must provide either UUID or ID"));
-      }
-
-      const [memberOfIds, captainOfIds] = await Promise.all([
-        memberOf
-          ? Promise.all(
-              memberOf.map(({ id, committeeRole }) =>
-                this.prisma.team
-                  .findUnique({
-                    where: typeof id === "number" ? { id } : { uuid: id },
-                    select: { id: true, correspondingCommitteeId: true },
-                  })
-                  .then((team) => {
-                    if (!team) {
-                      return Err(new NotFoundError({ what: "Team" }));
-                    } else if (
-                      !team.correspondingCommitteeId &&
-                      committeeRole
-                    ) {
-                      return Err(
-                        new ActionDeniedError(
-                          "Cannot assign a committee role to a non-committee team"
-                        )
-                      );
-                    } else {
-                      return Ok({
-                        id: team.id,
-                        committeeRole: committeeRole ?? undefined,
-                      });
-                    }
-                  })
-              )
-            )
-          : Promise.resolve([]),
-        captainOf
-          ? Promise.all(
-              captainOf.map(({ id, committeeRole }) =>
-                this.prisma.team
-                  .findUnique({
-                    where: typeof id === "number" ? { id } : { uuid: id },
-                    select: { id: true, correspondingCommitteeId: true },
-                  })
-                  .then((team) => {
-                    if (!team) {
-                      return Err(new NotFoundError({ what: "Team" }));
-                    } else if (
-                      !team.correspondingCommitteeId &&
-                      committeeRole
-                    ) {
-                      return Err(
-                        new ActionDeniedError(
-                          "Cannot assign a committee role to a non-committee team"
-                        )
-                      );
-                    } else {
-                      return Ok({
-                        id: team.id,
-                        committeeRole: committeeRole ?? undefined,
-                      });
-                    }
-                  })
-              )
-            )
-          : Promise.resolve([]),
-      ]);
-
-      const memberOfErrors: (ActionDeniedError | NotFoundError)[] = [];
-      const okMemberOfIds: { id: number; committeeRole?: CommitteeRole }[] = [];
-      const okCaptainOfIds: { id: number; committeeRole?: CommitteeRole }[] =
-        [];
-      for (const result of memberOfIds) {
-        if (result.isErr()) {
-          memberOfErrors.push(result.error);
-        } else {
-          okMemberOfIds.push(result.value);
-        }
-      }
-      for (const result of captainOfIds) {
-        if (result.isErr()) {
-          memberOfErrors.push(result.error);
-        } else {
-          okCaptainOfIds.push(result.value);
-        }
-      }
-      if (memberOfErrors.length > 0) {
-        return Err(new CompositeError(memberOfErrors));
-      }
-
-      return Ok(
-        await this.prisma.person.update({
-          where: param,
-          data: {
-            name,
-            email,
-            linkblue: linkblue?.toLowerCase(),
-            authIdPairs: authIds
-              ? {
-                  upsert: authIds.map((authId) => {
-                    return {
-                      create: {
-                        source: authId.source,
-                        value: authId.value,
-                      },
-                      update: {
-                        value: authId.value,
-                      },
-                      where: {
-                        personId_source: {
-                          personId,
-                          source: authId.source,
-                        },
-                      },
-                    };
-                  }),
-                }
-              : undefined,
-            memberships:
-              // How many indents is too many? This many. This many is too many
-              // TODO: this nesting is nightmarish and should be refactored
-              memberOf || captainOf
-                ? {
-                    deleteMany: {
-                      teamId: {
-                        notIn: [
-                          ...okMemberOfIds.map(({ id }) => id),
-                          ...okCaptainOfIds.map(({ id }) => id),
-                        ],
-                      },
-                      personId,
-                    },
-                    upsert: [
-                      ...okMemberOfIds.map(
-                        ({
-                          id: teamId,
-                          committeeRole,
-                        }): Prisma.MembershipUpsertWithWhereUniqueWithoutPersonInput => {
-                          return {
-                            where: { personId_teamId: { personId, teamId } },
-                            create: {
-                              position: MembershipPositionType.Member,
-                              committeeRole,
-                              team: {
-                                connect: {
-                                  id: teamId,
-                                  correspondingCommitteeId: committeeRole
-                                    ? {
-                                        not: null,
-                                      }
-                                    : undefined,
-                                },
-                              },
-                            },
-                            update: {
-                              position: MembershipPositionType.Member,
-                              committeeRole,
-                            },
-                          };
-                        }
-                      ),
-                      ...okCaptainOfIds.map(
-                        ({
-                          id: teamId,
-                          committeeRole,
-                        }): Prisma.MembershipUpsertWithWhereUniqueWithoutPersonInput => {
-                          return {
-                            where: { personId_teamId: { personId, teamId } },
-                            create: {
-                              position: MembershipPositionType.Captain,
-                              committeeRole,
-                              team: {
-                                connect: {
-                                  id: teamId,
-                                  correspondingCommitteeId: committeeRole
-                                    ? {
-                                        not: null,
-                                      }
-                                    : undefined,
-                                },
-                              },
-                            },
-                            update: {
-                              position: MembershipPositionType.Captain,
-                              committeeRole,
-                            },
-                          };
-                        }
-                      ),
-                    ],
-                  }
-                : undefined,
-          },
-        })
-      );
-    } catch (error) {
-      if (
-        error instanceof Prisma.PrismaClientKnownRequestError &&
-        error.code === "P2025"
-      ) {
-        return Err(new NotFoundError({ what: "Person" }));
-      } else {
-        return handleRepositoryError(error);
-      }
-    }
-  }
-
-  async bulkLoadPeople(
-    people: {
-      name: string;
-      email: string;
-      linkblue: string;
-      committee: CommitteeIdentifier | null | undefined;
-      role: CommitteeRole | null | undefined;
-    }[],
-    marathon: UniqueMarathonParam
-  ): Promise<
-    Result<Person[], RepositoryError | CompositeError<RepositoryError>>
-  > {
-    try {
-      await this.committeeRepository.ensureCommittees([marathon]);
-      let marathonId: number;
-      if ("id" in marathon) {
-        marathonId = marathon.id;
-      } else {
-        const found = await this.prisma.marathon.findUnique({
-          where: marathon,
-          select: { id: true },
-        });
-        if (found == null) {
-          return Err(new NotFoundError({ what: "Marathon" }));
-        }
-        marathonId = found.id;
-      }
-
-      const committeeIds: Record<CommitteeIdentifier, number> = {} as Record<
-        CommitteeIdentifier,
-        number
-      >;
-      const committees = await this.prisma.committee.findMany({
-        where: {
-          correspondingTeams: {
-            some: {
-              marathonId,
-            },
-          },
-        },
-        select: {
-          identifier: true,
-          id: true,
-        },
-      });
-      for (const committee of committees) {
-        committeeIds[committee.identifier] = committee.id;
-      }
-
-      const addToVice: {
-        name: string;
-        email: string;
-        linkblue: string;
-        committee: CommitteeIdentifier | null | undefined;
-        role: CommitteeRole | null | undefined;
-      }[] = [];
-
-      const result = await this.prisma.$transaction(
-        people.map((person) => {
-          if (
-            person.committee === CommitteeIdentifier.overallCommittee ||
-            person.committee === CommitteeIdentifier.fundraisingCommittee ||
-            person.committee === CommitteeIdentifier.dancerRelationsCommittee
-          ) {
-            addToVice.push(person);
-          }
-
-          return this.prisma.person.upsert({
-            where: {
-              linkblue: person.linkblue.toLowerCase(),
-            },
-            create: {
-              name: person.name,
-              email: person.email,
-              linkblue: person.linkblue.toLowerCase(),
-              memberships:
-                person.committee && person.role
-                  ? {
-                      create: {
-                        team: {
-                          connect: {
-                            marathonId_correspondingCommitteeId: {
-                              marathonId,
-                              correspondingCommitteeId:
-                                committeeIds[person.committee],
-                            },
-                          },
-                        },
-                        position:
-                          person.role === CommitteeRole.Chair
-                            ? MembershipPositionType.Captain
-                            : MembershipPositionType.Member,
-                        committeeRole: person.role,
-                      },
-                    }
-                  : undefined,
-            },
-            update: {
-              name: person.name,
-              email: person.email,
-              linkblue: person.linkblue.toLowerCase(),
-              memberships:
-                person.committee && person.role
-                  ? {
-                      create: {
-                        team: {
-                          connect: {
-                            marathonId_correspondingCommitteeId: {
-                              marathonId,
-                              correspondingCommitteeId:
-                                committeeIds[person.committee],
-                            },
-                          },
-                        },
-                        position:
-                          person.role === CommitteeRole.Chair
-                            ? MembershipPositionType.Captain
-                            : MembershipPositionType.Member,
-                        committeeRole: person.role,
-                      },
-                    }
-                  : undefined,
-            },
-          });
-        })
-      );
-
-      for (const person of addToVice) {
-        // eslint-disable-next-line no-await-in-loop
-        await this.prisma.membership.upsert({
-          create: {
-            person: {
-              connect: {
-                email: person.email,
-              },
-            },
-            team: {
-              connect: {
-                marathonId_correspondingCommitteeId: {
-                  marathonId,
-                  correspondingCommitteeId: committeeIds.viceCommittee,
-                },
-              },
-            },
-            position:
-              person.role === CommitteeRole.Chair
-                ? MembershipPositionType.Captain
-                : MembershipPositionType.Member,
-            committeeRole: person.role,
-          },
-          update: {
-            position:
-              person.role === CommitteeRole.Chair
-                ? MembershipPositionType.Captain
-                : MembershipPositionType.Member,
-            committeeRole: person.role,
-          },
-          where: {
-            personId_teamId: {
-              personId: result.find((r) => r.email === person.email)!.id,
-              teamId: marathonId,
-            },
-          },
-        });
-      }
-
-      return Ok(result);
-    } catch (error) {
-      return handleRepositoryError(error);
-    }
-  }
-
-  async deletePerson(
-    identifier: UniquePersonParam
-  ): Promise<Result<Person, RepositoryError>> {
-    try {
-      return Ok(await this.prisma.person.delete({ where: identifier }));
-    } catch (error) {
-      if (
-        error instanceof Prisma.PrismaClientKnownRequestError &&
-        error.code === "P2025"
-      ) {
-        return Err(new NotFoundError({ what: "Person" }));
-      } else {
-        return handleRepositoryError(error);
-      }
     }
   }
 

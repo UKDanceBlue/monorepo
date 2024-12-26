@@ -1,5 +1,5 @@
 import { Container } from "@freshgum/typedi";
-import { AuthSource, makeUserData } from "@ukdanceblue/common";
+import { AuthSource } from "@ukdanceblue/common";
 import { ErrorCode } from "@ukdanceblue/common/error";
 import type { NextFunction, Request, Response } from "express";
 import { DateTime } from "luxon";
@@ -7,12 +7,10 @@ import {
   buildAuthorizationUrl,
   calculatePKCECodeChallenge,
 } from "openid-client";
-import { AsyncResult } from "ts-results-es";
 
 import { makeUserJwt } from "#auth/index.js";
 import { getHostUrl } from "#lib/host.js";
 import { LoginFlowSessionRepository } from "#repositories/LoginFlowSession.js";
-import { personModelToResource } from "#repositories/person/personModelToResource.js";
 import { PersonRepository } from "#repositories/person/PersonRepository.js";
 
 import { oidcConfiguration } from "./oidcClient.js";
@@ -57,9 +55,7 @@ export const login = async (
       }
 
       const personRepository = Container.get(PersonRepository);
-      const person = await new AsyncResult(
-        personRepository.passwordLogin(email, password)
-      ).andThen((person) => personModelToResource(person, personRepository))
+      const person = await personRepository.passwordLogin(email, password)
         .promise;
 
       if (person.isErr()) {
@@ -68,9 +64,10 @@ export const login = async (
           ? void res.status(401).send("Invalid email or password")
           : void res.sendStatus(500);
       } else {
-        const jwt = makeUserJwt(
-          makeUserData(person.value, AuthSource.Password)
-        );
+        const jwt = makeUserJwt({
+          userId: person.value.row.uuid,
+          authSource: AuthSource.Password,
+        });
         let redirectTo = queryRedirectTo;
         if (returning.includes("token")) {
           redirectTo = `${redirectTo}?token=${encodeURIComponent(jwt)}`;
@@ -93,7 +90,7 @@ export const login = async (
         sendToken: returning.includes("token"),
       });
       const codeChallenge = await calculatePKCECodeChallenge(
-        session.codeVerifier
+        session[0]!.codeVerifier
       );
 
       return res.redirect(
@@ -102,7 +99,7 @@ export const login = async (
           response_mode: "form_post",
           code_challenge: codeChallenge,
           code_challenge_method: "S256",
-          state: session.uuid,
+          state: session[0]!.uuid,
           redirect_uri: new URL("/api/auth/oidc-callback", getHostUrl(req))
             .href,
         }).href

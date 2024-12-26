@@ -10,9 +10,8 @@ import { AsyncResult } from "ts-results-es";
 import { FieldResolver, Resolver, Root } from "type-graphql";
 
 import { MembershipRepository } from "#repositories/membership/MembershipRepository.js";
-import { personModelToResource } from "#repositories/person/personModelToResource.js";
+
 import { PersonRepository } from "#repositories/person/PersonRepository.js";
-import { teamModelToResource } from "#repositories/team/teamModelToResource.js";
 
 @Resolver(() => MembershipNode)
 @Service([MembershipRepository, PersonRepository])
@@ -25,7 +24,7 @@ export class MembershipResolver {
   @FieldResolver(() => PersonNode)
   async person(
     @Root() { id: { id } }: MembershipNode
-  ): Promise<ConcreteResult<PersonNode>> {
+  ): AsyncResult<PersonNode, ConcreteError> {
     const row = await this.membershipRepository.findMembershipByUnique(
       { uuid: id },
       {
@@ -43,7 +42,7 @@ export class MembershipResolver {
   @FieldResolver(() => TeamNode)
   async team(
     @Root() { id: { id } }: MembershipNode
-  ): Promise<ConcreteResult<TeamNode>> {
+  ): AsyncResult<TeamNode, ConcreteError> {
     const row = await this.membershipRepository.findMembershipByUnique(
       { uuid: id },
       {
@@ -57,7 +56,7 @@ export class MembershipResolver {
   @FieldResolver(() => CommitteeRole, { nullable: true })
   async committeeRole(
     @Root() { id: { id } }: MembershipNode
-  ): Promise<ConcreteResult<CommitteeRole | null>> {
+  ): AsyncResult<CommitteeRole | null, ConcreteError> {
     return new AsyncResult(
       this.membershipRepository.findMembershipByUnique({ uuid: id })
     ).map((row) => row.committeeRole).promise;

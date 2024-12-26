@@ -26,8 +26,6 @@ import {
   Root,
 } from "type-graphql";
 
-import { eventModelToResource } from "#repositories/event/eventModelToResource.js";
-import { pointOpportunityModelToResource } from "#repositories/pointOpportunity/pointOpportunityModelToResource.js";
 import { PointOpportunityRepository } from "#repositories/pointOpportunity/PointOpportunityRepository.js";
 
 @Resolver(() => PointOpportunityNode)

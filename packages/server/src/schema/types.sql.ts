@@ -1,4 +1,5 @@
 import { FormattedConcreteError, LuxonError } from "@ukdanceblue/common/error";
+import type { SQL } from "drizzle-orm";
 import { customType } from "drizzle-orm/pg-core";
 import { DateTime } from "luxon";
 
@@ -25,7 +26,7 @@ export const timestamp = customType<{
   fromDriver(value: string): DateTime {
     return DateTime.fromSQL(value, { zone: "utc" });
   },
-  toDriver(value: DateTime<true> | Date | string): string {
+  toDriver(value: DateTime<true> | Date | string | SQL): string | SQL {
     if (typeof value === "string") {
       return value;
     } else if (value instanceof Date) {
@@ -36,8 +37,10 @@ export const timestamp = customType<{
         );
       }
       return parsed.toSQL();
-    } else {
+    } else if (DateTime.isDateTime(value)) {
       return value.toSQL();
+    } else {
+      return value;
     }
   },
 });

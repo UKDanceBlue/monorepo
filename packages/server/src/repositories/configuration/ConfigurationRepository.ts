@@ -50,6 +50,6 @@ export class ConfigurationRepository extends buildDefaultRepository(
         orderBy: desc(configuration.createdAt),
       }),
       { what: `Configuration with key ${key}`, where: "findConfigurationByKey" }
-    ).map((row) => ConfigurationModel.fromRow(row));
+    ).map((row) => new ConfigurationModel(row));
   }
 }

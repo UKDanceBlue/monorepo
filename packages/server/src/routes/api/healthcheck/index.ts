@@ -1,5 +1,7 @@
 import { Service } from "@freshgum/typedi";
+import { sql } from "drizzle-orm";
 
+import type { Drizzle } from "#db";
 import { drizzleToken } from "#lib/typediTokens.js";
 import { RouterService } from "#routes/RouteService.js";
 
@@ -10,7 +12,7 @@ export default class HealthCheckRouter extends RouterService {
 
     this.addGetRoute("/", async (_, res) => {
       try {
-        await prisma.$connect();
+        await db.execute(sql`SELECT 1;`);
       } catch {
         res.type("text/plain");
         res.status(500);

@@ -1,14 +1,10 @@
 import { Container } from "@freshgum/typedi";
 import type { GlobalId, Resource } from "@ukdanceblue/common";
 import type { BasicError } from "@ukdanceblue/common/error";
-import {
-  ActionDeniedError,
-  InvariantError,
-  NotFoundError,
-} from "@ukdanceblue/common/error";
-import type { eq, SQL } from "drizzle-orm";
-import { is, View } from "drizzle-orm";
-import { or, Table, TransactionRollbackError } from "drizzle-orm";
+import { InvariantError, NotFoundError } from "@ukdanceblue/common/error";
+import type { eq, SQL, View } from "drizzle-orm";
+import { is } from "drizzle-orm";
+import { Table, TransactionRollbackError } from "drizzle-orm";
 import type { NodePgQueryResultHKT } from "drizzle-orm/node-postgres";
 import type { PgTable, PgView } from "drizzle-orm/pg-core";
 import {
@@ -26,7 +22,7 @@ import type { Drizzle } from "#db";
 import { PostgresError } from "#error/postgres.js";
 import {
   type FindManyParams,
-  parseFindManyParams,
+  parseFindManyParams as parseFindManyParamsFunc,
 } from "#lib/queryFromArgs.js";
 
 import type { RepositoryError } from "./shared.js";
@@ -62,12 +58,11 @@ export function mapToResources<T extends PgTable | PgView, R extends Resource>(
   return models.map((model) => model.toResource());
 }
 
-type SelectType<T extends Table | View> = T["$inferSelect"];
 type InsertType<T extends Table | View> = T extends Table
-  ? T["$inferInsert"]
+  ? Omit<T["$inferInsert"], "id" | "uuid" | "createdAt" | "updatedAt">
   : never;
 type UpdateType<T extends Table | View> = T extends Table
-  ? Partial<T["$inferSelect"] & T["$inferInsert"]>
+  ? Partial<Omit<T["$inferSelect"], "id" | "uuid" | "createdAt" | "updatedAt">>
   : never;
 
 export function buildDefaultDatabaseModel<
@@ -85,15 +80,8 @@ export function buildDefaultDatabaseModel<
     InstanceType<R>
   > {
     protected repository = Container.get<
-      Repository<T & Table, DefaultDatabaseModel, { uuid: string }, never>
+      BaseRepository<T & Table, DefaultDatabaseModel, { uuid: string }, never>
     >(`${tableName}Repository`);
-
-    public static fromRow(
-      this: new (row: SelectType) => DatabaseModel<T, InstanceType<R>>,
-      row: SelectType
-    ): InstanceType<typeof this> {
-      return new this(row);
-    }
 
     public static fromResource(
       this: {
@@ -101,7 +89,7 @@ export function buildDefaultDatabaseModel<
           row: SelectType,
           ...args: []
         ) => DatabaseModel<T, InstanceType<R>>;
-        repository: Repository<
+        repository: BaseRepository<
           T & Table,
           DefaultDatabaseModel,
           { uuid: string },
@@ -111,6 +99,11 @@ export function buildDefaultDatabaseModel<
       resource: R & { id: GlobalId },
       ..._args: unknown[]
     ): AsyncResult<DatabaseModel<T, InstanceType<R>>, RepositoryError> {
+      if (!this.repository.findOne) {
+        return Err(
+          new InvariantError("Repository does not have a findOne method")
+        ).toAsyncResult();
+      }
       return this.repository.findOne({ by: { uuid: resource.id.id } });
     }
 
@@ -126,7 +119,7 @@ export function buildDefaultDatabaseModel<
   return DefaultDatabaseModel;
 }
 
-interface Repository<
+interface BaseRepository<
   T extends PgTable | PgView,
   Model extends DatabaseModel<T, Resource>,
   UniqueParam,
@@ -134,7 +127,7 @@ interface Repository<
 > {
   uniqueToWhere(by: UniqueParam): ReturnType<typeof eq>;
 
-  findOne({
+  findOne?({
     by,
     tx,
   }: {
@@ -142,7 +135,7 @@ interface Repository<
     tx?: Transaction;
   }): AsyncResult<Model, RepositoryError>;
 
-  findAndCount({
+  findAndCount?({
     param,
     tx,
   }: {
@@ -150,9 +143,9 @@ interface Repository<
     tx?: Transaction;
   }): AsyncResult<{ total: number; selectedRows: Model[] }, RepositoryError>;
 
-  findAll({ tx }: { tx?: Transaction }): AsyncResult<Model[], RepositoryError>;
+  findAll?({ tx }: { tx?: Transaction }): AsyncResult<Model[], RepositoryError>;
 
-  create({
+  create?({
     init,
     tx,
   }: {
@@ -160,7 +153,7 @@ interface Repository<
     tx?: Transaction;
   }): AsyncResult<Model, RepositoryError>;
 
-  update({
+  update?({
     by,
     init,
     tx,
@@ -170,7 +163,7 @@ interface Repository<
     tx?: Transaction;
   }): AsyncResult<Model, RepositoryError>;
 
-  delete({
+  delete?({
     by,
     tx,
   }: {
@@ -178,7 +171,7 @@ interface Repository<
     tx?: Transaction;
   }): AsyncResult<Model, RepositoryError>;
 
-  createMultiple({
+  createMultiple?({
     data,
     tx,
   }: {
@@ -188,7 +181,7 @@ interface Repository<
     tx?: Transaction;
   }): AsyncResult<Model[], RepositoryError>;
 
-  updateMultiple({
+  updateMultiple?({
     data,
     tx,
   }: {
@@ -199,7 +192,7 @@ interface Repository<
     tx?: Transaction;
   }): AsyncResult<Model[], RepositoryError>;
 
-  deleteMultiple({
+  deleteMultiple?({
     data,
     tx,
   }: {
@@ -217,20 +210,24 @@ export function buildDefaultRepository<
   Field extends string,
 >(
   table: T,
-  ModelCls: { fromRow: (row: T["$inferSelect"]) => Model },
+  _ModelCls: new (row: T["$inferSelect"]) => Model,
   fieldLookup: Record<Field, SQL.Aliased | AnyPgColumn>,
   _dummyUniqueParam: UniqueParam
 ) {
   const tableName = getTableOrViewName(table);
 
-  abstract class DefaultRepository
-    implements Repository<T, Model, UniqueParam, Field>
-  {
+  // eslint-disable-next-line @typescript-eslint/no-empty-object-type, @typescript-eslint/no-unsafe-declaration-merging
+  interface DefaultRepository
+    extends BaseRepository<T, Model, UniqueParam, Field> {}
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-declaration-merging
+  abstract class DefaultRepository {
+    public static readonly fields: Field[] = Object.keys(
+      fieldLookup
+    ) as Field[];
+
     constructor(protected readonly db: Drizzle) {
       Container.setValue(`${tableName}Repository`, this);
     }
-    declare static readonly selectType: SelectType<T>;
-    declare static readonly insertType: InsertType<T>;
 
     protected handleQueryError<D>(
       promise: Promise<D>,
@@ -319,237 +316,13 @@ export function buildDefaultRepository<
       );
     }
 
-    protected parseFindManyParams(param: FindManyParams<Field>) {
-      return parseFindManyParams(param, fieldLookup);
+    protected parseFindManyParams(
+      param: FindManyParams<(typeof DefaultRepository.fields)[number]>
+    ) {
+      return parseFindManyParamsFunc(param, fieldLookup);
     }
 
     public abstract uniqueToWhere(by: UniqueParam): ReturnType<typeof eq>;
-
-    public findOne({
-      by,
-      tx,
-    }: {
-      by: UniqueParam;
-      tx?: Transaction;
-    }): AsyncResult<Model, RepositoryError> {
-      return this.handleQueryError(
-        (tx ?? this.db).select().from(table).where(this.uniqueToWhere(by)),
-        { where: `${tableName}Repository.findOne` }
-      ).andThen((rows) => {
-        if (rows.length === 1) {
-          return Ok(ModelCls.fromRow(rows[0]!));
-        } else {
-          return Err(
-            new NotFoundError({
-              what: "field",
-              where: `${tableName}Repository.findOne`,
-            })
-          );
-        }
-      });
-    }
-
-    public findAndCount({
-      tx,
-      ...param
-    }: FindManyParams<Field> & {
-      tx?: Transaction;
-    }): AsyncResult<{ total: number; selectedRows: Model[] }, RepositoryError> {
-      const parsed = this.parseFindManyParams(param);
-      if (parsed.isErr()) {
-        return parsed.toAsyncResult();
-      }
-      const { limit, offset, order, where } = parsed.value;
-      let query = (tx ?? this.db).select().from(table).$dynamic();
-      if (where) {
-        query = query.where(where);
-      }
-      if (order) {
-        query = query.orderBy(...order);
-      }
-      if (limit) {
-        query = query.limit(limit);
-      }
-      if (offset) {
-        query = query.offset(offset);
-      }
-      const rows = this.handleQueryError(query, {
-        where: `${tableName}Repository.findAndCount`,
-      });
-      const count = this.handleQueryError(
-        (tx ?? this.db).$count(table, where),
-        {
-          where: `${tableName}Repository.findAndCount`,
-        }
-      );
-      return rows
-        .map((rows) => rows.map((row) => ModelCls.fromRow(row)))
-        .andThen((selectedRows) =>
-          count.andThen((total) => Ok({ total, selectedRows }))
-        );
-    }
-
-    public findAll({
-      tx,
-      sortBy,
-    }: {
-      tx?: Transaction;
-      sortBy?: FindManyParams<Field>["sortBy"];
-    } = {}): AsyncResult<Model[], RepositoryError> {
-      const parsed = this.parseFindManyParams({ sortBy });
-      if (parsed.isErr()) {
-        return parsed.toAsyncResult();
-      }
-      let query = (tx ?? this.db).select().from(table).$dynamic();
-      if (parsed.value.order) {
-        query = query.orderBy(...parsed.value.order);
-      }
-      return this.handleQueryError(query).map((rows) =>
-        rows.map(ModelCls.fromRow)
-      );
-    }
-
-    public create({
-      init,
-      tx,
-    }: {
-      init: InsertType<T>;
-      tx?: Transaction;
-    }): AsyncResult<Model, RepositoryError> {
-      if (is(table, View)) {
-        return Err(
-          new ActionDeniedError("Cannot create a record in a view")
-        ).toAsyncResult();
-      }
-      return this.handleQueryError(
-        (tx ?? this.db).insert(table).values(init).returning()
-      ).map(([row]) => ModelCls.fromRow(row as SelectType<T>));
-    }
-
-    public update({
-      by,
-      init,
-      tx,
-    }: {
-      by: UniqueParam;
-      init: UpdateType<T>;
-      tx?: Transaction;
-    }): AsyncResult<Model, RepositoryError> {
-      if (is(table, View)) {
-        return Err(
-          new ActionDeniedError("Cannot update a record in a view")
-        ).toAsyncResult();
-      }
-      return this.handleQueryError(
-        (tx ?? this.db)
-          .update(table)
-          .set(init)
-          .where(this.uniqueToWhere(by))
-          .returning(),
-        { where: `${tableName}Repository.update` }
-      ).map((rows) => ModelCls.fromRow((rows as [SelectType<T>])[0]));
-    }
-
-    public delete({
-      by,
-      tx,
-    }: {
-      by: UniqueParam;
-      tx?: Transaction;
-    }): AsyncResult<Model, RepositoryError> {
-      if (is(table, View)) {
-        return Err(
-          new ActionDeniedError("Cannot delete a record in a view")
-        ).toAsyncResult();
-      }
-      return this.handleQueryError(
-        (tx ?? this.db).delete(table).where(this.uniqueToWhere(by)).returning(),
-        { where: `${tableName}Repository.delete` }
-      ).map(([row]) => ModelCls.fromRow(row as SelectType<T>));
-    }
-
-    public createMultiple({
-      data,
-      tx,
-    }: {
-      data: {
-        init: InsertType<T>;
-      }[];
-      tx?: Transaction;
-    }) {
-      if (is(table, View)) {
-        return Err(
-          new ActionDeniedError("Cannot create a record in a view")
-        ).toAsyncResult();
-      }
-      return this.handleQueryError(
-        (tx ?? this.db)
-          .insert(table)
-          .values(data.map(({ init }) => init))
-          .returning()
-      ).map((rows) =>
-        rows.map((row) => ModelCls.fromRow(row as SelectType<T>))
-      );
-    }
-
-    public updateMultiple({
-      data,
-      tx,
-    }: {
-      data: {
-        by: UniqueParam;
-        init: UpdateType<T>;
-      }[];
-      tx?: Transaction;
-    }) {
-      if (is(table, View)) {
-        return Err(
-          new ActionDeniedError("Cannot update a record in a view")
-        ).toAsyncResult();
-      }
-      const func = (tx: Transaction) => {
-        return new AsyncResult(
-          Promise.all(
-            data.map(({ by, init }) => this.update({ by, init, tx }).promise)
-          ).then((val) => Result.all(val))
-        );
-      };
-
-      return tx
-        ? func(tx)
-        : new AsyncResult(
-            this.handleTransactionError((tx) => func(tx).promise)
-          );
-    }
-
-    public deleteMultiple({
-      data,
-      tx,
-    }: {
-      data: {
-        by: UniqueParam;
-      }[];
-      tx?: Transaction;
-    }) {
-      if (is(table, View)) {
-        return Err(
-          new ActionDeniedError("Cannot delete a record in a view")
-        ).toAsyncResult();
-      }
-      if (data.length === 0) {
-        return Err(
-          new ActionDeniedError("Must pass at least one filter to delete")
-        ).toAsyncResult();
-      }
-      return this.handleQueryError(
-        (tx ?? this.db)
-          .delete(table)
-          .where(or(...data.map(({ by }) => this.uniqueToWhere(by))))
-          .returning()
-      ).map((rows) =>
-        rows.map((row) => ModelCls.fromRow(row as SelectType<T>))
-      );
-    }
   }
 
   return DefaultRepository;

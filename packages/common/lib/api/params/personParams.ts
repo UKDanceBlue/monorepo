@@ -36,7 +36,6 @@ export class ListPeopleArgs extends FilteredListQueryArgs("PersonResolver", [
   "linkblue",
   "committeeRole",
   "committeeName",
-  "dbRole",
 ]) {}
 @InputType()
 export class CreatePersonInput {

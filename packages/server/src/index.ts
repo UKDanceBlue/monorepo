@@ -21,7 +21,7 @@ logger.info(
   `Logger initialized with level "${loggingLevel}", writing log files to "${logDir}"`
 );
 
-await import("./prisma.js");
+await import("./drizzle.js");
 
 const { createServer, startHttpServer, startServer } = await import(
   "./server.js"

@@ -14,7 +14,7 @@ import {
   ListMarathonsResponse,
   SetMarathonInput,
 } from "@ukdanceblue/common";
-import { ConcreteResult } from "@ukdanceblue/common/error";
+import { type ConcreteError } from "@ukdanceblue/common/error";
 import { AsyncResult, Option } from "ts-results-es";
 import {
   Arg,
@@ -27,10 +27,11 @@ import {
 } from "type-graphql";
 
 import { CommitteeRepository } from "#repositories/committee/CommitteeRepository.js";
-import { marathonModelToResource } from "#repositories/marathon/marathonModelToResource.js";
+import {
+  mapToResource,
+  mapToResources,
+} from "#repositories/DefaultRepository.js";
 import { MarathonRepository } from "#repositories/marathon/MarathonRepository.js";
-import { marathonHourModelToResource } from "#repositories/marathonHour/marathonHourModelToResource.js";
-import { teamModelToResource } from "#repositories/team/teamModelToResource.js";
 
 @Resolver(() => MarathonNode)
 @Service([MarathonRepository, CommitteeRepository])
@@ -38,7 +39,7 @@ export class MarathonResolver
   implements
     Record<
       `${CommitteeIdentifier}Team`,
-      (marathon: MarathonNode) => Promise<ConcreteResult<TeamNode>>
+      (marathon: MarathonNode) => AsyncResult<TeamNode, ConcreteError>
     >,
     CrudResolver<MarathonNode, "marathon">
 {
@@ -46,99 +47,42 @@ export class MarathonResolver
     private readonly marathonRepository: MarathonRepository,
     private readonly committeeRepository: CommitteeRepository
   ) {}
-  allMarathons?:
-    | ((
-        ...args: never[]
-      ) =>
-        | MarathonNode[]
-        | Promise<MarathonNode[]>
-        | Promise<ConcreteResult<MarathonNode[]>>
-        | ConcreteResult<MarathonNode[]>)
-    | undefined;
-  getMultipleMarathons?:
-    | ((
-        ids: GlobalId[],
-        ...args: never[]
-      ) =>
-        | MarathonNode[]
-        | Promise<MarathonNode[]>
-        | Promise<ConcreteResult<MarathonNode[]>>
-        | ConcreteResult<MarathonNode[]>)
-    | undefined;
-  createMarathons?:
-    | ((
-        createArgs: never[],
-        ...args: never[]
-      ) =>
-        | MarathonNode[]
-        | Promise<MarathonNode[]>
-        | Promise<ConcreteResult<MarathonNode[]>>
-        | ConcreteResult<MarathonNode[]>)
-    | undefined;
-  deleteMarathons?:
-    | ((
-        ids: GlobalId[],
-        ...args: never[]
-      ) =>
-        | MarathonNode[]
-        | Promise<MarathonNode[]>
-        | Promise<ConcreteResult<MarathonNode[]>>
-        | ConcreteResult<MarathonNode[]>)
-    | undefined;
-  setMarathons?:
-    | ((
-        setArgs: { id: GlobalId; set: never }[],
-        ...args: never[]
-      ) =>
-        | MarathonNode[]
-        | Promise<MarathonNode[]>
-        | Promise<ConcreteResult<MarathonNode[]>>
-        | ConcreteResult<MarathonNode[]>)
-    | undefined;
-  set?: undefined;
-  get?: undefined;
-  getByUuid?: undefined;
-  update?: undefined;
-  create?: undefined;
-  delete?: undefined;
-  list?: undefined;
-  listMarathons?: undefined;
 
   @AccessControlAuthorized("get")
   @Query(() => MarathonNode)
-  async marathon(@Arg("id", () => GlobalIdScalar) { id }: GlobalId) {
-    const marathon = await this.marathonRepository.findOne({
+  marathon(@Arg("id", () => GlobalIdScalar) { id }: GlobalId) {
+    const marathon = this.marathonRepository.findOne({
       by: {
         uuid: id,
       },
-    }).promise;
-    return marathon.map(marathonModelToResource);
+    });
+    return marathon.map(mapToResource);
   }
 
   @AccessControlAuthorized("get")
   @Query(() => MarathonNode)
-  async marathonForYear(@Arg("year") year: string) {
-    const marathon = await this.marathonRepository.findOne({
+  marathonForYear(@Arg("year") year: string) {
+    const marathon = this.marathonRepository.findOne({
       by: {
         year,
       },
-    }).promise;
-    return marathon.map(marathonModelToResource);
+    });
+    return marathon.map(mapToResource);
   }
 
   @AccessControlAuthorized("list", "MarathonNode")
   @Query(() => ListMarathonsResponse)
-  async marathons(@Args() args: ListMarathonsArgs) {
+  marathons(@Args() args: ListMarathonsArgs) {
     return this.marathonRepository
       .findAndCount({
         param: args,
       })
       .map(({ selectedRows, total }) =>
         ListMarathonsResponse.newPaginated({
-          data: selectedRows.map(marathonModelToResource),
+          data: selectedRows.map(mapToResource),
           total,
         })
-      ).promise;
+      );
   }
 
   @AccessControlAuthorized("readActive")
@@ -147,9 +91,9 @@ export class MarathonResolver
     description:
       "The marathon that is currently happening, i.e. the marathon with the latest start date that has not yet ended.",
   })
-  async currentMarathon(): Promise<ConcreteResult<Option<MarathonNode>>> {
-    const marathon = await this.marathonRepository.findCurrentMarathon();
-    return marathon.map((m) => m.map(marathonModelToResource));
+  currentMarathon(): AsyncResult<MarathonNode, ConcreteError> {
+    const marathon = this.marathonRepository.findCurrentMarathon();
+    return marathon.map(mapToResource);
   }
 
   @AccessControlAuthorized("readActive")
@@ -158,27 +102,27 @@ export class MarathonResolver
     description:
       "The most recent marathon, regardless of whether it is currently happening, i.e. the marathon with the latest year.",
   })
-  async latestMarathon(): Promise<ConcreteResult<Option<MarathonNode>>> {
-    const marathon = await this.marathonRepository.findActiveMarathon();
-    return marathon.map((m) => m.map(marathonModelToResource));
+  latestMarathon(): AsyncResult<MarathonNode, ConcreteError> {
+    const marathon = this.marathonRepository.findActiveMarathon();
+    return marathon.map(mapToResource);
   }
 
   @AccessControlAuthorized("create")
   @Mutation(() => MarathonNode)
-  async createMarathon(@Arg("input") input: CreateMarathonInput) {
+  createMarathon(@Arg("input") input: CreateMarathonInput) {
     return this.marathonRepository
       .create({ init: input })
-      .andThen(async (marathon) => {
-        const result = await this.committeeRepository.ensureCommittees([
-          { id: marathon.id },
-        ]);
-        return result.map(() => marathonModelToResource(marathon));
-      }).promise;
+      .andThen((marathon) => {
+        const result = new AsyncResult(
+          this.committeeRepository.ensureCommittees([{ id: marathon.row.id }])
+        );
+        return result.map(() => marathon.toResource());
+      });
   }
 
   @AccessControlAuthorized("update")
   @Mutation(() => MarathonNode)
-  async setMarathon(
+  setMarathon(
     @Arg("id", () => GlobalIdScalar) { id }: GlobalId,
     @Arg("input") input: SetMarathonInput
   ) {
@@ -187,7 +131,7 @@ export class MarathonResolver
         by: { uuid: id },
         init: input,
       })
-      .map(marathonModelToResource).promise;
+      .map(mapToResource);
   }
 
   @AccessControlAuthorized("delete")
@@ -195,32 +139,32 @@ export class MarathonResolver
   deleteMarathon(@Arg("id", () => GlobalIdScalar) { id }: GlobalId) {
     return this.marathonRepository
       .delete({ by: { uuid: id } })
-      .map(marathonModelToResource).promise;
+      .map(mapToResource);
   }
 
   @AccessControlAuthorized("list", "MarathonNode")
   @FieldResolver(() => [MarathonHourNode])
-  async hours(@Root() { id: { id } }: MarathonNode) {
+  hours(@Root() { id: { id } }: MarathonNode) {
     return new AsyncResult(
       this.marathonRepository.getMarathonHours({
         uuid: id,
       })
-    ).map((hours) => hours.map(marathonHourModelToResource)).promise;
+    ).map((hours) => hours.map(marathonHourModelToResource));
   }
 
-  async #committeeTeam(
-    committee: CommitteeIdentifier,
-    { id: { id } }: MarathonNode
-  ) {
-    const result = await this.committeeRepository.getCommitteeTeam(committee, {
-      uuid: id,
-    });
-    return result.map(teamModelToResource);
+  #committeeTeam(committee: CommitteeIdentifier, { id: { id } }: MarathonNode) {
+    const result = new AsyncResult(
+      this.committeeRepository.getCommitteeTeam(committee, {
+        uuid: id,
+      })
+    );
+    // TODO: Map to resource
+    return result;
   }
 
   // Committees
   @FieldResolver(() => TeamNode)
-  async communityDevelopmentCommitteeTeam(marathon: MarathonNode) {
+  communityDevelopmentCommitteeTeam(marathon: MarathonNode) {
     return this.#committeeTeam(
       CommitteeIdentifier.communityDevelopmentCommittee,
       marathon
@@ -228,7 +172,7 @@ export class MarathonResolver
   }
 
   @FieldResolver(() => TeamNode)
-  async programmingCommitteeTeam(marathon: MarathonNode) {
+  programmingCommitteeTeam(marathon: MarathonNode) {
     return this.#committeeTeam(
       CommitteeIdentifier.programmingCommittee,
       marathon
@@ -236,7 +180,7 @@ export class MarathonResolver
   }
 
   @FieldResolver(() => TeamNode)
-  async fundraisingCommitteeTeam(marathon: MarathonNode) {
+  fundraisingCommitteeTeam(marathon: MarathonNode) {
     return this.#committeeTeam(
       CommitteeIdentifier.fundraisingCommittee,
       marathon
@@ -244,7 +188,7 @@ export class MarathonResolver
   }
 
   @FieldResolver(() => TeamNode)
-  async dancerRelationsCommitteeTeam(marathon: MarathonNode) {
+  dancerRelationsCommitteeTeam(marathon: MarathonNode) {
     return this.#committeeTeam(
       CommitteeIdentifier.dancerRelationsCommittee,
       marathon
@@ -252,7 +196,7 @@ export class MarathonResolver
   }
 
   @FieldResolver(() => TeamNode)
-  async familyRelationsCommitteeTeam(marathon: MarathonNode) {
+  familyRelationsCommitteeTeam(marathon: MarathonNode) {
     return this.#committeeTeam(
       CommitteeIdentifier.familyRelationsCommittee,
       marathon
@@ -260,12 +204,12 @@ export class MarathonResolver
   }
 
   @FieldResolver(() => TeamNode)
-  async techCommitteeTeam(marathon: MarathonNode) {
+  techCommitteeTeam(marathon: MarathonNode) {
     return this.#committeeTeam(CommitteeIdentifier.techCommittee, marathon);
   }
 
   @FieldResolver(() => TeamNode)
-  async operationsCommitteeTeam(marathon: MarathonNode) {
+  operationsCommitteeTeam(marathon: MarathonNode) {
     return this.#committeeTeam(
       CommitteeIdentifier.operationsCommittee,
       marathon
@@ -273,7 +217,7 @@ export class MarathonResolver
   }
 
   @FieldResolver(() => TeamNode)
-  async marketingCommitteeTeam(marathon: MarathonNode) {
+  marketingCommitteeTeam(marathon: MarathonNode) {
     return this.#committeeTeam(
       CommitteeIdentifier.marketingCommittee,
       marathon
@@ -281,7 +225,7 @@ export class MarathonResolver
   }
 
   @FieldResolver(() => TeamNode)
-  async corporateCommitteeTeam(marathon: MarathonNode) {
+  corporateCommitteeTeam(marathon: MarathonNode) {
     return this.#committeeTeam(
       CommitteeIdentifier.corporateCommittee,
       marathon
@@ -289,7 +233,7 @@ export class MarathonResolver
   }
 
   @FieldResolver(() => TeamNode)
-  async miniMarathonsCommitteeTeam(marathon: MarathonNode) {
+  miniMarathonsCommitteeTeam(marathon: MarathonNode) {
     return this.#committeeTeam(
       CommitteeIdentifier.miniMarathonsCommittee,
       marathon
@@ -297,12 +241,12 @@ export class MarathonResolver
   }
 
   @FieldResolver(() => TeamNode)
-  async viceCommitteeTeam(marathon: MarathonNode) {
+  viceCommitteeTeam(marathon: MarathonNode) {
     return this.#committeeTeam(CommitteeIdentifier.viceCommittee, marathon);
   }
 
   @FieldResolver(() => TeamNode)
-  async overallCommitteeTeam(marathon: MarathonNode) {
+  overallCommitteeTeam(marathon: MarathonNode) {
     return this.#committeeTeam(CommitteeIdentifier.overallCommittee, marathon);
   }
 }

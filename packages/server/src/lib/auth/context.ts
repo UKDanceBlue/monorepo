@@ -10,6 +10,7 @@ import {
   AccessLevel,
   AuthSource,
   CommitteeIdentifier,
+  CommitteeRole,
   getAuthorizationFor,
   parseGlobalId,
   roleToAccessLevel,
@@ -21,7 +22,6 @@ import { Ok } from "ts-results-es";
 import { getHostUrl } from "#lib/host.js";
 import { logger } from "#lib/logging/standardLogging.js";
 import { superAdminLinkbluesToken } from "#lib/typediTokens.js";
-import { personModelToResource } from "#repositories/person/personModelToResource.js";
 import { PersonRepository } from "#repositories/person/PersonRepository.js";
 
 import { parseUserJwt } from "./index.js";
@@ -42,9 +42,11 @@ async function getUserInfo(
 ): Promise<ConcreteResult<UserContext>> {
   const outputContext: UserContext = {};
   const personRepository = Container.get(PersonRepository);
-  const person = await personRepository.findPersonAndTeamsByUnique({
-    uuid: userId,
-  });
+  const person = await personRepository.findOne({
+    by: {
+      uuid: userId,
+    },
+  }).promise;
 
   if (person.isErr()) {
     if (person.error.tag === ErrorCode.NotFound) {
@@ -56,37 +58,16 @@ async function getUserInfo(
 
   // If we found a user, set the authenticated user
   // Convert the user to a resource and set it on the context
-  const personResource = await personModelToResource(
-    person.value,
-    personRepository
-  ).promise;
-  if (personResource.isErr()) {
-    return personResource;
-  }
-  logger.trace("graphqlContextFunction Found user", personResource.value);
-  outputContext.authenticatedUser = personResource.value;
+  const personResource = person.value.toResource();
+  logger.trace("graphqlContextFunction Found user", personResource);
+  outputContext.authenticatedUser = personResource;
 
   // Set the teams the user is on
-  let teamMemberships = await personRepository.findMembershipsOfPerson(
-    {
-      id: person.value.id,
-    },
-    {},
-    undefined,
-    true
-  );
-  if (teamMemberships.isErr()) {
-    if (teamMemberships.error.tag === ErrorCode.NotFound) {
-      teamMemberships = Ok([]);
-    } else {
-      return teamMemberships;
-    }
-  }
-  logger.trace(
-    "graphqlContextFunction Found team memberships",
-    ...teamMemberships.value
-  );
-  outputContext.teamMemberships = teamMemberships.value.map((membership) => ({
+  const { memberships: teamMemberships, id: personId } = person.value.row;
+  logger.trace("graphqlContextFunction Found team memberships", {
+    teamMemberships,
+  });
+  outputContext.teamMemberships = teamMemberships.map((membership) => ({
     teamType: membership.team.type,
     position: membership.position,
     teamId: membership.team.uuid,
@@ -95,8 +76,8 @@ async function getUserInfo(
   // Set the effective committee roles the user has
   const effectiveCommitteeRoles =
     await personRepository.getEffectiveCommitteeRolesOfPerson({
-      id: person.value.id,
-    });
+      id: personId,
+    }).promise;
   if (effectiveCommitteeRoles.isErr()) {
     return effectiveCommitteeRoles;
   }
@@ -137,7 +118,7 @@ export const authenticate: ContextFunction<
   if (userId) {
     const userInfo = await getUserInfo(userId);
     if (userInfo.isErr()) {
-      logger.error(`Failed to get user info: ${userInfo.error.toString()}`);
+      logger.error("Failed to get user info", { error: userInfo.error });
     } else {
       userContext = userInfo.value;
     }

@@ -1,13 +1,6 @@
 import { Service } from "@freshgum/typedi";
 import type { SortDirection } from "@ukdanceblue/common";
 
-import type { FilterItems } from "#lib/prisma-utils/gqlFilterToPrismaFilter.js";
-
-import {
-  buildPointEntryOrder,
-  buildPointEntryWhere,
-} from "./pointEntryRepositoryUtils.js";
-
 const pointEntryBooleanKeys = [] as const;
 type PointEntryBooleanKey = (typeof pointEntryBooleanKeys)[number];
 

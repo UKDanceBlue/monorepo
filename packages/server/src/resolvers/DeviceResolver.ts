@@ -29,10 +29,7 @@ import {
 } from "type-graphql";
 import Validator from "validator";
 
-import { deviceModelToResource } from "#repositories/device/deviceModelToResource.js";
 import { DeviceRepository } from "#repositories/device/DeviceRepository.js";
-import { notificationDeliveryModelToResource } from "#repositories/notificationDelivery/notificationDeliveryModelToResource.js";
-import { personModelToResource } from "#repositories/person/personModelToResource.js";
 import { PersonRepository } from "#repositories/person/PersonRepository.js";
 
 @Resolver(() => DeviceNode)
@@ -108,7 +105,7 @@ export class DeviceResolver
   })
   async registerDevice(
     @Arg("input") input: RegisterDeviceInput
-  ): Promise<ConcreteResult<RegisterDeviceResponse>> {
+  ): AsyncResult<RegisterDeviceResponse, ConcreteError> {
     let deviceId: string;
     if (Validator.isUUID(input.deviceId)) {
       deviceId = input.deviceId;
@@ -152,7 +149,7 @@ export class DeviceResolver
   @FieldResolver(() => PersonNode, { nullable: true })
   async lastLoggedInUser(
     @Root() { id: { id } }: DeviceNode
-  ): Promise<ConcreteResult<PersonNode>> {
+  ): AsyncResult<PersonNode, ConcreteError> {
     const user = await this.deviceRepository.getLastLoggedInUser(id);
 
     return user

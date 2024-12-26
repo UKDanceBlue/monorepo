@@ -33,7 +33,7 @@ import {
 
 import { DBFundsFundraisingProvider } from "#lib/fundraising/DbFundsProvider.js";
 import type { FundraisingProvider } from "#lib/fundraising/FundraisingProvider.js";
-import { dailyDepartmentNotificationModelToResource } from "#repositories/dailyDepartmentNotification/ddnModelToResource.js";
+
 import { fundraisingAssignmentModelToNode } from "#repositories/fundraising/fundraisingAssignmentModelToNode.js";
 import { fundraisingEntryModelToNode } from "#repositories/fundraising/fundraisingEntryModelToNode.js";
 import { FundraisingEntryRepository } from "#repositories/fundraising/FundraisingRepository.js";
@@ -59,7 +59,7 @@ export class FundraisingEntryResolver
   @Query(() => FundraisingEntryNode)
   async fundraisingEntry(
     @Arg("id", () => GlobalIdScalar) { id }: GlobalId
-  ): Promise<ConcreteResult<FundraisingEntryNode>> {
+  ): AsyncResult<FundraisingEntryNode, ConcreteError> {
     const entry = await this.fundraisingEntryRepository.findEntryByUnique({
       uuid: id,
     });
@@ -71,7 +71,7 @@ export class FundraisingEntryResolver
   async fundraisingEntries(
     @Args(() => ListFundraisingEntriesArgs) args: ListFundraisingEntriesArgs,
     solicitationCodeId?: GlobalId
-  ): Promise<ConcreteResult<ListFundraisingEntriesResponse>> {
+  ): AsyncResult<ListFundraisingEntriesResponse, ConcreteError> {
     const entries = await this.fundraisingEntryRepository.listEntries(
       {
         filters: args.filters,
@@ -177,7 +177,7 @@ export class FundraisingEntryResolver
   @FieldResolver(() => [FundraisingAssignmentNode])
   async assignments(
     @Root() { id: { id } }: FundraisingEntryNode
-  ): Promise<ConcreteResult<FundraisingAssignmentNode[]>> {
+  ): AsyncResult<FundraisingAssignmentNode[], ConcreteError> {
     const assignments =
       await this.fundraisingEntryRepository.getAssignmentsForEntry({
         uuid: id,
@@ -203,7 +203,7 @@ export class FundraisingEntryResolver
     @Arg("id", () => GlobalIdScalar) { id }: GlobalId,
     @Arg("input", () => SetFundraisingEntryInput)
     input: SetFundraisingEntryInput
-  ): Promise<ConcreteResult<FundraisingEntryNode>> {
+  ): AsyncResult<FundraisingEntryNode, ConcreteError> {
     const entry = await this.fundraisingEntryRepository.setEntry(
       {
         uuid: id,
@@ -258,7 +258,7 @@ export class FundraisingEntryResolver
   async dailyDepartmentNotification(
     @Root()
     fundraisingEntry: FundraisingEntryNode
-  ): Promise<ConcreteResult<Option<DailyDepartmentNotificationNode>>> {
+  ): AsyncResult<Option<DailyDepartmentNotificationNode>, ConcreteError> {
     const dailyDepartmentNotification =
       await this.fundraisingEntryRepository.getDdnForEntry({
         uuid: fundraisingEntry.id.id,
@@ -272,7 +272,7 @@ export class FundraisingEntryResolver
   @FieldResolver(() => SolicitationCodeNode)
   async solicitationCode(
     @Root() { solicitationCodeOverride, id: { id: uuid } }: FundraisingEntryNode
-  ): Promise<ConcreteResult<SolicitationCodeNode>> {
+  ): AsyncResult<SolicitationCodeNode, ConcreteError> {
     if (solicitationCodeOverride != null) {
       return Ok(solicitationCodeOverride);
     }

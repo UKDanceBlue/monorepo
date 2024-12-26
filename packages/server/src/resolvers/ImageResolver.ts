@@ -22,7 +22,7 @@ import { Arg, Args, Ctx, Mutation, Query, Resolver } from "type-graphql";
 import { FileManager } from "#files/FileManager.js";
 import { generateThumbHash } from "#lib/thumbHash.js";
 import { logger } from "#logging/standardLogging.js";
-import { imageModelToResource } from "#repositories/image/imageModelToResource.js";
+
 import { ImageRepository } from "#repositories/image/ImageRepository.js";
 
 import type { GraphQLContext } from "../lib/auth/context.js";

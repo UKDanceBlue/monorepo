@@ -7,8 +7,8 @@ import { authorizationCodeGrant } from "openid-client";
 
 import { makeUserJwt } from "#auth/index.js";
 import { getHostUrl } from "#lib/host.js";
+import { logger } from "#lib/logging/standardLogging.js";
 import { LoginFlowSessionRepository } from "#repositories/LoginFlowSession.js";
-import { personModelToResource } from "#repositories/person/personModelToResource.js";
 import { PersonRepository } from "#repositories/person/PersonRepository.js";
 
 import { oidcConfiguration } from "./oidcClient.js";
@@ -113,6 +113,7 @@ export const oidcCallback = async (
     );
 
     if (findPersonForLoginResult.isErr()) {
+      logger.error(findPersonForLoginResult.error.detailedMessage);
       return void res
         .status(500)
         .send(
@@ -151,9 +152,9 @@ export const oidcCallback = async (
       currentPerson.linkblue = linkblue.toLowerCase();
     }
 
-    const updatedPerson = await personRepository.updatePerson(
-      { id: currentPerson.id },
-      {
+    const updatedPerson = await personRepository.update({
+      by: { id: currentPerson.id },
+      init: {
         name: currentPerson.name,
         email: currentPerson.email,
         linkblue: currentPerson.linkblue?.toLowerCase(),
@@ -161,26 +162,16 @@ export const oidcCallback = async (
           source: a.source,
           value: a.value,
         })),
-      }
-    );
+      },
+    }).promise;
 
     if (updatedPerson.isErr()) {
+      logger.error(updatedPerson.error.detailedMessage);
       return void res.status(500).send("Failed to update database entry");
     }
 
-    const personNode = personModelToResource(updatedPerson.value);
-    if (personNode.isErr()) {
-      return void res
-        .status(500)
-        .send(
-          personNode.error.expose
-            ? personNode.error.message
-            : "Error creating person node"
-        );
-    }
-    const jwt = makeUserJwt(
-      makeUserData(personNode.value, AuthSource.LinkBlue)
-    );
+    const personNode = updatedPerson.value.toResource();
+    const jwt = makeUserJwt(makeUserData(personNode, AuthSource.LinkBlue));
     let redirectTo = session.redirectToAfterLogin;
     if (session.sendToken) {
       redirectTo = `${redirectTo}?token=${encodeURIComponent(jwt)}`;

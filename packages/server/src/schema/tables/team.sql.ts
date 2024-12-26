@@ -55,7 +55,7 @@ export const team = danceblue.table("Team", {
 export const teamRelations = relations(team, ({ one, many }) => ({
   memberships: many(membership),
   pointEntries: many(pointEntry),
-  committee: one(committee, {
+  correspondingCommittee: one(committee, {
     fields: [team.correspondingCommitteeId],
     references: [committee.id],
   }),
@@ -70,12 +70,12 @@ export const teamRelations = relations(team, ({ one, many }) => ({
 }));
 
 export const committeeRelations = relations(committee, ({ one, many }) => ({
-  committee: one(committee, {
+  parentCommittee: one(committee, {
     fields: [committee.parentCommitteeId],
     references: [committee.id],
     relationName: "committee_parentCommitteeId_committee_id",
   }),
-  committees: many(committee, {
+  childCommittees: many(committee, {
     relationName: "committee_parentCommitteeId_committee_id",
   }),
   teams: many(team),

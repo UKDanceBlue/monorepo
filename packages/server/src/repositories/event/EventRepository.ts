@@ -1,10 +1,6 @@
 import { Service } from "@freshgum/typedi";
 import { SortDirection } from "@ukdanceblue/common";
 
-import type { FilterItems } from "#lib/prisma-utils/gqlFilterToPrismaFilter.js";
-
-import { buildEventOrder, buildEventWhere } from "./eventRepositoryUtils.js";
-
 const eventBooleanKeys = [] as const;
 type EventBooleanKey = (typeof eventBooleanKeys)[number];
 

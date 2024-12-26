@@ -28,12 +28,9 @@ import {
   Root,
 } from "type-graphql";
 
-import { personModelToResource } from "#repositories/person/personModelToResource.js";
 import { PersonRepository } from "#repositories/person/PersonRepository.js";
-import { pointEntryModelToResource } from "#repositories/pointEntry/pointEntryModelToResource.js";
+
 import { PointEntryRepository } from "#repositories/pointEntry/PointEntryRepository.js";
-import { pointOpportunityModelToResource } from "#repositories/pointOpportunity/pointOpportunityModelToResource.js";
-import { teamModelToResource } from "#repositories/team/teamModelToResource.js";
 
 @Resolver(() => PointEntryNode)
 @Service([PointEntryRepository, PersonRepository])
@@ -117,7 +114,7 @@ export class PointEntryResolver
   @Mutation(() => PointEntryNode, { name: "deletePointEntry" })
   async deletePointEntry(
     @Arg("id", () => GlobalIdScalar) { id }: GlobalId
-  ): Promise<ConcreteResult<PointEntryNode>> {
+  ): AsyncResult<PointEntryNode, ConcreteError> {
     const row = await this.pointEntryRepository.deletePointEntry({ uuid: id });
 
     if (row == null) {
@@ -135,7 +132,7 @@ export class PointEntryResolver
   @FieldResolver(() => PersonNode, { nullable: true })
   async personFrom(
     @Root() { id: { id } }: PointEntryNode
-  ): Promise<ConcreteResult<Option<PersonNode>>> {
+  ): AsyncResult<Option<PersonNode>, ConcreteError> {
     const model = await this.pointEntryRepository.getPointEntryPersonFrom({
       uuid: id,
     });
@@ -150,7 +147,7 @@ export class PointEntryResolver
   @FieldResolver(() => TeamNode)
   async team(
     @Root() { id: { id } }: PointEntryNode
-  ): Promise<ConcreteResult<TeamNode>> {
+  ): AsyncResult<TeamNode, ConcreteError> {
     const model = await this.pointEntryRepository.getPointEntryTeam({
       uuid: id,
     });

@@ -1,13 +1,6 @@
 import { Service } from "@freshgum/typedi";
 import type { SortDirection } from "@ukdanceblue/common";
 
-import type { FilterItems } from "#lib/prisma-utils/gqlFilterToPrismaFilter.js";
-
-import {
-  buildNotificationOrder,
-  buildNotificationWhere,
-} from "./notificationRepositoryUtils.js";
-
 const notificationBooleanKeys = [] as const;
 type NotificationBooleanKey = (typeof notificationBooleanKeys)[number];
 

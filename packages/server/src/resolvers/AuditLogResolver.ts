@@ -30,7 +30,6 @@ import {
 
 import type { GraphQLContext } from "#auth/context.js";
 import { drizzleToken } from "#lib/typediTokens.js";
-import { personModelToResource } from "#repositories/person/personModelToResource.js";
 import { PersonRepository } from "#repositories/person/PersonRepository.js";
 import { RepositoryError } from "#repositories/shared.js";
 
@@ -118,7 +117,7 @@ export class AuditLogResolver {
   @FieldResolver(() => PersonNode, { nullable: true })
   async user(
     @Root() log: AuditLogNode
-  ): Promise<Result<PersonNode | null, RepositoryError>> {
+  ): AsyncResult<PersonNode | null, RepositoryError> {
     if (!log.userId) {
       return Ok(null);
     }
@@ -139,7 +138,7 @@ export class AuditLogResolver {
   async subject(
     @Root() log: AuditLogNode,
     @Ctx() ctx: GraphQLContext
-  ): Promise<ConcreteResult<Node | Option<Node>>> {
+  ): AsyncResult<Node | Option<Node>, ConcreteError> {
     if (!log.subjectGlobalId) {
       return Ok(None);
     }
@@ -162,7 +161,7 @@ export class AuditLogResolver {
   async subjectJson(
     @Root() log: AuditLogNode,
     @Ctx() ctx: GraphQLContext
-  ): Promise<ConcreteResult<object | Option<object>>> {
+  ): AsyncResult<object | Option<object>, ConcreteError> {
     const subject = await this.subject(log, ctx);
 
     return subject.map((subject) =>

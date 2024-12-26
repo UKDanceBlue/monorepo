@@ -26,7 +26,7 @@ import {
 import { fundraisingAssignmentModelToNode } from "#repositories/fundraising/fundraisingAssignmentModelToNode.js";
 import { fundraisingEntryModelToNode } from "#repositories/fundraising/fundraisingEntryModelToNode.js";
 import { FundraisingEntryRepository } from "#repositories/fundraising/FundraisingRepository.js";
-import { personModelToResource } from "#repositories/person/personModelToResource.js";
+
 import { PersonRepository } from "#repositories/person/PersonRepository.js";
 
 // TODO: Turn authorization back on for this field, currently we are only protected by the parent field
@@ -91,7 +91,7 @@ export class FundraisingAssignmentResolver
   @Query(() => FundraisingAssignmentNode)
   async fundraisingAssignment(
     @Arg("id", () => GlobalIdScalar) { id }: GlobalId
-  ): Promise<ConcreteResult<FundraisingAssignmentNode>> {
+  ): AsyncResult<FundraisingAssignmentNode, ConcreteError> {
     const assignment =
       await this.fundraisingEntryRepository.findAssignmentByUnique({
         uuid: id,
@@ -153,7 +153,7 @@ export class FundraisingAssignmentResolver
     @Arg("entryId", () => GlobalIdScalar) { id: entryId }: GlobalId,
     @Arg("personId", () => GlobalIdScalar) { id: personId }: GlobalId,
     @Arg("input") { amount }: AssignEntryToPersonInput
-  ): Promise<ConcreteResult<Promise<FundraisingAssignmentNode>>> {
+  ): AsyncResult<Promise<FundraisingAssignmentNode>, ConcreteError> {
     const assignment =
       await this.fundraisingEntryRepository.addAssignmentToEntry(
         { uuid: entryId },
@@ -213,7 +213,7 @@ export class FundraisingAssignmentResolver
   async updateFundraisingAssignment(
     @Arg("id", () => GlobalIdScalar) { id }: GlobalId,
     @Arg("input") { amount }: UpdateFundraisingAssignmentInput
-  ): Promise<ConcreteResult<Promise<FundraisingAssignmentNode>>> {
+  ): AsyncResult<Promise<FundraisingAssignmentNode>, ConcreteError> {
     const assignment = await this.fundraisingEntryRepository.updateAssignment(
       { uuid: id },
       { amount }
@@ -270,7 +270,7 @@ export class FundraisingAssignmentResolver
   @Mutation(() => FundraisingAssignmentNode)
   async deleteFundraisingAssignment(
     @Arg("id", () => GlobalIdScalar) { id }: GlobalId
-  ): Promise<ConcreteResult<FundraisingAssignmentNode>> {
+  ): AsyncResult<FundraisingAssignmentNode, ConcreteError> {
     const assignment = new AsyncResult(
       this.fundraisingEntryRepository.deleteAssignment({
         uuid: id,
@@ -335,7 +335,7 @@ export class FundraisingAssignmentResolver
   })
   async person(
     @Root() { id: { id } }: FundraisingAssignmentNode
-  ): Promise<ConcreteResult<PersonNode>> {
+  ): AsyncResult<PersonNode, ConcreteError> {
     const person = await this.fundraisingEntryRepository.getPersonForAssignment(
       { uuid: id }
     );
@@ -397,7 +397,7 @@ export class FundraisingAssignmentResolver
   @FieldResolver(() => FundraisingEntryNode)
   async entry(
     @Root() { id: { id } }: FundraisingAssignmentNode
-  ): Promise<ConcreteResult<Promise<FundraisingEntryNode>>> {
+  ): AsyncResult<Promise<FundraisingEntryNode>, ConcreteError> {
     const entry = await this.fundraisingEntryRepository.getEntryForAssignment({
       uuid: id,
     });

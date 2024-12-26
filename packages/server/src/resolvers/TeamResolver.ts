@@ -46,10 +46,7 @@ import {
   solicitationCodeModelToNode,
 } from "#repositories/fundraising/fundraisingEntryModelToNode.js";
 import { FundraisingEntryRepository } from "#repositories/fundraising/FundraisingRepository.js";
-import { marathonModelToResource } from "#repositories/marathon/marathonModelToResource.js";
-import { membershipModelToResource } from "#repositories/membership/membershipModelToResource.js";
-import { pointEntryModelToResource } from "#repositories/pointEntry/pointEntryModelToResource.js";
-import { teamModelToResource } from "#repositories/team/teamModelToResource.js";
+
 import { TeamRepository } from "#repositories/team/TeamRepository.js";
 
 @Resolver(() => TeamNode)
@@ -64,7 +61,7 @@ export class TeamResolver implements CrudResolver<TeamNode, "team"> {
   @Query(() => TeamNode, { name: "team" })
   async team(
     @Arg("id", () => GlobalIdScalar) { id }: GlobalId
-  ): Promise<ConcreteResult<Option<TeamNode>>> {
+  ): AsyncResult<Option<TeamNode>, ConcreteError> {
     const row = await this.teamRepository.findTeamByUnique({ uuid: id });
 
     if (row == null) {
@@ -175,7 +172,7 @@ export class TeamResolver implements CrudResolver<TeamNode, "team"> {
   async createTeams(
     @Arg("teams", () => [BulkTeamInput]) teams: BulkTeamInput[],
     @Arg("marathonId", () => GlobalIdScalar) marathonId: GlobalId
-  ): Promise<ConcreteResult<TeamNode[]>> {
+  ): AsyncResult<TeamNode[], ConcreteError> {
     const rows = await this.teamRepository.bulkLoadTeams(teams, {
       uuid: marathonId.id,
     });
@@ -224,7 +221,7 @@ export class TeamResolver implements CrudResolver<TeamNode, "team"> {
   @FieldResolver(() => Float, { nullable: true })
   async fundraisingTotalAmount(
     @Root() { id: { id } }: TeamNode
-  ): Promise<ConcreteResult<Option<number>>> {
+  ): AsyncResult<Option<number>, ConcreteError> {
     return this.teamRepository.getTotalFundraisingAmount({
       uuid: id,
     });
@@ -268,7 +265,7 @@ export class TeamResolver implements CrudResolver<TeamNode, "team"> {
   async fundraisingEntries(
     @Root() { id: { id } }: TeamNode,
     @Args(() => ListFundraisingEntriesArgs) args: ListFundraisingEntriesArgs
-  ): Promise<ConcreteResult<ListFundraisingEntriesResponse>> {
+  ): AsyncResult<ListFundraisingEntriesResponse, ConcreteError> {
     const entries = await this.fundraisingEntryRepository.listEntries(
       {
         filters: args.filters,
@@ -320,7 +317,7 @@ export class TeamResolver implements CrudResolver<TeamNode, "team"> {
   @FieldResolver(() => SolicitationCodeNode, { nullable: true })
   async solicitationCode(
     @Root() { id: { id } }: TeamNode
-  ): Promise<ConcreteResult<Option<SolicitationCodeNode>>> {
+  ): AsyncResult<Option<SolicitationCodeNode>, ConcreteError> {
     return new AsyncResult(
       this.teamRepository.getSolicitationCodeForTeam({
         uuid: id,
