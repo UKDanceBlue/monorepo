@@ -30,7 +30,6 @@ import {
 } from "@ukdanceblue/common/error";
 import { Err, None, Ok, Option, Result, Some } from "ts-results-es";
 
-import type { FilterItems } from "#lib/prisma-utils/gqlFilterToPrismaFilter.js";
 import { prismaToken } from "#lib/typediTokens.js";
 import { UniquePersonParam } from "#repositories/person/PersonRepository.js";
 import {

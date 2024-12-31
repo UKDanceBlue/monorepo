@@ -1,5 +1,5 @@
 import { Container } from "@freshgum/typedi";
-import { AuthSource, makeUserData } from "@ukdanceblue/common";
+import { AuthSource } from "@ukdanceblue/common";
 import type { NextFunction, Request, Response } from "express";
 import jsonwebtoken from "jsonwebtoken";
 import { DateTime } from "luxon";
@@ -181,9 +181,10 @@ export const oidcCallback = async (
             : "Error creating person node"
         );
     }
-    const jwt = makeUserJwt(
-      makeUserData(personNode.value, AuthSource.LinkBlue)
-    );
+    const jwt = makeUserJwt({
+      userId: personNode.value.id.id,
+      authSource: AuthSource.LinkBlue,
+    });
     let redirectTo = session.redirectToAfterLogin;
     if (session.sendToken) {
       redirectTo = `${redirectTo}?token=${encodeURIComponent(jwt)}`;

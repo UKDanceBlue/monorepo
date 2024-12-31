@@ -3,7 +3,6 @@ import { Prisma, PrismaClient } from "@prisma/client";
 import type { SortDirection } from "@ukdanceblue/common";
 import type { DateTime } from "luxon";
 
-import type { FilterItems } from "#lib/prisma-utils/gqlFilterToPrismaFilter.js";
 import { SimpleUniqueParam } from "#repositories/shared.js";
 
 import {

@@ -38,6 +38,7 @@ import {
 import { EventRepository } from "#repositories/event/EventRepository.js";
 import { EventImagesRepository } from "#repositories/event/images/EventImagesRepository.js";
 import { imageModelToResource } from "#repositories/image/imageModelToResource.js";
+import type { AsyncRepositoryResult } from "#repositories/shared.js";
 
 @Service([EventRepository, EventImagesRepository, FileManager])
 @Resolver(() => EventNode)
@@ -53,19 +54,17 @@ export class EventResolver implements CrudResolver<EventNode, "event"> {
     name: "event",
     description: "Get an event by UUID",
   })
-  async event(
+  event(
     @Arg("id", () => GlobalIdScalar) { id }: GlobalId
-  ): Promise<EventNode> {
-    const row = await this.eventRepository.findEventByUnique({ uuid: id });
-
-    if (row == null) {
-      throw new LegacyError(LegacyErrorCode.NotFound, "Event not found");
-    }
-
-    return eventModelToResource(
-      row,
-      row.eventOccurrences.map(eventOccurrenceModelToResource)
-    );
+  ): AsyncRepositoryResult<EventNode> {
+    return this.eventRepository
+      .findOne({ by: { uuid: id } })
+      .map((row) =>
+        eventModelToResource(
+          row,
+          row.eventOccurrences.map(eventOccurrenceModelToResource)
+        )
+      );
   }
 
   @AccessControlAuthorized("list", "EventNode")
@@ -74,7 +73,7 @@ export class EventResolver implements CrudResolver<EventNode, "event"> {
     description: "List events",
   })
   async events(@Args() query: ListEventsArgs) {
-    const rows = await this.eventRepository.listEvents({
+    const rows = await this.eventRepository.findAndCount({
       filters: query.filters,
       order:
         query.sortBy?.map((key, i) => [

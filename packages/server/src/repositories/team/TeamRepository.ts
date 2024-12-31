@@ -10,7 +10,6 @@ import { MembershipPositionType, TeamLegacyStatus } from "@ukdanceblue/common";
 import { ConcreteResult, optionOf } from "@ukdanceblue/common/error";
 import { None, Ok, Option, Result, Some } from "ts-results-es";
 
-import type { FilterItems } from "#lib/prisma-utils/gqlFilterToPrismaFilter.js";
 import type { UniqueMarathonParam } from "#repositories/marathon/MarathonRepository.js";
 import {
   handleRepositoryError,

@@ -1,68 +1,27 @@
 import { Service } from "@freshgum/typedi";
 import { Event, EventOccurrence, Prisma, PrismaClient } from "@prisma/client";
-import { SortDirection } from "@ukdanceblue/common";
-
-import type { FilterItems } from "#lib/prisma-utils/gqlFilterToPrismaFilter.js";
-
-import { buildEventOrder, buildEventWhere } from "./eventRepositoryUtils.js";
-
-const eventBooleanKeys = [] as const;
-type EventBooleanKey = (typeof eventBooleanKeys)[number];
-
-const eventDateKeys = [
-  "createdAt",
-  "updatedAt",
-  "occurrence",
-  "occurrenceStart",
-  "occurrenceEnd",
-] as const;
-type EventDateKey = (typeof eventDateKeys)[number];
-
-const eventIsNullKeys = [] as const;
-type EventIsNullKey = (typeof eventIsNullKeys)[number];
-
-const eventNumericKeys = [] as const;
-type EventNumericKey = (typeof eventNumericKeys)[number];
-
-const eventOneOfKeys = [] as const;
-type EventOneOfKey = (typeof eventOneOfKeys)[number];
-
-const eventStringKeys = [
-  "title",
-  "summary",
-  "description",
-  "location",
-] as const;
-type EventStringKey = (typeof eventStringKeys)[number];
-
-export type EventOrderKeys =
-  | "title"
-  | "description"
-  | "summary"
-  | "location"
-  | "occurrence"
-  | "occurrenceStart"
-  | "occurrenceEnd"
-  | "createdAt"
-  | "updatedAt";
-
-export type EventFilters = FilterItems<
-  EventBooleanKey,
-  EventDateKey,
-  EventIsNullKey,
-  EventNumericKey,
-  EventOneOfKey,
-  EventStringKey
->;
 
 type UniqueEventParam = { id: number } | { uuid: string };
 
-import { ConcreteError } from "@ukdanceblue/common/error";
-import { Ok, Result } from "ts-results-es";
+import type { DefaultArgs } from "@prisma/client/runtime/library";
+import { ConcreteError, InvalidArgumentError } from "@ukdanceblue/common/error";
+import { Err, Ok, Result } from "ts-results-es";
 
 import { externalUrlToImage } from "#lib/external-apis/externalUrlToImage.js";
 import { prismaToken } from "#lib/typediTokens.js";
 import {
+  buildDefaultRepository,
+  type CreateParams,
+  type CreateResult,
+  type DeleteParams,
+  type DeleteResult,
+  type FindAndCountParams,
+  type FindAndCountResult,
+  type FindOneParams,
+  type FindOneResult,
+} from "#repositories/Default.js";
+import {
+  type AsyncRepositoryResult,
   handleRepositoryError,
   RepositoryError,
 } from "#repositories/shared.js";
@@ -78,88 +37,177 @@ export interface ForeignEvent {
   imageUrls: URL[];
 }
 
+type EventFilterKeys =
+  | "title"
+  | "summary"
+  | "description"
+  | "location"
+  | "occurrence"
+  | "occurrenceStart"
+  | "occurrenceEnd"
+  | "createdAt"
+  | "updatedAt";
+
 @Service([prismaToken])
-export class EventRepository {
-  constructor(private prisma: PrismaClient) {}
-
-  findEventByUnique(param: UniqueEventParam) {
-    return this.prisma.event.findUnique({
-      where: param,
-      include: { eventOccurrences: true },
-    });
+export class EventRepository extends buildDefaultRepository<
+  PrismaClient["event"],
+  UniqueEventParam,
+  EventFilterKeys,
+  {
+    eventOccurrences: true;
+  }
+>("Event", {
+  title: {
+    getOrderBy: (order) =>
+      Ok({
+        title: order,
+      }),
+    getWhere: (value) =>
+      Ok({
+        title: value,
+      }),
+  },
+  summary: {
+    getOrderBy: (order) =>
+      Ok({
+        summary: order,
+      }),
+    getWhere: (value) =>
+      Ok({
+        summary: value,
+      }),
+  },
+  description: {
+    getOrderBy: (order) =>
+      Ok({
+        description: order,
+      }),
+    getWhere: (value) =>
+      Ok({
+        description: value,
+      }),
+  },
+  location: {
+    getOrderBy: (order) =>
+      Ok({
+        location: order,
+      }),
+    getWhere: (value) =>
+      Ok({
+        location: value,
+      }),
+  },
+  get occurrence() {
+    return this.occurrenceStart;
+  },
+  // See https://github.com/prisma/prisma/issues/5837
+  occurrenceStart: {
+    getOrderBy: () =>
+      Err(new InvalidArgumentError("Cannot order by occurrenceStart")),
+    getWhere: (value) =>
+      Ok({
+        eventOccurrences: {
+          some: {
+            date: value,
+          },
+        },
+      }),
+  },
+  occurrenceEnd: {
+    getOrderBy: () =>
+      Err(new InvalidArgumentError("Cannot order by occurrenceEnd")),
+    getWhere: (value) =>
+      Ok({
+        eventOccurrences: {
+          some: {
+            endDate: value,
+          },
+        },
+      }),
+  },
+  createdAt: {
+    getOrderBy: (order) =>
+      Ok({
+        createdAt: order,
+      }),
+    getWhere: (value) =>
+      Ok({
+        createdAt: value,
+      }),
+  },
+  updatedAt: {
+    getOrderBy: (order) =>
+      Ok({
+        updatedAt: order,
+      }),
+    getWhere: (value) =>
+      Ok({
+        updatedAt: value,
+      }),
+  },
+}) {
+  constructor(protected readonly prisma: PrismaClient) {
+    super(prisma);
   }
 
-  async listEvents({
-    filters,
-    order,
-    skip,
-    take,
-  }: {
-    filters?: readonly EventFilters[] | undefined | null;
-    order?:
-      | readonly [key: EventOrderKeys, sort: SortDirection][]
-      | undefined
-      | null;
-    skip?: number | undefined | null;
-    take?: number | undefined | null;
-  }) {
-    const where = buildEventWhere(filters);
-    const orderBy = buildEventOrder(order);
-
-    let rows = await this.prisma.event.findMany({
-      where,
-      orderBy,
-      skip: skip ?? undefined,
-      take: take ?? undefined,
-      include: { eventOccurrences: true },
-    });
-
-    rows = rows.map((row) => {
-      row.eventOccurrences.sort((a, b) => {
-        return a.date.getTime() - b.date.getTime();
-      });
-      return row;
-    });
-
-    for (const [key, sort] of order ?? []) {
-      switch (key) {
-        case "occurrence":
-        case "occurrenceStart": {
-          rows.sort((a, b) => {
-            const aDate = a.eventOccurrences[0]?.date ?? new Date(0);
-            const bDate = b.eventOccurrences[0]?.date ?? new Date(0);
-            return sort === SortDirection.asc
-              ? aDate.getTime() - bDate.getTime()
-              : bDate.getTime() - aDate.getTime();
-          });
-          break;
-        }
-        case "occurrenceEnd": {
-          rows.sort((a, b) => {
-            const aDate = a.eventOccurrences.at(-1)?.date ?? new Date(0);
-            const bDate = b.eventOccurrences.at(-1)?.date ?? new Date(0);
-            return sort === SortDirection.asc
-              ? aDate.getTime() - bDate.getTime()
-              : bDate.getTime() - aDate.getTime();
-          });
-          break;
-        }
-      }
-    }
-
-    return rows;
+  public uniqueToWhere(by: UniqueEventParam): Prisma.EventWhereUniqueInput {
+    return EventRepository.simpleUniqueToWhere(by);
   }
 
-  countEvents({
-    filters,
-  }: {
-    filters?: readonly EventFilters[] | undefined | null;
-  }) {
-    const where = buildEventWhere(filters);
+  findOne({
+    by,
+    tx,
+  }: FindOneParams<UniqueEventParam>): AsyncRepositoryResult<
+    FindOneResult<
+      Prisma.EventDelegate<DefaultArgs, Prisma.PrismaClientOptions>,
+      { include: { eventOccurrences: true } }
+    >
+  > {
+    return this.handleQueryError(
+      (tx ?? this.prisma).event.findUnique({
+        where: this.uniqueToWhere(by),
+        include: { eventOccurrences: true },
+      }),
+      { what: "event", where: "EventRepository.findOne" }
+    );
+  }
 
-    return this.prisma.event.count({
-      where,
-    });
+  findAndCount({
+    tx,
+    ...params
+  }: FindAndCountParams<EventFilterKeys>): AsyncRepositoryResult<
+    FindAndCountResult<
+      Prisma.EventDelegate<DefaultArgs, Prisma.PrismaClientOptions>
+    >
+  > {
+    return this.parseFindManyParams(params)
+      .toAsyncResult()
+      .andThen((params) =>
+        this.handleQueryError(
+          (tx ?? this.prisma).event.findMany({
+            ...params,
+            include: { eventOccurrences: true },
+          })
+        )
+          .map((rows) => ({ rows, params }))
+          .map(({ rows, params }) => ({
+            rows: rows.map((row) => {
+              row.eventOccurrences.sort((a, b) => {
+                return a.date.getTime() - b.date.getTime();
+              });
+              return row;
+            }),
+            params,
+          }))
+      )
+      .andThen(({ rows, params }) =>
+        this.handleQueryError((tx ?? this.prisma).event.count(params)).map(
+          (total) => ({
+            selectedRows: rows,
+            total,
+          })
+        )
+      );
   }
 
   async getUpcomingEvents({ count, until }: { count: number; until: Date }) {
@@ -203,11 +251,20 @@ export class EventRepository {
       });
   }
 
-  createEvent(data: Prisma.EventCreateInput) {
-    return this.prisma.event.create({
-      data,
-      include: { eventOccurrences: true },
-    });
+  create({
+    init,
+    tx,
+  }: CreateParams<
+    Prisma.EventDelegate<DefaultArgs, Prisma.PrismaClientOptions>
+  >): AsyncRepositoryResult<
+    CreateResult<Prisma.EventDelegate<DefaultArgs, Prisma.PrismaClientOptions>>
+  > {
+    return this.handleQueryError(
+      (tx ?? this.prisma).event.create({
+        data: init,
+        include: { eventOccurrences: true },
+      })
+    );
   }
 
   loadForeignEvents(
@@ -367,21 +424,17 @@ export class EventRepository {
     }
   }
 
-  deleteEvent(param: UniqueEventParam) {
-    try {
-      return this.prisma.event.delete({
-        where: param,
+  delete({
+    by,
+    tx,
+  }: DeleteParams<UniqueEventParam>): AsyncRepositoryResult<
+    DeleteResult<Prisma.EventDelegate<DefaultArgs, Prisma.PrismaClientOptions>>
+  > {
+    return this.handleQueryError(
+      (tx ?? this.prisma).event.delete({
+        where: this.uniqueToWhere(by),
         include: { eventOccurrences: true },
-      });
-    } catch (error) {
-      if (
-        error instanceof Prisma.PrismaClientKnownRequestError &&
-        error.code === "P2025"
-      ) {
-        return null;
-      } else {
-        throw error;
-      }
-    }
+      })
+    );
   }
 }

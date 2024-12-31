@@ -3,8 +3,6 @@ import type { PointOpportunityType } from "@prisma/client";
 import { Prisma, PrismaClient } from "@prisma/client";
 import type { SortDirection } from "@ukdanceblue/common";
 
-import type { FilterItems } from "#lib/prisma-utils/gqlFilterToPrismaFilter.js";
-
 import {
   buildPointOpportunityOrder,
   buildPointOpportunityWhere,

@@ -4,6 +4,7 @@ import {
   EventOccurrenceNode,
   IntervalISO,
 } from "@ukdanceblue/common";
+import { DateTime } from "luxon";
 
 export function eventModelToResource(
   eventModel: Event,
@@ -16,8 +17,8 @@ export function eventModelToResource(
     description: eventModel.description,
     location: eventModel.location,
     occurrences,
-    createdAt: eventModel.createdAt,
-    updatedAt: eventModel.updatedAt,
+    createdAt: DateTime.fromJSDate(eventModel.createdAt),
+    updatedAt: DateTime.fromJSDate(eventModel.updatedAt),
   });
 }
 
@@ -26,7 +27,10 @@ export function eventOccurrenceModelToResource(
 ): EventOccurrenceNode {
   return EventOccurrenceNode.init({
     id: occurrenceModel.uuid,
-    interval: IntervalISO.init(occurrenceModel.date, occurrenceModel.endDate),
+    interval: IntervalISO.init(
+      DateTime.fromJSDate(occurrenceModel.date),
+      DateTime.fromJSDate(occurrenceModel.endDate)
+    ),
     fullDay: occurrenceModel.fullDay,
   });
 }

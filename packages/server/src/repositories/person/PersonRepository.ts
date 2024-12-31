@@ -41,7 +41,6 @@ import {
 } from "ts-results-es";
 
 import { findPersonForLogin } from "#auth/findPersonForLogin.js";
-import type { FilterItems } from "#lib/prisma-utils/gqlFilterToPrismaFilter.js";
 import {
   MarathonRepository,
   UniqueMarathonParam,

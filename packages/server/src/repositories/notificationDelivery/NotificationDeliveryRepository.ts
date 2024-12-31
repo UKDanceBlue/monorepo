@@ -4,8 +4,6 @@ import type { SortDirection } from "@ukdanceblue/common";
 import type { ExpoPushReceipt, ExpoPushTicket } from "expo-server-sdk";
 import type { DateTime } from "luxon";
 
-import type { FilterItems } from "#lib/prisma-utils/gqlFilterToPrismaFilter.js";
-
 import {
   buildNotificationDeliveryOrder,
   buildNotificationDeliveryWhere,

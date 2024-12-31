@@ -1,11 +1,14 @@
 import type {
   ActionDeniedError,
   BasicError,
+  CompositeError,
+  InvalidArgumentError,
+  InvalidOperationError,
   InvariantError,
   NotFoundError,
 } from "@ukdanceblue/common/error";
 import { toBasicError } from "@ukdanceblue/common/error";
-import { Err, Some } from "ts-results-es";
+import { type AsyncResult, Err, type Result, Some } from "ts-results-es";
 
 import type { SomePrismaError } from "#error/prisma.js";
 import { toPrismaError } from "#error/prisma.js";
@@ -22,7 +25,16 @@ export type RepositoryError =
   | BasicError
   | NotFoundError
   | ActionDeniedError
-  | InvariantError;
+  | InvariantError
+  | InvalidArgumentError
+  | InvalidOperationError
+  | CompositeError<RepositoryError>;
+
+export type RepositoryResult<T, E = never> = Result<T, RepositoryError | E>;
+export type AsyncRepositoryResult<T, E = never> = AsyncResult<
+  T,
+  RepositoryError | E
+>;
 
 /**
  * Takes in an arbitrary error and returns a PrismaError subclass if it is a Prisma error, or a BasicError if it is not

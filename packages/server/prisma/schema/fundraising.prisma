@@ -43,6 +43,8 @@ model SolicitationCode {
   prefix                    String
   code                      Int
   name                      String?
+  /// An automatically generated string representation of the solicitation code in the format "AA9999 - Name"
+  text                      String?                       @default(dbgenerated()) @db.Text()
   dbFundsTeams              DBFundsTeam[]
   ddns                      DailyDepartmentNotification[]
   FundraisingEntry          FundraisingEntry[]

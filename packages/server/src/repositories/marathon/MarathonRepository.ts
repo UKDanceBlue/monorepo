@@ -4,7 +4,6 @@ import type { SortDirection } from "@ukdanceblue/common";
 import { NotFoundError, optionOf } from "@ukdanceblue/common/error";
 import { Err, Ok, Option, Result } from "ts-results-es";
 
-import type { FilterItems } from "#lib/prisma-utils/gqlFilterToPrismaFilter.js";
 import {
   handleRepositoryError,
   type RepositoryError,

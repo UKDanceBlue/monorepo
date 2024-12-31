@@ -4,7 +4,6 @@ import { CommitteeRole, MembershipPositionType } from "@ukdanceblue/common";
 import { NotFoundError } from "@ukdanceblue/common/error";
 import { Err, Ok, Result } from "ts-results-es";
 
-import type { FilterItems } from "#lib/prisma-utils/gqlFilterToPrismaFilter.js";
 import {
   handleRepositoryError,
   type RepositoryError,

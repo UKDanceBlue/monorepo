@@ -3,8 +3,6 @@ import { Notification, Prisma, PrismaClient } from "@prisma/client";
 import { NotificationError } from "@prisma/client";
 import type { SortDirection } from "@ukdanceblue/common";
 
-import type { FilterItems } from "#lib/prisma-utils/gqlFilterToPrismaFilter.js";
-
 import {
   buildNotificationOrder,
   buildNotificationWhere,

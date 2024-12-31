@@ -10,8 +10,6 @@ import {
 } from "@prisma/client";
 import { DDNInit, localDateToJs, SortDirection } from "@ukdanceblue/common";
 
-import type { FilterItems } from "#lib/prisma-utils/gqlFilterToPrismaFilter.js";
-
 import {
   buildDailyDepartmentNotificationOrder,
   buildDailyDepartmentNotificationWhere,

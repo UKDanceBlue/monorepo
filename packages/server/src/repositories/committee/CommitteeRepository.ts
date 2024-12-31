@@ -16,7 +16,6 @@ import {
 } from "@ukdanceblue/common/error";
 import { AsyncResult, Err, None, Ok, Result } from "ts-results-es";
 
-import type { FilterItems } from "#lib/prisma-utils/gqlFilterToPrismaFilter.js";
 import type { UniqueMarathonParam } from "#repositories/marathon/MarathonRepository.js";
 import { MarathonRepository } from "#repositories/marathon/MarathonRepository.js";
 import { MembershipRepository } from "#repositories/membership/MembershipRepository.js";

@@ -1,4 +1,4 @@
-import type { Prisma, PrismaClient } from "@prisma/client";
+import type { Prisma } from "@prisma/client";
 import type { Args } from "@prisma/client/runtime/library";
 import type {
   AbstractFilterGroup,
@@ -17,32 +17,41 @@ import { InvariantError } from "@ukdanceblue/common/error";
 import { Result } from "ts-results-es";
 import { Err, Ok } from "ts-results-es";
 
+import type { RepositoryResult } from "#repositories/shared.js";
+
 export type GetWhereFn<T> = (
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   placeholder: any
-) => Args<T, "findMany">["where"];
+) => RepositoryResult<Args<T, "findMany">["where"]>;
+export type GetOrderFn<T> = (
+  order: SortDirection
+) => RepositoryResult<Args<T, "findMany">["orderBy"]>;
+
+export interface FieldLookupItem<T> {
+  getWhere: GetWhereFn<T>;
+  getOrderBy: GetOrderFn<T>;
+}
+
+export type FieldLookup<T, Field extends string> = Record<
+  Field,
+  FieldLookupItem<T>
+>;
 
 function buildWhereFromItemWithoutNegate<T, Field extends string>(
   filter: AbstractFilterItem<Field>,
-  fieldLookup: Record<
-    Field,
-    { getWhere: GetWhereFn<T>; orderBy: Args<T, "findMany">["orderBy"] }
-  >
-): Result<
-  {
-    where: Args<T, "findMany">["where"];
-    orderObj: Args<T, "findMany">["orderBy"];
-  },
-  InvariantError
-> {
-  return getPrismaFilterFor(filter).map((prismaFilter) =>
+  fieldLookup: FieldLookup<T, Field>
+): RepositoryResult<{
+  where: Args<T, "findMany">["where"];
+  orderObj: Args<T, "findMany">["orderBy"];
+}> {
+  return getPrismaFilterFor(filter).andThen((prismaFilter) =>
     fieldLookup[filter.field].getWhere(prismaFilter)
   );
 }
 
 function getPrismaFilterFor<Field extends string>(
   filter: AbstractFilterItem<Field>
-): Result<unknown, InvariantError> {
+): RepositoryResult<unknown> {
   const {
     arrayBooleanFilter,
     arrayDateFilter,
@@ -344,7 +353,7 @@ function getPrismaFilterFor<Field extends string>(
       }
     }
   } else if (arrayBooleanFilter) {
-    throw new InvariantError("Array boolean filters are not supported"); // Why would you even want this?
+    return Err(new InvariantError("Array boolean filters are not supported")); // Why would you even want this?
   } else if (arrayDateFilter) {
     switch (arrayDateFilter.comparison) {
       case ArrayOperators.IN: {
@@ -486,11 +495,8 @@ function getPrismaFilterFor<Field extends string>(
 
 export function buildWhereFromGroup<T, Field extends string>(
   group: AbstractFilterGroup<Field>,
-  fieldLookup: Record<
-    Field,
-    { getWhere: GetWhereFn<T>; orderBy: Args<T, "findMany">["orderBy"] }
-  >
-): Result<Args<T, "findMany">["where"], InvariantError> {
+  fieldLookup: FieldLookup<T, Field>
+): RepositoryResult<Args<T, "findMany">["where"]> {
   return Result.all(
     group.filters.map((filter) =>
       buildWhereFromItemWithoutNegate(filter, fieldLookup).map((where) => ({
@@ -501,24 +507,26 @@ export function buildWhereFromGroup<T, Field extends string>(
     .andThen((filters) => {
       return Result.all(
         group.children.map((child) => buildWhereFromGroup(child, fieldLookup))
-      ).andThen((children) => {
-        switch (group.operator) {
-          case FilterGroupOperator.AND: {
-            return Ok({ AND: [...filters, ...children] });
-          }
-          case FilterGroupOperator.OR: {
-            return Ok({ OR: [...filters, ...children] });
-          }
-          default: {
-            group.operator satisfies never;
-            return Err(
-              new InvariantError(
-                `Unsupported filter group operator: ${String(group.operator)}`
-              )
-            );
+      ).andThen(
+        (children): Result<Args<T, "findMany">["where"], InvariantError> => {
+          switch (group.operator) {
+            case FilterGroupOperator.AND: {
+              return Ok({ AND: [...filters, ...children] });
+            }
+            case FilterGroupOperator.OR: {
+              return Ok({ OR: [...filters, ...children] });
+            }
+            default: {
+              group.operator satisfies never;
+              return Err(
+                new InvariantError(
+                  `Unsupported filter group operator: ${String(group.operator)}`
+                )
+              );
+            }
           }
         }
-      });
+      );
     })
     .andThen((where) => {
       if (!where) {
@@ -530,19 +538,19 @@ export function buildWhereFromGroup<T, Field extends string>(
     });
 }
 
-export function buildOrder<Field extends string>(
+export function buildOrder<Field extends string, T>(
   args: AbstractSortItem<Field>[],
-  fieldLookup: Record<Field, SQL.Aliased | AnyPgColumn>
-): Result<SQL[], InvariantError> {
+  fieldLookup: FieldLookup<T, Field>
+): RepositoryResult<Extract<Args<T, "findMany">["orderBy"], unknown[]>> {
   return Result.all(
     args.map(({ direction, field: key }) => {
       const field = fieldLookup[key];
       switch (direction) {
         case SortDirection.asc: {
-          return Ok(asc(field));
+          return field.getOrderBy(SortDirection.asc);
         }
         case SortDirection.desc: {
-          return Ok(desc(field));
+          return field.getOrderBy(SortDirection.desc);
         }
         default: {
           direction satisfies never;
@@ -564,18 +572,15 @@ export interface FindManyParams<Field extends string> {
   limit?: number | null | undefined;
 }
 
-export function parseFindManyParams<Field extends string>(
+export function parseFindManyParams<T, Field extends string>(
   params: FindManyParams<Field>,
-  fieldLookup: Record<Field, SQL.Aliased | AnyPgColumn>
-): Result<
-  {
-    where: SQL | undefined;
-    orderBy: SQL[] | undefined;
-    offset: number | undefined;
-    limit: number | undefined;
-  },
-  InvariantError
-> {
+  fieldLookup: FieldLookup<T, Field>
+): RepositoryResult<{
+  where: Args<T, "findMany">["where"] | undefined;
+  orderBy: Args<T, "findMany">["orderBy"] | undefined;
+  skip: number | undefined;
+  take: number | undefined;
+}> {
   const where = params.filters
     ? buildWhereFromGroup(params.filters, fieldLookup)
     : undefined;
@@ -597,7 +602,7 @@ export function parseFindManyParams<Field extends string>(
   return Ok({
     where: where?.value,
     orderBy: order?.value,
-    offset: params.offset ?? undefined,
-    limit: params.limit ?? undefined,
+    skip: params.offset ?? undefined,
+    take: params.limit ?? undefined,
   });
 }

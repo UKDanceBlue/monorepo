@@ -1,5 +1,5 @@
 import { Container } from "@freshgum/typedi";
-import { AuthSource, makeUserData } from "@ukdanceblue/common";
+import { AuthSource } from "@ukdanceblue/common";
 import { ErrorCode } from "@ukdanceblue/common/error";
 import type { NextFunction, Request, Response } from "express";
 import { DateTime } from "luxon";
@@ -68,9 +68,10 @@ export const login = async (
           ? void res.status(401).send("Invalid email or password")
           : void res.sendStatus(500);
       } else {
-        const jwt = makeUserJwt(
-          makeUserData(person.value, AuthSource.Password)
-        );
+        const jwt = makeUserJwt({
+          authSource: AuthSource.Password,
+          userId: person.value.id.id,
+        });
         let redirectTo = queryRedirectTo;
         if (returning.includes("token")) {
           redirectTo = `${redirectTo}?token=${encodeURIComponent(jwt)}`;
