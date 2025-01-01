@@ -102,8 +102,8 @@ function getDates(
 const fundraisingReportDialogDocument = graphql(/* GraphQL */ `
   query FundraisingReportDialog(
     $report: NonEmptyString!
-    $from: DateTimeISO
-    $to: DateTimeISO
+    $from: LuxonDateTime
+    $to: LuxonDateTime
   ) {
     report(report: $report, from: $from, to: $to) {
       pages {

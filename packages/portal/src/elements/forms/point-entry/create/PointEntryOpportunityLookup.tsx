@@ -15,8 +15,26 @@ import type { usePointEntryCreatorForm } from "./usePointEntryCreatorForm.js";
 const pointEntryOpportunityLookup = graphql(/* GraphQL */ `
   query PointEntryOpportunityLookup($name: String!, $marathonUuid: String!) {
     pointOpportunities(
-      stringFilters: { field: name, comparison: SUBSTRING, value: $name }
-      oneOfFilters: { field: marathonUuid, value: [$marathonUuid] }
+      filters: {
+        operator: AND
+        filters: [
+          {
+            field: name
+            filter: {
+              singleStringFilter: {
+                comparison: INSENSITIVE_CONTAINS
+                value: $name
+              }
+            }
+          }
+          {
+            field: marathonUuid
+            filter: {
+              singleStringFilter: { comparison: EQUALS, value: $marathonUuid }
+            }
+          }
+        ]
+      }
       sendAll: true
     ) {
       data {

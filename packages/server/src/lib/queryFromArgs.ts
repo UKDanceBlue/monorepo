@@ -37,7 +37,7 @@ export type FieldLookup<T, Field extends string> = Record<
   FieldLookupItem<T>
 >;
 
-function buildWhereFromItemWithoutNegate<T, Field extends string>(
+function buildWhereFromItem<T, Field extends string>(
   filter: AbstractFilterItem<Field>,
   fieldLookup: FieldLookup<T, Field>
 ): RepositoryResult<{
@@ -498,11 +498,7 @@ export function buildWhereFromGroup<T, Field extends string>(
   fieldLookup: FieldLookup<T, Field>
 ): RepositoryResult<Args<T, "findMany">["where"]> {
   return Result.all(
-    group.filters.map((filter) =>
-      buildWhereFromItemWithoutNegate(filter, fieldLookup).map((where) => ({
-        NOT: where,
-      }))
-    )
+    group.filters.map((filter) => buildWhereFromItem(filter, fieldLookup))
   )
     .andThen((filters) => {
       return Result.all(

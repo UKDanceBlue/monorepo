@@ -43,7 +43,20 @@ const SearchTeamsDocument = graphql(
     query SearchTeams($search: String!, $marathonId: GlobalId!) {
       teams(
         marathonId: [$marathonId]
-        stringFilters: [{ comparison: SUBSTRING, field: name, value: $search }]
+        filters: {
+          operator: AND
+          filters: [
+            {
+              field: name
+              filter: {
+                singleStringFilter: {
+                  comparison: INSENSITIVE_CONTAINS
+                  value: $search
+                }
+              }
+            }
+          ]
+        }
         sendAll: true
       ) {
         data {

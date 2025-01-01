@@ -25,6 +25,7 @@ export const graphql = initGraphQLTada<{
   scalars: {
     LuxonDateRange: string;
     LuxonDuration: string;
+    LuxonDateTime: string;
     GlobalId: string;
     NonEmptyString: string;
     NonNegativeInt: number;

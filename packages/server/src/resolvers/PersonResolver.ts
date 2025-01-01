@@ -71,7 +71,6 @@ export class PersonResolver
     private readonly fundraisingEntryRepository: FundraisingEntryRepository
   ) {}
 
-  @WithAuditLogging()
   @AccessControlAuthorized("get")
   @Query(() => PersonNode, { name: "person" })
   async person(

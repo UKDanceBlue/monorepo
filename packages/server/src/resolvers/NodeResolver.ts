@@ -127,8 +127,7 @@ export class NodeResolver {
         return Ok(data.data);
       }
       case EventNode.name: {
-        const data = await this.eventResolver.event(id);
-        return Ok(data);
+        return this.eventResolver.event(id).promise;
       }
       case FeedResolver.name: {
         return this.feedResolver.feedItem(id);

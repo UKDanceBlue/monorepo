@@ -481,10 +481,10 @@ type EventOccurrenceNode {
 enum EventResolverFilterFields {
   createdAt
   description
+  end
   location
-  occurrence
-  occurrenceEnd
-  occurrenceStart
+  occurrences
+  start
   summary
   title
   updatedAt
@@ -674,7 +674,7 @@ The `JSONObject` scalar type represents JSON objects as specified by [ECMA-404](
 scalar JSONObject @specifiedBy(url: "http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf")
 
 type ListAuditLogsResponse implements AbstractGraphQLPaginatedResponse {
-  data: AuditLogNode!
+  data: [AuditLogNode!]!
 
   """The total number of items"""
   total: NonNegativeInt!
@@ -1253,7 +1253,7 @@ type Query {
   allConfigurations: [ConfigurationNode!]!
 
   """Get a list of audit logs"""
-  auditLogs(page: PositiveInt = 1, pageSize: PositiveInt = 10, search: NonEmptyString): ListAuditLogsResponse!
+  auditLogs(idSearch: NonEmptyString, page: PositiveInt = 1, pageSize: PositiveInt = 10, textSearch: NonEmptyString, typenameSearch: NonEmptyString): ListAuditLogsResponse!
 
   """Get a particular configuration entry by UUID"""
   configuration(id: GlobalId!): ConfigurationNode!
@@ -1266,7 +1266,7 @@ type Query {
   dailyDepartmentNotification(id: GlobalId!): DailyDepartmentNotificationNode!
   dailyDepartmentNotificationBatch(id: GlobalId!): DailyDepartmentNotificationBatchNode!
   dailyDepartmentNotifications(
-    filters: DailyDepartmentNotificationResolverFilterGroup!
+    filters: DailyDepartmentNotificationResolverFilterGroup
 
     """The page number to return, defaults to 1"""
     page: PositiveInt! = 1
@@ -1293,7 +1293,7 @@ type Query {
 
   """List all devices"""
   devices(
-    filters: DeviceResolverFilterGroup!
+    filters: DeviceResolverFilterGroup
 
     """The page number to return, defaults to 1"""
     page: PositiveInt! = 1
@@ -1317,7 +1317,7 @@ type Query {
 
   """List events"""
   events(
-    filters: EventResolverFilterGroup!
+    filters: EventResolverFilterGroup
 
     """The page number to return, defaults to 1"""
     page: PositiveInt! = 1
@@ -1343,7 +1343,7 @@ type Query {
   feedItem(feedItemId: GlobalId!): FeedNode!
   fundraisingAssignment(id: GlobalId!): FundraisingAssignmentNode!
   fundraisingEntries(
-    filters: FundraisingEntryResolverFilterGroup!
+    filters: FundraisingEntryResolverFilterGroup
 
     """The page number to return, defaults to 1"""
     page: PositiveInt! = 1
@@ -1364,7 +1364,7 @@ type Query {
   fundraisingEntry(id: GlobalId!): FundraisingEntryNode!
   image(id: GlobalId!): ImageNode!
   images(
-    filters: ImageResolverFilterGroup!
+    filters: ImageResolverFilterGroup
 
     """The page number to return, defaults to 1"""
     page: PositiveInt! = 1
@@ -1392,7 +1392,7 @@ type Query {
   marathonForYear(year: String!): MarathonNode!
   marathonHour(id: GlobalId!): MarathonHourNode!
   marathonHours(
-    filters: MarathonHourResolverFilterGroup!
+    filters: MarathonHourResolverFilterGroup
 
     """The page number to return, defaults to 1"""
     page: PositiveInt! = 1
@@ -1411,7 +1411,7 @@ type Query {
     sortBy: [MarathonHourResolverSort!]
   ): ListMarathonHoursResponse!
   marathons(
-    filters: MarathonResolverFilterGroup!
+    filters: MarathonResolverFilterGroup
 
     """The page number to return, defaults to 1"""
     page: PositiveInt! = 1
@@ -1433,7 +1433,7 @@ type Query {
   node(id: GlobalId!): Node!
   notification(id: GlobalId!): NotificationNode!
   notificationDeliveries(
-    filters: NotificationDeliveryResolverFilterGroup!
+    filters: NotificationDeliveryResolverFilterGroup
     notificationUuid: GlobalId!
 
     """The page number to return, defaults to 1"""
@@ -1453,7 +1453,7 @@ type Query {
     sortBy: [NotificationDeliveryResolverSort!]
   ): ListNotificationDeliveriesResponse!
   notifications(
-    filters: NotificationResolverFilterGroup!
+    filters: NotificationResolverFilterGroup
 
     """The page number to return, defaults to 1"""
     page: PositiveInt! = 1
@@ -1472,7 +1472,7 @@ type Query {
     sortBy: [NotificationResolverSort!]
   ): ListNotificationsResponse!
   people(
-    filters: PersonResolverFilterGroup!
+    filters: PersonResolverFilterGroup
 
     """The page number to return, defaults to 1"""
     page: PositiveInt! = 1
@@ -1493,7 +1493,7 @@ type Query {
   person(id: GlobalId!): PersonNode!
   personByLinkBlue(linkBlueId: String!): PersonNode
   pointEntries(
-    filters: PointEntryResolverFilterGroup!
+    filters: PointEntryResolverFilterGroup
 
     """The page number to return, defaults to 1"""
     page: PositiveInt! = 1
@@ -1513,7 +1513,7 @@ type Query {
   ): ListPointEntriesResponse!
   pointEntry(id: GlobalId!): PointEntryNode!
   pointOpportunities(
-    filters: PointOpportunityResolverFilterGroup!
+    filters: PointOpportunityResolverFilterGroup
 
     """The page number to return, defaults to 1"""
     page: PositiveInt! = 1
@@ -1542,7 +1542,7 @@ type Query {
   searchPeopleByName(name: String!): [PersonNode!]!
   solicitationCode(id: GlobalId!): SolicitationCodeNode!
   solicitationCodes(
-    filters: SolicitationCodeFilterGroup!
+    filters: SolicitationCodeFilterGroup
 
     """The page number to return, defaults to 1"""
     page: PositiveInt! = 1
@@ -1562,7 +1562,7 @@ type Query {
   ): ListSolicitationCodesResponse!
   team(id: GlobalId!): TeamNode!
   teams(
-    filters: TeamResolverFilterGroup!
+    filters: TeamResolverFilterGroup
     legacyStatus: [TeamLegacyStatus!]
     marathonId: [GlobalId!]
 
@@ -1758,7 +1758,7 @@ type SolicitationCodeNode implements Node {
   code: NonNegativeInt!
   createdAt: LuxonDateTime
   entries(
-    filters: FundraisingEntryResolverFilterGroup!
+    filters: FundraisingEntryResolverFilterGroup
 
     """The page number to return, defaults to 1"""
     page: PositiveInt! = 1
@@ -1819,7 +1819,7 @@ type TeamNode implements Node {
   committeeIdentifier: CommitteeIdentifier
   createdAt: LuxonDateTime
   fundraisingEntries(
-    filters: FundraisingEntryResolverFilterGroup!
+    filters: FundraisingEntryResolverFilterGroup
 
     """The page number to return, defaults to 1"""
     page: PositiveInt! = 1

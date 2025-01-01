@@ -52,4 +52,7 @@ view EventWithOccurrences {
   eventImages        EventImage[]
   eventOccurrences   EventOccurrence[]
   pointOpportunities PointOpportunity[]
+
+  firstOccurrence DateTime? @db.Timestamptz(6)
+  lastOccurrence  DateTime? @db.Timestamptz(6)
 }

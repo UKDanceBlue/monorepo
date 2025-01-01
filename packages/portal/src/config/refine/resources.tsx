@@ -180,11 +180,11 @@ export const refineResources: ResourceProps[] = [
     list: "/config",
   },
   {
-    name: "log",
+    name: "auditLog",
     meta: {
       icon: <FileTextOutlined />,
       label: "Logs",
-      modelName: "LogNode",
+      modelName: "AuditLogNode",
     },
     create: "/admin/logs/create",
     edit: "/admin/logs/:id/edit",

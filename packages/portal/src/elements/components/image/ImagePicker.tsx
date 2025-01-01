@@ -1,3 +1,4 @@
+import { SingleTargetOperators } from "@ukdanceblue/common";
 import { Button, Flex, Image, Input } from "antd";
 import { useState } from "react";
 import { useQuery } from "urql";
@@ -6,8 +7,8 @@ import { graphql } from "#graphql/index.js";
 import { useQueryStatusWatcher } from "#hooks/useQueryStatusWatcher.js";
 
 const imagePickerDocument = graphql(/* GraphQL */ `
-  query ImagePicker($stringFilters: [ImageResolverKeyedStringFilterItem!]) {
-    images(stringFilters: $stringFilters, pageSize: 9) {
+  query ImagePicker($filters: ImageResolverFilterGroup) {
+    images(filters: $filters, pageSize: 9) {
       data {
         id
         alt
@@ -29,15 +30,22 @@ export function ImagePicker({
   const [result] = useQuery({
     query: imagePickerDocument,
     variables: {
-      stringFilters: search
-        ? [
-            {
-              field: "alt",
-              value: search,
-              comparison: StringComparator.SUBSTRING,
-            },
-          ]
-        : [],
+      filters: search
+        ? {
+            operator: "AND",
+            filters: [
+              {
+                field: "alt",
+                filter: {
+                  singleStringFilter: {
+                    value: search,
+                    comparison: SingleTargetOperators.INSENSITIVE_CONTAINS,
+                  },
+                },
+              },
+            ],
+          }
+        : undefined,
     },
   });
 

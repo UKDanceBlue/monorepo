@@ -28,7 +28,7 @@ const stringifyConfig = {
 
 export const routerBindings: RouterBindings = {
   go: (): GoFunction => {
-    const { search: existingSearch, hash: existingHash } = useLocation();
+    const { searchStr: existingSearch, hash: existingHash } = useLocation();
     const navigate = useNavigate();
 
     const fn = useCallback<GoFunction>(

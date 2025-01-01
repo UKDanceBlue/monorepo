@@ -4,13 +4,9 @@ import { Event, Prisma, PrismaClient } from "@prisma/client";
 type UniqueEventParam = { id: number } | { uuid: string };
 
 import type { DefaultArgs } from "@prisma/client/runtime/library";
-import {
-  type FetchError,
-  InvalidArgumentError,
-  LuxonError,
-} from "@ukdanceblue/common/error";
+import { type FetchError, LuxonError } from "@ukdanceblue/common/error";
 import type { Interval } from "luxon";
-import { AsyncResult, Err, Ok, Result } from "ts-results-es";
+import { AsyncResult, Ok, Result } from "ts-results-es";
 
 import { externalUrlToImage } from "#lib/external-apis/externalUrlToImage.js";
 import { prismaToken } from "#lib/typediTokens.js";
@@ -45,9 +41,9 @@ type EventFilterKeys =
   | "summary"
   | "description"
   | "location"
-  | "occurrence"
-  | "occurrenceStart"
-  | "occurrenceEnd"
+  | "occurrences"
+  | "start"
+  | "end"
   | "createdAt"
   | "updatedAt";
 
@@ -100,25 +96,11 @@ export class EventRepository extends buildDefaultRepository<
         location: value,
       }),
   },
-  get occurrence() {
-    return this.occurrenceStart;
-  },
-  // See https://github.com/prisma/prisma/issues/5837
-  occurrenceStart: {
-    getOrderBy: () =>
-      Err(new InvalidArgumentError("Cannot order by occurrenceStart")),
-    getWhere: (value) =>
+  occurrences: {
+    getOrderBy: (order) =>
       Ok({
-        eventOccurrences: {
-          some: {
-            date: value,
-          },
-        },
+        firstOccurrence: order,
       }),
-  },
-  occurrenceEnd: {
-    getOrderBy: () =>
-      Err(new InvalidArgumentError("Cannot order by occurrenceEnd")),
     getWhere: (value) =>
       Ok({
         eventOccurrences: {
@@ -126,6 +108,27 @@ export class EventRepository extends buildDefaultRepository<
             endDate: value,
           },
         },
+      }),
+  },
+  // See https://github.com/prisma/prisma/issues/5837 for why we have to use the view property
+  start: {
+    getOrderBy: (order) =>
+      Ok({
+        firstOccurrence: order,
+      }),
+    getWhere: (value) =>
+      Ok({
+        firstOccurrence: value,
+      }),
+  },
+  end: {
+    getOrderBy: (order) =>
+      Ok({
+        lastOccurrence: order,
+      }),
+    getWhere: (value) =>
+      Ok({
+        lastOccurrence: value,
       }),
   },
   createdAt: {
@@ -298,32 +301,34 @@ export class EventRepository extends buildDefaultRepository<
       )
     );
 
-    return eventOccurrences.toAsyncResult().andThen((eventOccurrences) =>
-      this.handleQueryError(
-        (tx ?? this.prisma).eventWithOccurrences.create({
-          data: {
-            ...init,
-            eventOccurrences: {
-              createMany: {
-                data: eventOccurrences.map(({ interval, fullDay }) => ({
-                  date: interval.start.toISO(),
-                  endDate: interval.end.toISO(),
-                  fullDay,
-                })),
+    return eventOccurrences
+      .toAsyncResult()
+      .andThen((eventOccurrences) =>
+        this.handleQueryError(
+          (tx ?? this.prisma).event.create({
+            data: {
+              ...init,
+              eventOccurrences: {
+                createMany: {
+                  data: eventOccurrences.map(({ interval, fullDay }) => ({
+                    date: interval.start.toISO(),
+                    endDate: interval.end.toISO(),
+                    fullDay,
+                  })),
+                },
+              },
+              eventImages: init.eventImages && {
+                createMany: {
+                  data: init.eventImages.connect.map(({ id }) => ({
+                    imageId: id,
+                  })),
+                },
               },
             },
-            eventImages: init.eventImages && {
-              createMany: {
-                data: init.eventImages.connect.map(({ id }) => ({
-                  imageId: id,
-                })),
-              },
-            },
-          },
-          include: { eventOccurrences: true },
-        })
+          })
+        )
       )
-    );
+      .andThen((event) => this.findOne({ by: { id: event.id }, tx }));
   }
 
   loadForeignEvents(
@@ -427,63 +432,66 @@ export class EventRepository extends buildDefaultRepository<
         )
       )
     );
-    return eventOccurrences.toAsyncResult().andThen((eventOccurrences) =>
-      this.handleTransactionError(
-        (tx) =>
-          this.handleQueryError(
-            tx.eventOccurrence.deleteMany({
-              where: {
-                event: this.uniqueToWhere(by),
-                uuid: {
-                  notIn: init.eventOccurrences
-                    .filter((occurrence) => occurrence.uuid != null)
-                    .map((occurrence) => occurrence.uuid!),
-                },
-              },
-            })
-          ).andThen(() =>
+    return eventOccurrences
+      .toAsyncResult()
+      .andThen((eventOccurrences) =>
+        this.handleTransactionError(
+          (tx) =>
             this.handleQueryError(
-              tx.eventWithOccurrences.update({
-                include: { eventOccurrences: true },
-                where: this.uniqueToWhere(by),
-                data: {
-                  ...init,
-                  eventOccurrences: {
-                    createMany: {
-                      data: eventOccurrences
-                        .filter((occurrence) => occurrence.uuid == null)
-                        .map(
-                          (
-                            occurrence
-                          ): Prisma.EventOccurrenceCreateManyEventWithOccurrencesInput => ({
-                            date: occurrence.interval.start.toISO(),
-                            endDate: occurrence.interval.end.toISO(),
-                            fullDay: occurrence.fullDay,
-                          })
-                        ),
-                    },
-                    updateMany: eventOccurrences
+              tx.eventOccurrence.deleteMany({
+                where: {
+                  event: this.uniqueToWhere(by),
+                  uuid: {
+                    notIn: init.eventOccurrences
                       .filter((occurrence) => occurrence.uuid != null)
-                      .map(
-                        (
-                          occurrence
-                        ): Prisma.EventOccurrenceUpdateManyWithWhereWithoutEventInput => ({
-                          where: { uuid: occurrence.uuid },
-                          data: {
-                            date: occurrence.interval.start.toISO(),
-                            endDate: occurrence.interval.end.toISO(),
-                            fullDay: occurrence.fullDay,
-                          },
-                        })
-                      ),
+                      .map((occurrence) => occurrence.uuid!),
                   },
                 },
               })
-            )
-          ),
-        tx
+            ).andThen(() =>
+              this.handleQueryError(
+                tx.event.update({
+                  include: { eventOccurrences: true },
+                  where: this.uniqueToWhere(by),
+                  data: {
+                    ...init,
+                    eventOccurrences: {
+                      createMany: {
+                        data: eventOccurrences
+                          .filter((occurrence) => occurrence.uuid == null)
+                          .map(
+                            (
+                              occurrence
+                            ): Prisma.EventOccurrenceCreateManyEventWithOccurrencesInput => ({
+                              date: occurrence.interval.start.toISO(),
+                              endDate: occurrence.interval.end.toISO(),
+                              fullDay: occurrence.fullDay,
+                            })
+                          ),
+                      },
+                      updateMany: eventOccurrences
+                        .filter((occurrence) => occurrence.uuid != null)
+                        .map(
+                          (
+                            occurrence
+                          ): Prisma.EventOccurrenceUpdateManyWithWhereWithoutEventInput => ({
+                            where: { uuid: occurrence.uuid },
+                            data: {
+                              date: occurrence.interval.start.toISO(),
+                              endDate: occurrence.interval.end.toISO(),
+                              fullDay: occurrence.fullDay,
+                            },
+                          })
+                        ),
+                    },
+                  },
+                })
+              )
+            ),
+          tx
+        )
       )
-    );
+      .andThen((event) => this.findOne({ by: { id: event.id }, tx }));
   }
 
   delete({
@@ -491,7 +499,10 @@ export class EventRepository extends buildDefaultRepository<
     tx,
   }: DeleteParams<UniqueEventParam>): AsyncRepositoryResult<
     DeleteResult<
-      Prisma.EventDelegate<DefaultArgs, Prisma.PrismaClientOptions>,
+      Prisma.EventWithOccurrencesDelegate<
+        DefaultArgs,
+        Prisma.PrismaClientOptions
+      >,
       typeof defaultOptions
     >
   > {
@@ -500,6 +511,6 @@ export class EventRepository extends buildDefaultRepository<
         where: this.uniqueToWhere(by),
         include: { eventOccurrences: true },
       })
-    );
+    ).andThen((event) => this.findOne({ by: { id: event.id }, tx }));
   }
 }

@@ -28,6 +28,7 @@ import {
 
 import type { GraphQLContext } from "#auth/context.js";
 import { FileManager } from "#files/FileManager.js";
+import { WithAuditLogging } from "#lib/logging/auditLogging.js";
 import {
   eventModelToResource,
   eventOccurrenceModelToResource,
@@ -90,6 +91,7 @@ export class EventResolver implements CrudResolver<EventNode, "event"> {
       });
   }
 
+  @WithAuditLogging()
   @AccessControlAuthorized("create")
   @Mutation(() => EventNode, {
     name: "createEvent",
@@ -119,6 +121,7 @@ export class EventResolver implements CrudResolver<EventNode, "event"> {
       );
   }
 
+  @WithAuditLogging()
   @AccessControlAuthorized("delete")
   @Mutation(() => EventNode, {
     name: "deleteEvent",
@@ -137,6 +140,7 @@ export class EventResolver implements CrudResolver<EventNode, "event"> {
       );
   }
 
+  @WithAuditLogging()
   @AccessControlAuthorized("update")
   @Mutation(() => EventNode, {
     name: "setEvent",
@@ -168,6 +172,7 @@ export class EventResolver implements CrudResolver<EventNode, "event"> {
       );
   }
 
+  @WithAuditLogging()
   @AccessControlAuthorized("update", "EventNode")
   @Mutation(() => VoidResolver, {
     name: "removeImageFromEvent",
@@ -187,6 +192,7 @@ export class EventResolver implements CrudResolver<EventNode, "event"> {
     }
   }
 
+  @WithAuditLogging()
   @AccessControlAuthorized("update", "EventNode")
   @Mutation(() => ImageNode, {
     name: "addExistingImageToEvent",

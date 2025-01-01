@@ -39,7 +39,9 @@ prisma.$on("error", (e) => {
   sqlLogger.error(e.message);
 });
 
-Container.setValue(prismaToken, prisma);
+// Typescript takes a full second to make sure the types are correct, so we just cast to any to avoid that
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+Container.setValue(prismaToken, prisma as any);
 
 if (!Container.has(prismaToken)) {
   throw new Error("PrismaClient not registered");

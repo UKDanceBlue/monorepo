@@ -13,7 +13,20 @@ const teamSelectDocument = graphql(
   /* GraphQL */ `
     query TeamSelect($search: String!) {
       teams(
-        stringFilters: { comparison: SUBSTRING, value: $search, field: name }
+        filters: {
+          operator: AND
+          filters: [
+            {
+              field: name
+              filter: {
+                singleStringFilter: {
+                  comparison: INSENSITIVE_CONTAINS
+                  value: $search
+                }
+              }
+            }
+          ]
+        }
         sendAll: true
       ) {
         data {

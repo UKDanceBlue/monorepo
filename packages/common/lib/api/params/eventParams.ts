@@ -81,9 +81,9 @@ export class ListEventsArgs extends FilteredListQueryArgs("EventResolver", [
   "description",
   "summary",
   "location",
-  "occurrence",
-  "occurrenceStart",
-  "occurrenceEnd",
+  "occurrences",
+  "start",
+  "end",
   "createdAt",
   "updatedAt",
 ]) {}

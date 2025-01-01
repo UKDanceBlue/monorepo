@@ -85,7 +85,7 @@ export function FilteredListQueryArgs<Fields extends string>(
 
   @ArgsType()
   abstract class FilteredListQueryArgs extends AbstractFilteredListQueryArgs<Fields> {
-    @Field(() => FilterGroup)
+    @Field(() => FilterGroup, { nullable: true })
     filters!: InstanceType<typeof FilterGroup> | null;
 
     @Field(() => [Sort], {

@@ -25,7 +25,7 @@ export function makeListDocument(
             },
             type: {
               kind: Kind.NAMED_TYPE,
-              name: { kind: Kind.NAME, value: "Int" },
+              name: { kind: Kind.NAME, value: "PositiveInt" },
             },
           },
           {
@@ -36,7 +36,7 @@ export function makeListDocument(
             },
             type: {
               kind: Kind.NAMED_TYPE,
-              name: { kind: Kind.NAME, value: "Int" },
+              name: { kind: Kind.NAME, value: "NonNegativeInt" },
             },
           },
           {
@@ -49,21 +49,10 @@ export function makeListDocument(
               kind: Kind.LIST_TYPE,
               type: {
                 kind: Kind.NAMED_TYPE,
-                name: { kind: Kind.NAME, value: "String!" },
-              },
-            },
-          },
-          {
-            kind: Kind.VARIABLE_DEFINITION,
-            variable: {
-              kind: Kind.VARIABLE,
-              name: { kind: Kind.NAME, value: "sortDirection" },
-            },
-            type: {
-              kind: Kind.LIST_TYPE,
-              type: {
-                kind: Kind.NAMED_TYPE,
-                name: { kind: Kind.NAME, value: "SortDirection!" },
+                name: {
+                  kind: Kind.NAME,
+                  value: `${pascalResource}ResolverSort!`,
+                },
               },
             },
           },
@@ -77,7 +66,7 @@ export function makeListDocument(
               kind: Kind.NAMED_TYPE,
               name: {
                 kind: Kind.NAME,
-                value: `${pascalResource}ResolverFilterGroup`,
+                value: `${pascalResource}ResolverFilterGroup!`,
               },
             },
           },
@@ -111,14 +100,6 @@ export function makeListDocument(
                   value: {
                     kind: Kind.VARIABLE,
                     name: { kind: Kind.NAME, value: "sortBy" },
-                  },
-                },
-                {
-                  kind: Kind.ARGUMENT,
-                  name: { kind: Kind.NAME, value: "sortDirection" },
-                  value: {
-                    kind: Kind.VARIABLE,
-                    name: { kind: Kind.NAME, value: "sortDirection" },
                   },
                 },
                 {

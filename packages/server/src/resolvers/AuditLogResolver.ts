@@ -1,5 +1,5 @@
 import { Service } from "@freshgum/typedi";
-import { PrismaClient } from "@prisma/client";
+import { type Prisma, PrismaClient } from "@prisma/client";
 import {
   AbstractGraphQLPaginatedResponse,
   AccessControlAuthorized,
@@ -17,6 +17,7 @@ import {
   GraphQLPositiveInt,
   JSONObjectResolver,
 } from "graphql-scalars";
+import { DateTime } from "luxon";
 import { None, Ok, Option, Result } from "ts-results-es";
 import {
   Arg,
@@ -41,7 +42,7 @@ import { NodeResolver } from "./NodeResolver.js";
   implements: AbstractGraphQLPaginatedResponse<AuditLogNode>,
 })
 export class ListAuditLogsResponse extends AbstractGraphQLPaginatedResponse<AuditLogNode> {
-  @Field(() => AuditLogNode)
+  @Field(() => [AuditLogNode])
   data!: AuditLogNode[];
 }
 
@@ -70,31 +71,61 @@ export class AuditLogResolver {
       defaultValue: DEFAULT_PAGE_SIZE,
     })
     pageSize: number,
-    @Arg("search", () => GraphQLNonEmptyString, { nullable: true })
-    search?: string
+    @Arg("textSearch", () => GraphQLNonEmptyString, { nullable: true })
+    search?: string,
+    @Arg("typenameSearch", () => GraphQLNonEmptyString, { nullable: true })
+    typename?: string,
+    @Arg("idSearch", () => GraphQLNonEmptyString, { nullable: true })
+    id?: string
   ): Promise<ListAuditLogsResponse> {
+    const where: Prisma.AuditLogWhereInput[] = [];
+    if (search)
+      where.push({
+        OR: [
+          { summary: { contains: search } },
+          ...[
+            "name",
+            "title",
+            "comment",
+            "key",
+            "value",
+            "year",
+            "combinedDonorName",
+            "donatedToOverride",
+            "donatedByOverride",
+            "notes",
+          ].map((field) => ({
+            details: { path: ["input", field], string_contains: search },
+          })),
+        ],
+      });
+    if (typename)
+      where.push({
+        details: {
+          path: ["id", "typename"],
+          string_contains: typename,
+        },
+      });
+    if (id)
+      where.push({
+        details: {
+          path: ["id", "id"],
+          string_contains: id,
+        },
+      });
+
     const logs = await this.prisma.auditLog.findMany({
       take: pageSize,
       skip: (page - 1) * pageSize,
-      where: search
-        ? {
-            OR: [
-              { summary: { contains: search } },
-              { details: { string_contains: search } },
-            ],
-          }
-        : undefined,
+      where: {
+        AND: where,
+      },
       orderBy: { createdAt: "desc" },
     });
     const total = await this.prisma.auditLog.count({
-      where: search
-        ? {
-            OR: [
-              { summary: { contains: search } },
-              { details: { string_contains: search } },
-            ],
-          }
-        : undefined,
+      where: {
+        AND: where,
+      },
     });
 
     return ListAuditLogsResponse.newPaginated({
@@ -105,14 +136,12 @@ export class AuditLogResolver {
           details: (typeof log.details !== "object"
             ? { val: log.details }
             : log.details) as PrimitiveObject | null,
-          createdAt: log.createdAt,
+          createdAt: DateTime.fromJSDate(log.createdAt),
           userId: log.userId,
           subjectGlobalId: log.subjectGlobalId,
         })
       ),
       total,
-      page,
-      pageSize,
     });
   }
 
