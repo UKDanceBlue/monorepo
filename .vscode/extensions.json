@@ -18,6 +18,7 @@
     "GitHub.copilot",
     "GitHub.vscode-pull-request-github",
     "fill-labs.dependi",
-    "yoavbls.pretty-ts-errors"
+    "yoavbls.pretty-ts-errors",
+    "nicoespeon.abracadabra"
   ]
 }
