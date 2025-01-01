@@ -26,10 +26,6 @@ import {
 } from "#repositories/shared.js";
 
 import * as CommitteeDescriptions from "./committeeDescriptions.js";
-import {
-  buildCommitteeOrder,
-  buildCommitteeWhere,
-} from "./committeeRepositoryUtils.js";
 
 // Make sure that we are exporting a description for every committee
 CommitteeDescriptions[
@@ -345,7 +341,7 @@ export class CommitteeRepository {
         });
 
       if (result?.length === 1) {
-        return Ok(result[0]!);
+        return Ok(result[0]);
       } else if (result?.length === 0) {
         return Err(
           new NotFoundError({

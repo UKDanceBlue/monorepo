@@ -37,14 +37,6 @@ export abstract class AbstractFilteredListQueryArgs<Fields extends string> {
 
   @Field(() => Boolean, {
     nullable: true,
-    description: "Whether to include deleted items in the results",
-    deprecationReason:
-      "Soft-deletion is no longer used in this project, this parameter is ignored",
-  })
-  includeDeleted!: boolean | null;
-
-  @Field(() => Boolean, {
-    nullable: true,
     description:
       "Whether to send all results in a single page, defaults to false (should generally be avoided)",
     defaultValue: false,

@@ -6,11 +6,9 @@ import type {
   CommitteeRole,
   DbRole,
   MembershipPositionType,
-  NumericComparator,
   Primitive,
   PrimitiveObject,
   SortDirection,
-  StringComparator,
   TeamLegacyStatus,
   TeamType,
 } from "@ukdanceblue/common";
@@ -47,8 +45,6 @@ export const graphql = initGraphQLTada<{
     TeamType: TeamType;
     SortDirection: SortDirection;
     // Comparator: Comparator,
-    NumericComparator: NumericComparator;
-    StringComparator: StringComparator;
     // IsComparator: IsComparator,
     BatchType: BatchType;
     JSONObject: Record<string, Primitive | PrimitiveObject>;

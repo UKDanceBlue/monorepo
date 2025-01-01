@@ -26,7 +26,6 @@ export const PersonViewerFragment = graphql(/* GraphQL */ `
     name
     linkblue
     email
-    dbRole
     primarySpiritTeam: primaryTeam(teamType: Spirit) {
       team {
         id

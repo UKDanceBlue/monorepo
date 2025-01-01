@@ -9,11 +9,6 @@ import {
   type RepositoryError,
 } from "#repositories/shared.js";
 
-import {
-  buildMarathonOrder,
-  buildMarathonWhere,
-} from "./marathonRepositoryUtils.js";
-
 const marathonBooleanKeys = [] as const;
 type MarathonBooleanKey = (typeof marathonBooleanKeys)[number];
 

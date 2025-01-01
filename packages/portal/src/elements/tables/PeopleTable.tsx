@@ -21,7 +21,6 @@ const PeopleTableFragment = graphql(/* GraphQL */ `
     name
     linkblue
     email
-    dbRole
     primaryCommittee {
       identifier
       role
@@ -213,14 +212,6 @@ export const PeopleTable = () => {
               updateFilter,
               clearFilter
             ),
-          },
-          {
-            title: "Role",
-            dataIndex: "dbRole",
-            render: (_, record) => {
-              return stringifyDbRole(record.dbRole);
-            },
-            sorter: false,
           },
           {
             title: "Committee Role",

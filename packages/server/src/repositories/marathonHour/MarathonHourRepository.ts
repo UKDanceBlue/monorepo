@@ -2,11 +2,6 @@ import { Service } from "@freshgum/typedi";
 import { Prisma, PrismaClient } from "@prisma/client";
 import type { SortDirection } from "@ukdanceblue/common";
 
-import {
-  buildMarathonHourOrder,
-  buildMarathonHourWhere,
-} from "./marathonHourRepositoryUtils.js";
-
 const marathonHourBooleanKeys = [] as const;
 type MarathonHourBooleanKey = (typeof marathonHourBooleanKeys)[number];
 

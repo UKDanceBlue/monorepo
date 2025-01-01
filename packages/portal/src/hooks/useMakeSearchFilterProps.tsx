@@ -1,9 +1,4 @@
 import { NumberOutlined, SearchOutlined } from "@ant-design/icons";
-import type {
-  NumericFilterItemInterface,
-  StringFilterItemInterface,
-} from "@ukdanceblue/common";
-import { NumericComparator } from "@ukdanceblue/common";
 import { Input, type InputRef, Select, Space } from "antd";
 import { useEffect, useRef, useState } from "react";
 

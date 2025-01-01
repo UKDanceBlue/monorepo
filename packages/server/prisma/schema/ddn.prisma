@@ -49,6 +49,8 @@ model DailyDepartmentNotification {
   fundraisingEntry         FundraisingEntry                 @relation(fields: [fundraisingEntryId], references: [id], onDelete: Cascade, map: "DailyDepartmentNotification_fundraisingEntry")
   solicitationCode         SolicitationCode                 @relation(fields: [solicitationCodeId], references: [id])
   fundraisingEntryWithMeta FundraisingEntryWithMeta?        @relation(fields: [fundraisingEntryId], references: [id], map: "DailyDepartmentNotification_fundraisingEntryWithMeta")
+
+  @@unique([idSorter, processDate, batchId, solicitationCodeId, combinedAmount])
 }
 
 model DDNDonor {

@@ -8,7 +8,7 @@ model Team {
   legacyStatus             TeamLegacyStatus
   persistentIdentifier     String?           @unique()
   marathonId               Int
-  correspondingCommitteeId Int?              @unique()
+  correspondingCommitteeId Int?
   dbFundsTeamId            Int?
   solicitationCodeId       Int?
   memberships              Membership[]
@@ -16,21 +16,23 @@ model Team {
   correspondingCommittee   Committee?        @relation(fields: [correspondingCommitteeId], references: [id])
   marathon                 Marathon          @relation(fields: [marathonId], references: [id], onDelete: Cascade)
   solicitationCode         SolicitationCode? @relation(fields: [solicitationCodeId], references: [id])
+
+  @@unique([marathonId, correspondingCommitteeId])
 }
 
 model PointEntry {
-  id                 Int              @id @default(autoincrement())
-  uuid               String           @unique() @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  createdAt          DateTime         @default(now()) @db.Timestamptz(6)
-  updatedAt          DateTime         @updatedAt @db.Timestamptz(6)
+  id                 Int               @id @default(autoincrement())
+  uuid               String            @unique() @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  createdAt          DateTime          @default(now()) @db.Timestamptz(6)
+  updatedAt          DateTime          @updatedAt @db.Timestamptz(6)
   comment            String?
   points             Int
   personFromId       Int?
   teamId             Int
-  pointOpportunityId Int
-  person             Person?          @relation(fields: [personFromId], references: [id])
-  pointOpportunity   PointOpportunity @relation(fields: [pointOpportunityId], references: [id])
-  team               Team             @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  pointOpportunityId Int?
+  person             Person?           @relation(fields: [personFromId], references: [id])
+  pointOpportunity   PointOpportunity? @relation(fields: [pointOpportunityId], references: [id])
+  team               Team              @relation(fields: [teamId], references: [id], onDelete: Cascade)
 }
 
 model PointOpportunity {

@@ -53,8 +53,6 @@ import {
   unwrapRepositoryError,
 } from "#repositories/shared.js";
 
-import { buildPersonOrder, buildPersonWhere } from "./personRepositoryUtils.js";
-
 const personStringKeys = ["name", "email", "linkblue"] as const;
 type PersonStringKey = (typeof personStringKeys)[number];
 
@@ -900,7 +898,7 @@ export class PersonRepository {
                         value: authId.value,
                       },
                       where: {
-                        personId_source: {
+                        source_personId: {
                           personId,
                           source: authId.source,
                         },
@@ -937,9 +935,9 @@ export class PersonRepository {
                               team: {
                                 connect: {
                                   id: teamId,
-                                  correspondingCommitteeId: committeeRole
+                                  correspondingCommittee: committeeRole
                                     ? {
-                                        not: null,
+                                        isNot: null,
                                       }
                                     : undefined,
                                 },
@@ -965,9 +963,9 @@ export class PersonRepository {
                               team: {
                                 connect: {
                                   id: teamId,
-                                  correspondingCommitteeId: committeeRole
+                                  correspondingCommittee: committeeRole
                                     ? {
-                                        not: null,
+                                        isNot: null,
                                       }
                                     : undefined,
                                 },

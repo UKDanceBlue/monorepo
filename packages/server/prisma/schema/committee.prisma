@@ -7,7 +7,7 @@ model Committee {
   updatedAt          DateTime      @updatedAt @db.Timestamptz(6)
   parentCommittee    Committee?    @relation("parent_committee", fields: [parentCommitteeId], references: [id])
   childCommittees    Committee[]   @relation("parent_committee")
-  correspondingTeams Team?
+  correspondingTeams Team[]
 }
 
 enum CommitteeName {

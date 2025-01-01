@@ -15,7 +15,7 @@ model FundraisingEntry {
   ddn                         DailyDepartmentNotification?
   assignments                 FundraisingAssignment[]
   enteredByPerson             Person?                      @relation(fields: [originallyEnteredByPersonId], references: [id])
-  SolicitationCode            SolicitationCode?            @relation(fields: [solicitationCodeOverrideId], references: [id])
+  solicitationCodeOverride    SolicitationCode?            @relation(fields: [solicitationCodeOverrideId], references: [id])
 }
 
 model FundraisingAssignment {

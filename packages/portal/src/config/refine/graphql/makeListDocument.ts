@@ -7,15 +7,7 @@ import { PaginationFragment } from "#documents/shared.ts";
 export function makeListDocument(
   pascalResource: string,
   resource: string,
-  fragmentDefinition: FragmentDefinitionNode,
-  variableTypes: {
-    isNull: boolean;
-    date: boolean;
-    numeric: boolean;
-    oneOf: boolean;
-    string: boolean;
-    boolean: boolean;
-  }
+  fragmentDefinition: FragmentDefinitionNode
 ): DocumentNode {
   return {
     kind: Kind.DOCUMENT,
@@ -75,132 +67,20 @@ export function makeListDocument(
               },
             },
           },
-          ...(variableTypes.date
-            ? [
-                {
-                  kind: Kind.VARIABLE_DEFINITION,
-                  variable: {
-                    kind: Kind.VARIABLE,
-                    name: { kind: Kind.NAME, value: "dateFilters" },
-                  },
-                  type: {
-                    kind: Kind.LIST_TYPE,
-                    type: {
-                      kind: Kind.NAMED_TYPE,
-                      name: {
-                        kind: Kind.NAME,
-                        value: `${pascalResource}ResolverKeyedDateFilterItem!`,
-                      },
-                    },
-                  },
-                } as const,
-              ]
-            : []),
-          ...(variableTypes.isNull
-            ? [
-                {
-                  kind: Kind.VARIABLE_DEFINITION,
-                  variable: {
-                    kind: Kind.VARIABLE,
-                    name: { kind: Kind.NAME, value: "isNullFilters" },
-                  },
-                  type: {
-                    kind: Kind.LIST_TYPE,
-                    type: {
-                      kind: Kind.NAMED_TYPE,
-                      name: {
-                        kind: Kind.NAME,
-                        value: `${pascalResource}ResolverKeyedIsNullFilterItem!`,
-                      },
-                    },
-                  },
-                } as const,
-              ]
-            : []),
-          ...(variableTypes.numeric
-            ? [
-                {
-                  kind: Kind.VARIABLE_DEFINITION,
-                  variable: {
-                    kind: Kind.VARIABLE,
-                    name: { kind: Kind.NAME, value: "numericFilters" },
-                  },
-                  type: {
-                    kind: Kind.LIST_TYPE,
-                    type: {
-                      kind: Kind.NAMED_TYPE,
-                      name: {
-                        kind: Kind.NAME,
-                        value: `${pascalResource}ResolverKeyedNumericFilterItem!`,
-                      },
-                    },
-                  },
-                } as const,
-              ]
-            : []),
-          ...(variableTypes.oneOf
-            ? [
-                {
-                  kind: Kind.VARIABLE_DEFINITION,
-                  variable: {
-                    kind: Kind.VARIABLE,
-                    name: { kind: Kind.NAME, value: "oneOfFilters" },
-                  },
-                  type: {
-                    kind: Kind.LIST_TYPE,
-                    type: {
-                      kind: Kind.NAMED_TYPE,
-                      name: {
-                        kind: Kind.NAME,
-                        value: `${pascalResource}ResolverKeyedOneOfFilterItem!`,
-                      },
-                    },
-                  },
-                } as const,
-              ]
-            : []),
-          ...(variableTypes.string
-            ? [
-                {
-                  kind: Kind.VARIABLE_DEFINITION,
-                  variable: {
-                    kind: Kind.VARIABLE,
-                    name: { kind: Kind.NAME, value: "stringFilters" },
-                  },
-                  type: {
-                    kind: Kind.LIST_TYPE,
-                    type: {
-                      kind: Kind.NAMED_TYPE,
-                      name: {
-                        kind: Kind.NAME,
-                        value: `${pascalResource}ResolverKeyedStringFilterItem!`,
-                      },
-                    },
-                  },
-                } as const,
-              ]
-            : []),
-          ...(variableTypes.boolean
-            ? [
-                {
-                  kind: Kind.VARIABLE_DEFINITION,
-                  variable: {
-                    kind: Kind.VARIABLE,
-                    name: { kind: Kind.NAME, value: "booleanFilters" },
-                  },
-                  type: {
-                    kind: Kind.LIST_TYPE,
-                    type: {
-                      kind: Kind.NAMED_TYPE,
-                      name: {
-                        kind: Kind.NAME,
-                        value: `${pascalResource}ResolverKeyedBooleanFilterItem!`,
-                      },
-                    },
-                  },
-                } as const,
-              ]
-            : []),
+          {
+            kind: Kind.VARIABLE_DEFINITION,
+            variable: {
+              kind: Kind.VARIABLE,
+              name: { kind: Kind.NAME, value: "filters" },
+            },
+            type: {
+              kind: Kind.NAMED_TYPE,
+              name: {
+                kind: Kind.NAME,
+                value: `${pascalResource}ResolverFilterGroup`,
+              },
+            },
+          },
         ],
         selectionSet: {
           kind: Kind.SELECTION_SET,
@@ -241,78 +121,14 @@ export function makeListDocument(
                     name: { kind: Kind.NAME, value: "sortDirection" },
                   },
                 },
-                ...(variableTypes.date
-                  ? [
-                      {
-                        kind: Kind.ARGUMENT,
-                        name: { kind: Kind.NAME, value: "dateFilters" },
-                        value: {
-                          kind: Kind.VARIABLE,
-                          name: { kind: Kind.NAME, value: "dateFilters" },
-                        },
-                      } as const,
-                    ]
-                  : []),
-                ...(variableTypes.isNull
-                  ? [
-                      {
-                        kind: Kind.ARGUMENT,
-                        name: { kind: Kind.NAME, value: "isNullFilters" },
-                        value: {
-                          kind: Kind.VARIABLE,
-                          name: { kind: Kind.NAME, value: "isNullFilters" },
-                        },
-                      } as const,
-                    ]
-                  : []),
-                ...(variableTypes.numeric
-                  ? [
-                      {
-                        kind: Kind.ARGUMENT,
-                        name: { kind: Kind.NAME, value: "numericFilters" },
-                        value: {
-                          kind: Kind.VARIABLE,
-                          name: { kind: Kind.NAME, value: "numericFilters" },
-                        },
-                      } as const,
-                    ]
-                  : []),
-                ...(variableTypes.oneOf
-                  ? [
-                      {
-                        kind: Kind.ARGUMENT,
-                        name: { kind: Kind.NAME, value: "oneOfFilters" },
-                        value: {
-                          kind: Kind.VARIABLE,
-                          name: { kind: Kind.NAME, value: "oneOfFilters" },
-                        },
-                      } as const,
-                    ]
-                  : []),
-                ...(variableTypes.string
-                  ? [
-                      {
-                        kind: Kind.ARGUMENT,
-                        name: { kind: Kind.NAME, value: "stringFilters" },
-                        value: {
-                          kind: Kind.VARIABLE,
-                          name: { kind: Kind.NAME, value: "stringFilters" },
-                        },
-                      } as const,
-                    ]
-                  : []),
-                ...(variableTypes.boolean
-                  ? [
-                      {
-                        kind: Kind.ARGUMENT,
-                        name: { kind: Kind.NAME, value: "booleanFilters" },
-                        value: {
-                          kind: Kind.VARIABLE,
-                          name: { kind: Kind.NAME, value: "booleanFilters" },
-                        },
-                      } as const,
-                    ]
-                  : []),
+                {
+                  kind: Kind.ARGUMENT,
+                  name: { kind: Kind.NAME, value: "filters" },
+                  value: {
+                    kind: Kind.VARIABLE,
+                    name: { kind: Kind.NAME, value: "filters" },
+                  },
+                },
               ],
               selectionSet: {
                 kind: Kind.SELECTION_SET,

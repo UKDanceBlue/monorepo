@@ -10,11 +10,6 @@ import {
 } from "@prisma/client";
 import { DDNInit, localDateToJs, SortDirection } from "@ukdanceblue/common";
 
-import {
-  buildDailyDepartmentNotificationOrder,
-  buildDailyDepartmentNotificationWhere,
-} from "./ddnRepositoryUtils.js";
-
 const dailyDepartmentNotificationBooleanKeys = [] as const;
 type DailyDepartmentNotificationBooleanKey =
   (typeof dailyDepartmentNotificationBooleanKeys)[number];

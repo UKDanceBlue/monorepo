@@ -3,11 +3,6 @@ import { Notification, Prisma, PrismaClient } from "@prisma/client";
 import { NotificationError } from "@prisma/client";
 import type { SortDirection } from "@ukdanceblue/common";
 
-import {
-  buildNotificationOrder,
-  buildNotificationWhere,
-} from "./notificationRepositoryUtils.js";
-
 const notificationBooleanKeys = [] as const;
 type NotificationBooleanKey = (typeof notificationBooleanKeys)[number];
 

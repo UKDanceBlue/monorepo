@@ -368,9 +368,6 @@ export abstract class AbstractFilterItem<Field extends string> {
 
   @Field(() => SomeFilter)
   filter!: SomeFilter;
-
-  @Field(() => Boolean)
-  negate!: boolean;
 }
 
 export function createFilterItem<Field extends string>(
@@ -388,9 +385,8 @@ export function createFilterItem<Field extends string>(
 
 @InputType()
 export abstract class AbstractFilterGroup<Field extends string> {
-  filters: AbstractFilterItem<Field>[] = [];
-
-  children: AbstractFilterGroup<Field>[] = [];
+  filters!: AbstractFilterItem<Field>[];
+  children!: AbstractFilterGroup<Field>[];
 
   @Field(() => FilterGroupOperator)
   operator!: FilterGroupOperator;
@@ -404,11 +400,11 @@ export function createFilterGroup<Field extends string>(
 
   @InputType(`${resolverName}FilterGroup`)
   class FilterGroup extends AbstractFilterGroup<Field> {
-    @Field(() => [FilterItem])
-    filters: AbstractFilterItem<Field>[] = [];
+    @Field(() => [FilterItem], { defaultValue: [] })
+    filters!: AbstractFilterItem<Field>[];
 
-    @Field(() => [FilterGroup])
-    children: AbstractFilterGroup<Field>[] = [];
+    @Field(() => [FilterGroup], { defaultValue: [] })
+    children!: AbstractFilterGroup<Field>[];
   }
 
   return FilterGroup;

@@ -5,12 +5,6 @@
 
 """API response"""
 interface AbstractGraphQLPaginatedResponse {
-  """The current page number (1-indexed)"""
-  page: PositiveInt!
-
-  """The number of items per page"""
-  pageSize: NonNegativeInt!
-
   """The total number of items"""
   total: NonNegativeInt!
 }
@@ -26,12 +20,37 @@ enum AccessLevel {
   UKY
 }
 
+input ArrayBooleanFilter {
+  comparison: ArrayOperators!
+  value: [Boolean!]!
+}
+
+input ArrayDateFilter {
+  comparison: ArrayOperators!
+  value: [LuxonDateTime!]!
+}
+
+input ArrayNumberFilter {
+  comparison: ArrayOperators!
+  value: [Float!]!
+}
+
+enum ArrayOperators {
+  IN
+  NOT_IN
+}
+
+input ArrayStringFilter {
+  comparison: ArrayOperators!
+  value: [String!]!
+}
+
 input AssignEntryToPersonInput {
   amount: Float!
 }
 
 type AuditLogNode implements Node {
-  createdAt: DateTimeISO
+  createdAt: LuxonDateTime
   details: JSONObject
   id: GlobalId!
   subject: Node
@@ -94,21 +113,21 @@ enum CommitteeIdentifier {
 
 type CommitteeMembershipNode implements Node {
   committeeRole: CommitteeRole
-  createdAt: DateTimeISO
+  createdAt: LuxonDateTime
   id: GlobalId!
   identifier: CommitteeIdentifier!
   person: PersonNode!
   position: MembershipPositionType!
   role: CommitteeRole!
   team: TeamNode!
-  updatedAt: DateTimeISO
+  updatedAt: LuxonDateTime
 }
 
 type CommitteeNode implements Node {
-  createdAt: DateTimeISO
+  createdAt: LuxonDateTime
   id: GlobalId!
   identifier: CommitteeIdentifier!
-  updatedAt: DateTimeISO
+  updatedAt: LuxonDateTime
 }
 
 """Roles within a committee"""
@@ -119,19 +138,19 @@ enum CommitteeRole {
 }
 
 type ConfigurationNode implements Node {
-  createdAt: DateTimeISO
+  createdAt: LuxonDateTime
   id: GlobalId!
   key: String!
-  updatedAt: DateTimeISO
-  validAfter: DateTimeISO
-  validUntil: DateTimeISO
+  updatedAt: LuxonDateTime
+  validAfter: LuxonDateTime
+  validUntil: LuxonDateTime
   value: String!
 }
 
 input CreateConfigurationInput {
   key: String!
-  validAfter: DateTimeISO
-  validUntil: DateTimeISO
+  validAfter: LuxonDateTime
+  validUntil: LuxonDateTime
   value: String!
 }
 
@@ -162,13 +181,13 @@ input CreateImageInput {
 input CreateMarathonHourInput {
   details: NonEmptyString
   durationInfo: NonEmptyString!
-  shownStartingAt: DateTimeISO!
+  shownStartingAt: LuxonDateTime!
   title: NonEmptyString!
 }
 
 input CreateMarathonInput {
-  endDate: DateTimeISO
-  startDate: DateTimeISO
+  endDate: LuxonDateTime
+  startDate: LuxonDateTime
   year: NonEmptyString!
 }
 
@@ -193,7 +212,7 @@ input CreatePointOpportunityInput {
   eventUuid: GlobalId
   marathonUuid: GlobalId!
   name: NonEmptyString!
-  opportunityDate: DateTimeISO
+  opportunityDate: LuxonDateTime
   type: TeamType!
 }
 
@@ -343,7 +362,7 @@ type DailyDepartmentNotificationNode {
   ukFirstGift: Boolean!
 }
 
-enum DailyDepartmentNotificationResolverAllKeys {
+enum DailyDepartmentNotificationResolverFilterFields {
   Amount
   BatchType
   Comment
@@ -353,70 +372,26 @@ enum DailyDepartmentNotificationResolverAllKeys {
   SolicitationCodePrefix
 }
 
-input DailyDepartmentNotificationResolverKeyedIsNullFilterItem {
-  """The field to filter on"""
-  field: DailyDepartmentNotificationResolverAllKeys!
-
-  """
-  Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation.
-  """
-  negate: Boolean = false
+input DailyDepartmentNotificationResolverFilterGroup {
+  children: [DailyDepartmentNotificationResolverFilterGroup!]! = []
+  filters: [DailyDepartmentNotificationResolverFilterItem!]! = []
+  operator: FilterGroupOperator!
 }
 
-input DailyDepartmentNotificationResolverKeyedNumericFilterItem {
-  """The comparator to use for the filter"""
-  comparison: NumericComparator!
-
-  """The field to filter on"""
-  field: DailyDepartmentNotificationResolverNumericFilterKeys!
-
-  """
-  Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation.
-  """
-  negate: Boolean = false
-  value: Float!
+input DailyDepartmentNotificationResolverFilterItem {
+  field: DailyDepartmentNotificationResolverFilterFields!
+  filter: SomeFilter!
 }
 
-input DailyDepartmentNotificationResolverKeyedOneOfFilterItem {
-  """The field to filter on"""
-  field: DailyDepartmentNotificationResolverOneOfFilterKeys!
-
-  """
-  Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation.
-  """
-  negate: Boolean = false
-  value: [String!]!
+input DailyDepartmentNotificationResolverSort {
+  direction: SortDirection! = asc
+  field: DailyDepartmentNotificationResolverFilterFields!
 }
 
-input DailyDepartmentNotificationResolverKeyedStringFilterItem {
-  """The comparator to use for the filter"""
-  comparison: StringComparator!
-
-  """The field to filter on"""
-  field: DailyDepartmentNotificationResolverStringFilterKeys!
-
-  """
-  Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation.
-  """
-  negate: Boolean = false
-  value: String!
-}
-
-enum DailyDepartmentNotificationResolverNumericFilterKeys {
-  Amount
-}
-
-enum DailyDepartmentNotificationResolverOneOfFilterKeys {
-  BatchType
-  SolicitationCodeNumber
-  SolicitationCodePrefix
-}
-
-enum DailyDepartmentNotificationResolverStringFilterKeys {
-  Comment
-  Donor
-  SolicitationCodeName
-}
+"""
+A date-time string at UTC, such as 2007-12-03T10:15:30Z, compliant with the `date-time` format outlined in section 5.6 of the RFC 3339 profile of the ISO 8601 standard for representation of dates and times using the Gregorian calendar.
+"""
+scalar DateTime
 
 """
 A date-time string at UTC, such as 2007-12-03T10:15:30Z, compliant with the `date-time` format outlined in section 5.6 of the RFC 3339 profile of the ISO 8601 standard for representation of dates and times using the Gregorian calendar.This scalar is serialized to a string in ISO 8601 format and parsed from a string in ISO 8601 format.
@@ -432,10 +407,10 @@ enum DbRole {
 }
 
 type DeviceNode implements Node {
-  createdAt: DateTimeISO
+  createdAt: LuxonDateTime
   id: GlobalId!
   lastLoggedInUser: PersonNode
-  lastLogin: DateTimeISO
+  lastLogin: DateTime
 
   """List all notification deliveries for this device"""
   notificationDeliveries(
@@ -447,73 +422,30 @@ type DeviceNode implements Node {
     """
     verifier: String
   ): [NotificationDeliveryNode!]!
-  updatedAt: DateTimeISO
+  updatedAt: LuxonDateTime
 }
 
-enum DeviceResolverAllKeys {
+enum DeviceResolverFilterFields {
   createdAt
   expoPushToken
   lastSeen
   updatedAt
 }
 
-enum DeviceResolverDateFilterKeys {
-  createdAt
-  lastSeen
-  updatedAt
+input DeviceResolverFilterGroup {
+  children: [DeviceResolverFilterGroup!]! = []
+  filters: [DeviceResolverFilterItem!]! = []
+  operator: FilterGroupOperator!
 }
 
-input DeviceResolverKeyedDateFilterItem {
-  """The comparator to use for the filter"""
-  comparison: NumericComparator!
-
-  """The field to filter on"""
-  field: DeviceResolverDateFilterKeys!
-
-  """
-  Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation.
-  """
-  negate: Boolean = false
-  value: DateTimeISO!
+input DeviceResolverFilterItem {
+  field: DeviceResolverFilterFields!
+  filter: SomeFilter!
 }
 
-input DeviceResolverKeyedIsNullFilterItem {
-  """The field to filter on"""
-  field: DeviceResolverAllKeys!
-
-  """
-  Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation.
-  """
-  negate: Boolean = false
-}
-
-input DeviceResolverKeyedOneOfFilterItem {
-  """The field to filter on"""
-  field: Void!
-
-  """
-  Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation.
-  """
-  negate: Boolean = false
-  value: [String!]!
-}
-
-input DeviceResolverKeyedStringFilterItem {
-  """The comparator to use for the filter"""
-  comparison: StringComparator!
-
-  """The field to filter on"""
-  field: DeviceResolverStringFilterKeys!
-
-  """
-  Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation.
-  """
-  negate: Boolean = false
-  value: String!
-}
-
-enum DeviceResolverStringFilterKeys {
-  expoPushToken
+input DeviceResolverSort {
+  direction: SortDirection! = asc
+  field: DeviceResolverFilterFields!
 }
 
 type EffectiveCommitteeRole {
@@ -527,7 +459,7 @@ A field whose value conforms to the standard internet email address format as sp
 scalar EmailAddress @specifiedBy(url: "https://html.spec.whatwg.org/multipage/input.html#valid-e-mail-address")
 
 type EventNode implements Node {
-  createdAt: DateTimeISO
+  createdAt: LuxonDateTime
   description: String
   id: GlobalId!
 
@@ -537,7 +469,7 @@ type EventNode implements Node {
   occurrences: [EventOccurrenceNode!]!
   summary: String
   title: String!
-  updatedAt: DateTimeISO
+  updatedAt: LuxonDateTime
 }
 
 type EventOccurrenceNode {
@@ -546,7 +478,7 @@ type EventOccurrenceNode {
   interval: IntervalISO!
 }
 
-enum EventResolverAllKeys {
+enum EventResolverFilterFields {
   createdAt
   description
   location
@@ -558,72 +490,24 @@ enum EventResolverAllKeys {
   updatedAt
 }
 
-enum EventResolverDateFilterKeys {
-  createdAt
-  occurrence
-  occurrenceEnd
-  occurrenceStart
-  updatedAt
+input EventResolverFilterGroup {
+  children: [EventResolverFilterGroup!]! = []
+  filters: [EventResolverFilterItem!]! = []
+  operator: FilterGroupOperator!
 }
 
-input EventResolverKeyedDateFilterItem {
-  """The comparator to use for the filter"""
-  comparison: NumericComparator!
-
-  """The field to filter on"""
-  field: EventResolverDateFilterKeys!
-
-  """
-  Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation.
-  """
-  negate: Boolean = false
-  value: DateTimeISO!
+input EventResolverFilterItem {
+  field: EventResolverFilterFields!
+  filter: SomeFilter!
 }
 
-input EventResolverKeyedIsNullFilterItem {
-  """The field to filter on"""
-  field: EventResolverAllKeys!
-
-  """
-  Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation.
-  """
-  negate: Boolean = false
-}
-
-input EventResolverKeyedOneOfFilterItem {
-  """The field to filter on"""
-  field: Void!
-
-  """
-  Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation.
-  """
-  negate: Boolean = false
-  value: [String!]!
-}
-
-input EventResolverKeyedStringFilterItem {
-  """The comparator to use for the filter"""
-  comparison: StringComparator!
-
-  """The field to filter on"""
-  field: EventResolverStringFilterKeys!
-
-  """
-  Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation.
-  """
-  negate: Boolean = false
-  value: String!
-}
-
-enum EventResolverStringFilterKeys {
-  description
-  location
-  summary
-  title
+input EventResolverSort {
+  direction: SortDirection! = asc
+  field: EventResolverFilterFields!
 }
 
 interface FeedItem {
-  createdAt: DateTimeISO
+  createdAt: LuxonDateTime
   id: GlobalId!
   image: ImageNode
   link: URL
@@ -632,7 +516,7 @@ interface FeedItem {
 }
 
 type FeedNode implements FeedItem & Node {
-  createdAt: DateTimeISO
+  createdAt: LuxonDateTime
   id: GlobalId!
 
   """The image associated with this feed item"""
@@ -640,12 +524,17 @@ type FeedNode implements FeedItem & Node {
   link: URL
   textContent: String
   title: String!
-  updatedAt: DateTimeISO
+  updatedAt: LuxonDateTime
+}
+
+enum FilterGroupOperator {
+  AND
+  OR
 }
 
 type FundraisingAssignmentNode implements Node {
   amount: Float!
-  createdAt: DateTimeISO
+  createdAt: LuxonDateTime
   entry: FundraisingEntryNode!
   id: GlobalId!
 
@@ -653,7 +542,7 @@ type FundraisingAssignmentNode implements Node {
   The person assigned to this assignment, only null when access is denied
   """
   person: PersonNode
-  updatedAt: DateTimeISO
+  updatedAt: LuxonDateTime
 }
 
 type FundraisingEntryNode implements Node {
@@ -663,22 +552,22 @@ type FundraisingEntryNode implements Node {
   assignments: [FundraisingAssignmentNode!]!
   batchType: BatchType!
   batchTypeOverride: BatchType
-  createdAt: DateTimeISO
+  createdAt: LuxonDateTime
   dailyDepartmentNotification: DailyDepartmentNotificationNode
   donatedByOverride: String
   donatedByText: String
-  donatedOn: DateTimeISO
-  donatedOnOverride: DateTimeISO
+  donatedOn: LuxonDateTime
+  donatedOnOverride: LuxonDateTime
   donatedToOverride: String
   donatedToText: String
   id: GlobalId!
   notes: String
   solicitationCode: SolicitationCodeNode!
   solicitationCodeOverride: SolicitationCodeNode
-  updatedAt: DateTimeISO
+  updatedAt: LuxonDateTime
 }
 
-enum FundraisingEntryResolverAllKeys {
+enum FundraisingEntryResolverFilterFields {
   amount
   amountUnassigned
   batchType
@@ -691,89 +580,20 @@ enum FundraisingEntryResolverAllKeys {
   updatedAt
 }
 
-enum FundraisingEntryResolverDateFilterKeys {
-  createdAt
-  donatedOn
-  updatedAt
+input FundraisingEntryResolverFilterGroup {
+  children: [FundraisingEntryResolverFilterGroup!]! = []
+  filters: [FundraisingEntryResolverFilterItem!]! = []
+  operator: FilterGroupOperator!
 }
 
-input FundraisingEntryResolverKeyedDateFilterItem {
-  """The comparator to use for the filter"""
-  comparison: NumericComparator!
-
-  """The field to filter on"""
-  field: FundraisingEntryResolverDateFilterKeys!
-
-  """
-  Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation.
-  """
-  negate: Boolean = false
-  value: DateTimeISO!
+input FundraisingEntryResolverFilterItem {
+  field: FundraisingEntryResolverFilterFields!
+  filter: SomeFilter!
 }
 
-input FundraisingEntryResolverKeyedIsNullFilterItem {
-  """The field to filter on"""
-  field: FundraisingEntryResolverAllKeys!
-
-  """
-  Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation.
-  """
-  negate: Boolean = false
-}
-
-input FundraisingEntryResolverKeyedNumericFilterItem {
-  """The comparator to use for the filter"""
-  comparison: NumericComparator!
-
-  """The field to filter on"""
-  field: FundraisingEntryResolverNumericFilterKeys!
-
-  """
-  Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation.
-  """
-  negate: Boolean = false
-  value: Float!
-}
-
-input FundraisingEntryResolverKeyedOneOfFilterItem {
-  """The field to filter on"""
-  field: FundraisingEntryResolverOneOfFilterKeys!
-
-  """
-  Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation.
-  """
-  negate: Boolean = false
-  value: [String!]!
-}
-
-input FundraisingEntryResolverKeyedStringFilterItem {
-  """The comparator to use for the filter"""
-  comparison: StringComparator!
-
-  """The field to filter on"""
-  field: FundraisingEntryResolverStringFilterKeys!
-
-  """
-  Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation.
-  """
-  negate: Boolean = false
-  value: String!
-}
-
-enum FundraisingEntryResolverNumericFilterKeys {
-  amount
-  amountUnassigned
-}
-
-enum FundraisingEntryResolverOneOfFilterKeys {
-  batchType
-  teamId
-}
-
-enum FundraisingEntryResolverStringFilterKeys {
-  donatedBy
-  donatedTo
-  solicitationCode
+input FundraisingEntryResolverSort {
+  direction: SortDirection! = asc
+  field: FundraisingEntryResolverFilterFields!
 }
 
 type GetConfigurationByUuidResponse {
@@ -789,17 +609,17 @@ scalar GlobalId
 
 type ImageNode implements Node {
   alt: String
-  createdAt: DateTimeISO
+  createdAt: LuxonDateTime
   height: Int!
   id: GlobalId!
   mimeType: String!
   thumbHash: String
-  updatedAt: DateTimeISO
+  updatedAt: LuxonDateTime
   url: URL
   width: Int!
 }
 
-enum ImageResolverAllKeys {
+enum ImageResolverFilterFields {
   alt
   createdAt
   height
@@ -807,101 +627,40 @@ enum ImageResolverAllKeys {
   width
 }
 
-enum ImageResolverDateFilterKeys {
-  createdAt
-  updatedAt
+input ImageResolverFilterGroup {
+  children: [ImageResolverFilterGroup!]! = []
+  filters: [ImageResolverFilterItem!]! = []
+  operator: FilterGroupOperator!
 }
 
-input ImageResolverKeyedDateFilterItem {
-  """The comparator to use for the filter"""
-  comparison: NumericComparator!
-
-  """The field to filter on"""
-  field: ImageResolverDateFilterKeys!
-
-  """
-  Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation.
-  """
-  negate: Boolean = false
-  value: DateTimeISO!
+input ImageResolverFilterItem {
+  field: ImageResolverFilterFields!
+  filter: SomeFilter!
 }
 
-input ImageResolverKeyedIsNullFilterItem {
-  """The field to filter on"""
-  field: ImageResolverAllKeys!
-
-  """
-  Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation.
-  """
-  negate: Boolean = false
-}
-
-input ImageResolverKeyedNumericFilterItem {
-  """The comparator to use for the filter"""
-  comparison: NumericComparator!
-
-  """The field to filter on"""
-  field: ImageResolverNumericFilterKeys!
-
-  """
-  Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation.
-  """
-  negate: Boolean = false
-  value: Float!
-}
-
-input ImageResolverKeyedOneOfFilterItem {
-  """The field to filter on"""
-  field: Void!
-
-  """
-  Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation.
-  """
-  negate: Boolean = false
-  value: [String!]!
-}
-
-input ImageResolverKeyedStringFilterItem {
-  """The comparator to use for the filter"""
-  comparison: StringComparator!
-
-  """The field to filter on"""
-  field: ImageResolverStringFilterKeys!
-
-  """
-  Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation.
-  """
-  negate: Boolean = false
-  value: String!
-}
-
-enum ImageResolverNumericFilterKeys {
-  height
-  width
-}
-
-enum ImageResolverStringFilterKeys {
-  alt
+input ImageResolverSort {
+  direction: SortDirection! = asc
+  field: ImageResolverFilterFields!
 }
 
 type InstagramFeedNode implements FeedItem & Node {
-  createdAt: DateTimeISO
+  createdAt: LuxonDateTime
   id: GlobalId!
   image: ImageNode
   link: URL
   textContent: String
   title: String!
-  updatedAt: DateTimeISO
+  updatedAt: LuxonDateTime
 }
 
 type IntervalISO {
-  end: DateTimeISO!
-  start: DateTimeISO!
+  end: LuxonDateTime!
+  start: LuxonDateTime!
 }
 
 input IntervalISOInput {
-  end: DateTimeISO!
-  start: DateTimeISO!
+  end: LuxonDateTime!
+  start: LuxonDateTime!
 }
 
 """
@@ -917,24 +676,12 @@ scalar JSONObject @specifiedBy(url: "http://www.ecma-international.org/publicati
 type ListAuditLogsResponse implements AbstractGraphQLPaginatedResponse {
   data: AuditLogNode!
 
-  """The current page number (1-indexed)"""
-  page: PositiveInt!
-
-  """The number of items per page"""
-  pageSize: NonNegativeInt!
-
   """The total number of items"""
   total: NonNegativeInt!
 }
 
 type ListDailyDepartmentNotificationsResponse implements AbstractGraphQLPaginatedResponse {
   data: [DailyDepartmentNotificationNode!]!
-
-  """The current page number (1-indexed)"""
-  page: PositiveInt!
-
-  """The number of items per page"""
-  pageSize: NonNegativeInt!
 
   """The total number of items"""
   total: NonNegativeInt!
@@ -943,24 +690,12 @@ type ListDailyDepartmentNotificationsResponse implements AbstractGraphQLPaginate
 type ListDevicesResponse implements AbstractGraphQLPaginatedResponse {
   data: [DeviceNode!]!
 
-  """The current page number (1-indexed)"""
-  page: PositiveInt!
-
-  """The number of items per page"""
-  pageSize: NonNegativeInt!
-
   """The total number of items"""
   total: NonNegativeInt!
 }
 
 type ListEventsResponse implements AbstractGraphQLPaginatedResponse {
   data: [EventNode!]!
-
-  """The current page number (1-indexed)"""
-  page: PositiveInt!
-
-  """The number of items per page"""
-  pageSize: NonNegativeInt!
 
   """The total number of items"""
   total: NonNegativeInt!
@@ -969,24 +704,12 @@ type ListEventsResponse implements AbstractGraphQLPaginatedResponse {
 type ListFundraisingEntriesResponse implements AbstractGraphQLPaginatedResponse {
   data: [FundraisingEntryNode!]!
 
-  """The current page number (1-indexed)"""
-  page: PositiveInt!
-
-  """The number of items per page"""
-  pageSize: NonNegativeInt!
-
   """The total number of items"""
   total: NonNegativeInt!
 }
 
 type ListImagesResponse implements AbstractGraphQLPaginatedResponse {
   data: [ImageNode!]!
-
-  """The current page number (1-indexed)"""
-  page: PositiveInt!
-
-  """The number of items per page"""
-  pageSize: NonNegativeInt!
 
   """The total number of items"""
   total: NonNegativeInt!
@@ -995,24 +718,12 @@ type ListImagesResponse implements AbstractGraphQLPaginatedResponse {
 type ListMarathonHoursResponse implements AbstractGraphQLPaginatedResponse {
   data: [MarathonHourNode!]!
 
-  """The current page number (1-indexed)"""
-  page: PositiveInt!
-
-  """The number of items per page"""
-  pageSize: NonNegativeInt!
-
   """The total number of items"""
   total: NonNegativeInt!
 }
 
 type ListMarathonsResponse implements AbstractGraphQLPaginatedResponse {
   data: [MarathonNode!]!
-
-  """The current page number (1-indexed)"""
-  page: PositiveInt!
-
-  """The number of items per page"""
-  pageSize: NonNegativeInt!
 
   """The total number of items"""
   total: NonNegativeInt!
@@ -1021,24 +732,12 @@ type ListMarathonsResponse implements AbstractGraphQLPaginatedResponse {
 type ListNotificationDeliveriesResponse implements AbstractGraphQLPaginatedResponse {
   data: [NotificationDeliveryNode!]!
 
-  """The current page number (1-indexed)"""
-  page: PositiveInt!
-
-  """The number of items per page"""
-  pageSize: NonNegativeInt!
-
   """The total number of items"""
   total: NonNegativeInt!
 }
 
 type ListNotificationsResponse implements AbstractGraphQLPaginatedResponse {
   data: [NotificationNode!]!
-
-  """The current page number (1-indexed)"""
-  page: PositiveInt!
-
-  """The number of items per page"""
-  pageSize: NonNegativeInt!
 
   """The total number of items"""
   total: NonNegativeInt!
@@ -1047,24 +746,12 @@ type ListNotificationsResponse implements AbstractGraphQLPaginatedResponse {
 type ListPeopleResponse implements AbstractGraphQLPaginatedResponse {
   data: [PersonNode!]!
 
-  """The current page number (1-indexed)"""
-  page: PositiveInt!
-
-  """The number of items per page"""
-  pageSize: NonNegativeInt!
-
   """The total number of items"""
   total: NonNegativeInt!
 }
 
 type ListPointEntriesResponse implements AbstractGraphQLPaginatedResponse {
   data: [PointEntryNode!]!
-
-  """The current page number (1-indexed)"""
-  page: PositiveInt!
-
-  """The number of items per page"""
-  pageSize: NonNegativeInt!
 
   """The total number of items"""
   total: NonNegativeInt!
@@ -1073,12 +760,6 @@ type ListPointEntriesResponse implements AbstractGraphQLPaginatedResponse {
 type ListPointOpportunitiesResponse implements AbstractGraphQLPaginatedResponse {
   data: [PointOpportunityNode!]!
 
-  """The current page number (1-indexed)"""
-  page: PositiveInt!
-
-  """The number of items per page"""
-  pageSize: NonNegativeInt!
-
   """The total number of items"""
   total: NonNegativeInt!
 }
@@ -1086,24 +767,12 @@ type ListPointOpportunitiesResponse implements AbstractGraphQLPaginatedResponse 
 type ListSolicitationCodesResponse implements AbstractGraphQLPaginatedResponse {
   data: [SolicitationCodeNode!]!
 
-  """The current page number (1-indexed)"""
-  page: PositiveInt!
-
-  """The number of items per page"""
-  pageSize: NonNegativeInt!
-
   """The total number of items"""
   total: NonNegativeInt!
 }
 
 type ListTeamsResponse implements AbstractGraphQLPaginatedResponse {
   data: [TeamNode!]!
-
-  """The current page number (1-indexed)"""
-  page: PositiveInt!
-
-  """The number of items per page"""
-  pageSize: NonNegativeInt!
 
   """The total number of items"""
   total: NonNegativeInt!
@@ -1123,18 +792,21 @@ type LoginState {
   loggedIn: Boolean!
 }
 
+"""Cursor custom scalar type"""
+scalar LuxonDateTime
+
 type MarathonHourNode implements Node {
-  createdAt: DateTimeISO
+  createdAt: LuxonDateTime
   details: String
   durationInfo: String!
   id: GlobalId!
   mapImages: [ImageNode!]!
-  shownStartingAt: DateTimeISO!
+  shownStartingAt: LuxonDateTime!
   title: String!
-  updatedAt: DateTimeISO
+  updatedAt: LuxonDateTime
 }
 
-enum MarathonHourResolverAllKeys {
+enum MarathonHourResolverFilterFields {
   createdAt
   details
   durationInfo
@@ -1144,75 +816,26 @@ enum MarathonHourResolverAllKeys {
   updatedAt
 }
 
-enum MarathonHourResolverDateFilterKeys {
-  createdAt
-  shownStartingAt
-  updatedAt
+input MarathonHourResolverFilterGroup {
+  children: [MarathonHourResolverFilterGroup!]! = []
+  filters: [MarathonHourResolverFilterItem!]! = []
+  operator: FilterGroupOperator!
 }
 
-input MarathonHourResolverKeyedDateFilterItem {
-  """The comparator to use for the filter"""
-  comparison: NumericComparator!
-
-  """The field to filter on"""
-  field: MarathonHourResolverDateFilterKeys!
-
-  """
-  Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation.
-  """
-  negate: Boolean = false
-  value: DateTimeISO!
+input MarathonHourResolverFilterItem {
+  field: MarathonHourResolverFilterFields!
+  filter: SomeFilter!
 }
 
-input MarathonHourResolverKeyedIsNullFilterItem {
-  """The field to filter on"""
-  field: MarathonHourResolverAllKeys!
-
-  """
-  Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation.
-  """
-  negate: Boolean = false
-}
-
-input MarathonHourResolverKeyedOneOfFilterItem {
-  """The field to filter on"""
-  field: MarathonHourResolverOneOfFilterKeys!
-
-  """
-  Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation.
-  """
-  negate: Boolean = false
-  value: [String!]!
-}
-
-input MarathonHourResolverKeyedStringFilterItem {
-  """The comparator to use for the filter"""
-  comparison: StringComparator!
-
-  """The field to filter on"""
-  field: MarathonHourResolverStringFilterKeys!
-
-  """
-  Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation.
-  """
-  negate: Boolean = false
-  value: String!
-}
-
-enum MarathonHourResolverOneOfFilterKeys {
-  marathonYear
-}
-
-enum MarathonHourResolverStringFilterKeys {
-  details
-  durationInfo
-  title
+input MarathonHourResolverSort {
+  direction: SortDirection! = asc
+  field: MarathonHourResolverFilterFields!
 }
 
 type MarathonNode implements Node {
   communityDevelopmentCommitteeTeam: TeamNode!
   corporateCommitteeTeam: TeamNode!
-  createdAt: DateTimeISO
+  createdAt: LuxonDateTime
   dancerRelationsCommitteeTeam: TeamNode!
   endDate: DateTimeISO
   familyRelationsCommitteeTeam: TeamNode!
@@ -1226,12 +849,12 @@ type MarathonNode implements Node {
   programmingCommitteeTeam: TeamNode!
   startDate: DateTimeISO
   techCommitteeTeam: TeamNode!
-  updatedAt: DateTimeISO
+  updatedAt: LuxonDateTime
   viceCommitteeTeam: TeamNode!
   year: String!
 }
 
-enum MarathonResolverAllKeys {
+enum MarathonResolverFilterFields {
   createdAt
   endDate
   startDate
@@ -1239,35 +862,20 @@ enum MarathonResolverAllKeys {
   year
 }
 
-enum MarathonResolverDateFilterKeys {
-  createdAt
-  endDate
-  startDate
-  updatedAt
+input MarathonResolverFilterGroup {
+  children: [MarathonResolverFilterGroup!]! = []
+  filters: [MarathonResolverFilterItem!]! = []
+  operator: FilterGroupOperator!
 }
 
-input MarathonResolverKeyedDateFilterItem {
-  """The comparator to use for the filter"""
-  comparison: NumericComparator!
-
-  """The field to filter on"""
-  field: MarathonResolverDateFilterKeys!
-
-  """
-  Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation.
-  """
-  negate: Boolean = false
-  value: DateTimeISO!
+input MarathonResolverFilterItem {
+  field: MarathonResolverFilterFields!
+  filter: SomeFilter!
 }
 
-input MarathonResolverKeyedIsNullFilterItem {
-  """The field to filter on"""
-  field: MarathonResolverAllKeys!
-
-  """
-  Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation.
-  """
-  negate: Boolean = false
+input MarathonResolverSort {
+  direction: SortDirection! = asc
+  field: MarathonResolverFilterFields!
 }
 
 input MemberOf {
@@ -1277,12 +885,12 @@ input MemberOf {
 
 type MembershipNode implements Node {
   committeeRole: CommitteeRole
-  createdAt: DateTimeISO
+  createdAt: LuxonDateTime
   id: GlobalId!
   person: PersonNode!
   position: MembershipPositionType!
   team: TeamNode!
-  updatedAt: DateTimeISO
+  updatedAt: LuxonDateTime
 }
 
 """The position of a member on a team"""
@@ -1398,6 +1006,11 @@ type Mutation {
   updateFundraisingAssignment(id: GlobalId!, input: UpdateFundraisingAssignmentInput!): FundraisingAssignmentNode!
 }
 
+enum NoTargetOperators {
+  IS_NOT_NULL
+  IS_NULL
+}
+
 interface Node {
   id: GlobalId!
 }
@@ -1430,7 +1043,7 @@ type NotificationDeliveryNode implements Node {
   A unique identifier corresponding the group of notifications this was sent to Expo with.
   """
   chunkUuid: String
-  createdAt: DateTimeISO
+  createdAt: LuxonDateTime
 
   """Any error message returned by Expo when sending the notification."""
   deliveryError: String
@@ -1438,14 +1051,14 @@ type NotificationDeliveryNode implements Node {
   notification: NotificationNode!
 
   """The time the server received a delivery receipt from the user."""
-  receiptCheckedAt: DateTimeISO
+  receiptCheckedAt: LuxonDateTime
 
   """The time the server sent the notification to Expo for delivery."""
-  sentAt: DateTimeISO
-  updatedAt: DateTimeISO
+  sentAt: LuxonDateTime
+  updatedAt: LuxonDateTime
 }
 
-enum NotificationDeliveryResolverAllKeys {
+enum NotificationDeliveryResolverFilterFields {
   createdAt
   deliveryError
   receiptCheckedAt
@@ -1453,59 +1066,44 @@ enum NotificationDeliveryResolverAllKeys {
   updatedAt
 }
 
-enum NotificationDeliveryResolverDateFilterKeys {
-  createdAt
-  receiptCheckedAt
-  sentAt
-  updatedAt
+input NotificationDeliveryResolverFilterGroup {
+  children: [NotificationDeliveryResolverFilterGroup!]! = []
+  filters: [NotificationDeliveryResolverFilterItem!]! = []
+  operator: FilterGroupOperator!
 }
 
-input NotificationDeliveryResolverKeyedDateFilterItem {
-  """The comparator to use for the filter"""
-  comparison: NumericComparator!
-
-  """The field to filter on"""
-  field: NotificationDeliveryResolverDateFilterKeys!
-
-  """
-  Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation.
-  """
-  negate: Boolean = false
-  value: DateTimeISO!
+input NotificationDeliveryResolverFilterItem {
+  field: NotificationDeliveryResolverFilterFields!
+  filter: SomeFilter!
 }
 
-input NotificationDeliveryResolverKeyedIsNullFilterItem {
-  """The field to filter on"""
-  field: NotificationDeliveryResolverAllKeys!
-
-  """
-  Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation.
-  """
-  negate: Boolean = false
+input NotificationDeliveryResolverSort {
+  direction: SortDirection! = asc
+  field: NotificationDeliveryResolverFilterFields!
 }
 
 type NotificationNode implements Node {
   body: String!
-  createdAt: DateTimeISO
+  createdAt: LuxonDateTime
   deliveryCount: Int!
   deliveryIssue: String
-  deliveryIssueAcknowledgedAt: DateTimeISO
+  deliveryIssueAcknowledgedAt: LuxonDateTime
   deliveryIssueCount: NotificationDeliveryIssueCount!
   id: GlobalId!
 
   """
   The time the notification is scheduled to be sent, if null it is either already sent or unscheduled.
   """
-  sendAt: DateTimeISO
+  sendAt: LuxonDateTime
 
   """The time the server started sending the notification."""
-  startedSendingAt: DateTimeISO
+  startedSendingAt: LuxonDateTime
   title: String!
-  updatedAt: DateTimeISO
+  updatedAt: LuxonDateTime
   url: URL
 }
 
-enum NotificationResolverAllKeys {
+enum NotificationResolverFilterFields {
   body
   createdAt
   deliveryIssue
@@ -1516,85 +1114,29 @@ enum NotificationResolverAllKeys {
   updatedAt
 }
 
-enum NotificationResolverDateFilterKeys {
-  createdAt
-  deliveryIssueAcknowledgedAt
-  sendAt
-  startedSendingAt
-  updatedAt
+input NotificationResolverFilterGroup {
+  children: [NotificationResolverFilterGroup!]! = []
+  filters: [NotificationResolverFilterItem!]! = []
+  operator: FilterGroupOperator!
 }
 
-input NotificationResolverKeyedDateFilterItem {
-  """The comparator to use for the filter"""
-  comparison: NumericComparator!
-
-  """The field to filter on"""
-  field: NotificationResolverDateFilterKeys!
-
-  """
-  Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation.
-  """
-  negate: Boolean = false
-  value: DateTimeISO!
+input NotificationResolverFilterItem {
+  field: NotificationResolverFilterFields!
+  filter: SomeFilter!
 }
 
-input NotificationResolverKeyedIsNullFilterItem {
-  """The field to filter on"""
-  field: NotificationResolverAllKeys!
-
-  """
-  Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation.
-  """
-  negate: Boolean = false
+input NotificationResolverSort {
+  direction: SortDirection! = asc
+  field: NotificationResolverFilterFields!
 }
 
-input NotificationResolverKeyedOneOfFilterItem {
-  """The field to filter on"""
-  field: NotificationResolverOneOfFilterKeys!
-
-  """
-  Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation.
-  """
-  negate: Boolean = false
-  value: [String!]!
-}
-
-input NotificationResolverKeyedStringFilterItem {
-  """The comparator to use for the filter"""
-  comparison: StringComparator!
-
-  """The field to filter on"""
-  field: NotificationResolverStringFilterKeys!
-
-  """
-  Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation.
-  """
-  negate: Boolean = false
-  value: String!
-}
-
-enum NotificationResolverOneOfFilterKeys {
-  deliveryIssue
-}
-
-enum NotificationResolverStringFilterKeys {
-  body
-  title
-}
-
-enum NumericComparator {
-  EQUALS
-  GREATER_THAN
-  GREATER_THAN_OR_EQUAL_TO
-  IS
-  LESS_THAN
-  LESS_THAN_OR_EQUAL_TO
+input NullFilter {
+  comparison: NoTargetOperators!
 }
 
 type PersonNode implements Node {
   committees: [CommitteeMembershipNode!]!
-  createdAt: DateTimeISO
-  dbRole: DbRole!
+  createdAt: LuxonDateTime
   email: String!
   fundraisingAssignments: [FundraisingAssignmentNode!]!
   fundraisingTotalAmount: Float
@@ -1606,121 +1148,76 @@ type PersonNode implements Node {
   primaryCommittee: CommitteeMembershipNode
   primaryTeam(teamType: TeamType!): MembershipNode
   teams: [MembershipNode!]!
-  updatedAt: DateTimeISO
+  updatedAt: LuxonDateTime
 }
 
-enum PersonResolverAllKeys {
+enum PersonResolverFilterFields {
   committeeName
   committeeRole
-  dbRole
   email
   linkblue
   name
 }
 
-input PersonResolverKeyedIsNullFilterItem {
-  """The field to filter on"""
-  field: PersonResolverAllKeys!
-
-  """
-  Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation.
-  """
-  negate: Boolean = false
+input PersonResolverFilterGroup {
+  children: [PersonResolverFilterGroup!]! = []
+  filters: [PersonResolverFilterItem!]! = []
+  operator: FilterGroupOperator!
 }
 
-input PersonResolverKeyedOneOfFilterItem {
-  """The field to filter on"""
-  field: PersonResolverOneOfFilterKeys!
-
-  """
-  Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation.
-  """
-  negate: Boolean = false
-  value: [String!]!
+input PersonResolverFilterItem {
+  field: PersonResolverFilterFields!
+  filter: SomeFilter!
 }
 
-input PersonResolverKeyedStringFilterItem {
-  """The comparator to use for the filter"""
-  comparison: StringComparator!
-
-  """The field to filter on"""
-  field: PersonResolverStringFilterKeys!
-
-  """
-  Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation.
-  """
-  negate: Boolean = false
-  value: String!
-}
-
-enum PersonResolverOneOfFilterKeys {
-  committeeName
-  committeeRole
-  dbRole
-}
-
-enum PersonResolverStringFilterKeys {
-  email
-  linkblue
-  name
+input PersonResolverSort {
+  direction: SortDirection! = asc
+  field: PersonResolverFilterFields!
 }
 
 type PointEntryNode implements Node {
   comment: String
-  createdAt: DateTimeISO
+  createdAt: LuxonDateTime
   id: GlobalId!
   personFrom: PersonNode
   pointOpportunity: PointOpportunityNode
   points: Int!
   team: TeamNode!
-  updatedAt: DateTimeISO
+  updatedAt: LuxonDateTime
 }
 
-enum PointEntryResolverAllKeys {
+enum PointEntryResolverFilterFields {
   createdAt
   updatedAt
 }
 
-enum PointEntryResolverDateFilterKeys {
-  createdAt
-  updatedAt
+input PointEntryResolverFilterGroup {
+  children: [PointEntryResolverFilterGroup!]! = []
+  filters: [PointEntryResolverFilterItem!]! = []
+  operator: FilterGroupOperator!
 }
 
-input PointEntryResolverKeyedDateFilterItem {
-  """The comparator to use for the filter"""
-  comparison: NumericComparator!
-
-  """The field to filter on"""
-  field: PointEntryResolverDateFilterKeys!
-
-  """
-  Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation.
-  """
-  negate: Boolean = false
-  value: DateTimeISO!
+input PointEntryResolverFilterItem {
+  field: PointEntryResolverFilterFields!
+  filter: SomeFilter!
 }
 
-input PointEntryResolverKeyedIsNullFilterItem {
-  """The field to filter on"""
-  field: PointEntryResolverAllKeys!
-
-  """
-  Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation.
-  """
-  negate: Boolean = false
+input PointEntryResolverSort {
+  direction: SortDirection! = asc
+  field: PointEntryResolverFilterFields!
 }
 
 type PointOpportunityNode implements Node {
-  createdAt: DateTimeISO
+  createdAt: LuxonDateTime
   event: EventNode
   id: GlobalId!
   name: String!
-  opportunityDate: DateTimeISO
+  opportunityDate: LuxonDateTime
   type: TeamType!
-  updatedAt: DateTimeISO
+  updatedAt: LuxonDateTime
 }
 
-enum PointOpportunityResolverAllKeys {
+enum PointOpportunityResolverFilterFields {
   createdAt
   marathonUuid
   name
@@ -1729,68 +1226,20 @@ enum PointOpportunityResolverAllKeys {
   updatedAt
 }
 
-enum PointOpportunityResolverDateFilterKeys {
-  createdAt
-  opportunityDate
-  updatedAt
+input PointOpportunityResolverFilterGroup {
+  children: [PointOpportunityResolverFilterGroup!]! = []
+  filters: [PointOpportunityResolverFilterItem!]! = []
+  operator: FilterGroupOperator!
 }
 
-input PointOpportunityResolverKeyedDateFilterItem {
-  """The comparator to use for the filter"""
-  comparison: NumericComparator!
-
-  """The field to filter on"""
-  field: PointOpportunityResolverDateFilterKeys!
-
-  """
-  Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation.
-  """
-  negate: Boolean = false
-  value: DateTimeISO!
+input PointOpportunityResolverFilterItem {
+  field: PointOpportunityResolverFilterFields!
+  filter: SomeFilter!
 }
 
-input PointOpportunityResolverKeyedIsNullFilterItem {
-  """The field to filter on"""
-  field: PointOpportunityResolverAllKeys!
-
-  """
-  Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation.
-  """
-  negate: Boolean = false
-}
-
-input PointOpportunityResolverKeyedOneOfFilterItem {
-  """The field to filter on"""
-  field: PointOpportunityResolverOneOfFilterKeys!
-
-  """
-  Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation.
-  """
-  negate: Boolean = false
-  value: [String!]!
-}
-
-input PointOpportunityResolverKeyedStringFilterItem {
-  """The comparator to use for the filter"""
-  comparison: StringComparator!
-
-  """The field to filter on"""
-  field: PointOpportunityResolverStringFilterKeys!
-
-  """
-  Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation.
-  """
-  negate: Boolean = false
-  value: String!
-}
-
-enum PointOpportunityResolverOneOfFilterKeys {
-  marathonUuid
-  type
-}
-
-enum PointOpportunityResolverStringFilterKeys {
-  name
+input PointOpportunityResolverSort {
+  direction: SortDirection! = asc
+  field: PointOpportunityResolverFilterFields!
 }
 
 """Integers that will have a value greater than 0."""
@@ -1817,29 +1266,13 @@ type Query {
   dailyDepartmentNotification(id: GlobalId!): DailyDepartmentNotificationNode!
   dailyDepartmentNotificationBatch(id: GlobalId!): DailyDepartmentNotificationBatchNode!
   dailyDepartmentNotifications(
-    """The boolean filters to apply to the query"""
-    booleanFilters: Void
-
-    """The date filters to apply to the query"""
-    dateFilters: Void
-
-    """Whether to include deleted items in the results"""
-    includeDeleted: Boolean @deprecated(reason: "Soft-deletion is no longer used in this project, this parameter is ignored")
-
-    """The is-null filters to apply to the query"""
-    isNullFilters: [DailyDepartmentNotificationResolverKeyedIsNullFilterItem!]
-
-    """The numeric filters to apply to the query"""
-    numericFilters: [DailyDepartmentNotificationResolverKeyedNumericFilterItem!]
-
-    """The one-of filters to apply to the query"""
-    oneOfFilters: [DailyDepartmentNotificationResolverKeyedOneOfFilterItem!]
+    filters: DailyDepartmentNotificationResolverFilterGroup!
 
     """The page number to return, defaults to 1"""
-    page: Int
+    page: PositiveInt! = 1
 
     """The number of items to return per page, defaults to 10"""
-    pageSize: Int
+    pageSize: NonNegativeInt! = 10
 
     """
     Whether to send all results in a single page, defaults to false (should generally be avoided)
@@ -1849,15 +1282,7 @@ type Query {
     """
     The fields to sort by, in order of priority. If unspecified, the sort order is undefined
     """
-    sortBy: [String!]
-
-    """
-    The direction to sort, if not specified will default to ascending, the order of the values in this array should match the order of the values in the sortBy array, if only one value is specified it will be used for all sortBy values, otherwise the lengths must match
-    """
-    sortDirection: [SortDirection!]
-
-    """The string filters to apply to the query"""
-    stringFilters: [DailyDepartmentNotificationResolverKeyedStringFilterItem!]
+    sortBy: [DailyDepartmentNotificationResolverSort!]
   ): ListDailyDepartmentNotificationsResponse!
 
   """Get a device by it's UUID"""
@@ -1868,29 +1293,13 @@ type Query {
 
   """List all devices"""
   devices(
-    """The boolean filters to apply to the query"""
-    booleanFilters: Void
-
-    """The date filters to apply to the query"""
-    dateFilters: [DeviceResolverKeyedDateFilterItem!]
-
-    """Whether to include deleted items in the results"""
-    includeDeleted: Boolean @deprecated(reason: "Soft-deletion is no longer used in this project, this parameter is ignored")
-
-    """The is-null filters to apply to the query"""
-    isNullFilters: [DeviceResolverKeyedIsNullFilterItem!]
-
-    """The numeric filters to apply to the query"""
-    numericFilters: Void
-
-    """The one-of filters to apply to the query"""
-    oneOfFilters: [DeviceResolverKeyedOneOfFilterItem!]
+    filters: DeviceResolverFilterGroup!
 
     """The page number to return, defaults to 1"""
-    page: Int
+    page: PositiveInt! = 1
 
     """The number of items to return per page, defaults to 10"""
-    pageSize: Int
+    pageSize: NonNegativeInt! = 10
 
     """
     Whether to send all results in a single page, defaults to false (should generally be avoided)
@@ -1900,15 +1309,7 @@ type Query {
     """
     The fields to sort by, in order of priority. If unspecified, the sort order is undefined
     """
-    sortBy: [String!]
-
-    """
-    The direction to sort, if not specified will default to ascending, the order of the values in this array should match the order of the values in the sortBy array, if only one value is specified it will be used for all sortBy values, otherwise the lengths must match
-    """
-    sortDirection: [SortDirection!]
-
-    """The string filters to apply to the query"""
-    stringFilters: [DeviceResolverKeyedStringFilterItem!]
+    sortBy: [DeviceResolverSort!]
   ): ListDevicesResponse!
 
   """Get an event by UUID"""
@@ -1916,29 +1317,13 @@ type Query {
 
   """List events"""
   events(
-    """The boolean filters to apply to the query"""
-    booleanFilters: Void
-
-    """The date filters to apply to the query"""
-    dateFilters: [EventResolverKeyedDateFilterItem!]
-
-    """Whether to include deleted items in the results"""
-    includeDeleted: Boolean @deprecated(reason: "Soft-deletion is no longer used in this project, this parameter is ignored")
-
-    """The is-null filters to apply to the query"""
-    isNullFilters: [EventResolverKeyedIsNullFilterItem!]
-
-    """The numeric filters to apply to the query"""
-    numericFilters: Void
-
-    """The one-of filters to apply to the query"""
-    oneOfFilters: [EventResolverKeyedOneOfFilterItem!]
+    filters: EventResolverFilterGroup!
 
     """The page number to return, defaults to 1"""
-    page: Int
+    page: PositiveInt! = 1
 
     """The number of items to return per page, defaults to 10"""
-    pageSize: Int
+    pageSize: NonNegativeInt! = 10
 
     """
     Whether to send all results in a single page, defaults to false (should generally be avoided)
@@ -1948,15 +1333,7 @@ type Query {
     """
     The fields to sort by, in order of priority. If unspecified, the sort order is undefined
     """
-    sortBy: [String!]
-
-    """
-    The direction to sort, if not specified will default to ascending, the order of the values in this array should match the order of the values in the sortBy array, if only one value is specified it will be used for all sortBy values, otherwise the lengths must match
-    """
-    sortDirection: [SortDirection!]
-
-    """The string filters to apply to the query"""
-    stringFilters: [EventResolverKeyedStringFilterItem!]
+    sortBy: [EventResolverSort!]
   ): ListEventsResponse!
 
   """Get the active feed"""
@@ -1966,29 +1343,13 @@ type Query {
   feedItem(feedItemId: GlobalId!): FeedNode!
   fundraisingAssignment(id: GlobalId!): FundraisingAssignmentNode!
   fundraisingEntries(
-    """The boolean filters to apply to the query"""
-    booleanFilters: Void
-
-    """The date filters to apply to the query"""
-    dateFilters: [FundraisingEntryResolverKeyedDateFilterItem!]
-
-    """Whether to include deleted items in the results"""
-    includeDeleted: Boolean @deprecated(reason: "Soft-deletion is no longer used in this project, this parameter is ignored")
-
-    """The is-null filters to apply to the query"""
-    isNullFilters: [FundraisingEntryResolverKeyedIsNullFilterItem!]
-
-    """The numeric filters to apply to the query"""
-    numericFilters: [FundraisingEntryResolverKeyedNumericFilterItem!]
-
-    """The one-of filters to apply to the query"""
-    oneOfFilters: [FundraisingEntryResolverKeyedOneOfFilterItem!]
+    filters: FundraisingEntryResolverFilterGroup!
 
     """The page number to return, defaults to 1"""
-    page: Int
+    page: PositiveInt! = 1
 
     """The number of items to return per page, defaults to 10"""
-    pageSize: Int
+    pageSize: NonNegativeInt! = 10
 
     """
     Whether to send all results in a single page, defaults to false (should generally be avoided)
@@ -1998,42 +1359,18 @@ type Query {
     """
     The fields to sort by, in order of priority. If unspecified, the sort order is undefined
     """
-    sortBy: [String!]
-
-    """
-    The direction to sort, if not specified will default to ascending, the order of the values in this array should match the order of the values in the sortBy array, if only one value is specified it will be used for all sortBy values, otherwise the lengths must match
-    """
-    sortDirection: [SortDirection!]
-
-    """The string filters to apply to the query"""
-    stringFilters: [FundraisingEntryResolverKeyedStringFilterItem!]
+    sortBy: [FundraisingEntryResolverSort!]
   ): ListFundraisingEntriesResponse!
   fundraisingEntry(id: GlobalId!): FundraisingEntryNode!
   image(id: GlobalId!): ImageNode!
   images(
-    """The boolean filters to apply to the query"""
-    booleanFilters: Void
-
-    """The date filters to apply to the query"""
-    dateFilters: [ImageResolverKeyedDateFilterItem!]
-
-    """Whether to include deleted items in the results"""
-    includeDeleted: Boolean @deprecated(reason: "Soft-deletion is no longer used in this project, this parameter is ignored")
-
-    """The is-null filters to apply to the query"""
-    isNullFilters: [ImageResolverKeyedIsNullFilterItem!]
-
-    """The numeric filters to apply to the query"""
-    numericFilters: [ImageResolverKeyedNumericFilterItem!]
-
-    """The one-of filters to apply to the query"""
-    oneOfFilters: [ImageResolverKeyedOneOfFilterItem!]
+    filters: ImageResolverFilterGroup!
 
     """The page number to return, defaults to 1"""
-    page: Int
+    page: PositiveInt! = 1
 
     """The number of items to return per page, defaults to 10"""
-    pageSize: Int
+    pageSize: NonNegativeInt! = 10
 
     """
     Whether to send all results in a single page, defaults to false (should generally be avoided)
@@ -2043,15 +1380,7 @@ type Query {
     """
     The fields to sort by, in order of priority. If unspecified, the sort order is undefined
     """
-    sortBy: [String!]
-
-    """
-    The direction to sort, if not specified will default to ascending, the order of the values in this array should match the order of the values in the sortBy array, if only one value is specified it will be used for all sortBy values, otherwise the lengths must match
-    """
-    sortDirection: [SortDirection!]
-
-    """The string filters to apply to the query"""
-    stringFilters: [ImageResolverKeyedStringFilterItem!]
+    sortBy: [ImageResolverSort!]
   ): ListImagesResponse!
 
   """
@@ -2063,29 +1392,13 @@ type Query {
   marathonForYear(year: String!): MarathonNode!
   marathonHour(id: GlobalId!): MarathonHourNode!
   marathonHours(
-    """The boolean filters to apply to the query"""
-    booleanFilters: Void
-
-    """The date filters to apply to the query"""
-    dateFilters: [MarathonHourResolverKeyedDateFilterItem!]
-
-    """Whether to include deleted items in the results"""
-    includeDeleted: Boolean @deprecated(reason: "Soft-deletion is no longer used in this project, this parameter is ignored")
-
-    """The is-null filters to apply to the query"""
-    isNullFilters: [MarathonHourResolverKeyedIsNullFilterItem!]
-
-    """The numeric filters to apply to the query"""
-    numericFilters: Void
-
-    """The one-of filters to apply to the query"""
-    oneOfFilters: [MarathonHourResolverKeyedOneOfFilterItem!]
+    filters: MarathonHourResolverFilterGroup!
 
     """The page number to return, defaults to 1"""
-    page: Int
+    page: PositiveInt! = 1
 
     """The number of items to return per page, defaults to 10"""
-    pageSize: Int
+    pageSize: NonNegativeInt! = 10
 
     """
     Whether to send all results in a single page, defaults to false (should generally be avoided)
@@ -2095,40 +1408,16 @@ type Query {
     """
     The fields to sort by, in order of priority. If unspecified, the sort order is undefined
     """
-    sortBy: [String!]
-
-    """
-    The direction to sort, if not specified will default to ascending, the order of the values in this array should match the order of the values in the sortBy array, if only one value is specified it will be used for all sortBy values, otherwise the lengths must match
-    """
-    sortDirection: [SortDirection!]
-
-    """The string filters to apply to the query"""
-    stringFilters: [MarathonHourResolverKeyedStringFilterItem!]
+    sortBy: [MarathonHourResolverSort!]
   ): ListMarathonHoursResponse!
   marathons(
-    """The boolean filters to apply to the query"""
-    booleanFilters: Void
-
-    """The date filters to apply to the query"""
-    dateFilters: [MarathonResolverKeyedDateFilterItem!]
-
-    """Whether to include deleted items in the results"""
-    includeDeleted: Boolean @deprecated(reason: "Soft-deletion is no longer used in this project, this parameter is ignored")
-
-    """The is-null filters to apply to the query"""
-    isNullFilters: [MarathonResolverKeyedIsNullFilterItem!]
-
-    """The numeric filters to apply to the query"""
-    numericFilters: Void
-
-    """The one-of filters to apply to the query"""
-    oneOfFilters: Void
+    filters: MarathonResolverFilterGroup!
 
     """The page number to return, defaults to 1"""
-    page: Int
+    page: PositiveInt! = 1
 
     """The number of items to return per page, defaults to 10"""
-    pageSize: Int
+    pageSize: NonNegativeInt! = 10
 
     """
     Whether to send all results in a single page, defaults to false (should generally be avoided)
@@ -2138,44 +1427,20 @@ type Query {
     """
     The fields to sort by, in order of priority. If unspecified, the sort order is undefined
     """
-    sortBy: [String!]
-
-    """
-    The direction to sort, if not specified will default to ascending, the order of the values in this array should match the order of the values in the sortBy array, if only one value is specified it will be used for all sortBy values, otherwise the lengths must match
-    """
-    sortDirection: [SortDirection!]
-
-    """The string filters to apply to the query"""
-    stringFilters: Void
+    sortBy: [MarathonResolverSort!]
   ): ListMarathonsResponse!
   me: PersonNode
   node(id: GlobalId!): Node!
   notification(id: GlobalId!): NotificationNode!
   notificationDeliveries(
-    """The boolean filters to apply to the query"""
-    booleanFilters: Void
-
-    """The date filters to apply to the query"""
-    dateFilters: [NotificationDeliveryResolverKeyedDateFilterItem!]
-
-    """Whether to include deleted items in the results"""
-    includeDeleted: Boolean @deprecated(reason: "Soft-deletion is no longer used in this project, this parameter is ignored")
-
-    """The is-null filters to apply to the query"""
-    isNullFilters: [NotificationDeliveryResolverKeyedIsNullFilterItem!]
+    filters: NotificationDeliveryResolverFilterGroup!
     notificationUuid: GlobalId!
 
-    """The numeric filters to apply to the query"""
-    numericFilters: Void
-
-    """The one-of filters to apply to the query"""
-    oneOfFilters: Void
-
     """The page number to return, defaults to 1"""
-    page: Int
+    page: PositiveInt! = 1
 
     """The number of items to return per page, defaults to 10"""
-    pageSize: Int
+    pageSize: NonNegativeInt! = 10
 
     """
     Whether to send all results in a single page, defaults to false (should generally be avoided)
@@ -2185,40 +1450,16 @@ type Query {
     """
     The fields to sort by, in order of priority. If unspecified, the sort order is undefined
     """
-    sortBy: [String!]
-
-    """
-    The direction to sort, if not specified will default to ascending, the order of the values in this array should match the order of the values in the sortBy array, if only one value is specified it will be used for all sortBy values, otherwise the lengths must match
-    """
-    sortDirection: [SortDirection!]
-
-    """The string filters to apply to the query"""
-    stringFilters: Void
+    sortBy: [NotificationDeliveryResolverSort!]
   ): ListNotificationDeliveriesResponse!
   notifications(
-    """The boolean filters to apply to the query"""
-    booleanFilters: Void
-
-    """The date filters to apply to the query"""
-    dateFilters: [NotificationResolverKeyedDateFilterItem!]
-
-    """Whether to include deleted items in the results"""
-    includeDeleted: Boolean @deprecated(reason: "Soft-deletion is no longer used in this project, this parameter is ignored")
-
-    """The is-null filters to apply to the query"""
-    isNullFilters: [NotificationResolverKeyedIsNullFilterItem!]
-
-    """The numeric filters to apply to the query"""
-    numericFilters: Void
-
-    """The one-of filters to apply to the query"""
-    oneOfFilters: [NotificationResolverKeyedOneOfFilterItem!]
+    filters: NotificationResolverFilterGroup!
 
     """The page number to return, defaults to 1"""
-    page: Int
+    page: PositiveInt! = 1
 
     """The number of items to return per page, defaults to 10"""
-    pageSize: Int
+    pageSize: NonNegativeInt! = 10
 
     """
     Whether to send all results in a single page, defaults to false (should generally be avoided)
@@ -2228,40 +1469,16 @@ type Query {
     """
     The fields to sort by, in order of priority. If unspecified, the sort order is undefined
     """
-    sortBy: [String!]
-
-    """
-    The direction to sort, if not specified will default to ascending, the order of the values in this array should match the order of the values in the sortBy array, if only one value is specified it will be used for all sortBy values, otherwise the lengths must match
-    """
-    sortDirection: [SortDirection!]
-
-    """The string filters to apply to the query"""
-    stringFilters: [NotificationResolverKeyedStringFilterItem!]
+    sortBy: [NotificationResolverSort!]
   ): ListNotificationsResponse!
   people(
-    """The boolean filters to apply to the query"""
-    booleanFilters: Void
-
-    """The date filters to apply to the query"""
-    dateFilters: Void
-
-    """Whether to include deleted items in the results"""
-    includeDeleted: Boolean @deprecated(reason: "Soft-deletion is no longer used in this project, this parameter is ignored")
-
-    """The is-null filters to apply to the query"""
-    isNullFilters: [PersonResolverKeyedIsNullFilterItem!]
-
-    """The numeric filters to apply to the query"""
-    numericFilters: Void
-
-    """The one-of filters to apply to the query"""
-    oneOfFilters: [PersonResolverKeyedOneOfFilterItem!]
+    filters: PersonResolverFilterGroup!
 
     """The page number to return, defaults to 1"""
-    page: Int
+    page: PositiveInt! = 1
 
     """The number of items to return per page, defaults to 10"""
-    pageSize: Int
+    pageSize: NonNegativeInt! = 10
 
     """
     Whether to send all results in a single page, defaults to false (should generally be avoided)
@@ -2271,42 +1488,18 @@ type Query {
     """
     The fields to sort by, in order of priority. If unspecified, the sort order is undefined
     """
-    sortBy: [String!]
-
-    """
-    The direction to sort, if not specified will default to ascending, the order of the values in this array should match the order of the values in the sortBy array, if only one value is specified it will be used for all sortBy values, otherwise the lengths must match
-    """
-    sortDirection: [SortDirection!]
-
-    """The string filters to apply to the query"""
-    stringFilters: [PersonResolverKeyedStringFilterItem!]
+    sortBy: [PersonResolverSort!]
   ): ListPeopleResponse!
   person(id: GlobalId!): PersonNode!
   personByLinkBlue(linkBlueId: String!): PersonNode
   pointEntries(
-    """The boolean filters to apply to the query"""
-    booleanFilters: Void
-
-    """The date filters to apply to the query"""
-    dateFilters: [PointEntryResolverKeyedDateFilterItem!]
-
-    """Whether to include deleted items in the results"""
-    includeDeleted: Boolean @deprecated(reason: "Soft-deletion is no longer used in this project, this parameter is ignored")
-
-    """The is-null filters to apply to the query"""
-    isNullFilters: [PointEntryResolverKeyedIsNullFilterItem!]
-
-    """The numeric filters to apply to the query"""
-    numericFilters: Void
-
-    """The one-of filters to apply to the query"""
-    oneOfFilters: Void
+    filters: PointEntryResolverFilterGroup!
 
     """The page number to return, defaults to 1"""
-    page: Int
+    page: PositiveInt! = 1
 
     """The number of items to return per page, defaults to 10"""
-    pageSize: Int
+    pageSize: NonNegativeInt! = 10
 
     """
     Whether to send all results in a single page, defaults to false (should generally be avoided)
@@ -2316,41 +1509,17 @@ type Query {
     """
     The fields to sort by, in order of priority. If unspecified, the sort order is undefined
     """
-    sortBy: [String!]
-
-    """
-    The direction to sort, if not specified will default to ascending, the order of the values in this array should match the order of the values in the sortBy array, if only one value is specified it will be used for all sortBy values, otherwise the lengths must match
-    """
-    sortDirection: [SortDirection!]
-
-    """The string filters to apply to the query"""
-    stringFilters: Void
+    sortBy: [PointEntryResolverSort!]
   ): ListPointEntriesResponse!
   pointEntry(id: GlobalId!): PointEntryNode!
   pointOpportunities(
-    """The boolean filters to apply to the query"""
-    booleanFilters: Void
-
-    """The date filters to apply to the query"""
-    dateFilters: [PointOpportunityResolverKeyedDateFilterItem!]
-
-    """Whether to include deleted items in the results"""
-    includeDeleted: Boolean @deprecated(reason: "Soft-deletion is no longer used in this project, this parameter is ignored")
-
-    """The is-null filters to apply to the query"""
-    isNullFilters: [PointOpportunityResolverKeyedIsNullFilterItem!]
-
-    """The numeric filters to apply to the query"""
-    numericFilters: Void
-
-    """The one-of filters to apply to the query"""
-    oneOfFilters: [PointOpportunityResolverKeyedOneOfFilterItem!]
+    filters: PointOpportunityResolverFilterGroup!
 
     """The page number to return, defaults to 1"""
-    page: Int
+    page: PositiveInt! = 1
 
     """The number of items to return per page, defaults to 10"""
-    pageSize: Int
+    pageSize: NonNegativeInt! = 10
 
     """
     Whether to send all results in a single page, defaults to false (should generally be avoided)
@@ -2360,15 +1529,7 @@ type Query {
     """
     The fields to sort by, in order of priority. If unspecified, the sort order is undefined
     """
-    sortBy: [String!]
-
-    """
-    The direction to sort, if not specified will default to ascending, the order of the values in this array should match the order of the values in the sortBy array, if only one value is specified it will be used for all sortBy values, otherwise the lengths must match
-    """
-    sortDirection: [SortDirection!]
-
-    """The string filters to apply to the query"""
-    stringFilters: [PointOpportunityResolverKeyedStringFilterItem!]
+    sortBy: [PointOpportunityResolverSort!]
   ): ListPointOpportunitiesResponse!
   pointOpportunity(id: GlobalId!): PointOpportunityNode!
   rawFundraisingEntries(identifier: Int!, marathonYear: String!): String!
@@ -2377,33 +1538,17 @@ type Query {
   """
   The output of this query is not stable. Do not rely on an exact format.
   """
-  report(from: DateTimeISO, report: NonEmptyString!, to: DateTimeISO): Report!
+  report(from: LuxonDateTime, report: NonEmptyString!, to: LuxonDateTime): Report!
   searchPeopleByName(name: String!): [PersonNode!]!
   solicitationCode(id: GlobalId!): SolicitationCodeNode!
   solicitationCodes(
-    """The boolean filters to apply to the query"""
-    booleanFilters: Void
-
-    """The date filters to apply to the query"""
-    dateFilters: [SolicitationCodeKeyedDateFilterItem!]
-
-    """Whether to include deleted items in the results"""
-    includeDeleted: Boolean @deprecated(reason: "Soft-deletion is no longer used in this project, this parameter is ignored")
-
-    """The is-null filters to apply to the query"""
-    isNullFilters: [SolicitationCodeKeyedIsNullFilterItem!]
-
-    """The numeric filters to apply to the query"""
-    numericFilters: [SolicitationCodeKeyedNumericFilterItem!]
-
-    """The one-of filters to apply to the query"""
-    oneOfFilters: [SolicitationCodeKeyedOneOfFilterItem!]
+    filters: SolicitationCodeFilterGroup!
 
     """The page number to return, defaults to 1"""
-    page: Int
+    page: PositiveInt! = 1
 
     """The number of items to return per page, defaults to 10"""
-    pageSize: Int
+    pageSize: NonNegativeInt! = 10
 
     """
     Whether to send all results in a single page, defaults to false (should generally be avoided)
@@ -2413,43 +1558,19 @@ type Query {
     """
     The fields to sort by, in order of priority. If unspecified, the sort order is undefined
     """
-    sortBy: [String!]
-
-    """
-    The direction to sort, if not specified will default to ascending, the order of the values in this array should match the order of the values in the sortBy array, if only one value is specified it will be used for all sortBy values, otherwise the lengths must match
-    """
-    sortDirection: [SortDirection!]
-
-    """The string filters to apply to the query"""
-    stringFilters: [SolicitationCodeKeyedStringFilterItem!]
+    sortBy: [SolicitationCodeSort!]
   ): ListSolicitationCodesResponse!
   team(id: GlobalId!): TeamNode!
   teams(
-    """The boolean filters to apply to the query"""
-    booleanFilters: Void
-
-    """The date filters to apply to the query"""
-    dateFilters: Void
-
-    """Whether to include deleted items in the results"""
-    includeDeleted: Boolean @deprecated(reason: "Soft-deletion is no longer used in this project, this parameter is ignored")
-
-    """The is-null filters to apply to the query"""
-    isNullFilters: [TeamResolverKeyedIsNullFilterItem!]
+    filters: TeamResolverFilterGroup!
     legacyStatus: [TeamLegacyStatus!]
     marathonId: [GlobalId!]
 
-    """The numeric filters to apply to the query"""
-    numericFilters: Void
-
-    """The one-of filters to apply to the query"""
-    oneOfFilters: [TeamResolverKeyedOneOfFilterItem!]
-
     """The page number to return, defaults to 1"""
-    page: Int
+    page: PositiveInt! = 1
 
     """The number of items to return per page, defaults to 10"""
-    pageSize: Int
+    pageSize: NonNegativeInt! = 10
 
     """
     Whether to send all results in a single page, defaults to false (should generally be avoided)
@@ -2459,15 +1580,7 @@ type Query {
     """
     The fields to sort by, in order of priority. If unspecified, the sort order is undefined
     """
-    sortBy: [String!]
-
-    """
-    The direction to sort, if not specified will default to ascending, the order of the values in this array should match the order of the values in the sortBy array, if only one value is specified it will be used for all sortBy values, otherwise the lengths must match
-    """
-    sortDirection: [SortDirection!]
-
-    """The string filters to apply to the query"""
-    stringFilters: [TeamResolverKeyedStringFilterItem!]
+    sortBy: [TeamResolverSort!]
     type: [TeamType!]
     visibility: [DbRole!] @deprecated(reason: "Use type")
   ): ListTeamsResponse!
@@ -2538,13 +1651,13 @@ input SetFundraisingEntryInput {
 input SetMarathonHourInput {
   details: NonEmptyString
   durationInfo: NonEmptyString!
-  shownStartingAt: DateTimeISO!
+  shownStartingAt: LuxonDateTime!
   title: NonEmptyString!
 }
 
 input SetMarathonInput {
-  endDate: DateTimeISO
-  startDate: DateTimeISO
+  endDate: LuxonDateTime
+  startDate: LuxonDateTime
   year: NonEmptyString!
 }
 
@@ -2566,7 +1679,7 @@ input SetPersonInput {
 input SetPointOpportunityInput {
   eventUuid: GlobalId
   name: NonEmptyString
-  opportunityDate: DateTimeISO
+  opportunityDate: LuxonDateTime
   type: TeamType
 }
 
@@ -2581,7 +1694,48 @@ input SetTeamInput {
   type: TeamType
 }
 
-enum SolicitationCodeAllKeys {
+input SingleBooleanFilter {
+  comparison: SingleTargetOperators!
+  value: Boolean!
+}
+
+input SingleDateFilter {
+  comparison: SingleTargetOperators!
+  value: LuxonDateTime!
+}
+
+input SingleNumberFilter {
+  comparison: SingleTargetOperators!
+  value: Float!
+}
+
+input SingleStringFilter {
+  comparison: SingleTargetOperators!
+  value: String!
+}
+
+enum SingleTargetOperators {
+  CONTAINS
+  ENDS_WITH
+  EQUALS
+  GREATER_THAN
+  GREATER_THAN_OR_EQUAL_TO
+  INSENSITIVE_CONTAINS
+  INSENSITIVE_ENDS_WITH
+  INSENSITIVE_NOT_CONTAINS
+  INSENSITIVE_NOT_ENDS_WITH
+  INSENSITIVE_NOT_STARTS_WITH
+  INSENSITIVE_STARTS_WITH
+  LESS_THAN
+  LESS_THAN_OR_EQUAL_TO
+  NOT_CONTAINS
+  NOT_ENDS_WITH
+  NOT_EQUALS
+  NOT_STARTS_WITH
+  STARTS_WITH
+}
+
+enum SolicitationCodeFilterFields {
   code
   createdAt
   name
@@ -2589,101 +1743,28 @@ enum SolicitationCodeAllKeys {
   updatedAt
 }
 
-enum SolicitationCodeDateFilterKeys {
-  createdAt
-  updatedAt
+input SolicitationCodeFilterGroup {
+  children: [SolicitationCodeFilterGroup!]! = []
+  filters: [SolicitationCodeFilterItem!]! = []
+  operator: FilterGroupOperator!
 }
 
-input SolicitationCodeKeyedDateFilterItem {
-  """The comparator to use for the filter"""
-  comparison: NumericComparator!
-
-  """The field to filter on"""
-  field: SolicitationCodeDateFilterKeys!
-
-  """
-  Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation.
-  """
-  negate: Boolean = false
-  value: DateTimeISO!
-}
-
-input SolicitationCodeKeyedIsNullFilterItem {
-  """The field to filter on"""
-  field: SolicitationCodeAllKeys!
-
-  """
-  Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation.
-  """
-  negate: Boolean = false
-}
-
-input SolicitationCodeKeyedNumericFilterItem {
-  """The comparator to use for the filter"""
-  comparison: NumericComparator!
-
-  """The field to filter on"""
-  field: SolicitationCodeNumericFilterKeys!
-
-  """
-  Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation.
-  """
-  negate: Boolean = false
-  value: Float!
-}
-
-input SolicitationCodeKeyedOneOfFilterItem {
-  """The field to filter on"""
-  field: Void!
-
-  """
-  Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation.
-  """
-  negate: Boolean = false
-  value: [String!]!
-}
-
-input SolicitationCodeKeyedStringFilterItem {
-  """The comparator to use for the filter"""
-  comparison: StringComparator!
-
-  """The field to filter on"""
-  field: SolicitationCodeStringFilterKeys!
-
-  """
-  Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation.
-  """
-  negate: Boolean = false
-  value: String!
+input SolicitationCodeFilterItem {
+  field: SolicitationCodeFilterFields!
+  filter: SomeFilter!
 }
 
 type SolicitationCodeNode implements Node {
   code: NonNegativeInt!
-  createdAt: DateTimeISO
+  createdAt: LuxonDateTime
   entries(
-    """The boolean filters to apply to the query"""
-    booleanFilters: Void
-
-    """The date filters to apply to the query"""
-    dateFilters: [FundraisingEntryResolverKeyedDateFilterItem!]
-
-    """Whether to include deleted items in the results"""
-    includeDeleted: Boolean @deprecated(reason: "Soft-deletion is no longer used in this project, this parameter is ignored")
-
-    """The is-null filters to apply to the query"""
-    isNullFilters: [FundraisingEntryResolverKeyedIsNullFilterItem!]
-
-    """The numeric filters to apply to the query"""
-    numericFilters: [FundraisingEntryResolverKeyedNumericFilterItem!]
-
-    """The one-of filters to apply to the query"""
-    oneOfFilters: [FundraisingEntryResolverKeyedOneOfFilterItem!]
+    filters: FundraisingEntryResolverFilterGroup!
 
     """The page number to return, defaults to 1"""
-    page: Int
+    page: PositiveInt! = 1
 
     """The number of items to return per page, defaults to 10"""
-    pageSize: Int
+    pageSize: NonNegativeInt! = 10
 
     """
     Whether to send all results in a single page, defaults to false (should generally be avoided)
@@ -2693,48 +1774,38 @@ type SolicitationCodeNode implements Node {
     """
     The fields to sort by, in order of priority. If unspecified, the sort order is undefined
     """
-    sortBy: [String!]
-
-    """
-    The direction to sort, if not specified will default to ascending, the order of the values in this array should match the order of the values in the sortBy array, if only one value is specified it will be used for all sortBy values, otherwise the lengths must match
-    """
-    sortDirection: [SortDirection!]
-
-    """The string filters to apply to the query"""
-    stringFilters: [FundraisingEntryResolverKeyedStringFilterItem!]
+    sortBy: [FundraisingEntryResolverSort!]
   ): ListFundraisingEntriesResponse!
   id: GlobalId!
   name: String
   prefix: String!
   teams(marathonId: GlobalId): [TeamNode!]!
   text: String!
-  updatedAt: DateTimeISO
+  updatedAt: LuxonDateTime
 }
 
-enum SolicitationCodeNumericFilterKeys {
-  code
+input SolicitationCodeSort {
+  direction: SortDirection! = asc
+  field: SolicitationCodeFilterFields!
 }
 
-enum SolicitationCodeStringFilterKeys {
-  name
-  prefix
+input SomeFilter {
+  arrayBooleanFilter: ArrayBooleanFilter
+  arrayDateFilter: ArrayDateFilter
+  arrayNumberFilter: ArrayNumberFilter
+  arrayStringFilter: ArrayStringFilter
+  nullFilter: NullFilter
+  singleBooleanFilter: SingleBooleanFilter
+  singleDateFilter: SingleDateFilter
+  singleNumberFilter: SingleNumberFilter
+  singleStringFilter: SingleStringFilter
+  twoDateFilter: TwoDateFilter
+  twoNumberFilter: TwoNumberFilter
 }
 
 enum SortDirection {
   asc
   desc
-}
-
-enum StringComparator {
-  ENDS_WITH
-  EQUALS
-  GREATER_THAN
-  GREATER_THAN_OR_EQUAL_TO
-  IS
-  LESS_THAN
-  LESS_THAN_OR_EQUAL_TO
-  STARTS_WITH
-  SUBSTRING
 }
 
 """New Team vs Returning Team"""
@@ -2746,31 +1817,15 @@ enum TeamLegacyStatus {
 
 type TeamNode implements Node {
   committeeIdentifier: CommitteeIdentifier
-  createdAt: DateTimeISO
+  createdAt: LuxonDateTime
   fundraisingEntries(
-    """The boolean filters to apply to the query"""
-    booleanFilters: Void
-
-    """The date filters to apply to the query"""
-    dateFilters: [FundraisingEntryResolverKeyedDateFilterItem!]
-
-    """Whether to include deleted items in the results"""
-    includeDeleted: Boolean @deprecated(reason: "Soft-deletion is no longer used in this project, this parameter is ignored")
-
-    """The is-null filters to apply to the query"""
-    isNullFilters: [FundraisingEntryResolverKeyedIsNullFilterItem!]
-
-    """The numeric filters to apply to the query"""
-    numericFilters: [FundraisingEntryResolverKeyedNumericFilterItem!]
-
-    """The one-of filters to apply to the query"""
-    oneOfFilters: [FundraisingEntryResolverKeyedOneOfFilterItem!]
+    filters: FundraisingEntryResolverFilterGroup!
 
     """The page number to return, defaults to 1"""
-    page: Int
+    page: PositiveInt! = 1
 
     """The number of items to return per page, defaults to 10"""
-    pageSize: Int
+    pageSize: NonNegativeInt! = 10
 
     """
     Whether to send all results in a single page, defaults to false (should generally be avoided)
@@ -2780,15 +1835,7 @@ type TeamNode implements Node {
     """
     The fields to sort by, in order of priority. If unspecified, the sort order is undefined
     """
-    sortBy: [String!]
-
-    """
-    The direction to sort, if not specified will default to ascending, the order of the values in this array should match the order of the values in the sortBy array, if only one value is specified it will be used for all sortBy values, otherwise the lengths must match
-    """
-    sortDirection: [SortDirection!]
-
-    """The string filters to apply to the query"""
-    stringFilters: [FundraisingEntryResolverKeyedStringFilterItem!]
+    sortBy: [FundraisingEntryResolverSort!]
   ): ListFundraisingEntriesResponse!
   fundraisingTotalAmount: Float
   id: GlobalId!
@@ -2800,59 +1847,30 @@ type TeamNode implements Node {
   solicitationCode: SolicitationCodeNode
   totalPoints: Int!
   type: TeamType!
-  updatedAt: DateTimeISO
+  updatedAt: LuxonDateTime
 }
 
-enum TeamResolverAllKeys {
+enum TeamResolverFilterFields {
   legacyStatus
   marathonId
   name
   type
 }
 
-input TeamResolverKeyedIsNullFilterItem {
-  """The field to filter on"""
-  field: TeamResolverAllKeys!
-
-  """
-  Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation.
-  """
-  negate: Boolean = false
+input TeamResolverFilterGroup {
+  children: [TeamResolverFilterGroup!]! = []
+  filters: [TeamResolverFilterItem!]! = []
+  operator: FilterGroupOperator!
 }
 
-input TeamResolverKeyedOneOfFilterItem {
-  """The field to filter on"""
-  field: TeamResolverOneOfFilterKeys!
-
-  """
-  Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation.
-  """
-  negate: Boolean = false
-  value: [String!]!
+input TeamResolverFilterItem {
+  field: TeamResolverFilterFields!
+  filter: SomeFilter!
 }
 
-input TeamResolverKeyedStringFilterItem {
-  """The comparator to use for the filter"""
-  comparison: StringComparator!
-
-  """The field to filter on"""
-  field: TeamResolverStringFilterKeys!
-
-  """
-  Should the comparator be negated? WARNING: This will throw if used on a comparator that does not support negation.
-  """
-  negate: Boolean = false
-  value: String!
-}
-
-enum TeamResolverOneOfFilterKeys {
-  legacyStatus
-  marathonId
-  type
-}
-
-enum TeamResolverStringFilterKeys {
-  name
+input TeamResolverSort {
+  direction: SortDirection! = asc
+  field: TeamResolverFilterFields!
 }
 
 """Types of teams"""
@@ -2860,6 +1878,23 @@ enum TeamType {
   Mini
   Morale
   Spirit
+}
+
+input TwoDateFilter {
+  comparison: TwoTargetOperators!
+  lower: LuxonDateTime!
+  upper: LuxonDateTime!
+}
+
+input TwoNumberFilter {
+  comparison: TwoTargetOperators!
+  lower: Float!
+  upper: Float!
+}
+
+enum TwoTargetOperators {
+  BETWEEN
+  NOT_BETWEEN
 }
 
 """

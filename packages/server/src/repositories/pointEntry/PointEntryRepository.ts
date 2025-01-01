@@ -2,11 +2,6 @@ import { Service } from "@freshgum/typedi";
 import { Prisma, PrismaClient } from "@prisma/client";
 import type { SortDirection } from "@ukdanceblue/common";
 
-import {
-  buildPointEntryOrder,
-  buildPointEntryWhere,
-} from "./pointEntryRepositoryUtils.js";
-
 const pointEntryBooleanKeys = [] as const;
 type PointEntryBooleanKey = (typeof pointEntryBooleanKeys)[number];
 

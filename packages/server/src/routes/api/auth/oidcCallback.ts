@@ -7,6 +7,7 @@ import { authorizationCodeGrant } from "openid-client";
 
 import { makeUserJwt } from "#auth/index.js";
 import { getHostUrl } from "#lib/host.js";
+import { logger } from "#lib/logging/standardLogging.js";
 import { LoginFlowSessionRepository } from "#repositories/LoginFlowSession.js";
 import { personModelToResource } from "#repositories/person/personModelToResource.js";
 import { PersonRepository } from "#repositories/person/PersonRepository.js";
@@ -165,6 +166,9 @@ export const oidcCallback = async (
     );
 
     if (updatedPerson.isErr()) {
+      logger.error("Failed to update database entry", {
+        error: updatedPerson.error,
+      });
       return void res.status(500).send("Failed to update database entry");
     }
 

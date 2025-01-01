@@ -1,4 +1,3 @@
-import { StringComparator } from "@ukdanceblue/common";
 import { Button, Flex, Image, Input } from "antd";
 import { useState } from "react";
 import { useQuery } from "urql";

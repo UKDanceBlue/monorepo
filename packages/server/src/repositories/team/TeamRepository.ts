@@ -17,8 +17,6 @@ import {
   type SimpleUniqueParam,
 } from "#repositories/shared.js";
 
-import { buildTeamOrder, buildTeamWhere } from "./teamRepositoryUtils.js";
-
 const teamBooleanKeys = [] as const;
 type TeamBooleanKey = (typeof teamBooleanKeys)[number];
 

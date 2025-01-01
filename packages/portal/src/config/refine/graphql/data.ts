@@ -3,14 +3,8 @@
 import type { DataProvider, HttpError } from "@refinedev/core";
 import type { Pagination } from "@refinedev/core";
 import type {
-  BooleanFilterItemInterface,
-  DateFilterItemInterface,
-  IsNullFilterItemInterface,
-  NumericFilterItemInterface,
-  OneOfFilterItemInterface,
-  PaginationOptions,
-  SortingOptions,
-  StringFilterItemInterface,
+  AbstractFilteredListQueryArgs,
+  AbstractSortItem,
 } from "@ukdanceblue/common";
 import { getCrudOperationNames } from "@ukdanceblue/common";
 import type { CombinedError } from "@urql/core";
@@ -27,7 +21,10 @@ import {
 import pluralize, { singular } from "pluralize";
 
 import { API_BASE_URL, urqlClient } from "../../api";
-import { crudFiltersToFilterObject } from "./crudFiltersToFilterObject";
+import {
+  crudFiltersToFilterObject,
+  type FilterGroup,
+} from "./crudFiltersToFilterObject";
 import { makeListDocument } from "./makeListDocument";
 
 function getOperationName(
@@ -38,15 +35,6 @@ function getOperationName(
 }
 
 export type FieldTypes = Record<string, "string" | "number" | "date" | "oneOf">;
-
-export interface FilterObject {
-  dateFilters: DateFilterItemInterface<string>[];
-  isNullFilters: IsNullFilterItemInterface<string>[];
-  numericFilters: NumericFilterItemInterface<string>[];
-  oneOfFilters: OneOfFilterItemInterface<string>[];
-  stringFilters: StringFilterItemInterface<string>[];
-  booleanFilters: BooleanFilterItemInterface<string>[];
-}
 
 function combinedToHttpError(error: CombinedError): HttpError {
   if (error.networkError) {
@@ -72,8 +60,6 @@ function combinedToHttpError(error: CombinedError): HttpError {
     };
   }
 }
-
-type ListQueryOptions = PaginationOptions & SortingOptions & FilterObject;
 
 // We alias gql to gqlButDifferentName to avoid the GraphQL plugin giving us an error about the invalid syntax
 const gqlButDifferentName = gql;
@@ -169,17 +155,15 @@ export const dataProvider: Required<DataProvider> = {
   getList: async (params) => {
     const { meta, sorters, filters, pagination, resource } = params;
 
-    const {
-      dateFilters,
-      isNullFilters,
-      numericFilters,
-      oneOfFilters,
-      stringFilters,
-      booleanFilters,
-    } = crudFiltersToFilterObject(
-      filters ?? [],
-      meta?.fieldTypes as FieldTypes | undefined
-    );
+    const filterObj =
+      filters &&
+      crudFiltersToFilterObject(
+        {
+          operator: "and",
+          value: filters,
+        },
+        meta?.fieldTypes as FieldTypes | undefined
+      );
 
     let query: DocumentNode | undefined;
     if (meta?.gqlQuery) {
@@ -192,14 +176,7 @@ export const dataProvider: Required<DataProvider> = {
           pascalCase: true,
         });
 
-        query = makeListDocument(pascalResource, resource, fragmentDefinition, {
-          boolean: booleanFilters.length > 0,
-          date: dateFilters.length > 0,
-          isNull: isNullFilters.length > 0,
-          numeric: numericFilters.length > 0,
-          oneOf: oneOfFilters.length > 0,
-          string: stringFilters.length > 0,
-        });
+        query = makeListDocument(pascalResource, resource, fragmentDefinition);
       }
     }
 
@@ -209,19 +186,23 @@ export const dataProvider: Required<DataProvider> = {
 
     const response = await urqlClient
       .query(query, {
-        sortBy: sorters?.map((sorter) => sorter.field) ?? undefined,
-        sortDirection: sorters?.map((sorter) => sorter.order) ?? undefined,
+        sortBy:
+          sorters?.map(
+            (sorter): AbstractSortItem<string> => ({
+              field: sorter.field,
+              direction: sorter.order,
+            })
+          ) ?? undefined,
         page: pagination?.current ?? undefined,
         pageSize: pagination?.pageSize ?? undefined,
-        booleanFilters: booleanFilters.length > 0 ? booleanFilters : undefined,
-        dateFilters: dateFilters.length > 0 ? dateFilters : undefined,
-        isNullFilters: isNullFilters.length > 0 ? isNullFilters : undefined,
-        numericFilters: numericFilters.length > 0 ? numericFilters : undefined,
-        oneOfFilters: oneOfFilters.length > 0 ? oneOfFilters : undefined,
-        stringFilters: stringFilters.length > 0 ? stringFilters : undefined,
+        filters: filterObj,
         ...meta?.variables,
         ...meta?.gqlVariables,
-      } satisfies Partial<ListQueryOptions>)
+      } satisfies Partial<
+        Omit<AbstractFilteredListQueryArgs<string>, "filters"> & {
+          filters: FilterGroup;
+        }
+      >)
       .toPromise();
 
     if (response.error) {

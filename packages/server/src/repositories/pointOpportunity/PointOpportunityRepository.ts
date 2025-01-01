@@ -3,11 +3,6 @@ import type { PointOpportunityType } from "@prisma/client";
 import { Prisma, PrismaClient } from "@prisma/client";
 import type { SortDirection } from "@ukdanceblue/common";
 
-import {
-  buildPointOpportunityOrder,
-  buildPointOpportunityWhere,
-} from "./pointOpportunityRepositoryUtils.js";
-
 const pointOpportunityBooleanKeys = [] as const;
 type PointOpportunityBooleanKey = (typeof pointOpportunityBooleanKeys)[number];
 

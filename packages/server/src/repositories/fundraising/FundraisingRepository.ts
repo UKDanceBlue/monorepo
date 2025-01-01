@@ -39,11 +39,6 @@ import {
 } from "#repositories/shared.js";
 import { SolicitationCodeUniqueParam } from "#repositories/solicitationCode/SolicitationCodeRepository.js";
 
-import {
-  buildFundraisingEntryOrder,
-  buildFundraisingEntryWhere,
-} from "./fundraisingEntryRepositoryUtils.js";
-
 const fundraisingEntryBooleanKeys = [] as const;
 type FundraisingEntryBooleanKey = (typeof fundraisingEntryBooleanKeys)[number];
 

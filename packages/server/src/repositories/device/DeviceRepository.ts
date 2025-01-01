@@ -9,8 +9,6 @@ import type { NotificationAudience } from "#notification/NotificationProvider.js
 import { PersonRepository } from "#repositories/person/PersonRepository.js";
 import { RepositoryError } from "#repositories/shared.js";
 
-import { buildDeviceOrder, buildDeviceWhere } from "./deviceRepositoryUtils.js";
-
 const deviceStringKeys = ["expoPushToken"] as const;
 type DeviceStringKey = (typeof deviceStringKeys)[number];
 

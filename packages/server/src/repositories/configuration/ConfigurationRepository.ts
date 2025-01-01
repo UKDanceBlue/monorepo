@@ -5,11 +5,6 @@ import type { DateTime } from "luxon";
 
 import { SimpleUniqueParam } from "#repositories/shared.js";
 
-import {
-  buildConfigurationOrder,
-  buildConfigurationWhere,
-} from "./configurationRepositoryUtils.js";
-
 const configurationStringKeys = ["key", "value"] as const;
 type ConfigurationStringKey = (typeof configurationStringKeys)[number];
 

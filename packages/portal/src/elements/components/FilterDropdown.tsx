@@ -1,5 +1,3 @@
-import type { StringFilterItemInterface } from "@ukdanceblue/common";
-import { StringComparator } from "@ukdanceblue/common";
 import type { InputRef } from "antd";
 import Search from "antd/es/input/Search.js";
 
