@@ -61,10 +61,15 @@ export default class EventsRouter extends RouterService {
           }
         }
 
-        const upcomingEvents = await this.eventRepository.getUpcomingEvents({
-          count: eventsToSend,
-          until,
-        });
+        const upcomingEventsResult =
+          await this.eventRepository.getUpcomingEvents({
+            count: eventsToSend,
+            until,
+          }).promise;
+        if (upcomingEventsResult.isErr()) {
+          throw upcomingEventsResult.error.graphqlError;
+        }
+        const upcomingEvents = upcomingEventsResult.value;
 
         const eventsJson: UpcomingEvent[] = await Promise.all(
           upcomingEvents.map(async (event) => {

@@ -45,7 +45,7 @@ model PointOpportunity {
   marathonId           Int
   pointEntries         PointEntry[]
   event                Event?                @relation(fields: [eventId], references: [id])
-  eventWithOccurrences EventWithOccurrences? @relation(fields: [eventId], references: [id], map: "eventWithOccurrencesRelation") @ignore
+  eventWithOccurrences EventWithOccurrences? @relation(fields: [eventId], references: [id], map: "eventWithOccurrencesRelation")
   marathon             Marathon              @relation(fields: [marathonId], references: [id], onDelete: Cascade)
 }
 

@@ -1,7 +1,6 @@
 /* eslint-disable no-await-in-loop */
 import { faker } from "@faker-js/faker";
 import { Container } from "@freshgum/typedi";
-import type { Prisma } from "@prisma/client";
 import {
   CommitteeIdentifier,
   CommitteeRole,
@@ -159,25 +158,26 @@ try {
   }
 
   for (let i = 0; i < 20; i++) {
-    await eventRepository.createEvent({
-      title: faker.lorem.words({ min: 2, max: 6 }),
-      description: faker.datatype.boolean()
-        ? faker.lorem.sentences({ min: 1, max: 6 })
-        : undefined,
-      location: faker.datatype.boolean()
-        ? faker.location.streetAddress()
-        : undefined,
-      summary: faker.datatype.boolean()
-        ? faker.lorem.sentence({ min: 3, max: 6 })
-        : undefined,
-      eventImages: {
-        create: faker.helpers.arrayElements(images, { min: 0, max: 3 }).map(
-          ({ id }): Prisma.EventImageCreateWithoutEventInput => ({
-            image: { connect: { id } },
-          })
-        ),
+    await eventRepository.create({
+      init: {
+        title: faker.lorem.words({ min: 2, max: 6 }),
+        description: faker.datatype.boolean()
+          ? faker.lorem.sentences({ min: 1, max: 6 })
+          : null,
+        location: faker.datatype.boolean()
+          ? faker.location.streetAddress()
+          : null,
+        summary: faker.datatype.boolean()
+          ? faker.lorem.sentence({ min: 3, max: 6 })
+          : null,
+        eventOccurrences: [],
+        eventImages: {
+          connect: faker.helpers
+            .arrayElements(images, { min: 0, max: 3 })
+            .map(({ id }) => ({ id })),
+        },
       },
-    });
+    }).promise;
   }
 } finally {
   await prisma.$disconnect();

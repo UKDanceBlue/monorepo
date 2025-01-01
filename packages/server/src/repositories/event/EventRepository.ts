@@ -1,11 +1,16 @@
 import { Service } from "@freshgum/typedi";
-import { Event, EventOccurrence, Prisma, PrismaClient } from "@prisma/client";
+import { Event, Prisma, PrismaClient } from "@prisma/client";
 
 type UniqueEventParam = { id: number } | { uuid: string };
 
 import type { DefaultArgs } from "@prisma/client/runtime/library";
-import { ConcreteError, InvalidArgumentError } from "@ukdanceblue/common/error";
-import { Err, Ok, Result } from "ts-results-es";
+import {
+  type FetchError,
+  InvalidArgumentError,
+  LuxonError,
+} from "@ukdanceblue/common/error";
+import type { Interval } from "luxon";
+import { AsyncResult, Err, Ok, Result } from "ts-results-es";
 
 import { externalUrlToImage } from "#lib/external-apis/externalUrlToImage.js";
 import { prismaToken } from "#lib/typediTokens.js";
@@ -19,12 +24,10 @@ import {
   type FindAndCountResult,
   type FindOneParams,
   type FindOneResult,
+  type UpdateParams,
+  type UpdateResult,
 } from "#repositories/Default.js";
-import {
-  type AsyncRepositoryResult,
-  handleRepositoryError,
-  RepositoryError,
-} from "#repositories/shared.js";
+import { type AsyncRepositoryResult } from "#repositories/shared.js";
 
 export interface ForeignEvent {
   id: string;
@@ -48,14 +51,14 @@ type EventFilterKeys =
   | "createdAt"
   | "updatedAt";
 
+const defaultOptions = { include: { eventOccurrences: true } } as const;
+
 @Service([prismaToken])
 export class EventRepository extends buildDefaultRepository<
-  PrismaClient["event"],
+  PrismaClient["eventWithOccurrences"],
   UniqueEventParam,
   EventFilterKeys,
-  {
-    eventOccurrences: true;
-  }
+  (typeof defaultOptions)["include"]
 >("Event", {
   title: {
     getOrderBy: (order) =>
@@ -150,7 +153,10 @@ export class EventRepository extends buildDefaultRepository<
     super(prisma);
   }
 
-  public uniqueToWhere(by: UniqueEventParam): Prisma.EventWhereUniqueInput {
+  public uniqueToWhere(
+    by: UniqueEventParam
+  ): Prisma.EventWithOccurrencesWhereUniqueInput &
+    Prisma.EventWhereUniqueInput {
     return EventRepository.simpleUniqueToWhere(by);
   }
 
@@ -159,14 +165,17 @@ export class EventRepository extends buildDefaultRepository<
     tx,
   }: FindOneParams<UniqueEventParam>): AsyncRepositoryResult<
     FindOneResult<
-      Prisma.EventDelegate<DefaultArgs, Prisma.PrismaClientOptions>,
-      { include: { eventOccurrences: true } }
+      Prisma.EventWithOccurrencesDelegate<
+        DefaultArgs,
+        Prisma.PrismaClientOptions
+      >,
+      typeof defaultOptions
     >
   > {
     return this.handleQueryError(
-      (tx ?? this.prisma).event.findUnique({
+      (tx ?? this.prisma).eventWithOccurrences.findUnique({
+        ...defaultOptions,
         where: this.uniqueToWhere(by),
-        include: { eventOccurrences: true },
       }),
       { what: "event", where: "EventRepository.findOne" }
     );
@@ -177,14 +186,18 @@ export class EventRepository extends buildDefaultRepository<
     ...params
   }: FindAndCountParams<EventFilterKeys>): AsyncRepositoryResult<
     FindAndCountResult<
-      Prisma.EventDelegate<DefaultArgs, Prisma.PrismaClientOptions>
+      Prisma.EventWithOccurrencesDelegate<
+        DefaultArgs,
+        Prisma.PrismaClientOptions
+      >,
+      typeof defaultOptions
     >
   > {
     return this.parseFindManyParams(params)
       .toAsyncResult()
       .andThen((params) =>
         this.handleQueryError(
-          (tx ?? this.prisma).event.findMany({
+          (tx ?? this.prisma).eventWithOccurrences.findMany({
             ...params,
             include: { eventOccurrences: true },
           })
@@ -201,234 +214,286 @@ export class EventRepository extends buildDefaultRepository<
           }))
       )
       .andThen(({ rows, params }) =>
-        this.handleQueryError((tx ?? this.prisma).event.count(params)).map(
-          (total) => ({
-            selectedRows: rows,
-            total,
-          })
-        )
+        this.handleQueryError(
+          (tx ?? this.prisma).eventWithOccurrences.count(params)
+        ).map((total) => ({
+          selectedRows: rows,
+          total,
+        }))
       );
   }
 
-  async getUpcomingEvents({ count, until }: { count: number; until: Date }) {
-    const rows = await this.prisma.event.findMany({
-      where: {
-        eventOccurrences: {
-          some: {
-            date: {
-              gte: new Date(),
-              lte: until,
-            },
-          },
-        },
-      },
-      take: count,
-      include: {
-        eventOccurrences: true,
-        eventImages: {
-          include: {
-            image: {
-              include: {
-                file: true,
+  getUpcomingEvents({ count, until }: { count: number; until: Date }) {
+    return this.handleQueryError(
+      this.prisma.event.findMany({
+        where: {
+          eventOccurrences: {
+            some: {
+              date: {
+                gte: new Date(),
+                lte: until,
               },
             },
           },
         },
-      },
-    });
-
-    return rows
-      .map((row) => {
-        row.eventOccurrences.sort((a, b) => {
-          return a.date.getTime() - b.date.getTime();
-        });
-        return row;
+        take: count,
+        include: {
+          eventOccurrences: true,
+          eventImages: {
+            include: {
+              image: {
+                include: {
+                  file: true,
+                },
+              },
+            },
+          },
+        },
       })
-      .sort((a, b) => {
-        const aDate = a.eventOccurrences[0]?.date ?? new Date(0);
-        const bDate = b.eventOccurrences[0]?.date ?? new Date(0);
-        return aDate.getTime() - bDate.getTime();
-      });
+    ).map((rows) =>
+      rows
+        .map((row) => {
+          row.eventOccurrences.sort((a, b) => {
+            return a.date.getTime() - b.date.getTime();
+          });
+          return row;
+        })
+        .sort((a, b) => {
+          const aDate = a.eventOccurrences[0]?.date ?? new Date(0);
+          const bDate = b.eventOccurrences[0]?.date ?? new Date(0);
+          return aDate.getTime() - bDate.getTime();
+        })
+    );
   }
 
   create({
     init,
     tx,
-  }: CreateParams<
-    Prisma.EventDelegate<DefaultArgs, Prisma.PrismaClientOptions>
-  >): AsyncRepositoryResult<
-    CreateResult<Prisma.EventDelegate<DefaultArgs, Prisma.PrismaClientOptions>>
+  }: CreateParams<{
+    title: string;
+    summary: string | null;
+    description: string | null;
+    location: string | null;
+    eventOccurrences: {
+      interval: Interval;
+      fullDay: boolean;
+    }[];
+    eventImages?: {
+      connect: { id: number }[];
+    };
+  }>): AsyncRepositoryResult<
+    CreateResult<
+      Prisma.EventWithOccurrencesDelegate<
+        DefaultArgs,
+        Prisma.PrismaClientOptions
+      >,
+      typeof defaultOptions
+    >
   > {
-    return this.handleQueryError(
-      (tx ?? this.prisma).event.create({
-        data: init,
-        include: { eventOccurrences: true },
-      })
+    const eventOccurrences = Result.all(
+      init.eventOccurrences.map(({ interval, ...other }) =>
+        LuxonError.luxonObjectToResult(interval).map(
+          (interval: Interval<true>) => ({ interval, ...other })
+        )
+      )
+    );
+
+    return eventOccurrences.toAsyncResult().andThen((eventOccurrences) =>
+      this.handleQueryError(
+        (tx ?? this.prisma).eventWithOccurrences.create({
+          data: {
+            ...init,
+            eventOccurrences: {
+              createMany: {
+                data: eventOccurrences.map(({ interval, fullDay }) => ({
+                  date: interval.start.toISO(),
+                  endDate: interval.end.toISO(),
+                  fullDay,
+                })),
+              },
+            },
+            eventImages: init.eventImages && {
+              createMany: {
+                data: init.eventImages.connect.map(({ id }) => ({
+                  imageId: id,
+                })),
+              },
+            },
+          },
+          include: { eventOccurrences: true },
+        })
+      )
     );
   }
 
   loadForeignEvents(
     events: ForeignEvent[]
-  ): Promise<Result<Event[], ConcreteError>> {
-    const results: Event[] = [];
-    return this.prisma.$transaction(async (prisma) => {
-      for (const event of events) {
-        // eslint-disable-next-line no-await-in-loop
-        const existingEvent = await prisma.event.findUnique({
-          where: { remoteId: event.id },
-        });
-
-        if (existingEvent) {
-          continue;
-        }
-
-        const images = Result.all(
-          // eslint-disable-next-line no-await-in-loop
-          await Promise.all(event.imageUrls.map(externalUrlToImage))
-        );
-
-        if (images.isErr()) {
-          return images;
-        }
-
-        results.push(
-          // eslint-disable-next-line no-await-in-loop
-          await prisma.event.create({
-            data: {
-              title: event.title,
-              description: `${event.description}\n\n[More info](${event.url.href})`,
-              location: event.location,
-              remoteId: event.id,
-              eventOccurrences:
-                event.startsOn && event.endsOn
-                  ? {
-                      create: {
-                        date: event.startsOn,
-                        endDate: event.endsOn,
-                      },
-                    }
-                  : undefined,
-              eventImages: {
-                create: images
-                  .unwrap()
-                  .map(({ height, mimeType, thumbHash, url, width }) => ({
-                    image: {
-                      create: {
-                        height,
-                        width,
-                        thumbHash,
-                        file: {
-                          create: {
-                            filename: url.pathname.split("/").at(-1) ?? "",
-                            locationUrl: url.href,
-                            mimeSubtypeName: mimeType.subtype,
-                            mimeTypeName: mimeType.type,
-                            mimeParameters:
-                              mimeType.params.keys.length > 0
-                                ? {
-                                    set: [...mimeType.params.entries()].map(
-                                      ([k, v]) => `${k}=${v}`
-                                    ),
-                                  }
-                                : undefined,
-                          },
+  ): AsyncRepositoryResult<Event[], FetchError> {
+    return new AsyncResult(
+      Promise.all(
+        events.map(
+          (event) =>
+            new AsyncResult(
+              Promise.all(
+                event.imageUrls.map((url) => externalUrlToImage(url))
+              ).then((images) => Result.all(images))
+            ).map((images) => ({
+              images,
+              event,
+            })).promise
+        )
+      ).then((results) => Result.all(results))
+    ).andThen((results) =>
+      this.handleQueryError(
+        this.prisma.event.createManyAndReturn({
+          data: results.map(({ images, event }) => ({
+            title: event.title,
+            description: `${event.description}\n\n[More info](${event.url.href})`,
+            location: event.location,
+            eventOccurrences:
+              event.startsOn && event.endsOn
+                ? {
+                    create: {
+                      date: event.startsOn,
+                      endDate: event.endsOn,
+                    },
+                  }
+                : undefined,
+            eventImages: {
+              create: images.map(
+                ({ height, mimeType, thumbHash, url, width }) => ({
+                  image: {
+                    create: {
+                      height,
+                      width,
+                      thumbHash,
+                      file: {
+                        create: {
+                          filename: url.pathname.split("/").at(-1) ?? "",
+                          locationUrl: url.href,
+                          mimeSubtypeName: mimeType.subtype,
+                          mimeTypeName: mimeType.type,
+                          mimeParameters:
+                            mimeType.params.keys.length > 0
+                              ? {
+                                  set: [...mimeType.params.entries()].map(
+                                    ([k, v]) => `${k}=${v}`
+                                  ),
+                                }
+                              : undefined,
                         },
                       },
                     },
-                  })),
-              },
+                  },
+                })
+              ),
             },
-          })
-        );
-      }
-
-      return Ok(results);
-    });
+          })),
+        })
+      )
+    );
   }
 
-  async updateEvent(
-    param: UniqueEventParam,
-    data: {
-      title: string;
-      summary: string | null;
-      description: string | null;
-      location: string | null;
+  update({
+    by,
+    init,
+    tx,
+  }: UpdateParams<
+    UniqueEventParam,
+    {
+      title?: string;
+      summary?: string | null;
+      description?: string | null;
+      location?: string | null;
       eventOccurrences: {
         uuid?: string;
-        interval: {
-          start: Date | string;
-          end: Date | string;
-        };
+        interval: Interval;
         fullDay: boolean;
       }[];
     }
-  ): Promise<
-    Result<Event & { eventOccurrences: EventOccurrence[] }, RepositoryError>
+  >): AsyncRepositoryResult<
+    UpdateResult<
+      Prisma.EventWithOccurrencesDelegate<
+        DefaultArgs,
+        Prisma.PrismaClientOptions
+      >,
+      typeof defaultOptions
+    >
   > {
-    try {
-      return Ok(
-        await this.prisma.$transaction(async (prisma) => {
-          await prisma.eventOccurrence.deleteMany({
-            where: {
-              event: param,
-              uuid: {
-                notIn: data.eventOccurrences
-                  .filter((occurrence) => occurrence.uuid != null)
-                  .map((occurrence) => occurrence.uuid!),
-              },
-            },
-          });
-          return prisma.event.update({
-            where: param,
-            include: { eventOccurrences: true },
-            data: {
-              title: data.title,
-              summary: data.summary,
-              description: data.description,
-              location: data.location,
-              eventOccurrences: {
-                createMany: {
-                  data: data.eventOccurrences
-                    .filter((occurrence) => occurrence.uuid == null)
-                    .map(
-                      (
-                        occurrence
-                      ): Prisma.EventOccurrenceCreateManyEventInput => ({
-                        date: occurrence.interval.start,
-                        endDate: occurrence.interval.end,
-                        fullDay: occurrence.fullDay,
-                      })
-                    ),
+    const eventOccurrences = Result.all(
+      init.eventOccurrences.map(({ interval, ...other }) =>
+        LuxonError.luxonObjectToResult(interval).map(
+          (interval: Interval<true>) => ({ interval, ...other })
+        )
+      )
+    );
+    return eventOccurrences.toAsyncResult().andThen((eventOccurrences) =>
+      this.handleTransactionError(
+        (tx) =>
+          this.handleQueryError(
+            tx.eventOccurrence.deleteMany({
+              where: {
+                event: this.uniqueToWhere(by),
+                uuid: {
+                  notIn: init.eventOccurrences
+                    .filter((occurrence) => occurrence.uuid != null)
+                    .map((occurrence) => occurrence.uuid!),
                 },
-                updateMany: data.eventOccurrences
-                  .filter((occurrence) => occurrence.uuid != null)
-                  .map(
-                    (
-                      occurrence
-                    ): Prisma.EventOccurrenceUpdateManyWithWhereWithoutEventInput => ({
-                      where: { uuid: occurrence.uuid },
-                      data: {
-                        date: occurrence.interval.start,
-                        endDate: occurrence.interval.end,
-                        fullDay: occurrence.fullDay,
-                      },
-                    })
-                  ),
               },
-            },
-          });
-        })
-      );
-    } catch (error) {
-      return handleRepositoryError(error);
-    }
+            })
+          ).andThen(() =>
+            this.handleQueryError(
+              tx.eventWithOccurrences.update({
+                include: { eventOccurrences: true },
+                where: this.uniqueToWhere(by),
+                data: {
+                  ...init,
+                  eventOccurrences: {
+                    createMany: {
+                      data: eventOccurrences
+                        .filter((occurrence) => occurrence.uuid == null)
+                        .map(
+                          (
+                            occurrence
+                          ): Prisma.EventOccurrenceCreateManyEventWithOccurrencesInput => ({
+                            date: occurrence.interval.start.toISO(),
+                            endDate: occurrence.interval.end.toISO(),
+                            fullDay: occurrence.fullDay,
+                          })
+                        ),
+                    },
+                    updateMany: eventOccurrences
+                      .filter((occurrence) => occurrence.uuid != null)
+                      .map(
+                        (
+                          occurrence
+                        ): Prisma.EventOccurrenceUpdateManyWithWhereWithoutEventInput => ({
+                          where: { uuid: occurrence.uuid },
+                          data: {
+                            date: occurrence.interval.start.toISO(),
+                            endDate: occurrence.interval.end.toISO(),
+                            fullDay: occurrence.fullDay,
+                          },
+                        })
+                      ),
+                  },
+                },
+              })
+            )
+          ),
+        tx
+      )
+    );
   }
 
   delete({
     by,
     tx,
   }: DeleteParams<UniqueEventParam>): AsyncRepositoryResult<
-    DeleteResult<Prisma.EventDelegate<DefaultArgs, Prisma.PrismaClientOptions>>
+    DeleteResult<
+      Prisma.EventDelegate<DefaultArgs, Prisma.PrismaClientOptions>,
+      typeof defaultOptions
+    >
   > {
     return this.handleQueryError(
       (tx ?? this.prisma).event.delete({

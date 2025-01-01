@@ -1,26 +1,26 @@
 model EventImage {
-  createdAt            DateTime             @default(now()) @db.Timestamptz(6)
-  updatedAt            DateTime             @updatedAt @db.Timestamptz(6)
+  createdAt            DateTime              @default(now()) @db.Timestamptz(6)
+  updatedAt            DateTime              @updatedAt @db.Timestamptz(6)
   eventId              Int
   imageId              Int
-  event                Event                @relation(fields: [eventId], references: [id], onDelete: Cascade)
-  eventWithOccurrences EventWithOccurrences @relation(fields: [eventId], references: [id], onDelete: Cascade, map: "eventWithOccurrencesRelation") @ignore
-  image                Image                @relation(fields: [imageId], references: [id], onDelete: Cascade)
+  event                Event                 @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  eventWithOccurrences EventWithOccurrences? @relation(fields: [eventId], references: [id], onDelete: Cascade, map: "eventWithOccurrencesRelation")
+  image                Image                 @relation(fields: [imageId], references: [id], onDelete: Cascade)
 
   @@id([eventId, imageId])
 }
 
 model EventOccurrence {
-  id                   Int                  @id @default(autoincrement())
-  uuid                 String               @unique() @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  createdAt            DateTime             @default(now()) @db.Timestamptz(6)
-  updatedAt            DateTime             @updatedAt @db.Timestamptz(6)
-  fullDay              Boolean              @default(false)
-  date                 DateTime             @db.Timestamptz(6)
-  endDate              DateTime             @db.Timestamptz(6)
+  id                   Int                   @id @default(autoincrement())
+  uuid                 String                @unique() @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  createdAt            DateTime              @default(now()) @db.Timestamptz(6)
+  updatedAt            DateTime              @updatedAt @db.Timestamptz(6)
+  fullDay              Boolean               @default(false)
+  date                 DateTime              @db.Timestamptz(6)
+  endDate              DateTime              @db.Timestamptz(6)
   eventId              Int
-  event                Event                @relation(fields: [eventId], references: [id], onDelete: Cascade)
-  eventWithOccurrences EventWithOccurrences @relation(fields: [eventId], references: [id], onDelete: Cascade, map: "eventWithOccurrencesRelation") @ignore
+  event                Event                 @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  eventWithOccurrences EventWithOccurrences? @relation(fields: [eventId], references: [id], onDelete: Cascade, map: "eventWithOccurrencesRelation")
 }
 
 model Event {
@@ -40,10 +40,10 @@ model Event {
 
 /// This view is used to allow sorting by firstOccurrence and lastOccurrence
 view EventWithOccurrences {
-  id                 Int                @id
-  uuid               String             @db.Uuid
-  createdAt          DateTime           @db.Timestamptz(6)
-  updatedAt          DateTime           @db.Timestamptz(6)
+  id                 Int                @id @default(dbgenerated())
+  uuid               String             @unique() @default(dbgenerated()) @db.Uuid
+  createdAt          DateTime           @default(dbgenerated()) @db.Timestamptz(6)
+  updatedAt          DateTime           @updatedAt @db.Timestamptz(6)
   title              String
   summary            String?
   description        String?
@@ -52,7 +52,4 @@ view EventWithOccurrences {
   eventImages        EventImage[]
   eventOccurrences   EventOccurrence[]
   pointOpportunities PointOpportunity[]
-
-  firstOccurrence DateTime
-  lastOccurrence  DateTime
 }

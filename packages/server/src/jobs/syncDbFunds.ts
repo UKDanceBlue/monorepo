@@ -1,5 +1,5 @@
 import type { MarathonYearString } from "@ukdanceblue/common";
-import { NotFoundError } from "@ukdanceblue/common/error";
+import { type ConcreteError, NotFoundError } from "@ukdanceblue/common/error";
 
 const jobStateRepository = Container.get(JobStateRepository);
 
@@ -9,7 +9,6 @@ import { CompositeError } from "@ukdanceblue/common/error";
 import { Cron } from "croner";
 import { AsyncResult, Err, None, Ok, type Result } from "ts-results-es";
 
-import type { PrismaError } from "#error/prisma.js";
 import {
   DBFundsFundraisingProvider,
   type DBFundsFundraisingProviderError,
@@ -19,15 +18,9 @@ import { logger } from "#logging/standardLogging.js";
 import { DBFundsRepository } from "#repositories/fundraising/DBFundsRepository.js";
 import { JobStateRepository } from "#repositories/JobState.js";
 import { MarathonRepository } from "#repositories/marathon/MarathonRepository.js";
+import type { RepositoryError } from "#repositories/shared.js";
 
-type DoSyncError =
-  | NotFoundError
-  | PrismaError
-  | DBFundsFundraisingProviderError;
-
-async function doSyncForActive(): Promise<
-  Result<None, DoSyncError | CompositeError<DoSyncError>>
-> {
+async function doSyncForActive(): Promise<Result<None, ConcreteError>> {
   const marathonRepository = Container.get(MarathonRepository);
 
   const activeMarathon = await new AsyncResult(
@@ -43,9 +36,7 @@ async function doSyncForActive(): Promise<
   return doSyncForMarathon(activeMarathon.value);
 }
 
-async function doSyncForPastMarathons(): Promise<
-  Result<None, DoSyncError | CompositeError<DoSyncError>>
-> {
+async function doSyncForPastMarathons(): Promise<Result<None, ConcreteError>> {
   const marathonRepository = Container.get(MarathonRepository);
 
   const activeMarathon = await new AsyncResult(
@@ -76,7 +67,7 @@ async function doSyncForPastMarathons(): Promise<
 
 async function doSyncForMarathon(
   marathon: Marathon
-): Promise<Result<None, DoSyncError | CompositeError<DoSyncError>>> {
+): Promise<Result<None, ConcreteError>> {
   const fundraisingRepository = Container.get(DBFundsRepository);
   const fundraisingProvider = Container.get(DBFundsFundraisingProvider);
   const prisma = Container.get(prismaToken);
@@ -118,7 +109,7 @@ async function doSyncForMarathon(
     );
   }
 
-  const errors: DoSyncError[] = [];
+  const errors: (RepositoryError | DBFundsFundraisingProviderError)[] = [];
   for (const result of results) {
     if (result.isErr()) {
       if (result.error instanceof CompositeError) {

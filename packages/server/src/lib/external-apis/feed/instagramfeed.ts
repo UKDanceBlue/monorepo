@@ -133,8 +133,8 @@ async function instagramFeedItemToNode(
       image: image.value,
       textContent: item.caption,
       link: item.permalink ? new URL(item.permalink) : undefined,
-      createdAt: item.timestamp.toJSDate(),
-      updatedAt: item.timestamp.toJSDate(),
+      createdAt: item.timestamp,
+      updatedAt: item.timestamp,
     })
   );
 }

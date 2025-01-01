@@ -1,5 +1,4 @@
 import { Service } from "@freshgum/typedi";
-import type { Prisma } from "@prisma/client";
 import type { CrudResolver, GlobalId } from "@ukdanceblue/common";
 import {
   AccessControlAuthorized,
@@ -8,7 +7,6 @@ import {
   ImageNode,
   LegacyError,
   LegacyErrorCode,
-  SortDirection,
 } from "@ukdanceblue/common";
 import {
   CreateEventInput,
@@ -16,7 +14,6 @@ import {
   ListEventsResponse,
   SetEventInput,
 } from "@ukdanceblue/common";
-import { ConcreteResult } from "@ukdanceblue/common/error";
 import { VoidResolver } from "graphql-scalars";
 import {
   Arg,
@@ -72,32 +69,25 @@ export class EventResolver implements CrudResolver<EventNode, "event"> {
     name: "events",
     description: "List events",
   })
-  async events(@Args() query: ListEventsArgs) {
-    const rows = await this.eventRepository.findAndCount({
-      filters: query.filters,
-      order:
-        query.sortBy?.map((key, i) => [
-          key,
-          query.sortDirection?.[i] ?? SortDirection.desc,
-        ]) ?? [],
-      skip:
-        query.page != null && query.actualPageSize != null
-          ? (query.page - 1) * query.actualPageSize
-          : null,
-      take: query.actualPageSize,
-    });
-
-    return ListEventsResponse.newPaginated({
-      data: rows.map((row) =>
-        eventModelToResource(
-          row,
-          row.eventOccurrences.map(eventOccurrenceModelToResource)
-        )
-      ),
-      total: await this.eventRepository.countEvents({ filters: query.filters }),
-      page: query.page,
-      pageSize: query.actualPageSize,
-    });
+  events(@Args() query: ListEventsArgs) {
+    return this.eventRepository
+      .findAndCount({
+        filters: query.filters,
+        sortBy: query.sortBy,
+        offset: query.offset,
+        limit: query.limit,
+      })
+      .map(({ selectedRows, total }) => {
+        return ListEventsResponse.newPaginated({
+          data: selectedRows.map((row) =>
+            eventModelToResource(
+              row,
+              row.eventOccurrences.map(eventOccurrenceModelToResource)
+            )
+          ),
+          total,
+        });
+      });
   }
 
   @AccessControlAuthorized("create")
@@ -105,29 +95,28 @@ export class EventResolver implements CrudResolver<EventNode, "event"> {
     name: "createEvent",
     description: "Create a new event",
   })
-  async createEvent(@Arg("input") input: CreateEventInput): Promise<EventNode> {
-    const row = await this.eventRepository.createEvent({
-      title: input.title,
-      summary: input.summary,
-      description: input.description,
-      location: input.location,
-      eventOccurrences: {
-        createMany: {
-          data: input.occurrences.map(
-            (occurrence): Prisma.EventOccurrenceCreateManyEventInput => ({
-              date: occurrence.interval.start,
-              endDate: occurrence.interval.end,
-              fullDay: occurrence.fullDay,
-            })
-          ),
+  createEvent(
+    @Arg("input") input: CreateEventInput
+  ): AsyncRepositoryResult<EventNode> {
+    return this.eventRepository
+      .create({
+        init: {
+          title: input.title,
+          summary: input.summary,
+          description: input.description,
+          location: input.location,
+          eventOccurrences: input.occurrences.map((occurrence) => ({
+            interval: occurrence.interval.interval,
+            fullDay: occurrence.fullDay,
+          })),
         },
-      },
-    });
-
-    return eventModelToResource(
-      row,
-      row.eventOccurrences.map(eventOccurrenceModelToResource)
-    );
+      })
+      .map((row) =>
+        eventModelToResource(
+          row,
+          row.eventOccurrences.map(eventOccurrenceModelToResource)
+        )
+      );
   }
 
   @AccessControlAuthorized("delete")
@@ -135,19 +124,17 @@ export class EventResolver implements CrudResolver<EventNode, "event"> {
     name: "deleteEvent",
     description: "Delete an event by UUID",
   })
-  async deleteEvent(
+  deleteEvent(
     @Arg("id", () => GlobalIdScalar) { id }: GlobalId
-  ): Promise<EventNode> {
-    const row = await this.eventRepository.deleteEvent({ uuid: id });
-
-    if (row == null) {
-      throw new LegacyError(LegacyErrorCode.NotFound, "Event not found");
-    }
-
-    return eventModelToResource(
-      row,
-      row.eventOccurrences.map(eventOccurrenceModelToResource)
-    );
+  ): AsyncRepositoryResult<EventNode> {
+    return this.eventRepository
+      .delete({ by: { uuid: id } })
+      .map((row) =>
+        eventModelToResource(
+          row,
+          row.eventOccurrences.map(eventOccurrenceModelToResource)
+        )
+      );
   }
 
   @AccessControlAuthorized("update")
@@ -155,27 +142,30 @@ export class EventResolver implements CrudResolver<EventNode, "event"> {
     name: "setEvent",
     description: "Update an event by UUID",
   })
-  async setEvent(
+  setEvent(
     @Arg("id", () => GlobalIdScalar) { id }: GlobalId,
     @Arg("input") input: SetEventInput
-  ): Promise<ConcreteResult<EventNode>> {
-    const row = await this.eventRepository.updateEvent(
-      { uuid: id },
-      {
-        title: input.title,
-        summary: input.summary,
-        description: input.description,
-        location: input.location,
-        eventOccurrences: input.occurrences,
-      }
-    );
-
-    return row.map((row) => {
-      return eventModelToResource(
-        row,
-        row.eventOccurrences.map(eventOccurrenceModelToResource)
+  ): AsyncRepositoryResult<EventNode> {
+    return this.eventRepository
+      .update({
+        by: { uuid: id },
+        init: {
+          title: input.title,
+          summary: input.summary,
+          description: input.description,
+          location: input.location,
+          eventOccurrences: input.occurrences.map((occurrence) => ({
+            interval: occurrence.interval.interval,
+            fullDay: occurrence.fullDay,
+          })),
+        },
+      })
+      .map((row) =>
+        eventModelToResource(
+          row,
+          row.eventOccurrences.map(eventOccurrenceModelToResource)
+        )
       );
-    });
   }
 
   @AccessControlAuthorized("update", "EventNode")

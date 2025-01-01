@@ -30,12 +30,6 @@ export class LuxonError extends ConcreteError {
   readonly expose = true;
 
   static luxonObjectToResult(
-    interval: Interval<false> | Duration<false> | DateTime<false>
-  ): Err<LuxonError>;
-  static luxonObjectToResult(interval: Interval<true>): Ok<Interval<true>>;
-  static luxonObjectToResult(duration: Duration<true>): Ok<Duration<true>>;
-  static luxonObjectToResult(date: DateTime<true>): Ok<DateTime<true>>;
-  static luxonObjectToResult(
     interval: Interval
   ): Result<Interval<true>, LuxonError>;
   static luxonObjectToResult(

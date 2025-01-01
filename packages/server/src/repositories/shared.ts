@@ -5,6 +5,7 @@ import type {
   InvalidArgumentError,
   InvalidOperationError,
   InvariantError,
+  LuxonError,
   NotFoundError,
 } from "@ukdanceblue/common/error";
 import { toBasicError } from "@ukdanceblue/common/error";
@@ -28,6 +29,7 @@ export type RepositoryError =
   | InvariantError
   | InvalidArgumentError
   | InvalidOperationError
+  | LuxonError
   | CompositeError<RepositoryError>;
 
 export type RepositoryResult<T, E = never> = Result<T, RepositoryError | E>;

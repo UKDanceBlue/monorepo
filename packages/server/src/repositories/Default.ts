@@ -47,20 +47,20 @@ export interface FindAndCountParams<Field extends string>
   extends FindManyParams<Field>,
     WithTxParam {}
 export type FindAllParams = WithTxParam;
-export interface CreateParams<T> extends WithTxParam {
-  init: Args<T, "create">["data"];
+export interface CreateParams<Init extends object> extends WithTxParam {
+  init: Init;
 }
-export interface UpdateParams<T, UniqueParam>
+export interface UpdateParams<UniqueParam, Init extends object>
   extends WithByParam<UniqueParam>,
     WithTxParam {
-  init: Args<T, "update">["data"];
+  init: Init;
 }
 export interface DeleteParams<UniqueParam>
   extends WithByParam<UniqueParam>,
     WithTxParam {}
-export interface CreateMultipleParams<T> extends WithTxParam {
+export interface CreateMultipleParams<Init extends object> extends WithTxParam {
   data: {
-    init: Args<T, "createMany">["data"];
+    init: Init;
   }[];
 }
 export interface DeleteMultipleParams<UniqueParam> extends WithTxParam {
@@ -76,10 +76,7 @@ type AliasedPrismaResult<T, A, F extends Operation> = Pick<
   keyof NonNullable<Awaited<PrismaResult<T, A, F>>>
 >;
 export type FindOneResult<T, A> = AliasedPrismaResult<T, A, "findUnique">;
-export interface FindAndCountResult<
-  T,
-  A extends Args<T, "findMany"> = Args<T, "findMany">,
-> {
+export interface FindAndCountResult<T, A> {
   total: number;
   selectedRows: PrismaResult<T, A, "findMany">;
 }
@@ -109,34 +106,38 @@ interface BaseRepository<
     FindOneResult<
       T,
       {
-        include?: Include;
+        include: Include;
       }
     >
   >;
 
   findAndCount?(
     params: FindAndCountParams<Field>
-  ): AsyncRepositoryResult<FindAndCountResult<T>>;
+  ): AsyncRepositoryResult<FindAndCountResult<T, { include: Include }>>;
 
-  findAll?(params: FindAllParams): AsyncRepositoryResult<FindAllResult<T>>;
+  findAll?(
+    params: FindAllParams
+  ): AsyncRepositoryResult<FindAllResult<T, { include: Include }>>;
 
-  create?(params: CreateParams<T>): AsyncRepositoryResult<CreateResult<T>>;
+  create?(
+    params: CreateParams<object>
+  ): AsyncRepositoryResult<CreateResult<T, { include: Include }>>;
 
   update?(
-    params: UpdateParams<T, UniqueParam>
-  ): AsyncRepositoryResult<UpdateResult<T>>;
+    params: UpdateParams<UniqueParam, object>
+  ): AsyncRepositoryResult<UpdateResult<T, { include: Include }>>;
 
   delete?(
     params: DeleteParams<UniqueParam>
-  ): AsyncRepositoryResult<DeleteResult<T>>;
+  ): AsyncRepositoryResult<DeleteResult<T, { include: Include }>>;
 
   createMultiple?(
-    params: CreateMultipleParams<T>
-  ): AsyncRepositoryResult<CreateMultipleResult<T>>;
+    params: CreateMultipleParams<object>
+  ): AsyncRepositoryResult<CreateMultipleResult<T, { include: Include }>>;
 
   deleteMultiple?(
     params: DeleteMultipleParams<UniqueParam>
-  ): AsyncRepositoryResult<DeleteMultipleResult<T>>;
+  ): AsyncRepositoryResult<DeleteMultipleResult<T, { include: Include }>>;
 }
 
 export function buildDefaultRepository<
@@ -158,17 +159,16 @@ export function buildDefaultRepository<
       Container.setValue(`${tableName}Repository`, this);
     }
 
-    static simpleUniqueToWhere<U extends SimpleUniqueParam>(
-      by: U
-    ): Exclude<U, SimpleUniqueParam> extends never
-      ? Args<T, "findUnique">["where"]
-      : Args<T, "findUnique">["where"] | null {
+    static simpleUniqueToWhere(
+      by: SimpleUniqueParam
+    ): { id: number } | { uuid: string } {
       if ("id" in by) {
         return { id: by.id };
       } else if ("uuid" in by) {
         return { uuid: by.uuid };
       }
-      return null;
+      by satisfies never;
+      throw new Error("Invalid SimpleUniqueParam");
     }
 
     protected handleQueryError<D>(
@@ -190,24 +190,33 @@ export function buildDefaultRepository<
         : this.promiseToAsyncResult(promise);
     }
 
-    protected async handleTransactionError<D>(
-      callback: (tx: Transaction) => Promise<Result<D, RepositoryError>>
-    ): Promise<Result<D, RepositoryError>> {
-      let result: Result<D, RepositoryError> = Err(
-        new InvariantError("Transaction not completed")
+    protected handleTransactionError<D>(
+      callback: (tx: Transaction) => AsyncRepositoryResult<D>,
+      tx?: Transaction
+    ): AsyncRepositoryResult<D> {
+      if (tx) {
+        return callback(tx);
+      }
+
+      return new AsyncResult(
+        (async (): Promise<Result<D, RepositoryError>> => {
+          let result: Result<D, RepositoryError> = Err(
+            new InvariantError("Transaction not completed")
+          );
+          await this.prisma.$transaction(async (tx) => {
+            try {
+              result = await callback(tx).promise;
+              if (result.isErr()) {
+                throw new Error("Rollback");
+              }
+            } catch (error) {
+              result = handleRepositoryError(error);
+              throw error;
+            }
+          });
+          return result;
+        })()
       );
-      await this.prisma.$transaction(async (tx) => {
-        try {
-          result = await callback(tx);
-          if (result.isErr()) {
-            throw new Error("Rollback");
-          }
-        } catch (error) {
-          result = handleRepositoryError(error);
-          throw error;
-        }
-      });
-      return result;
     }
 
     protected promiseToAsyncResult<T>(
