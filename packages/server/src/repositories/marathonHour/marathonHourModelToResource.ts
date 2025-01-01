@@ -1,5 +1,6 @@
 import type { MarathonHour } from "@prisma/client";
 import { MarathonHourNode } from "@ukdanceblue/common";
+import { DateTime } from "luxon";
 
 export function marathonHourModelToResource(
   marathonHourModel: MarathonHour
@@ -9,8 +10,8 @@ export function marathonHourModelToResource(
     title: marathonHourModel.title,
     details: marathonHourModel.details,
     durationInfo: marathonHourModel.durationInfo,
-    shownStartingAt: marathonHourModel.shownStartingAt,
-    createdAt: marathonHourModel.createdAt,
-    updatedAt: marathonHourModel.updatedAt,
+    shownStartingAt: DateTime.fromJSDate(marathonHourModel.shownStartingAt),
+    createdAt: DateTime.fromJSDate(marathonHourModel.createdAt),
+    updatedAt: DateTime.fromJSDate(marathonHourModel.updatedAt),
   });
 }

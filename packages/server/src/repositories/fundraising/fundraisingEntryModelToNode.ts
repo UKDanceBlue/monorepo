@@ -4,6 +4,7 @@ import {
   FundraisingEntryNode,
   SolicitationCodeNode,
 } from "@ukdanceblue/common";
+import { DateTime } from "luxon";
 
 import type { WideFundraisingEntryWithMeta } from "./FundraisingRepository.js";
 
@@ -22,10 +23,13 @@ export function fundraisingEntryModelToNode(
       donatedByOverride: entryModel.donatedByOverride,
       donatedToText: entryModel.donatedTo,
       donatedToOverride: entryModel.donatedToOverride,
-      donatedOn: entryModel.donatedOn,
-      donatedOnOverride: entryModel.donatedOnOverride,
-      createdAt: entryModel.createdAt,
-      updatedAt: entryModel.updatedAt,
+      donatedOn:
+        entryModel.donatedOn && DateTime.fromJSDate(entryModel.donatedOn),
+      donatedOnOverride:
+        entryModel.donatedOnOverride &&
+        DateTime.fromJSDate(entryModel.donatedOnOverride),
+      createdAt: DateTime.fromJSDate(entryModel.createdAt),
+      updatedAt: DateTime.fromJSDate(entryModel.updatedAt),
       notes: entryModel.notes,
       solicitationCodeOverride:
         entryModel.solicitationCodeOverride &&
@@ -44,7 +48,7 @@ export function solicitationCodeModelToNode(
     prefix: solicitationCode.prefix,
     code: solicitationCode.code,
     name: solicitationCode.name,
-    createdAt: solicitationCode.createdAt,
-    updatedAt: solicitationCode.updatedAt,
+    createdAt: DateTime.fromJSDate(solicitationCode.createdAt),
+    updatedAt: DateTime.fromJSDate(solicitationCode.updatedAt),
   });
 }

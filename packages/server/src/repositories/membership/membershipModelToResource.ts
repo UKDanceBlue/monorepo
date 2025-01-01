@@ -5,6 +5,7 @@ import {
   CommitteeRole,
   MembershipNode,
 } from "@ukdanceblue/common";
+import { DateTime } from "luxon";
 
 export function membershipModelToResource(
   membershipModel: Membership
@@ -12,8 +13,8 @@ export function membershipModelToResource(
   return MembershipNode.init({
     id: membershipModel.uuid,
     position: membershipModel.position,
-    createdAt: membershipModel.createdAt,
-    updatedAt: membershipModel.updatedAt,
+    createdAt: DateTime.fromJSDate(membershipModel.createdAt),
+    updatedAt: DateTime.fromJSDate(membershipModel.updatedAt),
   });
 }
 
@@ -26,7 +27,7 @@ export function committeeMembershipModelToResource(
     position: membershipModel.position,
     identifier: committeeIdentifier,
     role: membershipModel.committeeRole ?? CommitteeRole.Member,
-    createdAt: membershipModel.createdAt,
-    updatedAt: membershipModel.updatedAt,
+    createdAt: DateTime.fromJSDate(membershipModel.createdAt),
+    updatedAt: DateTime.fromJSDate(membershipModel.updatedAt),
   });
 }

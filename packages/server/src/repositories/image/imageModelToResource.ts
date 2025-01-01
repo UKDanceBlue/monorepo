@@ -1,5 +1,6 @@
 import type { File, Image } from "@prisma/client";
 import { ImageNode } from "@ukdanceblue/common";
+import { DateTime } from "luxon";
 
 import type { FileManager } from "#files/FileManager.js";
 import { combineMimePartsToString } from "#files/mime.js";
@@ -39,7 +40,7 @@ export async function imageModelToResource(
     alt: imageModel.alt ?? undefined,
     width: imageModel.width,
     height: imageModel.height,
-    createdAt: imageModel.createdAt,
-    updatedAt: imageModel.updatedAt,
+    createdAt: DateTime.fromJSDate(imageModel.createdAt),
+    updatedAt: DateTime.fromJSDate(imageModel.updatedAt),
   });
 }

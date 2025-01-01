@@ -30,8 +30,19 @@ describe("marathonHourModelToResource", () => {
     expect(result.title).toBe("test-title");
     expect(result.details).toBe("test-details");
     expect(result.durationInfo).toBe("test-durationInfo");
-    expect(result.shownStartingAt.toISOString()).toBe(nowString);
+    expect(result.shownStartingAt.toISO()).toBe(nowString);
     expect(result.createdAt).toBe(now);
     expect(result.updatedAt).toBe(now);
+  });
+
+  it("Should not add any additional properties", ({ expect }) => {
+    const marathonHourModel: MarathonHour = {
+      // @ts-expect-error - Test extra property
+      extraProperty: "extra",
+    };
+
+    const result = marathonHourModelToResource(marathonHourModel);
+
+    expect(result).not.toHaveProperty("extraProperty");
   });
 });

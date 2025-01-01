@@ -1,5 +1,6 @@
 import type { PointEntry } from "@prisma/client";
 import { PointEntryNode } from "@ukdanceblue/common";
+import { DateTime } from "luxon";
 
 export function pointEntryModelToResource(
   pointEntryModel: PointEntry
@@ -8,7 +9,7 @@ export function pointEntryModelToResource(
     id: pointEntryModel.uuid,
     points: pointEntryModel.points,
     comment: pointEntryModel.comment,
-    createdAt: pointEntryModel.createdAt,
-    updatedAt: pointEntryModel.updatedAt,
+    createdAt: DateTime.fromJSDate(pointEntryModel.createdAt),
+    updatedAt: DateTime.fromJSDate(pointEntryModel.updatedAt),
   });
 }

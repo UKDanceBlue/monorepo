@@ -1,5 +1,6 @@
 import type { TeamLegacyStatus } from "@ukdanceblue/common";
-import { TeamNode,TeamType } from "@ukdanceblue/common";
+import { TeamNode, TeamType } from "@ukdanceblue/common";
+import { DateTime } from "luxon";
 
 export function teamModelToResource(teamModel: {
   uuid: string;
@@ -17,7 +18,7 @@ export function teamModelToResource(teamModel: {
     name: teamModel.name,
     type: teamModel.type,
     legacyStatus: teamModel.legacyStatus,
-    createdAt: teamModel.createdAt,
-    updatedAt: teamModel.updatedAt,
+    createdAt: DateTime.fromJSDate(teamModel.createdAt),
+    updatedAt: DateTime.fromJSDate(teamModel.updatedAt),
   });
 }
