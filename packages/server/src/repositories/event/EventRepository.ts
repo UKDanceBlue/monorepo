@@ -218,7 +218,10 @@ export class EventRepository extends buildDefaultRepository<
       )
       .andThen(({ rows, params }) =>
         this.handleQueryError(
-          (tx ?? this.prisma).eventWithOccurrences.count(params)
+          (tx ?? this.prisma).eventWithOccurrences.count({
+            where: params.where,
+            orderBy: params.orderBy,
+          })
         ).map((total) => ({
           selectedRows: rows,
           total,

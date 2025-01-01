@@ -17,6 +17,7 @@ import { Arg, Mutation, Query, Resolver } from "type-graphql";
 
 import { configurationModelToResource } from "#repositories/configuration/configurationModelToResource.js";
 import { ConfigurationRepository } from "#repositories/configuration/ConfigurationRepository.js";
+import type { AsyncRepositoryResult } from "#repositories/shared.js";
 
 @Resolver(() => ConfigurationNode)
 @Service([ConfigurationRepository])
@@ -84,12 +85,14 @@ export class ConfigurationResolver
     name: "allConfigurations",
     description: "Get all configurations, irrespective of time",
   })
-  async allConfigurations(): Promise<ConcreteResult<ConfigurationNode[]>> {
-    const rows = await this.configurationRepository.findConfigurations(null, [
-      ["createdAt", SortDirection.desc],
-    ]);
-
-    return Ok(rows.map(configurationModelToResource));
+  allConfigurations(): AsyncRepositoryResult<ConfigurationNode[]> {
+    return this.configurationRepository
+      .findAndCount({
+        sortBy: [{ field: "createdAt", direction: SortDirection.desc }],
+      })
+      .map(({ selectedRows }) =>
+        selectedRows.map(configurationModelToResource)
+      );
   }
 
   @AccessControlAuthorized("create")

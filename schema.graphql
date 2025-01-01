@@ -370,6 +370,7 @@ enum DailyDepartmentNotificationResolverFilterFields {
   SolicitationCodeName
   SolicitationCodeNumber
   SolicitationCodePrefix
+  createdAt
 }
 
 input DailyDepartmentNotificationResolverFilterGroup {

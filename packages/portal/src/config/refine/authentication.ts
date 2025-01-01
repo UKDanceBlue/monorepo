@@ -4,7 +4,6 @@ import type {
   CheckResponse,
   OnErrorResponse,
 } from "@refinedev/core";
-import { notification } from "antd";
 
 import { API_BASE_URL, urqlClient } from "#config/api.ts";
 import { getLoginState, refreshLoginState } from "#hooks/useLoginState.ts";
@@ -108,9 +107,6 @@ export const authProvider: AuthProvider = {
     }
   },
   onError: (error): Promise<OnErrorResponse> => {
-    notification.error({
-      message: String(error),
-    });
     return Promise.resolve({ error });
   },
   // optional methods

@@ -1,5 +1,5 @@
 import { SettingOutlined } from "@ant-design/icons";
-import { AuthPage, useNotificationProvider } from "@refinedev/antd";
+import { AuthPage } from "@refinedev/antd";
 import { Refine, useLogin } from "@refinedev/core";
 import {
   createRootRouteWithContext,
@@ -21,6 +21,7 @@ import type { Client as UrqlClient } from "urql";
 import watermark from "#assets/watermark.svg";
 import { authProvider } from "#config/refine/authentication.ts";
 import { accessControlProvider } from "#config/refine/authorization.ts";
+import { useNotificationProvider } from "#config/refine/feedback.tsx";
 import { dataProvider } from "#config/refine/graphql/data.ts";
 import { refineResources } from "#config/refine/resources.tsx";
 import { routerBindings } from "#config/refine/router.tsx";

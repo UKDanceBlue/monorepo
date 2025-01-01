@@ -8,53 +8,24 @@ import {
   PrismaClient,
   SolicitationCode,
 } from "@prisma/client";
-import { DDNInit, localDateToJs, SortDirection } from "@ukdanceblue/common";
+import type { DefaultArgs } from "@prisma/client/runtime/library";
+import { DDNInit, localDateToJs } from "@ukdanceblue/common";
+import { InvalidArgumentError, NotFoundError } from "@ukdanceblue/common/error";
+import { Err, None, Ok, Option, Result, Some } from "ts-results-es";
 
-const dailyDepartmentNotificationBooleanKeys = [] as const;
-type DailyDepartmentNotificationBooleanKey =
-  (typeof dailyDepartmentNotificationBooleanKeys)[number];
-
-const dailyDepartmentNotificationDateKeys = [] as const;
-type DailyDepartmentNotificationDateKey =
-  (typeof dailyDepartmentNotificationDateKeys)[number];
-
-const dailyDepartmentNotificationIsNullKeys = [] as const;
-type DailyDepartmentNotificationIsNullKey =
-  (typeof dailyDepartmentNotificationIsNullKeys)[number];
-
-const dailyDepartmentNotificationNumericKeys = ["Amount"] as const;
-type DailyDepartmentNotificationNumericKey =
-  (typeof dailyDepartmentNotificationNumericKeys)[number];
-
-const dailyDepartmentNotificationOneOfKeys = [
-  "BatchType",
-  "SolicitationCodePrefix",
-  "SolicitationCodeNumber",
-] as const;
-type DailyDepartmentNotificationOneOfKey =
-  (typeof dailyDepartmentNotificationOneOfKeys)[number];
-
-const dailyDepartmentNotificationStringKeys = [
-  "Donor",
-  "Comment",
-  "SolicitationCodeName",
-] as const;
-type DailyDepartmentNotificationStringKey =
-  (typeof dailyDepartmentNotificationStringKeys)[number];
-
-export type DailyDepartmentNotificationOrderKeys =
-  | DailyDepartmentNotificationNumericKey
-  | DailyDepartmentNotificationStringKey
-  | DailyDepartmentNotificationOneOfKey;
-
-export type DailyDepartmentNotificationFilters = FilterItems<
-  DailyDepartmentNotificationBooleanKey,
-  DailyDepartmentNotificationDateKey,
-  DailyDepartmentNotificationIsNullKey,
-  DailyDepartmentNotificationNumericKey,
-  DailyDepartmentNotificationOneOfKey,
-  DailyDepartmentNotificationStringKey
->;
+import { prismaToken } from "#lib/typediTokens.js";
+import {
+  buildDefaultRepository,
+  type FindAndCountParams,
+  type FindAndCountResult,
+} from "#repositories/Default.js";
+import { UniquePersonParam } from "#repositories/person/PersonRepository.js";
+import {
+  type AsyncRepositoryResult,
+  handleRepositoryError,
+  RepositoryError,
+  SimpleUniqueParam,
+} from "#repositories/shared.js";
 
 type UniqueDailyDepartmentNotificationParam = SimpleUniqueParam;
 
@@ -64,16 +35,15 @@ type UniqueDailyDepartmentNotificationBatchParam =
       batchId: string;
     };
 
-import { InvalidArgumentError, NotFoundError } from "@ukdanceblue/common/error";
-import { Err, None, Ok, Option, Result, Some } from "ts-results-es";
-
-import { prismaToken } from "#lib/typediTokens.js";
-import { UniquePersonParam } from "#repositories/person/PersonRepository.js";
-import {
-  handleRepositoryError,
-  RepositoryError,
-  SimpleUniqueParam,
-} from "#repositories/shared.js";
+type DailyDepartmentNotificationKeys =
+  | "Amount"
+  | "BatchType"
+  | "Comment"
+  | "Donor"
+  | "SolicitationCodeName"
+  | "SolicitationCodeNumber"
+  | "SolicitationCodePrefix"
+  | "createdAt";
 
 function parseSolicitationCode(
   solicitationCodeString: string
@@ -145,9 +115,65 @@ interface ParsedDDNInit<
   solicitation: string | undefined;
 }
 
+const ddnInclude = {
+  batch: true,
+  solicitationCode: true,
+  donors: {
+    include: {
+      donor: true,
+    },
+  },
+} as const satisfies Prisma.DailyDepartmentNotificationInclude;
+
 @Service([prismaToken])
-export class DailyDepartmentNotificationRepository {
-  constructor(private prisma: PrismaClient) {}
+export class DailyDepartmentNotificationRepository extends buildDefaultRepository<
+  PrismaClient["dailyDepartmentNotification"],
+  UniqueDailyDepartmentNotificationParam,
+  DailyDepartmentNotificationKeys,
+  typeof ddnInclude
+>("dailyDepartmentNotification", {
+  Amount: {
+    getOrderBy: (sort) => Ok({ combinedAmount: sort }),
+    getWhere: (value) => Ok({ combinedAmount: value }),
+  },
+  BatchType: {
+    getOrderBy: () => Err(new InvalidArgumentError("BatchType not supported")),
+    getWhere: () => Err(new InvalidArgumentError("BatchType not supported")),
+  },
+  Comment: {
+    getOrderBy: (sort) => Ok({ comment: sort }),
+    getWhere: (value) => Ok({ comment: value }),
+  },
+  Donor: {
+    getOrderBy: (sort) => Ok({ combinedDonorSort: sort }),
+    getWhere: (value) => Ok({ combinedDonorSort: value }),
+  },
+  SolicitationCodeName: {
+    getOrderBy: (sort) => Ok({ solicitationCode: { name: sort } }),
+    getWhere: (value) => Ok({ solicitationCode: { name: value } }),
+  },
+  SolicitationCodeNumber: {
+    getOrderBy: (sort) => Ok({ solicitationCode: { code: sort } }),
+    getWhere: (value) => Ok({ solicitationCode: { code: value } }),
+  },
+  SolicitationCodePrefix: {
+    getOrderBy: (sort) => Ok({ solicitationCode: { prefix: sort } }),
+    getWhere: (value) => Ok({ solicitationCode: { prefix: value } }),
+  },
+  createdAt: {
+    getOrderBy: (sort) => Ok({ createdAt: sort }),
+    getWhere: (value) => Ok({ createdAt: value }),
+  },
+}) {
+  constructor(protected readonly prisma: PrismaClient) {
+    super(prisma);
+  }
+
+  public uniqueToWhere(
+    by: SimpleUniqueParam
+  ): Prisma.DailyDepartmentNotificationWhereUniqueInput {
+    return DailyDepartmentNotificationRepository.simpleUniqueToWhere(by);
+  }
 
   async findDDNByUnique(param: UniqueDailyDepartmentNotificationParam): Promise<
     Result<
@@ -164,15 +190,7 @@ export class DailyDepartmentNotificationRepository {
     try {
       const row = await this.prisma.dailyDepartmentNotification.findUnique({
         where: param,
-        include: {
-          batch: true,
-          solicitationCode: true,
-          donors: {
-            include: {
-              donor: true,
-            },
-          },
-        },
+        include: ddnInclude,
       });
       if (!row) {
         return Ok(None);
@@ -183,74 +201,45 @@ export class DailyDepartmentNotificationRepository {
     }
   }
 
-  async listDDNs({
-    filters,
-    order,
-    skip,
-    take,
-  }: {
-    filters?: readonly DailyDepartmentNotificationFilters[] | undefined | null;
-    order?:
-      | readonly [
-          key: DailyDepartmentNotificationOrderKeys,
-          sort: SortDirection,
-        ][]
-      | undefined
-      | null;
-    skip?: number | undefined | null;
-    take?: number | undefined | null;
-  }): Promise<
-    Result<
-      (DailyDepartmentNotification & {
-        batch: DailyDepartmentNotificationBatch;
-        donors: (DDNDonorLink & { donor: DDNDonor })[];
-        solicitationCode: SolicitationCode;
-      })[],
-      RepositoryError
+  findAndCount({
+    tx,
+    ...params
+  }: FindAndCountParams<DailyDepartmentNotificationKeys>): AsyncRepositoryResult<
+    FindAndCountResult<
+      Prisma.DailyDepartmentNotificationDelegate<
+        DefaultArgs,
+        Prisma.PrismaClientOptions
+      >,
+      {
+        include: {
+          readonly batch: true;
+          readonly solicitationCode: true;
+          readonly donors: { readonly include: { readonly donor: true } };
+        };
+      }
     >
   > {
-    try {
-      const where = buildDailyDepartmentNotificationWhere(filters);
-      const orderBy = buildDailyDepartmentNotificationOrder(order);
-
-      const rows = await this.prisma.dailyDepartmentNotification.findMany({
-        where,
-        orderBy,
-        skip: skip ?? undefined,
-        take: take ?? undefined,
-        include: {
-          batch: true,
-          donors: {
-            include: {
-              donor: true,
-            },
-          },
-          solicitationCode: true,
-        },
-      });
-
-      return Ok(rows);
-    } catch (error) {
-      return handleRepositoryError(error);
-    }
-  }
-
-  async countDDNs({
-    filters,
-  }: {
-    filters?: readonly DailyDepartmentNotificationFilters[] | undefined | null;
-  }): Promise<Result<number, RepositoryError>> {
-    try {
-      const where = buildDailyDepartmentNotificationWhere(filters);
-
-      const count = await this.prisma.dailyDepartmentNotification.count({
-        where,
-      });
-
-      return Ok(count);
-    } catch (error) {
-      return handleRepositoryError(error);
-    }
+    return this.parseFindManyParams(params)
+      .toAsyncResult()
+      .andThen((params) =>
+        this.handleQueryError(
+          (tx ?? this.prisma).dailyDepartmentNotification.findMany({
+            ...params,
+            include: ddnInclude,
+          })
+        ).map((rows) => ({ rows, params }))
+      )
+      .andThen(({ rows, params }) =>
+        this.handleQueryError(
+          (tx ?? this.prisma).dailyDepartmentNotification.count({
+            where: params.where,
+            orderBy: params.orderBy,
+          })
+        ).map((total) => ({
+          selectedRows: rows,
+          total,
+        }))
+      );
   }
 
   parseDDNInit(

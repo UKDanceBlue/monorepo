@@ -274,5 +274,6 @@ export class ListDailyDepartmentNotificationsArgs extends FilteredListQueryArgs(
     "SolicitationCodeNumber",
     "SolicitationCodePrefix",
     "BatchType",
+    "createdAt",
   ]
 ) {}

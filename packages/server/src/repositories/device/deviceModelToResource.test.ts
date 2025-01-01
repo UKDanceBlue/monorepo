@@ -1,5 +1,6 @@
 import type { Device } from "@prisma/client";
 import { DeviceNode } from "@ukdanceblue/common";
+import { DateTime } from "luxon";
 import { describe, expect, it } from "vitest";
 
 import { deviceModelToResource } from "./deviceModelToResource.js";
@@ -23,9 +24,9 @@ describe("deviceModelToResource", () => {
     expect(resource).toStrictEqual(
       DeviceNode.init({
         id: "uuid",
-        lastLogin: new Date("2021-01-01T00:00:00Z"),
-        createdAt: new Date("2021-01-01T00:00:00Z"),
-        updatedAt: new Date("2021-01-01T00:00:00Z"),
+        lastLogin: DateTime.fromISO("2021-01-01T00:00:00Z"),
+        createdAt: DateTime.fromISO("2021-01-01T00:00:00Z"),
+        updatedAt: DateTime.fromISO("2021-01-01T00:00:00Z"),
       })
     );
   });
@@ -48,8 +49,8 @@ describe("deviceModelToResource", () => {
       DeviceNode.init({
         id: "uuid",
         lastLogin: null,
-        createdAt: new Date("2021-01-01T00:00:00Z"),
-        updatedAt: new Date("2021-01-01T00:00:00Z"),
+        createdAt: DateTime.fromISO("2021-01-01T00:00:00Z"),
+        updatedAt: DateTime.fromISO("2021-01-01T00:00:00Z"),
       })
     );
   });

@@ -1,5 +1,6 @@
 import type { Configuration } from "@prisma/client";
 import { ConfigurationNode } from "@ukdanceblue/common";
+import { DateTime } from "luxon";
 
 export function configurationModelToResource(
   configuration: Configuration
@@ -8,9 +9,11 @@ export function configurationModelToResource(
     id: configuration.uuid,
     key: configuration.key,
     value: configuration.value,
-    validAfter: configuration.validAfter,
-    validUntil: configuration.validUntil,
-    createdAt: configuration.createdAt,
-    updatedAt: configuration.updatedAt,
+    validAfter:
+      configuration.validAfter && DateTime.fromJSDate(configuration.validAfter),
+    validUntil:
+      configuration.validUntil && DateTime.fromJSDate(configuration.validUntil),
+    createdAt: DateTime.fromJSDate(configuration.createdAt),
+    updatedAt: DateTime.fromJSDate(configuration.updatedAt),
   });
 }

@@ -5,7 +5,6 @@ import {
   DailyDepartmentNotificationBatchNode,
   DailyDepartmentNotificationNode,
   GlobalIdScalar,
-  SortDirection,
 } from "@ukdanceblue/common";
 import {
   DailyDepartmentNotificationInput,
@@ -13,7 +12,7 @@ import {
   ListDailyDepartmentNotificationsResponse,
 } from "@ukdanceblue/common";
 import { ConcreteError, ConcreteResult } from "@ukdanceblue/common/error";
-import { AsyncResult, Ok, Option, Result } from "ts-results-es";
+import { AsyncResult, Option, Result } from "ts-results-es";
 import {
   Arg,
   Args,
@@ -37,10 +36,7 @@ import type { GraphQLContext } from "../lib/auth/context.js";
 @Service([DailyDepartmentNotificationRepository])
 export class DailyDepartmentNotificationResolver
   implements
-    CrudResolver<
-      DailyDepartmentNotificationNode,
-      "dailyDepartmentNotification"
-    >
+    CrudResolver<DailyDepartmentNotificationNode, "dailyDepartmentNotification">
 {
   constructor(
     private readonly dailyDepartmentNotificationRepository: DailyDepartmentNotificationRepository
@@ -64,47 +60,24 @@ export class DailyDepartmentNotificationResolver
 
   @AccessControlAuthorized("list", "DailyDepartmentNotificationNode")
   @Query(() => ListDailyDepartmentNotificationsResponse)
-  async dailyDepartmentNotifications(
-    @Args() args: ListDailyDepartmentNotificationsArgs
-  ): Promise<ConcreteResult<ListDailyDepartmentNotificationsResponse>> {
-    const dailyDepartmentNotificationsResult =
-      await this.dailyDepartmentNotificationRepository.listDDNs({
-        filters: args.filters,
-        order:
-          args.sortBy?.map((key, i) => [
-            key,
-            args.sortDirection?.[i] ?? SortDirection.desc,
-          ]) ?? [],
-        skip:
-          args.page != null && args.actualPageSize != null
-            ? (args.page - 1) * args.actualPageSize
-            : null,
-        take: args.actualPageSize,
-      });
-    const dailyDepartmentNotificationCountResult =
-      await this.dailyDepartmentNotificationRepository.countDDNs({
-        filters: args.filters,
-      });
-    const combinedResult = Result.all([
-      dailyDepartmentNotificationsResult,
-      dailyDepartmentNotificationCountResult,
-    ]);
-    if (combinedResult.isErr()) {
-      return combinedResult;
-    }
-    const [dailyDepartmentNotifications, dailyDepartmentNotificationCount] =
-      combinedResult.value;
-
-    return Ok(
-      ListDailyDepartmentNotificationsResponse.newPaginated({
-        data: dailyDepartmentNotifications.map(
-          dailyDepartmentNotificationModelToResource
-        ),
-        total: dailyDepartmentNotificationCount,
-        page: args.page,
-        pageSize: args.actualPageSize,
+  dailyDepartmentNotifications(
+    @Args() query: ListDailyDepartmentNotificationsArgs
+  ) {
+    return this.dailyDepartmentNotificationRepository
+      .findAndCount({
+        filters: query.filters,
+        sortBy: query.sortBy,
+        offset: query.offset,
+        limit: query.limit,
       })
-    );
+      .map(({ selectedRows, total }) => {
+        return ListDailyDepartmentNotificationsResponse.newPaginated({
+          data: selectedRows.map((row) =>
+            dailyDepartmentNotificationModelToResource(row)
+          ),
+          total,
+        });
+      });
   }
 
   @AccessControlAuthorized("create")

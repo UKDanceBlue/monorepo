@@ -1,56 +1,103 @@
 import { Service } from "@freshgum/typedi";
 import { Prisma, PrismaClient } from "@prisma/client";
-import type { SortDirection } from "@ukdanceblue/common";
 import type { DateTime } from "luxon";
 
-import { SimpleUniqueParam } from "#repositories/shared.js";
+import {
+  type AsyncRepositoryResult,
+  SimpleUniqueParam,
+} from "#repositories/shared.js";
 
-const configurationStringKeys = ["key", "value"] as const;
-type ConfigurationStringKey = (typeof configurationStringKeys)[number];
+type ConfigurationKeys =
+  | "key"
+  | "value"
+  | "validAfter"
+  | "validUntil"
+  | "createdAt"
+  | "updatedAt";
 
-const configurationDateKeys = [
-  "validAfter",
-  "validUntil",
-  "createdAt",
-  "updatedAt",
-] as const;
-type ConfigurationDateKey = (typeof configurationDateKeys)[number];
-
-export type ConfigurationFilters = FilterItems<
-  never,
-  ConfigurationDateKey,
-  never,
-  never,
-  never,
-  ConfigurationStringKey
->;
+import type { DefaultArgs } from "@prisma/client/runtime/library";
+import { Ok } from "ts-results-es";
 
 import { prismaToken } from "#lib/typediTokens.js";
+import {
+  buildDefaultRepository,
+  type FindAndCountParams,
+  type FindAndCountResult,
+} from "#repositories/Default.js";
 
 @Service([prismaToken])
-export class ConfigurationRepository {
-  constructor(private prisma: PrismaClient) {}
+export class ConfigurationRepository extends buildDefaultRepository<
+  PrismaClient["configuration"],
+  SimpleUniqueParam,
+  ConfigurationKeys,
+  never
+>("configuration", {
+  key: {
+    getOrderBy: (sort) => Ok({ key: sort }),
+    getWhere: (value) => Ok({ key: value }),
+  },
+  value: {
+    getOrderBy: (sort) => Ok({ value: sort }),
+    getWhere: (value) => Ok({ value }),
+  },
+  validAfter: {
+    getOrderBy: (sort) => Ok({ validAfter: sort }),
+    getWhere: (value) => Ok({ validAfter: value }),
+  },
+  validUntil: {
+    getOrderBy: (sort) => Ok({ validUntil: sort }),
+    getWhere: (value) => Ok({ validUntil: value }),
+  },
+  createdAt: {
+    getOrderBy: (sort) => Ok({ createdAt: sort }),
+    getWhere: (value) => Ok({ createdAt: value }),
+  },
+  updatedAt: {
+    getOrderBy: (sort) => Ok({ updatedAt: sort }),
+    getWhere: (value) => Ok({ updatedAt: value }),
+  },
+}) {
+  constructor(protected readonly prisma: PrismaClient) {
+    super(prisma);
+  }
+
+  public uniqueToWhere(
+    by: SimpleUniqueParam
+  ): Prisma.ConfigurationWhereUniqueInput {
+    return ConfigurationRepository.simpleUniqueToWhere(by);
+  }
 
   // Finders
   findConfigurationByUnique(param: SimpleUniqueParam) {
     return this.prisma.configuration.findUnique({ where: param });
   }
 
-  findConfigurations(
-    filters: readonly ConfigurationFilters[] | null | undefined,
-    order: readonly [key: string, sort: SortDirection][] | null | undefined,
-    limit?: number,
-    offset?: number
-  ) {
-    const where = buildConfigurationWhere(filters);
-    const orderBy = buildConfigurationOrder(order);
-
-    return this.prisma.configuration.findMany({
-      where,
-      orderBy,
-      take: limit,
-      skip: offset,
-    });
+  findAndCount({
+    tx,
+    ...params
+  }: FindAndCountParams<ConfigurationKeys>): AsyncRepositoryResult<
+    FindAndCountResult<
+      Prisma.ConfigurationDelegate<DefaultArgs, Prisma.PrismaClientOptions>,
+      { include: never }
+    >
+  > {
+    return this.parseFindManyParams(params)
+      .toAsyncResult()
+      .andThen((params) =>
+        this.handleQueryError(
+          (tx ?? this.prisma).configuration.findMany({
+            ...params,
+          })
+        ).map((rows) => ({ rows, params }))
+      )
+      .andThen(({ rows, params }) =>
+        this.handleQueryError(
+          (tx ?? this.prisma).configuration.count(params)
+        ).map((total) => ({
+          selectedRows: rows,
+          total,
+        }))
+      );
   }
 
   findConfigurationByKey(key: string, at: Date | undefined) {

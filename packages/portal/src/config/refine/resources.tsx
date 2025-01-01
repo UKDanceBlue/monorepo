@@ -51,7 +51,7 @@ export const refineResources: ResourceProps[] = [
     list: "/fundraising/solicitation-code",
   },
   {
-    name: "ddn",
+    name: "dailyDepartmentNotification",
     meta: {
       label: "Uploaded DDNs",
       parent: "fundraising-group",
