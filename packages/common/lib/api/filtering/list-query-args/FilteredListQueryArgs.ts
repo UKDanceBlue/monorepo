@@ -71,6 +71,9 @@ export abstract class AbstractFilteredListQueryArgs<Fields extends string> {
   }
 }
 
+export type FieldsOfListQueryArgs<T> =
+  T extends AbstractFilteredListQueryArgs<infer Fields> ? Fields : never;
+
 export function FilteredListQueryArgs<Fields extends string>(
   resolverName: string,
   fields: Fields[] = []

@@ -4,6 +4,10 @@ import { Event, Prisma, PrismaClient } from "@prisma/client";
 type UniqueEventParam = { id: number } | { uuid: string };
 
 import type { DefaultArgs } from "@prisma/client/runtime/library";
+import type {
+  FieldsOfListQueryArgs,
+  ListEventsArgs,
+} from "@ukdanceblue/common";
 import { type FetchError, LuxonError } from "@ukdanceblue/common/error";
 import type { Interval } from "luxon";
 import { AsyncResult, Ok, Result } from "ts-results-es";
@@ -36,16 +40,7 @@ export interface ForeignEvent {
   imageUrls: URL[];
 }
 
-type EventFilterKeys =
-  | "title"
-  | "summary"
-  | "description"
-  | "location"
-  | "occurrences"
-  | "start"
-  | "end"
-  | "createdAt"
-  | "updatedAt";
+type EventFilterKeys = FieldsOfListQueryArgs<ListEventsArgs>;
 
 const defaultOptions = { include: { eventOccurrences: true } } as const;
 

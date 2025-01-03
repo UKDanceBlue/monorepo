@@ -9,7 +9,12 @@ import {
   SolicitationCode,
 } from "@prisma/client";
 import type { DefaultArgs } from "@prisma/client/runtime/library";
-import { DDNInit, localDateToJs } from "@ukdanceblue/common";
+import {
+  DDNInit,
+  type FieldsOfListQueryArgs,
+  type ListDailyDepartmentNotificationsArgs,
+  localDateToJs,
+} from "@ukdanceblue/common";
 import { InvalidArgumentError, NotFoundError } from "@ukdanceblue/common/error";
 import { Err, None, Ok, Option, Result, Some } from "ts-results-es";
 
@@ -36,14 +41,7 @@ type UniqueDailyDepartmentNotificationBatchParam =
     };
 
 type DailyDepartmentNotificationKeys =
-  | "Amount"
-  | "BatchType"
-  | "Comment"
-  | "Donor"
-  | "SolicitationCodeName"
-  | "SolicitationCodeNumber"
-  | "SolicitationCodePrefix"
-  | "createdAt";
+  FieldsOfListQueryArgs<ListDailyDepartmentNotificationsArgs>;
 
 function parseSolicitationCode(
   solicitationCodeString: string

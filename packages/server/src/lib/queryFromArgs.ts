@@ -561,11 +561,19 @@ export function buildOrder<Field extends string, T>(
   );
 }
 
-export interface FindManyParams<Field extends string> {
-  filters?: AbstractFilterGroup<Field> | null | undefined;
-  sortBy?: AbstractSortItem<Field>[] | null | undefined;
+export interface PaginationParams {
   offset?: number | null | undefined;
   limit?: number | null | undefined;
+}
+
+export interface FindManyParams<Field extends string> extends PaginationParams {
+  filters?: AbstractFilterGroup<Field> | null | undefined;
+  sortBy?: AbstractSortItem<Field>[] | null | undefined;
+}
+
+export interface SearchParams<Field extends string> extends PaginationParams {
+  query: string;
+  fields?: Field[] | null | undefined;
 }
 
 export function parseFindManyParams<T, Field extends string>(

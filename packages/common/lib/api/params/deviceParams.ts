@@ -53,7 +53,6 @@ export class RegisterDeviceInput {
 
 @ArgsType()
 export class ListDevicesArgs extends FilteredListQueryArgs("DeviceResolver", [
-  "expoPushToken",
   "lastSeen",
   "createdAt",
   "updatedAt",

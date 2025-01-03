@@ -21,6 +21,7 @@ import {
   type FieldLookup,
   type FindManyParams,
   parseFindManyParams as parseFindManyParamsFunc,
+  type SearchParams,
 } from "#lib/queryFromArgs.js";
 
 import {
@@ -115,6 +116,10 @@ interface BaseRepository<
     params: FindAndCountParams<Field>
   ): AsyncRepositoryResult<FindAndCountResult<T, { include: Include }>>;
 
+  search?(
+    params: SearchParams<Field>
+  ): AsyncRepositoryResult<FindAndCountResult<T, { include: Include }>>;
+
   findAll?(
     params: FindAllParams
   ): AsyncRepositoryResult<FindAllResult<T, { include: Include }>>;
@@ -145,21 +150,27 @@ export function buildDefaultRepository<
   UniqueParam,
   Field extends string,
   Include extends Args<T, "findUnique">["include"],
->(tableName: string, fieldLookup: FieldLookup<T, Field>) {
+>(
+  tableName: Exclude<keyof PrismaClient, `$${string}` | symbol>,
+  fieldLookup: FieldLookup<T, Field>
+) {
   // eslint-disable-next-line @typescript-eslint/no-empty-object-type, @typescript-eslint/no-unsafe-declaration-merging
   interface DefaultRepository
     extends BaseRepository<T, UniqueParam, Field, Include> {}
   // eslint-disable-next-line @typescript-eslint/no-unsafe-declaration-merging
-  abstract class DefaultRepository {
+  abstract class DefaultRepository
+    implements BaseRepository<T, UniqueParam, Field, Include>
+  {
     public static readonly fields: Field[] = Object.keys(
       fieldLookup
     ) as Field[];
 
     constructor(protected readonly prisma: PrismaClient) {
-      Container.setValue(`${tableName}Repository`, this);
+      // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
+      Container.setValue(`${tableName}Repository` as string, this);
     }
 
-    static simpleUniqueToWhere(
+    protected static simpleUniqueToWhere(
       by: SimpleUniqueParam
     ): { id: number } | { uuid: string } {
       if ("id" in by) {

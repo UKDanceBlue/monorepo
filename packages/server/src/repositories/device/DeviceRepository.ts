@@ -1,37 +1,63 @@
 import { Service } from "@freshgum/typedi";
-import type { Person } from "@prisma/client";
+import type { Person, Prisma } from "@prisma/client";
 import { PrismaClient } from "@prisma/client";
-import type { SortDirection } from "@ukdanceblue/common";
+import type {
+  FieldsOfListQueryArgs,
+  ListDevicesArgs,
+  SortDirection,
+} from "@ukdanceblue/common";
 import { NotFoundError } from "@ukdanceblue/common/error";
 import { Err, Ok, Result } from "ts-results-es";
 
 import type { NotificationAudience } from "#notification/NotificationProvider.js";
 import { PersonRepository } from "#repositories/person/PersonRepository.js";
-import { RepositoryError } from "#repositories/shared.js";
+import {
+  type AsyncRepositoryResult,
+  RepositoryError,
+  type SimpleUniqueParam,
+} from "#repositories/shared.js";
 
-const deviceStringKeys = ["expoPushToken"] as const;
-type DeviceStringKey = (typeof deviceStringKeys)[number];
+type DeviceFields = FieldsOfListQueryArgs<ListDevicesArgs>;
 
-const deviceDateKeys = ["lastSeen", "createdAt", "updatedAt"] as const;
-type DeviceDateKey = (typeof deviceDateKeys)[number];
-
-export type DeviceFilters = FilterItems<
-  never,
-  DeviceDateKey,
-  never,
-  never,
-  never,
-  DeviceStringKey
->;
+import type { DefaultArgs } from "@prisma/client/runtime/library";
 
 import { prismaToken } from "#lib/typediTokens.js";
+import {
+  buildDefaultRepository,
+  type FindAndCountParams,
+  type FindAndCountResult,
+} from "#repositories/Default.js";
 
 @Service([prismaToken, PersonRepository])
-export class DeviceRepository {
+export class DeviceRepository extends buildDefaultRepository<
+  PrismaClient["device"],
+  SimpleUniqueParam,
+  DeviceFields,
+  never
+>("device", {
+  lastSeen: {
+    getOrderBy: (sort) => Ok({ lastSeen: sort }),
+    getWhere: (value) => Ok({ lastSeen: value }),
+  },
+  createdAt: {
+    getOrderBy: (sort) => Ok({ createdAt: sort }),
+    getWhere: (value) => Ok({ createdAt: value }),
+  },
+  updatedAt: {
+    getOrderBy: (sort) => Ok({ updatedAt: sort }),
+    getWhere: (value) => Ok({ updatedAt: value }),
+  },
+}) {
   constructor(
-    private prisma: PrismaClient,
+    protected readonly prisma: PrismaClient,
     private personRepository: PersonRepository
-  ) {}
+  ) {
+    super(prisma);
+  }
+
+  public uniqueToWhere(by: SimpleUniqueParam): Prisma.DeviceWhereUniqueInput {
+    return DeviceRepository.simpleUniqueToWhere(by);
+  }
 
   async getDeviceByUuid(uuid: string) {
     return this.prisma.device.findUnique({
@@ -57,32 +83,36 @@ export class DeviceRepository {
       );
   }
 
-  async listDevices({
-    filters,
-    orderBy,
-    skip,
-    take,
-  }: {
-    filters: DeviceFilters[];
-    orderBy: [string, SortDirection][] | undefined | null;
-    skip?: number | undefined | null;
-    take?: number | undefined | null;
-  }) {
-    const where = buildDeviceWhere(filters);
-    const order = buildDeviceOrder(orderBy);
-
-    return this.prisma.device.findMany({
-      where,
-      orderBy: order,
-      take: take ?? undefined,
-      skip: skip ?? undefined,
-    });
-  }
-
-  async countDevices({ filters }: { filters: DeviceFilters[] }) {
-    const where = buildDeviceWhere(filters);
-
-    return this.prisma.device.count({ where });
+  findAndCount({
+    tx,
+    ...params
+  }: FindAndCountParams<
+    "lastSeen" | "createdAt" | "updatedAt"
+  >): AsyncRepositoryResult<
+    FindAndCountResult<
+      Prisma.DeviceDelegate<DefaultArgs, Prisma.PrismaClientOptions>,
+      { include: never }
+    >
+  > {
+    type test = Exclude<keyof PrismaClient, `$${string}` | symbol>;
+    return this.parseFindManyParams(params)
+      .toAsyncResult()
+      .andThen((params) =>
+        this.handleQueryError((tx ?? this.prisma).device.findMany(params)).map(
+          (rows) => ({ rows, params })
+        )
+      )
+      .andThen(({ rows, params }) =>
+        this.handleQueryError(
+          (tx ?? this.prisma).device.count({
+            where: params.where,
+            orderBy: params.orderBy,
+          })
+        ).map((total) => ({
+          selectedRows: rows,
+          total,
+        }))
+      );
   }
 
   async findNotificationDeliveriesForDevice(
