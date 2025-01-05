@@ -1,7 +1,7 @@
 import "reflect-metadata";
 
 export * from "./api/filtering/Filter.js";
-export * from "./api/filtering/list-query-args/FilteredListQueryArgs.js";
+export * from "./api/filtering/FilteredListQueryArgs.js";
 export * from "./api/filtering/ListQueryTypes.js";
 export type * from "./api/jwt.js";
 export * from "./api/params/index.js";

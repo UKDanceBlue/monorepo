@@ -129,7 +129,7 @@ export class DailyDepartmentNotificationRepository extends buildDefaultRepositor
   UniqueDailyDepartmentNotificationParam,
   DailyDepartmentNotificationKeys,
   typeof ddnInclude
->("dailyDepartmentNotification", {
+>("DailyDepartmentNotification", {
   Amount: {
     getOrderBy: (sort) => Ok({ combinedAmount: sort }),
     getWhere: (value) => Ok({ combinedAmount: value }),

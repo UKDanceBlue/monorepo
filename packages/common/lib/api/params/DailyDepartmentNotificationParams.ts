@@ -2,7 +2,7 @@ import { GraphQLLocalDate, GraphQLNonEmptyString } from "graphql-scalars";
 import { ArgsType, Field, InputType, ObjectType } from "type-graphql";
 
 import type { LocalDate } from "../../utility/time/localDate.js";
-import { FilteredListQueryArgs } from "../filtering/list-query-args/FilteredListQueryArgs.js";
+import { FilteredListQueryArgs } from "../filtering/FilteredListQueryArgs.js";
 import { DailyDepartmentNotificationNode } from "../resources/DailyDepartmentNotification.js";
 import { AbstractGraphQLPaginatedResponse } from "./ApiResponse.js";
 

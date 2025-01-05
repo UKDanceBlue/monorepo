@@ -384,6 +384,14 @@ input DailyDepartmentNotificationResolverFilterItem {
   filter: SomeFilter!
 }
 
+input DailyDepartmentNotificationResolverSearchFilter {
+  """
+  The fields to search in. If unspecified, searches all searchable fields. Note that searching by a field that does not support it will cause a runtime error
+  """
+  fields: [DailyDepartmentNotificationResolverFilterFields!]
+  query: NonEmptyString!
+}
+
 input DailyDepartmentNotificationResolverSort {
   direction: SortDirection! = asc
   field: DailyDepartmentNotificationResolverFilterFields!
@@ -443,6 +451,14 @@ input DeviceResolverFilterItem {
   filter: SomeFilter!
 }
 
+input DeviceResolverSearchFilter {
+  """
+  The fields to search in. If unspecified, searches all searchable fields. Note that searching by a field that does not support it will cause a runtime error
+  """
+  fields: [DeviceResolverFilterFields!]
+  query: NonEmptyString!
+}
+
 input DeviceResolverSort {
   direction: SortDirection! = asc
   field: DeviceResolverFilterFields!
@@ -499,6 +515,14 @@ input EventResolverFilterGroup {
 input EventResolverFilterItem {
   field: EventResolverFilterFields!
   filter: SomeFilter!
+}
+
+input EventResolverSearchFilter {
+  """
+  The fields to search in. If unspecified, searches all searchable fields. Note that searching by a field that does not support it will cause a runtime error
+  """
+  fields: [EventResolverFilterFields!]
+  query: NonEmptyString!
 }
 
 input EventResolverSort {
@@ -591,6 +615,14 @@ input FundraisingEntryResolverFilterItem {
   filter: SomeFilter!
 }
 
+input FundraisingEntryResolverSearchFilter {
+  """
+  The fields to search in. If unspecified, searches all searchable fields. Note that searching by a field that does not support it will cause a runtime error
+  """
+  fields: [FundraisingEntryResolverFilterFields!]
+  query: NonEmptyString!
+}
+
 input FundraisingEntryResolverSort {
   direction: SortDirection! = asc
   field: FundraisingEntryResolverFilterFields!
@@ -636,6 +668,14 @@ input ImageResolverFilterGroup {
 input ImageResolverFilterItem {
   field: ImageResolverFilterFields!
   filter: SomeFilter!
+}
+
+input ImageResolverSearchFilter {
+  """
+  The fields to search in. If unspecified, searches all searchable fields. Note that searching by a field that does not support it will cause a runtime error
+  """
+  fields: [ImageResolverFilterFields!]
+  query: NonEmptyString!
 }
 
 input ImageResolverSort {
@@ -827,6 +867,14 @@ input MarathonHourResolverFilterItem {
   filter: SomeFilter!
 }
 
+input MarathonHourResolverSearchFilter {
+  """
+  The fields to search in. If unspecified, searches all searchable fields. Note that searching by a field that does not support it will cause a runtime error
+  """
+  fields: [MarathonHourResolverFilterFields!]
+  query: NonEmptyString!
+}
+
 input MarathonHourResolverSort {
   direction: SortDirection! = asc
   field: MarathonHourResolverFilterFields!
@@ -871,6 +919,14 @@ input MarathonResolverFilterGroup {
 input MarathonResolverFilterItem {
   field: MarathonResolverFilterFields!
   filter: SomeFilter!
+}
+
+input MarathonResolverSearchFilter {
+  """
+  The fields to search in. If unspecified, searches all searchable fields. Note that searching by a field that does not support it will cause a runtime error
+  """
+  fields: [MarathonResolverFilterFields!]
+  query: NonEmptyString!
 }
 
 input MarathonResolverSort {
@@ -1077,6 +1133,14 @@ input NotificationDeliveryResolverFilterItem {
   filter: SomeFilter!
 }
 
+input NotificationDeliveryResolverSearchFilter {
+  """
+  The fields to search in. If unspecified, searches all searchable fields. Note that searching by a field that does not support it will cause a runtime error
+  """
+  fields: [NotificationDeliveryResolverFilterFields!]
+  query: NonEmptyString!
+}
+
 input NotificationDeliveryResolverSort {
   direction: SortDirection! = asc
   field: NotificationDeliveryResolverFilterFields!
@@ -1125,6 +1189,14 @@ input NotificationResolverFilterItem {
   filter: SomeFilter!
 }
 
+input NotificationResolverSearchFilter {
+  """
+  The fields to search in. If unspecified, searches all searchable fields. Note that searching by a field that does not support it will cause a runtime error
+  """
+  fields: [NotificationResolverFilterFields!]
+  query: NonEmptyString!
+}
+
 input NotificationResolverSort {
   direction: SortDirection! = asc
   field: NotificationResolverFilterFields!
@@ -1170,6 +1242,14 @@ input PersonResolverFilterItem {
   filter: SomeFilter!
 }
 
+input PersonResolverSearchFilter {
+  """
+  The fields to search in. If unspecified, searches all searchable fields. Note that searching by a field that does not support it will cause a runtime error
+  """
+  fields: [PersonResolverFilterFields!]
+  query: NonEmptyString!
+}
+
 input PersonResolverSort {
   direction: SortDirection! = asc
   field: PersonResolverFilterFields!
@@ -1200,6 +1280,14 @@ input PointEntryResolverFilterGroup {
 input PointEntryResolverFilterItem {
   field: PointEntryResolverFilterFields!
   filter: SomeFilter!
+}
+
+input PointEntryResolverSearchFilter {
+  """
+  The fields to search in. If unspecified, searches all searchable fields. Note that searching by a field that does not support it will cause a runtime error
+  """
+  fields: [PointEntryResolverFilterFields!]
+  query: NonEmptyString!
 }
 
 input PointEntryResolverSort {
@@ -1235,6 +1323,14 @@ input PointOpportunityResolverFilterGroup {
 input PointOpportunityResolverFilterItem {
   field: PointOpportunityResolverFilterFields!
   filter: SomeFilter!
+}
+
+input PointOpportunityResolverSearchFilter {
+  """
+  The fields to search in. If unspecified, searches all searchable fields. Note that searching by a field that does not support it will cause a runtime error
+  """
+  fields: [PointOpportunityResolverFilterFields!]
+  query: NonEmptyString!
 }
 
 input PointOpportunityResolverSort {
@@ -1273,6 +1369,7 @@ type Query {
 
     """The number of items to return per page, defaults to 10"""
     pageSize: NonNegativeInt! = 10
+    search: DailyDepartmentNotificationResolverSearchFilter
 
     """
     Whether to send all results in a single page, defaults to false (should generally be avoided)
@@ -1300,6 +1397,7 @@ type Query {
 
     """The number of items to return per page, defaults to 10"""
     pageSize: NonNegativeInt! = 10
+    search: DeviceResolverSearchFilter
 
     """
     Whether to send all results in a single page, defaults to false (should generally be avoided)
@@ -1324,6 +1422,7 @@ type Query {
 
     """The number of items to return per page, defaults to 10"""
     pageSize: NonNegativeInt! = 10
+    search: EventResolverSearchFilter
 
     """
     Whether to send all results in a single page, defaults to false (should generally be avoided)
@@ -1350,6 +1449,7 @@ type Query {
 
     """The number of items to return per page, defaults to 10"""
     pageSize: NonNegativeInt! = 10
+    search: FundraisingEntryResolverSearchFilter
 
     """
     Whether to send all results in a single page, defaults to false (should generally be avoided)
@@ -1371,6 +1471,7 @@ type Query {
 
     """The number of items to return per page, defaults to 10"""
     pageSize: NonNegativeInt! = 10
+    search: ImageResolverSearchFilter
 
     """
     Whether to send all results in a single page, defaults to false (should generally be avoided)
@@ -1399,6 +1500,7 @@ type Query {
 
     """The number of items to return per page, defaults to 10"""
     pageSize: NonNegativeInt! = 10
+    search: MarathonHourResolverSearchFilter
 
     """
     Whether to send all results in a single page, defaults to false (should generally be avoided)
@@ -1418,6 +1520,7 @@ type Query {
 
     """The number of items to return per page, defaults to 10"""
     pageSize: NonNegativeInt! = 10
+    search: MarathonResolverSearchFilter
 
     """
     Whether to send all results in a single page, defaults to false (should generally be avoided)
@@ -1441,6 +1544,7 @@ type Query {
 
     """The number of items to return per page, defaults to 10"""
     pageSize: NonNegativeInt! = 10
+    search: NotificationDeliveryResolverSearchFilter
 
     """
     Whether to send all results in a single page, defaults to false (should generally be avoided)
@@ -1460,6 +1564,7 @@ type Query {
 
     """The number of items to return per page, defaults to 10"""
     pageSize: NonNegativeInt! = 10
+    search: NotificationResolverSearchFilter
 
     """
     Whether to send all results in a single page, defaults to false (should generally be avoided)
@@ -1479,6 +1584,7 @@ type Query {
 
     """The number of items to return per page, defaults to 10"""
     pageSize: NonNegativeInt! = 10
+    search: PersonResolverSearchFilter
 
     """
     Whether to send all results in a single page, defaults to false (should generally be avoided)
@@ -1500,6 +1606,7 @@ type Query {
 
     """The number of items to return per page, defaults to 10"""
     pageSize: NonNegativeInt! = 10
+    search: PointEntryResolverSearchFilter
 
     """
     Whether to send all results in a single page, defaults to false (should generally be avoided)
@@ -1520,6 +1627,7 @@ type Query {
 
     """The number of items to return per page, defaults to 10"""
     pageSize: NonNegativeInt! = 10
+    search: PointOpportunityResolverSearchFilter
 
     """
     Whether to send all results in a single page, defaults to false (should generally be avoided)
@@ -1549,6 +1657,7 @@ type Query {
 
     """The number of items to return per page, defaults to 10"""
     pageSize: NonNegativeInt! = 10
+    search: SolicitationCodeSearchFilter
 
     """
     Whether to send all results in a single page, defaults to false (should generally be avoided)
@@ -1571,6 +1680,7 @@ type Query {
 
     """The number of items to return per page, defaults to 10"""
     pageSize: NonNegativeInt! = 10
+    search: TeamResolverSearchFilter
 
     """
     Whether to send all results in a single page, defaults to false (should generally be avoided)
@@ -1765,6 +1875,7 @@ type SolicitationCodeNode implements Node {
 
     """The number of items to return per page, defaults to 10"""
     pageSize: NonNegativeInt! = 10
+    search: FundraisingEntryResolverSearchFilter
 
     """
     Whether to send all results in a single page, defaults to false (should generally be avoided)
@@ -1782,6 +1893,14 @@ type SolicitationCodeNode implements Node {
   teams(marathonId: GlobalId): [TeamNode!]!
   text: String!
   updatedAt: LuxonDateTime
+}
+
+input SolicitationCodeSearchFilter {
+  """
+  The fields to search in. If unspecified, searches all searchable fields. Note that searching by a field that does not support it will cause a runtime error
+  """
+  fields: [SolicitationCodeFilterFields!]
+  query: NonEmptyString!
 }
 
 input SolicitationCodeSort {
@@ -1826,6 +1945,7 @@ type TeamNode implements Node {
 
     """The number of items to return per page, defaults to 10"""
     pageSize: NonNegativeInt! = 10
+    search: FundraisingEntryResolverSearchFilter
 
     """
     Whether to send all results in a single page, defaults to false (should generally be avoided)
@@ -1866,6 +1986,14 @@ input TeamResolverFilterGroup {
 input TeamResolverFilterItem {
   field: TeamResolverFilterFields!
   filter: SomeFilter!
+}
+
+input TeamResolverSearchFilter {
+  """
+  The fields to search in. If unspecified, searches all searchable fields. Note that searching by a field that does not support it will cause a runtime error
+  """
+  fields: [TeamResolverFilterFields!]
+  query: NonEmptyString!
 }
 
 input TeamResolverSort {

@@ -1,9 +1,5 @@
 import { PlusOutlined } from "@ant-design/icons";
-import {
-  createFileRoute,
-  useNavigate,
-  useSearch,
-} from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { Button, Flex, Typography } from "antd";
 import { useState } from "react";
 
@@ -12,19 +8,11 @@ import { ImagesTable } from "#elements/tables/ImagesTable.js";
 
 export const Route = createFileRoute("/images/")({
   component: RouteComponent,
-  validateSearch(search) {
-    return "previewedImage" in search &&
-      typeof search.previewedImage === "string"
-      ? { imageId: search.previewedImage }
-      : {};
-  },
 });
 
 function RouteComponent() {
   const [createImageOpen, setCreateImageOpen] = useState(false);
   const navigate = useNavigate();
-
-  const { imageId } = useSearch({ from: "/images/" });
 
   return (
     <>
@@ -51,7 +39,7 @@ function RouteComponent() {
           }
         }}
       />
-      <ImagesTable previewedImageId={imageId} />
+      <ImagesTable />
     </>
   );
 }

@@ -1,12 +1,16 @@
-import { GraphQLNonNegativeInt, GraphQLPositiveInt } from "graphql-scalars";
+import {
+  GraphQLNonEmptyString,
+  GraphQLNonNegativeInt,
+  GraphQLPositiveInt,
+} from "graphql-scalars";
 import { ArgsType, Field, InputType, registerEnumType } from "type-graphql";
 
-import { AbstractFilterGroup, createFilterGroup } from "../Filter.js";
+import { AbstractFilterGroup, createFilterGroup } from "./Filter.js";
 import {
   DEFAULT_PAGE_SIZE,
   FIRST_PAGE,
   SortDirection,
-} from "../ListQueryTypes.js";
+} from "./ListQueryTypes.js";
 
 @InputType()
 // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-parameters
@@ -30,10 +34,37 @@ export function SortItem<Fields extends string>(
   return Sort;
 }
 
+@InputType()
+export abstract class AbstractSearchFilter<Field extends string> {
+  @Field(() => GraphQLNonEmptyString, {
+    nullable: false,
+  })
+  query!: string;
+  fields?: Field[] | null | undefined;
+}
+
+export function SearchFilter<Fields extends string>(
+  resolverName: string,
+  fieldsEnum: Record<string, Fields>
+) {
+  @InputType(`${resolverName}SearchFilter`)
+  class SearchFilter extends AbstractSearchFilter<Fields> {
+    @Field(() => [fieldsEnum], {
+      nullable: true,
+      description:
+        "The fields to search in. If unspecified, searches all searchable fields. Note that searching by a field that does not support it will cause a runtime error",
+    })
+    fields?: Fields[] | null;
+  }
+
+  return SearchFilter;
+}
+
 @ArgsType()
 export abstract class AbstractFilteredListQueryArgs<Fields extends string> {
   filters!: AbstractFilterGroup<Fields> | null;
   sortBy!: AbstractSortItem<Fields>[] | null;
+  search!: AbstractSearchFilter<Fields> | null;
 
   @Field(() => Boolean, {
     nullable: true,
@@ -85,6 +116,7 @@ export function FilteredListQueryArgs<Fields extends string>(
 
   const FilterGroup = createFilterGroup(FilterKeysEnum, resolverName);
   const Sort = SortItem(resolverName, FilterKeysEnum);
+  const Search = SearchFilter(resolverName, FilterKeysEnum);
 
   @ArgsType()
   abstract class FilteredListQueryArgs extends AbstractFilteredListQueryArgs<Fields> {
@@ -97,6 +129,9 @@ export function FilteredListQueryArgs<Fields extends string>(
         "The fields to sort by, in order of priority. If unspecified, the sort order is undefined",
     })
     sortBy!: InstanceType<typeof Sort>[] | null;
+
+    @Field(() => Search, { nullable: true })
+    search!: InstanceType<typeof Search> | null;
   }
 
   return FilteredListQueryArgs;

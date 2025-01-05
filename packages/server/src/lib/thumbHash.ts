@@ -40,6 +40,8 @@ export async function generateThumbHash(
   // Get an RGBA buffer from the image
   const baseImage = "data" in input ? sharp(input.data, options) : input.image;
 
+  await baseImage.toBuffer({ resolveWithObject: false });
+
   // Get the width and height of the image
   const { width, height, ...metadata } = await baseImage.metadata();
   if (!width || !height) {

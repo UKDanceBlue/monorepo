@@ -1,82 +1,104 @@
 import { Service } from "@freshgum/typedi";
 import { Prisma, PrismaClient } from "@prisma/client";
-import type { SortDirection } from "@ukdanceblue/common";
+import type {
+  FieldsOfListQueryArgs,
+  ListImagesArgs,
+} from "@ukdanceblue/common";
 
-const imageBooleanKeys = [] as const;
-type ImageBooleanKey = (typeof imageBooleanKeys)[number];
+type UniqueImageParam = SimpleUniqueParam;
 
-const imageDateKeys = ["createdAt", "updatedAt"] as const;
-type ImageDateKey = (typeof imageDateKeys)[number];
-
-const imageIsNullKeys = [] as const;
-type ImageIsNullKey = (typeof imageIsNullKeys)[number];
-
-const imageNumericKeys = ["width", "height"] as const;
-type ImageNumericKey = (typeof imageNumericKeys)[number];
-
-const imageOneOfKeys = [] as const;
-type ImageOneOfKey = (typeof imageOneOfKeys)[number];
-
-const imageStringKeys = ["alt"] as const;
-type ImageStringKey = (typeof imageStringKeys)[number];
-
-export type ImageFilters = FilterItems<
-  ImageBooleanKey,
-  ImageDateKey,
-  ImageIsNullKey,
-  ImageNumericKey,
-  ImageOneOfKey,
-  ImageStringKey
->;
-
-type UniqueImageParam = { id: number } | { uuid: string };
+import type { DefaultArgs } from "@prisma/client/runtime/library";
+import { Ok } from "ts-results-es";
 
 import { prismaToken } from "#lib/typediTokens.js";
+import {
+  buildDefaultRepository,
+  type FindAndCountParams,
+  type FindAndCountResult,
+} from "#repositories/Default.js";
+import type {
+  AsyncRepositoryResult,
+  SimpleUniqueParam,
+} from "#repositories/shared.js";
+
+const imageRepositoryInclude = { file: true };
 
 @Service([prismaToken])
-export class ImageRepository {
-  constructor(private prisma: PrismaClient) {}
+export class ImageRepository extends buildDefaultRepository<
+  PrismaClient["image"],
+  UniqueImageParam,
+  FieldsOfListQueryArgs<ListImagesArgs>,
+  typeof imageRepositoryInclude
+>("Image", {
+  alt: {
+    getOrderBy: (dir) => Ok({ alt: dir }),
+    getWhere: (placeholder) => Ok({ alt: placeholder }),
+    searchable: true,
+  },
+  height: {
+    getOrderBy: (dir) => Ok({ height: dir }),
+    getWhere: (placeholder) => Ok({ height: placeholder }),
+  },
+  width: {
+    getOrderBy: (dir) => Ok({ width: dir }),
+    getWhere: (placeholder) => Ok({ width: placeholder }),
+  },
+  createdAt: {
+    getOrderBy: (dir) => Ok({ createdAt: dir }),
+    getWhere: (placeholder) => Ok({ createdAt: placeholder }),
+  },
+  updatedAt: {
+    getOrderBy: (dir) => Ok({ updatedAt: dir }),
+    getWhere: (placeholder) => Ok({ updatedAt: placeholder }),
+  },
+}) {
+  constructor(protected readonly prisma: PrismaClient) {
+    super(prisma);
+  }
+
+  public uniqueToWhere(by: UniqueImageParam): Prisma.ImageWhereUniqueInput {
+    return ImageRepository.simpleUniqueToWhere(by);
+  }
 
   findImageByUnique(param: UniqueImageParam) {
     return this.prisma.image.findUnique({
       where: param,
-      include: { file: true },
+      include: imageRepositoryInclude,
     });
   }
 
-  listImages({
-    filters,
-    order,
-    skip,
-    take,
-  }: {
-    filters?: readonly ImageFilters[] | undefined | null;
-    order?: readonly [key: string, sort: SortDirection][] | undefined | null;
-    skip?: number | undefined | null;
-    take?: number | undefined | null;
-  }) {
-    const where = buildImageWhere(filters);
-    const orderBy = buildImageOrder(order);
-
-    return this.prisma.image.findMany({
-      where,
-      orderBy,
-      skip: skip ?? undefined,
-      take: take ?? undefined,
-      include: { file: true },
-    });
-  }
-
-  countImages({
-    filters,
-  }: {
-    filters?: readonly ImageFilters[] | undefined | null;
-  }) {
-    const where = buildImageWhere(filters);
-
-    return this.prisma.image.count({
-      where,
-    });
+  findAndCount({
+    tx,
+    ...params
+  }: FindAndCountParams<
+    "createdAt" | "updatedAt" | "alt" | "width" | "height"
+  >): AsyncRepositoryResult<
+    FindAndCountResult<
+      Prisma.ImageDelegate<DefaultArgs, Prisma.PrismaClientOptions>,
+      { include: typeof imageRepositoryInclude }
+    >
+  > {
+    return this.parseFindManyParams(params)
+      .toAsyncResult()
+      .andThen((params) =>
+        this.handleQueryError(
+          (tx ?? this.prisma).image.findMany({
+            ...params,
+            include: imageRepositoryInclude,
+          })
+        ).map((rows) => ({ rows, params }))
+      )
+      .andThen(({ rows, params }) =>
+        this.handleQueryError(
+          (tx ?? this.prisma).image.count({
+            where: params.where,
+            orderBy: params.orderBy,
+          })
+        ).map((total) => ({
+          selectedRows: rows,
+          total,
+        }))
+      );
   }
 
   createImage(data: Prisma.ImageCreateInput) {

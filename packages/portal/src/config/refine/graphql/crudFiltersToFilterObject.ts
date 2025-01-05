@@ -353,31 +353,60 @@ export function crudFilterToFilterObject(
 export function crudFiltersToFilterObject(
   crudFilter: CrudFilter,
   fieldTypes: FieldTypes | undefined
-): FilterGroup {
+): {
+  filterGroup?: FilterGroup;
+  search?: string;
+} {
   const filters: FilterGroup["filters"] = [];
   const children: FilterGroup["children"] = [];
+  let search: string | undefined;
+
   if (crudFilter.operator === "or" || crudFilter.operator === "and") {
+    const mapped = crudFilter.value
+      .map((f) => crudFiltersToFilterObject(f, fieldTypes))
+      .reduce<{
+        children: FilterGroup[];
+        search?: string;
+      }>(
+        (acc, { filterGroup, search }) => {
+          if (filterGroup) {
+            acc.children.push(filterGroup);
+          }
+          if (search) {
+            acc.search = search;
+          }
+          return acc;
+        },
+        { children: [], search: undefined }
+      );
+    if (mapped.search) {
+      search = mapped.search;
+    }
     children.push({
       operator:
         crudFilter.operator === "or"
           ? FilterGroupOperator.OR
           : FilterGroupOperator.AND,
       filters: [],
-      children: crudFilter.value.map((f) =>
-        crudFiltersToFilterObject(f, fieldTypes)
-      ),
+      children: mapped.children,
     });
+  } else if ((crudFilter as LogicalFilter).field === "$search") {
+    search = crudFilter.value;
   } else {
     filters.push(
       crudFilterToFilterObject(crudFilter as LogicalFilter, fieldTypes)
     );
   }
+
   return {
-    operator:
-      crudFilter.operator === "or"
-        ? FilterGroupOperator.OR
-        : FilterGroupOperator.AND,
-    children,
-    filters,
+    search,
+    filterGroup: {
+      operator:
+        crudFilter.operator === "or"
+          ? FilterGroupOperator.OR
+          : FilterGroupOperator.AND,
+      children,
+      filters,
+    },
   };
 }

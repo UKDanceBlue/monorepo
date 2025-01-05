@@ -1,9 +1,10 @@
 import { Container, Service } from "@freshgum/typedi";
 import type { File } from "@prisma/client";
-import { open } from "fs/promises";
+import { parseGlobalId } from "@ukdanceblue/common";
 import multer from "multer";
 
 import { FileManager } from "#files/FileManager.js";
+import { FileSource } from "#files/storage/StorageProvider.js";
 import { generateThumbHash } from "#lib/thumbHash.js";
 import { maxFileSizeToken } from "#lib/typediTokens.js";
 import { logger } from "#logging/standardLogging.js";
@@ -20,6 +21,7 @@ const upload = multer({
     }
     cb(null, true);
   },
+  storage: multer.memoryStorage(),
 });
 
 @Service([ImageRepository, FileManager])
@@ -28,11 +30,16 @@ export default class HealthCheckRouter extends RouterService {
     super("/upload");
 
     this.addPostRoute(
-      "/image/:uuid",
+      "/image/:globalId",
       upload.single("file"),
       async (req, res, next): Promise<void> => {
         try {
-          const { uuid } = req.params;
+          const { globalId } = req.params;
+          const uuid = globalId
+            ? parseGlobalId(globalId)
+                .map(({ id }) => id)
+                .unwrapOr(null)
+            : null;
 
           // Check the image in the database
           if (!uuid) {
@@ -53,32 +60,24 @@ export default class HealthCheckRouter extends RouterService {
             thumbHash: thumbHashArray,
             height,
             width,
-          } = await generateThumbHash({ data: uploadedFile.path });
+          } = await generateThumbHash({ data: uploadedFile.buffer });
 
           const thumbHash = Buffer.from(thumbHashArray);
 
           let file: File;
           try {
-            const tmpFileHandle = await open(uploadedFile.path);
-            try {
-              file = await fileManager.storeFile(
-                {
-                  type: "stream",
-                  name: uploadedFile.originalname,
-                  stream: tmpFileHandle.createReadStream({
-                    autoClose: true,
-                    emitClose: true,
-                  }),
-                },
-                uploadedFile.mimetype,
-                // TODO: Implement file ownership
-                undefined,
-                undefined,
-                "local"
-              );
-            } finally {
-              await tmpFileHandle.close();
-            }
+            file = await fileManager.storeFile(
+              {
+                type: FileSource.Buffer,
+                name: uploadedFile.originalname,
+                buffer: uploadedFile.buffer,
+              },
+              uploadedFile.mimetype,
+              // TODO: Implement file ownership
+              undefined,
+              undefined,
+              "local"
+            );
           } catch (error) {
             logger.warning("Error while storing file", { error });
             return void res.status(500).send("Error while storing file");

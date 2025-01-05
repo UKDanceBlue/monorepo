@@ -2,7 +2,7 @@ import { GraphQLNonEmptyString } from "graphql-scalars";
 import { DateTime } from "luxon";
 import { ArgsType, Field, InputType, ObjectType } from "type-graphql";
 
-import { FilteredListQueryArgs } from "../filtering/list-query-args/FilteredListQueryArgs.js";
+import { FilteredListQueryArgs } from "../filtering/FilteredListQueryArgs.js";
 import { PointOpportunityNode } from "../resources/PointOpportunity.js";
 import { TeamType } from "../resources/Team.js";
 import { DateTimeScalar } from "../scalars/DateTimeISO.js";

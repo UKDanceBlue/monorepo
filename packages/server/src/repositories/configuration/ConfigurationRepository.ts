@@ -31,7 +31,7 @@ export class ConfigurationRepository extends buildDefaultRepository<
   SimpleUniqueParam,
   ConfigurationKeys,
   never
->("configuration", {
+>("Configuration", {
   key: {
     getOrderBy: (sort) => Ok({ key: sort }),
     getWhere: (value) => Ok({ key: value }),

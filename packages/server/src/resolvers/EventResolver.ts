@@ -77,6 +77,7 @@ export class EventResolver implements CrudResolver<EventNode, "event"> {
         sortBy: query.sortBy,
         offset: query.offset,
         limit: query.limit,
+        search: query.search,
       })
       .map(({ selectedRows, total }) => {
         return ListEventsResponse.newPaginated({

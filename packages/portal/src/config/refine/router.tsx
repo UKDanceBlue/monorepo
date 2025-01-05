@@ -7,6 +7,7 @@ import {
 } from "@refinedev/core";
 import {
   Link,
+  type LinkProps,
   useLocation,
   useNavigate,
   useParams,
@@ -139,7 +140,7 @@ export const routerBindings: RouterBindings = {
   Link: React.forwardRef<
     HTMLAnchorElement,
     ComponentProps<NonNullable<RouterBindings["Link"]>>
-  >((props, ref) => {
+  >((props: LinkProps, ref) => {
     return <Link {...props} ref={ref} />;
   }),
 };

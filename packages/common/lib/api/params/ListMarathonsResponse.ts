@@ -3,7 +3,7 @@ import { GraphQLNonEmptyString } from "graphql-scalars";
 import { DateTime } from "luxon";
 import { ArgsType, Field, InputType, ObjectType } from "type-graphql";
 
-import { FilteredListQueryArgs } from "../filtering/list-query-args/FilteredListQueryArgs.js";
+import { FilteredListQueryArgs } from "../filtering/FilteredListQueryArgs.js";
 import { MarathonNode } from "../resources/Marathon.js";
 import { DateTimeScalar } from "../scalars/DateTimeISO.js";
 import {

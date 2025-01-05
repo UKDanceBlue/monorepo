@@ -8,7 +8,6 @@ import {
   ImageNode,
   LegacyError,
   LegacyErrorCode,
-  SortDirection,
 } from "@ukdanceblue/common";
 import {
   CreateImageInput,
@@ -17,6 +16,7 @@ import {
 } from "@ukdanceblue/common";
 import { GraphQLURL } from "graphql-scalars";
 import fetch from "node-fetch";
+import { Result } from "ts-results-es";
 import { Arg, Args, Ctx, Mutation, Query, Resolver } from "type-graphql";
 
 import { FileManager } from "#files/FileManager.js";
@@ -24,6 +24,7 @@ import { generateThumbHash } from "#lib/thumbHash.js";
 import { logger } from "#logging/standardLogging.js";
 import { imageModelToResource } from "#repositories/image/imageModelToResource.js";
 import { ImageRepository } from "#repositories/image/ImageRepository.js";
+import type { AsyncRepositoryResult } from "#repositories/shared.js";
 
 import type { GraphQLContext } from "../lib/auth/context.js";
 
@@ -51,42 +52,40 @@ export class ImageResolver implements CrudResolver<ImageNode, "image"> {
       result.file,
       this.fileManager,
       serverUrl
-    );
+    ).promise.then((r) => r.unwrap());
   }
 
   @AccessControlAuthorized("list", "ImageNode")
   @Query(() => ListImagesResponse, { name: "images" })
-  async images(
-    @Args(() => ListImagesArgs) args: ListImagesArgs,
+  images(
+    @Args(() => ListImagesArgs) query: ListImagesArgs,
     @Ctx() { serverUrl }: GraphQLContext
-  ): Promise<ListImagesResponse> {
-    const result = await this.imageRepository.listImages({
-      filters: args.filters,
-      order:
-        args.sortBy?.map((key, i) => [
-          key,
-          args.sortDirection?.[i] ?? SortDirection.desc,
-        ]) ?? [],
-      skip:
-        args.page != null && args.actualPageSize != null
-          ? (args.page - 1) * args.actualPageSize
-          : null,
-      take: args.actualPageSize,
-    });
-    const count = await this.imageRepository.countImages({
-      filters: args.filters,
-    });
-
-    return ListImagesResponse.newPaginated({
-      data: await Promise.all(
-        result.map((model) =>
-          imageModelToResource(model, model.file, this.fileManager, serverUrl)
-        )
-      ),
-      total: count,
-      page: args.page,
-      pageSize: args.actualPageSize,
-    });
+  ): AsyncRepositoryResult<ListImagesResponse> {
+    return this.imageRepository
+      .findAndCount({
+        filters: query.filters,
+        sortBy: query.sortBy,
+        offset: query.offset,
+        limit: query.limit,
+        search: query.search,
+      })
+      .andThen(async (result) => {
+        return Result.all(
+          await Promise.all(
+            result.selectedRows.map(
+              (row) =>
+                imageModelToResource(row, row.file, this.fileManager, serverUrl)
+                  .promise
+            )
+          )
+        ).map((data) => ({ data, total: result.total }));
+      })
+      .map(({ data, total }) => {
+        return ListImagesResponse.newPaginated({
+          data,
+          total,
+        });
+      });
   }
 
   @AccessControlAuthorized("create")
@@ -129,7 +128,12 @@ export class ImageResolver implements CrudResolver<ImageNode, "image"> {
       thumbHash: thumbHash != null ? Buffer.from(thumbHash) : null,
     });
 
-    return imageModelToResource(result, null, this.fileManager, serverUrl);
+    return imageModelToResource(
+      result,
+      null,
+      this.fileManager,
+      serverUrl
+    ).promise.then((r) => r.unwrap());
   }
 
   @AccessControlAuthorized("update")
@@ -157,7 +161,7 @@ export class ImageResolver implements CrudResolver<ImageNode, "image"> {
       result.file,
       this.fileManager,
       serverUrl
-    );
+    ).promise.then((r) => r.unwrap());
   }
 
   @AccessControlAuthorized("update")
@@ -204,7 +208,7 @@ export class ImageResolver implements CrudResolver<ImageNode, "image"> {
       result.file,
       this.fileManager,
       serverUrl
-    );
+    ).promise.then((r) => r.unwrap());
   }
 
   @AccessControlAuthorized("delete")
@@ -224,7 +228,7 @@ export class ImageResolver implements CrudResolver<ImageNode, "image"> {
       result.file,
       this.fileManager,
       serverUrl
-    );
+    ).promise.then((r) => r.unwrap());
   }
 }
 

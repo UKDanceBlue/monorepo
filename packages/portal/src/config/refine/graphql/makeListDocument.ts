@@ -70,6 +70,20 @@ export function makeListDocument(
               },
             },
           },
+          {
+            kind: Kind.VARIABLE_DEFINITION,
+            variable: {
+              kind: Kind.VARIABLE,
+              name: { kind: Kind.NAME, value: "search" },
+            },
+            type: {
+              kind: Kind.NAMED_TYPE,
+              name: {
+                kind: Kind.NAME,
+                value: `${pascalResource}ResolverSearchFilter`,
+              },
+            },
+          },
         ],
         selectionSet: {
           kind: Kind.SELECTION_SET,
@@ -108,6 +122,14 @@ export function makeListDocument(
                   value: {
                     kind: Kind.VARIABLE,
                     name: { kind: Kind.NAME, value: "filters" },
+                  },
+                },
+                {
+                  kind: Kind.ARGUMENT,
+                  name: { kind: Kind.NAME, value: "search" },
+                  value: {
+                    kind: Kind.VARIABLE,
+                    name: { kind: Kind.NAME, value: "search" },
                   },
                 },
               ],

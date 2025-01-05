@@ -1,7 +1,7 @@
 import { GraphQLNonEmptyString, GraphQLURL } from "graphql-scalars";
 import { ArgsType, Field, InputType, Int, ObjectType } from "type-graphql";
 
-import { FilteredListQueryArgs } from "../filtering/list-query-args/FilteredListQueryArgs.js";
+import { FilteredListQueryArgs } from "../filtering/FilteredListQueryArgs.js";
 import {
   NotificationDeliveryNode,
   NotificationNode,

@@ -29,7 +29,6 @@ import { Route as PeopleCreateImport } from "./routes/people/create";
 import { Route as PeopleBulkImport } from "./routes/people/bulk";
 import { Route as NotificationsCreateImport } from "./routes/notifications/create";
 import { Route as MarathonCreateImport } from "./routes/marathon/create";
-import { Route as ImagesImageIdImport } from "./routes/images/$imageId";
 import { Route as FundraisingReportImport } from "./routes/fundraising/report";
 import { Route as FundraisingDbfundsImport } from "./routes/fundraising/dbfunds";
 import { Route as EventsCreateImport } from "./routes/events/create";
@@ -162,12 +161,6 @@ const NotificationsCreateRoute = NotificationsCreateImport.update({
 const MarathonCreateRoute = MarathonCreateImport.update({
   id: "/marathon/create",
   path: "/marathon/create",
-  getParentRoute: () => rootRoute,
-} as any);
-
-const ImagesImageIdRoute = ImagesImageIdImport.update({
-  id: "/images/$imageId",
-  path: "/images/$imageId",
   getParentRoute: () => rootRoute,
 } as any);
 
@@ -325,7 +318,7 @@ const MarathonMarathonIdHoursAddRoute = MarathonMarathonIdHoursAddImport.update(
     id: "/marathon/$marathonId/hours/add",
     path: "/marathon/$marathonId/hours/add",
     getParentRoute: () => rootRoute,
-  } as any
+  } as any,
 );
 
 const MarathonMarathonIdHoursHourIdIndexRoute =
@@ -372,13 +365,6 @@ declare module "@tanstack/react-router" {
       path: "/fundraising/report";
       fullPath: "/fundraising/report";
       preLoaderRoute: typeof FundraisingReportImport;
-      parentRoute: typeof rootRoute;
-    };
-    "/images/$imageId": {
-      id: "/images/$imageId";
-      path: "/images/$imageId";
-      fullPath: "/images/$imageId";
-      preLoaderRoute: typeof ImagesImageIdImport;
       parentRoute: typeof rootRoute;
     };
     "/marathon/create": {
@@ -678,7 +664,7 @@ const TeamsTeamIdRouteChildren: TeamsTeamIdRouteChildren = {
 };
 
 const TeamsTeamIdRouteWithChildren = TeamsTeamIdRoute._addFileChildren(
-  TeamsTeamIdRouteChildren
+  TeamsTeamIdRouteChildren,
 );
 
 export interface FileRoutesByFullPath {
@@ -687,7 +673,6 @@ export interface FileRoutesByFullPath {
   "/events/create": typeof EventsCreateRoute;
   "/fundraising/dbfunds": typeof FundraisingDbfundsRoute;
   "/fundraising/report": typeof FundraisingReportRoute;
-  "/images/$imageId": typeof ImagesImageIdRoute;
   "/marathon/create": typeof MarathonCreateRoute;
   "/notifications/create": typeof NotificationsCreateRoute;
   "/people/bulk": typeof PeopleBulkRoute;
@@ -733,7 +718,6 @@ export interface FileRoutesByTo {
   "/events/create": typeof EventsCreateRoute;
   "/fundraising/dbfunds": typeof FundraisingDbfundsRoute;
   "/fundraising/report": typeof FundraisingReportRoute;
-  "/images/$imageId": typeof ImagesImageIdRoute;
   "/marathon/create": typeof MarathonCreateRoute;
   "/notifications/create": typeof NotificationsCreateRoute;
   "/people/bulk": typeof PeopleBulkRoute;
@@ -773,13 +757,12 @@ export interface FileRoutesByTo {
 }
 
 export interface FileRoutesById {
-  "__root__": typeof rootRoute;
+  __root__: typeof rootRoute;
   "/": typeof IndexRoute;
   "/admin/logs": typeof AdminLogsRoute;
   "/events/create": typeof EventsCreateRoute;
   "/fundraising/dbfunds": typeof FundraisingDbfundsRoute;
   "/fundraising/report": typeof FundraisingReportRoute;
-  "/images/$imageId": typeof ImagesImageIdRoute;
   "/marathon/create": typeof MarathonCreateRoute;
   "/notifications/create": typeof NotificationsCreateRoute;
   "/people/bulk": typeof PeopleBulkRoute;
@@ -828,7 +811,6 @@ export interface FileRouteTypes {
     | "/events/create"
     | "/fundraising/dbfunds"
     | "/fundraising/report"
-    | "/images/$imageId"
     | "/marathon/create"
     | "/notifications/create"
     | "/people/bulk"
@@ -873,7 +855,6 @@ export interface FileRouteTypes {
     | "/events/create"
     | "/fundraising/dbfunds"
     | "/fundraising/report"
-    | "/images/$imageId"
     | "/marathon/create"
     | "/notifications/create"
     | "/people/bulk"
@@ -917,7 +898,6 @@ export interface FileRouteTypes {
     | "/events/create"
     | "/fundraising/dbfunds"
     | "/fundraising/report"
-    | "/images/$imageId"
     | "/marathon/create"
     | "/notifications/create"
     | "/people/bulk"
@@ -965,7 +945,6 @@ export interface RootRouteChildren {
   EventsCreateRoute: typeof EventsCreateRoute;
   FundraisingDbfundsRoute: typeof FundraisingDbfundsRoute;
   FundraisingReportRoute: typeof FundraisingReportRoute;
-  ImagesImageIdRoute: typeof ImagesImageIdRoute;
   MarathonCreateRoute: typeof MarathonCreateRoute;
   NotificationsCreateRoute: typeof NotificationsCreateRoute;
   PeopleBulkRoute: typeof PeopleBulkRoute;
@@ -1007,7 +986,6 @@ const rootRouteChildren: RootRouteChildren = {
   EventsCreateRoute: EventsCreateRoute,
   FundraisingDbfundsRoute: FundraisingDbfundsRoute,
   FundraisingReportRoute: FundraisingReportRoute,
-  ImagesImageIdRoute: ImagesImageIdRoute,
   MarathonCreateRoute: MarathonCreateRoute,
   NotificationsCreateRoute: NotificationsCreateRoute,
   PeopleBulkRoute: PeopleBulkRoute,
@@ -1062,7 +1040,6 @@ export const routeTree = rootRoute
         "/events/create",
         "/fundraising/dbfunds",
         "/fundraising/report",
-        "/images/$imageId",
         "/marathon/create",
         "/notifications/create",
         "/people/bulk",
@@ -1112,9 +1089,6 @@ export const routeTree = rootRoute
     },
     "/fundraising/report": {
       "filePath": "fundraising/report.tsx"
-    },
-    "/images/$imageId": {
-      "filePath": "images/$imageId.tsx"
     },
     "/marathon/create": {
       "filePath": "marathon/create.tsx"

@@ -122,7 +122,7 @@ export class FileManager {
     }
     switch (locationUrl.protocol) {
       case "file:": {
-        return new URL(fileUuid, serverOrigin);
+        return new URL(`/api/file/download/${fileUuid}`, serverOrigin);
       }
       case "http:":
       case "https:": {

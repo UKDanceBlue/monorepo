@@ -1,16 +1,15 @@
 import { EyeOutlined, InboxOutlined, UploadOutlined } from "@ant-design/icons";
-import { useNavigate } from "@tanstack/react-router";
-import { base64StringToArray, SortDirection } from "@ukdanceblue/common";
+import { base64StringToArray } from "@ukdanceblue/common";
 import { Button, Flex, Image, Modal, Table, Typography, Upload } from "antd";
-import { useMemo, useState } from "react";
+import { DateTime } from "luxon";
+import { useEffect, useState } from "react";
 import { thumbHashToDataURL } from "thumbhash";
-import { useQuery } from "urql";
 
 import { API_BASE_URL } from "#config/api.js";
-import { graphql, readFragment } from "#graphql/index.js";
+import { RefineSearchForm } from "#elements/components/RefineSearchForm.tsx";
+import { graphql } from "#graphql/index.js";
 import { useAntFeedback } from "#hooks/useAntFeedback.js";
-import { useListQuery } from "#hooks/useListQuery.js";
-import { useQueryStatusWatcher } from "#hooks/useQueryStatusWatcher.js";
+import { useTypedTable } from "#hooks/useTypedRefine.ts";
 
 const ImagesTableFragment = graphql(/* GraphQL */ `
   fragment ImagesTableFragment on ImageNode {
@@ -25,134 +24,69 @@ const ImagesTableFragment = graphql(/* GraphQL */ `
   }
 `);
 
-const imagesTableQueryDocument = graphql(
-  /* GraphQL */ `
-    query ImagesTable(
-      $page: Int
-      $pageSize: Int
-      $sortBy: [String!]
-      $sortDirection: [SortDirection!]
-      $dateFilters: [ImageResolverKeyedDateFilterItem!]
-      $isNullFilters: [ImageResolverKeyedIsNullFilterItem!]
-      $oneOfFilters: [ImageResolverKeyedOneOfFilterItem!]
-      $stringFilters: [ImageResolverKeyedStringFilterItem!]
-      $numericFilters: [ImageResolverKeyedNumericFilterItem!]
-    ) {
-      images(
-        page: $page
-        pageSize: $pageSize
-        sortBy: $sortBy
-        sortDirection: $sortDirection
-        dateFilters: $dateFilters
-        isNullFilters: $isNullFilters
-        oneOfFilters: $oneOfFilters
-        stringFilters: $stringFilters
-        numericFilters: $numericFilters
-      ) {
-        page
-        pageSize
-        total
-        data {
-          ...ImagesTableFragment
-        }
-      }
-    }
-  `,
-  [ImagesTableFragment]
-);
+const imageIconDataUrl = `data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='64 64 896 896' focusable='false' data-icon='file-image' width='1em' height='1em' fill='currentColor' aria-hidden='true'%3E%3Cpath d='M854.6 288.7L639.4 73.4c-6-6-14.2-9.4-22.7-9.4H192c-17.7 0-32 14.3-32 32v832c0 17.7 14.3 32 32 32h640c17.7 0 32-14.3 32-32V311.3c0-8.5-3.4-16.6-9.4-22.6zM400 402c22.1 0 40 17.9 40 40s-17.9 40-40 40-40-17.9-40-40 17.9-40 40-40zm296 294H328c-6.7 0-10.4-7.7-6.3-12.9l99.8-127.2a8 8 0 0112.6 0l41.1 52.4 77.8-99.2a8 8 0 0112.6 0l136.5 174c4.3 5.2.5 12.9-6.1 12.9zm-94-370V137.8L790.2 326H602z'%3E%3C/path%3E%3C/svg%3E`;
 
-export const ImagesTable = ({
-  previewedImageId,
-}: {
-  previewedImageId?: string;
-}) => {
-  const { queryOptions, updatePagination, clearSorting, pushSorting } =
-    useListQuery(
-      {
-        initPage: 1,
-        initPageSize: 10,
-        initSorting: [{ field: "createdAt", direction: SortDirection.desc }],
-      },
-      {
-        allFields: ["alt", "width", "height", "createdAt", "updatedAt"],
-        stringFields: ["alt"],
-        numericFields: ["width", "height"],
-        dateFields: ["createdAt", "updatedAt"],
-        oneOfFields: [],
-        booleanFields: [],
-        isNullFields: [],
-      }
-    );
+export const ImagesTable = () => {
   const { showErrorMessage } = useAntFeedback();
-  const navigate = useNavigate();
 
-  const [{ data: imagesDocument, error, fetching }, refresh] = useQuery({
-    query: imagesTableQueryDocument,
-    variables: queryOptions,
-  });
+  const [previewIdx, setPreviewIdx] = useState<number | null>(null);
 
-  useQueryStatusWatcher({
-    error,
-    fetching,
-    loadingMessage: "Loading images...",
-  });
+  const {
+    searchFormProps,
+    tableProps,
+    tableQuery: { refetch },
+    pageSize,
+    current,
+    setCurrent,
+  } = useTypedTable(
+    ImagesTableFragment,
+    {
+      sorters: {
+        initial: [
+          {
+            field: "createdAt",
+            order: "desc",
+          },
+        ],
+      },
+    },
+    {
+      createdAt: "date",
+    }
+  );
 
-  const listImagesData =
-    imagesDocument?.images.data &&
-    readFragment(ImagesTableFragment, imagesDocument.images.data);
+  useEffect(() => {
+    function setIdxTo(offset: number) {
+      const min = pageSize * (current - 1);
+      const max = pageSize * current;
+      setPreviewIdx((prev) => {
+        const idx = (prev ?? min) + offset;
+        if (idx < min || idx >= max) {
+          setCurrent(Math.floor(idx / pageSize) + 1);
+        }
+        return idx;
+      });
+    }
+
+    const listener = (e: KeyboardEvent) => {
+      if (e.key === "ArrowLeft") {
+        setIdxTo(-1);
+      } else if (e.key === "ArrowRight") {
+        setIdxTo(1);
+      }
+    };
+
+    document.addEventListener("keydown", listener);
+
+    return () => document.removeEventListener("keydown", listener);
+  }, [current, pageSize, setCurrent]);
 
   const [uploadingImage, setUploadingImage] = useState<
-    Exclude<typeof listImagesData, null | undefined>[number] | null
+    NonNullable<(typeof tableProps)["dataSource"]>[number] | null
   >(null);
 
   return (
     <>
-      <Modal
-        open={Boolean(previewedImageId)}
-        onCancel={() => navigate({ to: "/images" })}
-        cancelButtonProps={{ style: { display: "none" } }}
-        okButtonProps={{ style: { display: "none" } }}
-        forceRender
-        style={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-        }}
-      >
-        {useMemo(() => {
-          const previewedImage = previewedImageId
-            ? listImagesData?.find(({ id }) => id === previewedImageId)
-            : null;
-          if (!previewedImage) return null;
-          const aspectRatio = previewedImage.width / previewedImage.height;
-          const width = window.innerWidth * 0.45;
-          const height = width / aspectRatio;
-          return (
-            <>
-              <Typography>{previewedImage.alt ?? "Image Preview"}</Typography>
-              <Image
-                src={previewedImage.url?.toString()}
-                placeholder={
-                  previewedImage.thumbHash ? (
-                    <img
-                      src={thumbHashToDataURL(
-                        base64StringToArray(previewedImage.thumbHash)
-                      )}
-                      width={width}
-                      height={height}
-                    />
-                  ) : (
-                    true
-                  )
-                }
-                width={width}
-                height={height}
-                onLoadStartCapture={() => alert("load")}
-              />
-            </>
-          );
-        }, [listImagesData, previewedImageId])}
-      </Modal>
       <Modal
         open={uploadingImage !== null}
         onCancel={() => setUploadingImage(null)}
@@ -169,13 +103,7 @@ export const ImagesTable = ({
           maxCount={1}
           onChange={(info) => {
             if (info.file.status === "done") {
-              setTimeout(
-                () =>
-                  refresh({
-                    requestPolicy: "network-only",
-                  }),
-                1000
-              );
+              setTimeout(() => refetch(), 1000);
               setUploadingImage(null);
             }
             if (info.file.status === "error") {
@@ -191,66 +119,39 @@ export const ImagesTable = ({
           </p>
         </Upload.Dragger>
       </Modal>
+      <RefineSearchForm searchFormProps={searchFormProps} />
+
       <Table
-        dataSource={listImagesData ?? undefined}
-        rowKey={({ id }) => id}
-        loading={fetching}
-        pagination={
-          imagesDocument
-            ? {
-                current: imagesDocument.images.page,
-                pageSize: imagesDocument.images.pageSize,
-                total: imagesDocument.images.total,
-                showSizeChanger: true,
-              }
-            : false
-        }
-        sortDirections={["ascend", "descend"]}
-        onChange={(pagination, _filters, sorter, _extra) => {
-          updatePagination({
-            page: pagination.current,
-            pageSize: pagination.pageSize,
-          });
-          clearSorting();
-          for (const sort of Array.isArray(sorter) ? sorter : [sorter]) {
-            if (!sort.order) {
-              continue;
-            }
-            pushSorting({
-              field: sort.field as
-                | "alt"
-                | "width"
-                | "height"
-                | "createdAt"
-                | "updatedAt",
-              direction:
-                sort.order === "ascend"
-                  ? SortDirection.asc
-                  : SortDirection.desc,
-            });
-          }
-        }}
+        {...tableProps}
         columns={[
           {
             title: "Preview",
             dataIndex: "thumbHash",
-            render: (thumbHash: string, row) =>
-              thumbHash ? (
-                <Button
-                  onClick={() =>
-                    navigate({
-                      to: "/images",
-                      search: { imageId: row.id },
-                    })
-                  }
-                  type="text"
-                  style={{ padding: 0 }}
-                >
-                  <img
-                    src={thumbHashToDataURL(base64StringToArray(thumbHash))}
-                  />
-                </Button>
-              ) : undefined,
+            render: (_, row, idx) => (
+              <Image
+                width={50}
+                src={
+                  row.thumbHash
+                    ? thumbHashToDataURL(base64StringToArray(row.thumbHash))
+                    : imageIconDataUrl
+                }
+                preview={{
+                  visible:
+                    previewIdx != null &&
+                    previewIdx - pageSize * (current - 1) === idx,
+                  onVisibleChange: (visible) =>
+                    setPreviewIdx(
+                      visible ? pageSize * (current - 1) + idx : null
+                    ),
+                  src: row.url?.toString(),
+                  title: (
+                    <Typography.Title>
+                      {row.alt ?? "Image Preview"}
+                    </Typography.Title>
+                  ),
+                }}
+              />
+            ),
             width: 1,
           },
           {
@@ -272,19 +173,16 @@ export const ImagesTable = ({
             title: "Created At",
             dataIndex: "createdAt",
             sorter: true,
+            render: (date: string) =>
+              DateTime.fromISO(date).toLocaleString(DateTime.DATETIME_MED),
           },
           {
             title: "Actions",
             dataIndex: "id",
-            render: (_, row) => (
+            render: (_, row, idx) => (
               <Flex gap="small" align="center">
                 <Button
-                  onClick={() =>
-                    navigate({
-                      to: "/images",
-                      search: { imageId: row.id },
-                    })
-                  }
+                  onClick={() => setPreviewIdx(pageSize * (current - 1) + idx)}
                   icon={<EyeOutlined />}
                 />
                 <Button

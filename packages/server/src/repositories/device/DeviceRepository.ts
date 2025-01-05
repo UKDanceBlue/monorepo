@@ -4,7 +4,6 @@ import { PrismaClient } from "@prisma/client";
 import type {
   FieldsOfListQueryArgs,
   ListDevicesArgs,
-  SortDirection,
 } from "@ukdanceblue/common";
 import { NotFoundError } from "@ukdanceblue/common/error";
 import { Err, Ok, Result } from "ts-results-es";
@@ -34,7 +33,7 @@ export class DeviceRepository extends buildDefaultRepository<
   SimpleUniqueParam,
   DeviceFields,
   never
->("device", {
+>("Device", {
   lastSeen: {
     getOrderBy: (sort) => Ok({ lastSeen: sort }),
     getWhere: (value) => Ok({ lastSeen: value }),
@@ -94,7 +93,6 @@ export class DeviceRepository extends buildDefaultRepository<
       { include: never }
     >
   > {
-    type test = Exclude<keyof PrismaClient, `$${string}` | symbol>;
     return this.parseFindManyParams(params)
       .toAsyncResult()
       .andThen((params) =>

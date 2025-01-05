@@ -1,8 +1,5 @@
 import { Service } from "@freshgum/typedi";
 import { Event, Prisma, PrismaClient } from "@prisma/client";
-
-type UniqueEventParam = { id: number } | { uuid: string };
-
 import type { DefaultArgs } from "@prisma/client/runtime/library";
 import type {
   FieldsOfListQueryArgs,
@@ -27,7 +24,12 @@ import {
   type UpdateParams,
   type UpdateResult,
 } from "#repositories/Default.js";
-import { type AsyncRepositoryResult } from "#repositories/shared.js";
+import {
+  type AsyncRepositoryResult,
+  type SimpleUniqueParam,
+} from "#repositories/shared.js";
+
+type UniqueEventParam = SimpleUniqueParam;
 
 export interface ForeignEvent {
   id: string;
@@ -60,6 +62,7 @@ export class EventRepository extends buildDefaultRepository<
       Ok({
         title: value,
       }),
+    searchable: true,
   },
   summary: {
     getOrderBy: (order) =>
@@ -70,6 +73,7 @@ export class EventRepository extends buildDefaultRepository<
       Ok({
         summary: value,
       }),
+    searchable: true,
   },
   description: {
     getOrderBy: (order) =>
@@ -80,6 +84,7 @@ export class EventRepository extends buildDefaultRepository<
       Ok({
         description: value,
       }),
+    searchable: true,
   },
   location: {
     getOrderBy: (order) =>

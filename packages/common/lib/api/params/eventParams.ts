@@ -1,7 +1,7 @@
 import { GraphQLNonEmptyString } from "graphql-scalars";
 import { ArgsType, Field, InputType, ObjectType } from "type-graphql";
 
-import { FilteredListQueryArgs } from "../filtering/list-query-args/FilteredListQueryArgs.js";
+import { FilteredListQueryArgs } from "../filtering/FilteredListQueryArgs.js";
 import { EventNode } from "../resources/Event.js";
 import { GlobalId, GlobalIdScalar } from "../scalars/GlobalId.js";
 import { IntervalISO } from "../types/IntervalISO.js";

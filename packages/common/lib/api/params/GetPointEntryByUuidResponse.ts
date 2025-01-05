@@ -1,7 +1,7 @@
 import { GraphQLNonEmptyString } from "graphql-scalars";
 import { ArgsType, Field, InputType, Int, ObjectType } from "type-graphql";
 
-import { FilteredListQueryArgs } from "../filtering/list-query-args/FilteredListQueryArgs.js";
+import { FilteredListQueryArgs } from "../filtering/FilteredListQueryArgs.js";
 import { PointEntryNode } from "../resources/PointEntry.js";
 import { type GlobalId, GlobalIdScalar } from "../scalars/GlobalId.js";
 import { AbstractGraphQLPaginatedResponse } from "./ApiResponse.js";

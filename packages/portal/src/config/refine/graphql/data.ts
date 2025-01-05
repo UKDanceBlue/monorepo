@@ -36,6 +36,8 @@ function getOperationName(
 
 export type FieldTypes = Record<string, "string" | "number" | "date" | "oneOf">;
 
+const postgresFtsOperators = /[!&():|]/g;
+
 function combinedToHttpError(error: CombinedError): HttpError {
   if (error.networkError) {
     return {
@@ -155,15 +157,28 @@ export const dataProvider: Required<DataProvider> = {
   getList: async (params) => {
     const { meta, sorters, filters, pagination, resource } = params;
 
-    const filterObj =
-      filters &&
-      crudFiltersToFilterObject(
+    let filterGroup: FilterGroup | undefined;
+    let search: string | undefined;
+    if (filters) {
+      ({ filterGroup, search } = crudFiltersToFilterObject(
         {
           operator: "and",
           value: filters,
         },
         meta?.fieldTypes as FieldTypes | undefined
-      );
+      ));
+
+      if (search) {
+        if (postgresFtsOperators.test(search)) {
+          throw new Error("Invalid search query, contains invalid characters");
+        }
+        search = search
+          .split(" ")
+          .filter(Boolean)
+          .map((s) => (s.startsWith('"') && s.endsWith('"') ? s : `${s}:*`))
+          .join(" & ");
+      }
+    }
 
     let query: DocumentNode | undefined;
     if (meta?.gqlQuery) {
@@ -195,7 +210,13 @@ export const dataProvider: Required<DataProvider> = {
           ) ?? undefined,
         page: pagination?.current ?? undefined,
         pageSize: pagination?.pageSize ?? undefined,
-        filters: filterObj,
+        filters: filterGroup,
+        search: search
+          ? {
+              query: search,
+            }
+          : undefined,
+        sendAll: pagination?.mode !== "server",
         ...meta?.variables,
         ...meta?.gqlVariables,
       } satisfies Partial<

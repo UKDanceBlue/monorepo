@@ -1,7 +1,7 @@
 import { GraphQLNonNegativeInt, GraphQLPositiveInt } from "graphql-scalars";
 import { ArgsType, Field, InputType, ObjectType } from "type-graphql";
 
-import { FilteredListQueryArgs } from "../filtering/list-query-args/FilteredListQueryArgs.js";
+import { FilteredListQueryArgs } from "../filtering/FilteredListQueryArgs.js";
 import { DeviceNode } from "../resources/Device.js";
 import { GlobalId, GlobalIdScalar } from "../scalars/GlobalId.js";
 import { AbstractGraphQLPaginatedResponse } from "./ApiResponse.js";

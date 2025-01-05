@@ -2,7 +2,7 @@ import { IsAlpha, IsUppercase } from "class-validator";
 import { GraphQLNonEmptyString, NonNegativeIntResolver } from "graphql-scalars";
 import { ArgsType, Field, InputType, ObjectType } from "type-graphql";
 
-import { FilteredListQueryArgs } from "../filtering/list-query-args/FilteredListQueryArgs.js";
+import { FilteredListQueryArgs } from "../filtering/FilteredListQueryArgs.js";
 import { SolicitationCodeNode } from "../resources/SolicitationCode.js";
 import { AbstractGraphQLPaginatedResponse } from "./ApiResponse.js";
 

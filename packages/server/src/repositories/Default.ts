@@ -21,7 +21,6 @@ import {
   type FieldLookup,
   type FindManyParams,
   parseFindManyParams as parseFindManyParamsFunc,
-  type SearchParams,
 } from "#lib/queryFromArgs.js";
 
 import {
@@ -116,10 +115,6 @@ interface BaseRepository<
     params: FindAndCountParams<Field>
   ): AsyncRepositoryResult<FindAndCountResult<T, { include: Include }>>;
 
-  search?(
-    params: SearchParams<Field>
-  ): AsyncRepositoryResult<FindAndCountResult<T, { include: Include }>>;
-
   findAll?(
     params: FindAllParams
   ): AsyncRepositoryResult<FindAllResult<T, { include: Include }>>;
@@ -149,9 +144,9 @@ export function buildDefaultRepository<
   T,
   UniqueParam,
   Field extends string,
-  Include extends Args<T, "findUnique">["include"],
+  Include extends Args<T, "findUnique">["include"] = Record<string, never>,
 >(
-  tableName: Exclude<keyof PrismaClient, `$${string}` | symbol>,
+  tableName: Capitalize<Exclude<keyof PrismaClient, `$${string}` | symbol>>,
   fieldLookup: FieldLookup<T, Field>
 ) {
   // eslint-disable-next-line @typescript-eslint/no-empty-object-type, @typescript-eslint/no-unsafe-declaration-merging

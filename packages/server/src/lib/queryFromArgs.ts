@@ -3,6 +3,7 @@ import type { Args } from "@prisma/client/runtime/library";
 import type {
   AbstractFilterGroup,
   AbstractFilterItem,
+  AbstractSearchFilter,
   AbstractSortItem,
 } from "@ukdanceblue/common";
 import { SortDirection } from "@ukdanceblue/common";
@@ -13,7 +14,10 @@ import {
   SingleTargetOperators,
   TwoTargetOperators,
 } from "@ukdanceblue/common";
-import { InvariantError } from "@ukdanceblue/common/error";
+import {
+  InvalidArgumentError,
+  InvariantError,
+} from "@ukdanceblue/common/error";
 import { Result } from "ts-results-es";
 import { Err, Ok } from "ts-results-es";
 
@@ -30,6 +34,7 @@ export type GetOrderFn<T> = (
 export interface FieldLookupItem<T> {
   getWhere: GetWhereFn<T>;
   getOrderBy: GetOrderFn<T>;
+  searchable?: boolean;
 }
 
 export type FieldLookup<T, Field extends string> = Record<
@@ -569,11 +574,7 @@ export interface PaginationParams {
 export interface FindManyParams<Field extends string> extends PaginationParams {
   filters?: AbstractFilterGroup<Field> | null | undefined;
   sortBy?: AbstractSortItem<Field>[] | null | undefined;
-}
-
-export interface SearchParams<Field extends string> extends PaginationParams {
-  query: string;
-  fields?: Field[] | null | undefined;
+  search?: AbstractSearchFilter<Field> | null | undefined;
 }
 
 export function parseFindManyParams<T, Field extends string>(
@@ -585,15 +586,49 @@ export function parseFindManyParams<T, Field extends string>(
   skip: number | undefined;
   take: number | undefined;
 }> {
-  const where = params.filters
-    ? buildWhereFromGroup(params.filters, fieldLookup)
-    : undefined;
-  const order = params.sortBy
-    ? buildOrder(params.sortBy, fieldLookup)
-    : undefined;
+  let where;
+  let order;
+
+  if (params.search) {
+    for (const field of params.search.fields ?? []) {
+      if (!fieldLookup[field].searchable) {
+        return Err(
+          new InvalidArgumentError(`Field ${field} is not searchable`)
+        );
+      }
+    }
+
+    const fields =
+      params.search.fields ??
+      Object.entries(fieldLookup as FieldLookup<never, string>)
+        .filter(([, { searchable }]) => searchable)
+        .map(([field]) => field as Field);
+
+    where = Result.all(
+      fields.map((field) =>
+        fieldLookup[field].getWhere({
+          search: params.search!.query,
+        })
+      )
+    ).map((fields) => ({
+      OR: fields,
+    }));
+
+    order = Ok({
+      _relevance: {
+        fields,
+        search: params.search.query,
+        sort: SortDirection.desc,
+      },
+    });
+  } else {
+    where = params.filters
+      ? buildWhereFromGroup(params.filters, fieldLookup)
+      : undefined;
+    order = params.sortBy ? buildOrder(params.sortBy, fieldLookup) : undefined;
+  }
 
   // Disable optional chaining for better type inference
-
   // eslint-disable-next-line @typescript-eslint/prefer-optional-chain
   if (where && where.isErr()) {
     return where;
