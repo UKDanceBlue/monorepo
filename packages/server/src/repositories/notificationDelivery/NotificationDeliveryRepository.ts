@@ -1,55 +1,9 @@
 import { Service } from "@freshgum/typedi";
 import { NotificationError, Prisma, PrismaClient } from "@prisma/client";
-import type { SortDirection } from "@ukdanceblue/common";
 import type { ExpoPushReceipt, ExpoPushTicket } from "expo-server-sdk";
 import type { DateTime } from "luxon";
 
-const notificationDeliveryBooleanKeys = [] as const;
-type NotificationDeliveryBooleanKey =
-  (typeof notificationDeliveryBooleanKeys)[number];
-
-const notificationDeliveryDateKeys = [
-  "createdAt",
-  "updatedAt",
-  "sentAt",
-  "receiptCheckedAt",
-] as const;
-type NotificationDeliveryDateKey =
-  (typeof notificationDeliveryDateKeys)[number];
-
-const notificationDeliveryIsNullKeys = ["sentAt", "receiptCheckedAt"] as const;
-type NotificationDeliveryIsNullKey =
-  (typeof notificationDeliveryIsNullKeys)[number];
-
-const notificationDeliveryNumericKeys = [] as const;
-type NotificationDeliveryNumericKey =
-  (typeof notificationDeliveryNumericKeys)[number];
-
-const notificationDeliveryOneOfKeys = ["deliveryError"] as const;
-type NotificationDeliveryOneOfKey =
-  (typeof notificationDeliveryOneOfKeys)[number];
-
-const notificationDeliveryStringKeys = [] as const;
-type NotificationDeliveryStringKey =
-  (typeof notificationDeliveryStringKeys)[number];
-
-export type NotificationDeliveryOrderKeys =
-  | "createdAt"
-  | "updatedAt"
-  | "sentAt"
-  | "receiptCheckedAt"
-  | "deliveryError";
-
-export type NotificationDeliveryFilters = FilterItems<
-  NotificationDeliveryBooleanKey,
-  NotificationDeliveryDateKey,
-  NotificationDeliveryIsNullKey,
-  NotificationDeliveryNumericKey,
-  NotificationDeliveryOneOfKey,
-  NotificationDeliveryStringKey
->;
-
-type UniqueParam = { id: number } | { uuid: string };
+type NotificationDeliveryUniqueParam = SimpleUniqueParam;
 
 function normalizeReceiptErrorCode(
   code:
@@ -83,17 +37,34 @@ function normalizeReceiptErrorCode(
   return normalizedCode;
 }
 
+import type {
+  FieldsOfListQueryArgs,
+  ListNotificationDeliveriesArgs,
+} from "@ukdanceblue/common";
+
 import { prismaToken } from "#lib/typediTokens.js";
+import { buildDefaultRepository } from "#repositories/Default.js";
+import type { SimpleUniqueParam } from "#repositories/shared.js";
 
 @Service([prismaToken])
-export class NotificationDeliveryRepository {
-  constructor(private prisma: PrismaClient) {}
+export class NotificationDeliveryRepository extends buildDefaultRepository<
+  PrismaClient["notificationDelivery"],
+  SimpleUniqueParam,
+  FieldsOfListQueryArgs<ListNotificationDeliveriesArgs>
+>("NotificationDelivery", {}) {
+  constructor(protected readonly prisma: PrismaClient) {
+    super(prisma);
+  }
 
-  findNotificationDeliveryByUnique(param: UniqueParam) {
+  public uniqueToWhere(by: SimpleUniqueParam) {
+    return NotificationDeliveryRepository.simpleUniqueToWhere(by);
+  }
+
+  findNotificationDeliveryByUnique(param: NotificationDeliveryUniqueParam) {
     return this.prisma.notificationDelivery.findUnique({ where: param });
   }
 
-  async findNotificationForDelivery(param: UniqueParam) {
+  async findNotificationForDelivery(param: NotificationDeliveryUniqueParam) {
     const val = await this.prisma.notificationDelivery.findUnique({
       where: param,
       select: { notification: true },
@@ -102,7 +73,7 @@ export class NotificationDeliveryRepository {
     return val?.notification ?? null;
   }
 
-  async findDeviceForDelivery(param: UniqueParam) {
+  async findDeviceForDelivery(param: NotificationDeliveryUniqueParam) {
     const data = await this.prisma.notificationDelivery.findUnique({
       where: param,
       select: { device: true },
@@ -127,53 +98,6 @@ export class NotificationDeliveryRepository {
     return returnVal as (Omit<(typeof returnVal)[number], "receiptId"> & {
       receiptId: NonNullable<(typeof returnVal)[number]["receiptId"]>;
     })[];
-  }
-
-  listNotificationDeliveries(
-    forNotification: UniqueParam,
-    {
-      filters,
-      order,
-      skip,
-      take,
-    }: {
-      filters?: readonly NotificationDeliveryFilters[] | undefined | null;
-      order?:
-        | readonly [key: NotificationDeliveryOrderKeys, sort: SortDirection][]
-        | undefined
-        | null;
-      skip?: number | undefined | null;
-      take?: number | undefined | null;
-    }
-  ) {
-    const where = buildNotificationDeliveryWhere(filters);
-    const orderBy = buildNotificationDeliveryOrder(order);
-
-    return this.prisma.notificationDelivery.findMany({
-      where: {
-        AND: [{ notification: forNotification }, where],
-      },
-      orderBy,
-      skip: skip ?? undefined,
-      take: take ?? undefined,
-    });
-  }
-
-  countNotificationDeliveries(
-    notification: UniqueParam,
-    {
-      filters,
-    }: {
-      filters?: readonly NotificationDeliveryFilters[] | undefined | null;
-    }
-  ) {
-    const where = buildNotificationDeliveryWhere(filters);
-
-    return this.prisma.notificationDelivery.count({
-      where: {
-        AND: [{ notification }, where],
-      },
-    });
   }
 
   async createNotificationDeliveries({
@@ -266,7 +190,7 @@ export class NotificationDeliveryRepository {
   }
 
   updateNotificationDelivery(
-    param: UniqueParam,
+    param: NotificationDeliveryUniqueParam,
     data: Prisma.NotificationDeliveryUpdateInput
   ) {
     try {
@@ -283,7 +207,7 @@ export class NotificationDeliveryRepository {
     }
   }
 
-  deleteNotificationDelivery(param: UniqueParam) {
+  deleteNotificationDelivery(param: NotificationDeliveryUniqueParam) {
     try {
       return this.prisma.notificationDelivery.delete({ where: param });
     } catch (error) {

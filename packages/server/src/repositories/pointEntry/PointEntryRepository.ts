@@ -1,78 +1,32 @@
 import { Service } from "@freshgum/typedi";
 import { Prisma, PrismaClient } from "@prisma/client";
-import type { SortDirection } from "@ukdanceblue/common";
-
-const pointEntryBooleanKeys = [] as const;
-type PointEntryBooleanKey = (typeof pointEntryBooleanKeys)[number];
-
-const pointEntryDateKeys = ["createdAt", "updatedAt"] as const;
-type PointEntryDateKey = (typeof pointEntryDateKeys)[number];
-
-const pointEntryIsNullKeys = [] as const;
-type PointEntryIsNullKey = (typeof pointEntryIsNullKeys)[number];
-
-const pointEntryNumericKeys = [] as const;
-type PointEntryNumericKey = (typeof pointEntryNumericKeys)[number];
-
-const pointEntryOneOfKeys = [] as const;
-type PointEntryOneOfKey = (typeof pointEntryOneOfKeys)[number];
-
-const pointEntryStringKeys = [] as const;
-type PointEntryStringKey = (typeof pointEntryStringKeys)[number];
-
-export type PointEntryFilters = FilterItems<
-  PointEntryBooleanKey,
-  PointEntryDateKey,
-  PointEntryIsNullKey,
-  PointEntryNumericKey,
-  PointEntryOneOfKey,
-  PointEntryStringKey
->;
-
-type UniquePointEntryParam = { id: number } | { uuid: string };
+import type {
+  FieldsOfListQueryArgs,
+  ListPointEntriesArgs,
+} from "@ukdanceblue/common";
 
 import { prismaToken } from "#lib/typediTokens.js";
+import { buildDefaultRepository } from "#repositories/Default.js";
+import type { SimpleUniqueParam } from "#repositories/shared.js";
+
+type UniquePointEntryParam = SimpleUniqueParam;
 
 @Service([prismaToken])
-export class PointEntryRepository {
-  constructor(private prisma: PrismaClient) {}
+export class PointEntryRepository extends buildDefaultRepository<
+  PrismaClient["pointEntry"],
+  SimpleUniqueParam,
+  FieldsOfListQueryArgs<ListPointEntriesArgs>
+>("PointEntry", {}) {
+  constructor(protected readonly prisma: PrismaClient) {
+    super(prisma);
+  }
+
+  public uniqueToWhere(by: SimpleUniqueParam) {
+    return PointEntryRepository.simpleUniqueToWhere(by);
+  }
 
   findPointEntryByUnique(param: UniquePointEntryParam) {
     return this.prisma.pointEntry.findUnique({ where: param });
-  }
-
-  listPointEntries({
-    filters,
-    order,
-    skip,
-    take,
-  }: {
-    filters?: readonly PointEntryFilters[] | undefined | null;
-    order?: readonly [key: string, sort: SortDirection][] | undefined | null;
-    skip?: number | undefined | null;
-    take?: number | undefined | null;
-  }) {
-    const where = buildPointEntryWhere(filters);
-    const orderBy = buildPointEntryOrder(order);
-
-    return this.prisma.pointEntry.findMany({
-      where,
-      orderBy,
-      skip: skip ?? undefined,
-      take: take ?? undefined,
-    });
-  }
-
-  countPointEntries({
-    filters,
-  }: {
-    filters?: readonly PointEntryFilters[] | undefined | null;
-  }) {
-    const where = buildPointEntryWhere(filters);
-
-    return this.prisma.pointEntry.count({
-      where,
-    });
   }
 
   getPointEntryPersonFrom(param: { id: number } | { uuid: string }) {

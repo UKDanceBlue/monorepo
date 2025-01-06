@@ -1,56 +1,32 @@
 import { Service } from "@freshgum/typedi";
 import { Prisma, PrismaClient } from "@prisma/client";
-import type { SortDirection } from "@ukdanceblue/common";
 
-const marathonHourBooleanKeys = [] as const;
-type MarathonHourBooleanKey = (typeof marathonHourBooleanKeys)[number];
+type MarathonHourUniqueParam = SimpleUniqueParam;
 
-const marathonHourDateKeys = [
-  "shownStartingAt",
-  "createdAt",
-  "updatedAt",
-] as const;
-type MarathonHourDateKey = (typeof marathonHourDateKeys)[number];
-
-const marathonHourIsNullKeys = [] as const;
-type MarathonHourIsNullKey = (typeof marathonHourIsNullKeys)[number];
-
-const marathonHourNumericKeys = [] as const;
-type MarathonHourNumericKey = (typeof marathonHourNumericKeys)[number];
-
-const marathonHourOneOfKeys = ["marathonYear"] as const;
-type MarathonHourOneOfKey = (typeof marathonHourOneOfKeys)[number];
-
-const marathonHourStringKeys = ["title", "details", "durationInfo"] as const;
-type MarathonHourStringKey = (typeof marathonHourStringKeys)[number];
-
-export type MarathonHourOrderKeys =
-  | "title"
-  | "details"
-  | "durationInfo"
-  | "marathonYear"
-  | "shownStartingAt"
-  | "createdAt"
-  | "updatedAt";
-
-export type MarathonHourFilters = FilterItems<
-  MarathonHourBooleanKey,
-  MarathonHourDateKey,
-  MarathonHourIsNullKey,
-  MarathonHourNumericKey,
-  MarathonHourOneOfKey,
-  MarathonHourStringKey
->;
-
-type UniqueParam = { id: number } | { uuid: string };
+import type {
+  FieldsOfListQueryArgs,
+  ListMarathonHoursArgs,
+} from "@ukdanceblue/common";
 
 import { prismaToken } from "#lib/typediTokens.js";
+import { buildDefaultRepository } from "#repositories/Default.js";
+import type { SimpleUniqueParam } from "#repositories/shared.js";
 
 @Service([prismaToken])
-export class MarathonHourRepository {
-  constructor(private prisma: PrismaClient) {}
+export class MarathonHourRepository extends buildDefaultRepository<
+  PrismaClient["marathonHour"],
+  SimpleUniqueParam,
+  FieldsOfListQueryArgs<ListMarathonHoursArgs>
+>("MarathonHour", {}) {
+  constructor(protected readonly prisma: PrismaClient) {
+    super(prisma);
+  }
 
-  findMarathonHourByUnique(param: UniqueParam) {
+  public uniqueToWhere(by: SimpleUniqueParam) {
+    return MarathonHourRepository.simpleUniqueToWhere(by);
+  }
+
+  findMarathonHourByUnique(param: MarathonHourUniqueParam) {
     return this.prisma.marathonHour.findUnique({ where: param });
   }
 
@@ -64,42 +40,7 @@ export class MarathonHourRepository {
     });
   }
 
-  listMarathonHours({
-    filters,
-    order,
-    skip,
-    take,
-  }: {
-    filters?: readonly MarathonHourFilters[] | undefined | null;
-    order?:
-      | readonly [key: MarathonHourOrderKeys, sort: SortDirection][]
-      | undefined
-      | null;
-    skip?: number | undefined | null;
-    take?: number | undefined | null;
-  }) {
-    const where = buildMarathonHourWhere(filters);
-    const orderBy = buildMarathonHourOrder(order);
-
-    return this.prisma.marathonHour.findMany({
-      where,
-      orderBy,
-      skip: skip ?? undefined,
-      take: take ?? undefined,
-    });
-  }
-
-  countMarathonHours({
-    filters,
-  }: {
-    filters?: readonly MarathonHourFilters[] | undefined | null;
-  }) {
-    const where = buildMarathonHourWhere(filters);
-
-    return this.prisma.marathonHour.count({ where });
-  }
-
-  async getMaps(param: UniqueParam) {
+  async getMaps(param: MarathonHourUniqueParam) {
     const rows = await this.prisma.marathonHour.findUnique({
       where: param,
       include: {
@@ -118,7 +59,7 @@ export class MarathonHourRepository {
   }: {
     title: string;
     details?: string | undefined | null;
-    marathon: UniqueParam;
+    marathon: MarathonHourUniqueParam;
     shownStartingAt: Date;
     durationInfo: string;
   }) {
@@ -134,7 +75,7 @@ export class MarathonHourRepository {
   }
 
   updateMarathonHour(
-    param: UniqueParam,
+    param: MarathonHourUniqueParam,
     {
       title,
       details,
@@ -144,7 +85,7 @@ export class MarathonHourRepository {
     }: {
       title?: string | undefined;
       details?: string | undefined | null;
-      marathon?: UniqueParam | undefined;
+      marathon?: MarathonHourUniqueParam | undefined;
       shownStartingAt?: Date | undefined;
       durationInfo?: string | undefined;
     }
@@ -172,7 +113,7 @@ export class MarathonHourRepository {
     }
   }
 
-  deleteMarathonHour(param: UniqueParam) {
+  deleteMarathonHour(param: MarathonHourUniqueParam) {
     try {
       return this.prisma.marathonHour.delete({ where: param });
     } catch (error) {
@@ -187,7 +128,10 @@ export class MarathonHourRepository {
     }
   }
 
-  addMap(param: UniqueParam, image: { id: number } | { uuid: string }) {
+  addMap(
+    param: MarathonHourUniqueParam,
+    image: { id: number } | { uuid: string }
+  ) {
     try {
       return this.prisma.marathonHour.update({
         where: param,
@@ -209,7 +153,10 @@ export class MarathonHourRepository {
     }
   }
 
-  removeMap(param: UniqueParam, image: { id: number } | { uuid: string }) {
+  removeMap(
+    param: MarathonHourUniqueParam,
+    image: { id: number } | { uuid: string }
+  ) {
     try {
       return this.prisma.marathonHour.update({
         where: param,

@@ -10,40 +10,24 @@ import {
   type SimpleUniqueParam,
 } from "#repositories/shared.js";
 
-const membershipBooleanKeys = [] as const;
-type MembershipBooleanKey = (typeof membershipBooleanKeys)[number];
-
-const membershipDateKeys = ["createdAt", "updatedAt"] as const;
-type MembershipDateKey = (typeof membershipDateKeys)[number];
-
-const membershipIsNullKeys = [] as const;
-type MembershipIsNullKey = (typeof membershipIsNullKeys)[number];
-
-const membershipNumericKeys = [] as const;
-type MembershipNumericKey = (typeof membershipNumericKeys)[number];
-
-const membershipOneOfKeys = [] as const;
-type MembershipOneOfKey = (typeof membershipOneOfKeys)[number];
-
-const membershipStringKeys = [] as const;
-type MembershipStringKey = (typeof membershipStringKeys)[number];
-
-export type MembershipFilters = FilterItems<
-  MembershipBooleanKey,
-  MembershipDateKey,
-  MembershipIsNullKey,
-  MembershipNumericKey,
-  MembershipOneOfKey,
-  MembershipStringKey
->;
-
 type UniqueMembershipParam = { id: number } | { uuid: string };
 
 import { prismaToken } from "#lib/typediTokens.js";
+import { buildDefaultRepository } from "#repositories/Default.js";
 
 @Service([prismaToken])
-export class MembershipRepository {
-  constructor(private prisma: PrismaClient) {}
+export class MembershipRepository extends buildDefaultRepository<
+  PrismaClient["membership"],
+  SimpleUniqueParam,
+  never
+>("Membership", {}) {
+  constructor(protected readonly prisma: PrismaClient) {
+    super(prisma);
+  }
+
+  public uniqueToWhere(by: SimpleUniqueParam) {
+    return MembershipRepository.simpleUniqueToWhere(by);
+  }
 
   async findMembershipByUnique(
     param: UniqueMembershipParam,

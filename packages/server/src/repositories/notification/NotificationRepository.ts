@@ -1,71 +1,34 @@
 import { Service } from "@freshgum/typedi";
 import { Notification, Prisma, PrismaClient } from "@prisma/client";
 import { NotificationError } from "@prisma/client";
-import type { SortDirection } from "@ukdanceblue/common";
-
-const notificationBooleanKeys = [] as const;
-type NotificationBooleanKey = (typeof notificationBooleanKeys)[number];
-
-const notificationDateKeys = [
-  "createdAt",
-  "updatedAt",
-  "sendAt",
-  "startedSendingAt",
-  "deliveryIssueAcknowledgedAt",
-] as const;
-type NotificationDateKey = (typeof notificationDateKeys)[number];
-
-const notificationIsNullKeys = [
-  "createdAt",
-  "updatedAt",
-  "title",
-  "body",
-  "deliveryIssue",
-  "sendAt",
-  "startedSendingAt",
-] as const;
-type NotificationIsNullKey = (typeof notificationIsNullKeys)[number];
-
-const notificationNumericKeys = [] as const;
-type NotificationNumericKey = (typeof notificationNumericKeys)[number];
-
-const notificationOneOfKeys = ["deliveryIssue"] as const;
-type NotificationOneOfKey = (typeof notificationOneOfKeys)[number];
-
-const notificationStringKeys = ["title", "body"] as const;
-type NotificationStringKey = (typeof notificationStringKeys)[number];
-
-export type NotificationOrderKeys =
-  | "createdAt"
-  | "updatedAt"
-  | "title"
-  | "body"
-  | "deliveryIssue"
-  | "deliveryIssueAcknowledgedAt"
-  | "sendAt"
-  | "startedSendingAt";
-
-export type NotificationFilters = FilterItems<
-  NotificationBooleanKey,
-  NotificationDateKey,
-  NotificationIsNullKey,
-  NotificationNumericKey,
-  NotificationOneOfKey,
-  NotificationStringKey
->;
-
+import type {
+  FieldsOfListQueryArgs,
+  ListNotificationsArgs,
+} from "@ukdanceblue/common";
 import { NotFoundError } from "@ukdanceblue/common/error";
 import { AsyncResult, Err, Ok, Result } from "ts-results-es";
 
 import { prismaToken } from "#lib/typediTokens.js";
+import { buildDefaultRepository } from "#repositories/Default.js";
 import {
   handleRepositoryError,
   RepositoryError,
+  type SimpleUniqueParam,
 } from "#repositories/shared.js";
 
 @Service([prismaToken])
-export class NotificationRepository {
-  constructor(private prisma: PrismaClient) {}
+export class NotificationRepository extends buildDefaultRepository<
+  PrismaClient["notification"],
+  SimpleUniqueParam,
+  FieldsOfListQueryArgs<ListNotificationsArgs>
+>("Notification", {}) {
+  constructor(protected readonly prisma: PrismaClient) {
+    super(prisma);
+  }
+
+  public uniqueToWhere(by: SimpleUniqueParam) {
+    return NotificationRepository.simpleUniqueToWhere(by);
+  }
 
   findNotificationByUnique(param: Prisma.NotificationWhereUniqueInput) {
     return new AsyncResult(
@@ -140,31 +103,6 @@ export class NotificationRepository {
     return record;
   }
 
-  listNotifications({
-    filters,
-    order,
-    skip,
-    take,
-  }: {
-    filters?: readonly NotificationFilters[] | undefined | null;
-    order?:
-      | readonly [key: NotificationOrderKeys, sort: SortDirection][]
-      | undefined
-      | null;
-    skip?: number | undefined | null;
-    take?: number | undefined | null;
-  }) {
-    const where = buildNotificationWhere(filters);
-    const orderBy = buildNotificationOrder(order);
-
-    return this.prisma.notification.findMany({
-      where,
-      orderBy,
-      skip: skip ?? undefined,
-      take: take ?? undefined,
-    });
-  }
-
   findScheduledNotifications() {
     return this.prisma.notification.findMany({
       where: {
@@ -172,18 +110,6 @@ export class NotificationRepository {
           not: null,
         },
       },
-    });
-  }
-
-  countNotifications({
-    filters,
-  }: {
-    filters?: readonly NotificationFilters[] | undefined | null;
-  }) {
-    const where = buildNotificationWhere(filters);
-
-    return this.prisma.notification.count({
-      where,
     });
   }
 

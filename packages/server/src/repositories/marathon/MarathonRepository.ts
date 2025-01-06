@@ -1,64 +1,37 @@
 import { Service } from "@freshgum/typedi";
 import { Marathon, MarathonHour, Prisma, PrismaClient } from "@prisma/client";
-import type { SortDirection } from "@ukdanceblue/common";
 import { NotFoundError, optionOf } from "@ukdanceblue/common/error";
 import { Err, Ok, Option, Result } from "ts-results-es";
 
 import {
   handleRepositoryError,
   type RepositoryError,
+  type SimpleUniqueParam,
 } from "#repositories/shared.js";
 
-const marathonBooleanKeys = [] as const;
-type MarathonBooleanKey = (typeof marathonBooleanKeys)[number];
+export type UniqueMarathonParam = SimpleUniqueParam | { year: string };
 
-const marathonDateKeys = [
-  "startDate",
-  "endDate",
-  "createdAt",
-  "updatedAt",
-] as const;
-type MarathonDateKey = (typeof marathonDateKeys)[number];
-
-const marathonIsNullKeys = [] as const;
-type MarathonIsNullKey = (typeof marathonIsNullKeys)[number];
-
-const marathonNumericKeys = [] as const;
-type MarathonNumericKey = (typeof marathonNumericKeys)[number];
-
-const marathonOneOfKeys = ["year"] as const;
-type MarathonOneOfKey = (typeof marathonOneOfKeys)[number];
-
-const marathonStringKeys = [] as const;
-type MarathonStringKey = (typeof marathonStringKeys)[number];
-
-export type MarathonOrderKeys =
-  | "year"
-  | "startDate"
-  | "endDate"
-  | "createdAt"
-  | "updatedAt";
-
-export type MarathonFilters = FilterItems<
-  MarathonBooleanKey,
-  MarathonDateKey,
-  MarathonIsNullKey,
-  MarathonNumericKey,
-  MarathonOneOfKey,
-  MarathonStringKey
->;
-
-// type UniqueParam = { id: number } | { uuid: string };
-export type UniqueMarathonParam =
-  | { id: number }
-  | { uuid: string }
-  | { year: string };
+import type {
+  FieldsOfListQueryArgs,
+  ListMarathonsArgs,
+} from "@ukdanceblue/common";
 
 import { prismaToken } from "#lib/typediTokens.js";
+import { buildDefaultRepository } from "#repositories/Default.js";
 
 @Service([prismaToken])
-export class MarathonRepository {
-  constructor(private prisma: PrismaClient) {}
+export class MarathonRepository extends buildDefaultRepository<
+  PrismaClient["marathon"],
+  SimpleUniqueParam,
+  FieldsOfListQueryArgs<ListMarathonsArgs>
+>("Marathon", {}) {
+  constructor(protected readonly prisma: PrismaClient) {
+    super(prisma);
+  }
+
+  public uniqueToWhere(by: SimpleUniqueParam) {
+    return MarathonRepository.simpleUniqueToWhere(by);
+  }
 
   async findMarathonByUnique(
     param: UniqueMarathonParam
@@ -109,41 +82,6 @@ export class MarathonRepository {
     } catch (error) {
       return handleRepositoryError(error);
     }
-  }
-
-  listMarathons({
-    filters,
-    order,
-    skip,
-    take,
-  }: {
-    filters?: readonly MarathonFilters[] | undefined | null;
-    order?:
-      | readonly [key: MarathonOrderKeys, sort: SortDirection][]
-      | undefined
-      | null;
-    skip?: number | undefined | null;
-    take?: number | undefined | null;
-  }) {
-    const where = buildMarathonWhere(filters);
-    const orderBy = buildMarathonOrder(order);
-
-    return this.prisma.marathon.findMany({
-      where,
-      orderBy,
-      skip: skip ?? undefined,
-      take: take ?? undefined,
-    });
-  }
-
-  countMarathons({
-    filters,
-  }: {
-    filters?: readonly MarathonFilters[] | undefined | null;
-  }) {
-    const where = buildMarathonWhere(filters);
-
-    return this.prisma.marathon.count({ where });
   }
 
   async getMarathonHours(

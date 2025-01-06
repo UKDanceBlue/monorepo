@@ -1,96 +1,35 @@
 import { Service } from "@freshgum/typedi";
 import type { PointOpportunityType } from "@prisma/client";
 import { Prisma, PrismaClient } from "@prisma/client";
-import type { SortDirection } from "@ukdanceblue/common";
 
-const pointOpportunityBooleanKeys = [] as const;
-type PointOpportunityBooleanKey = (typeof pointOpportunityBooleanKeys)[number];
+type UniquePointOpportunityParam = SimpleUniqueParam;
 
-const pointOpportunityDateKeys = [
-  "opportunityDate",
-  "createdAt",
-  "updatedAt",
-] as const;
-type PointOpportunityDateKey = (typeof pointOpportunityDateKeys)[number];
-
-const pointOpportunityIsNullKeys = [] as const;
-type PointOpportunityIsNullKey = (typeof pointOpportunityIsNullKeys)[number];
-
-const pointOpportunityNumericKeys = [] as const;
-type PointOpportunityNumericKey = (typeof pointOpportunityNumericKeys)[number];
-
-const pointOpportunityOneOfKeys = ["type", "marathonUuid"] as const;
-type PointOpportunityOneOfKey = (typeof pointOpportunityOneOfKeys)[number];
-
-const pointOpportunityStringKeys = ["name"] as const;
-type PointOpportunityStringKey = (typeof pointOpportunityStringKeys)[number];
-
-export type PointOpportunityOrderKeys =
-  | "name"
-  | "opportunityDate"
-  | "type"
-  | "marathonUuid"
-  | "createdAt"
-  | "updatedAt";
-
-export type PointOpportunityFilters = FilterItems<
-  PointOpportunityBooleanKey,
-  PointOpportunityDateKey,
-  PointOpportunityIsNullKey,
-  PointOpportunityNumericKey,
-  PointOpportunityOneOfKey,
-  PointOpportunityStringKey
->;
-
-type UniquePointOpportunityParam = { id: number } | { uuid: string };
+import type {
+  FieldsOfListQueryArgs,
+  ListPointOpportunitiesArgs,
+} from "@ukdanceblue/common";
 
 import { prismaToken } from "#lib/typediTokens.js";
+import { buildDefaultRepository } from "#repositories/Default.js";
 import { UniqueMarathonParam } from "#repositories/marathon/MarathonRepository.js";
 import { SimpleUniqueParam } from "#repositories/shared.js";
 
 @Service([prismaToken])
-export class PointOpportunityRepository {
-  constructor(private prisma: PrismaClient) {}
+export class PointOpportunityRepository extends buildDefaultRepository<
+  PrismaClient["pointOpportunity"],
+  SimpleUniqueParam,
+  FieldsOfListQueryArgs<ListPointOpportunitiesArgs>
+>("PointOpportunity", {}) {
+  constructor(protected readonly prisma: PrismaClient) {
+    super(prisma);
+  }
+
+  public uniqueToWhere(by: SimpleUniqueParam) {
+    return PointOpportunityRepository.simpleUniqueToWhere(by);
+  }
 
   findPointOpportunityByUnique(param: UniquePointOpportunityParam) {
     return this.prisma.pointOpportunity.findUnique({ where: param });
-  }
-
-  listPointOpportunities({
-    filters,
-    order,
-    skip,
-    take,
-  }: {
-    filters?: readonly PointOpportunityFilters[] | undefined | null;
-    order?:
-      | readonly [key: PointOpportunityOrderKeys, sort: SortDirection][]
-      | undefined
-      | null;
-    skip?: number | undefined | null;
-    take?: number | undefined | null;
-  }) {
-    const where = buildPointOpportunityWhere(filters);
-    const orderBy = buildPointOpportunityOrder(order);
-
-    return this.prisma.pointOpportunity.findMany({
-      where,
-      orderBy,
-      skip: skip ?? undefined,
-      take: take ?? undefined,
-    });
-  }
-
-  countPointOpportunities({
-    filters,
-  }: {
-    filters?: readonly PointOpportunityFilters[] | undefined | null;
-  }) {
-    const where = buildPointOpportunityWhere(filters);
-
-    return this.prisma.pointOpportunity.count({
-      where,
-    });
   }
 
   getEventForPointOpportunity(param: UniquePointOpportunityParam) {
