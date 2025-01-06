@@ -7,7 +7,6 @@ import {
   LegacyError,
   LegacyErrorCode,
   PointOpportunityNode,
-  SortDirection,
   TeamType,
 } from "@ukdanceblue/common";
 import {
@@ -29,6 +28,7 @@ import {
 import { eventModelToResource } from "#repositories/event/eventModelToResource.js";
 import { pointOpportunityModelToResource } from "#repositories/pointOpportunity/pointOpportunityModelToResource.js";
 import { PointOpportunityRepository } from "#repositories/pointOpportunity/PointOpportunityRepository.js";
+import type { AsyncRepositoryResult } from "#repositories/shared.js";
 
 @Resolver(() => PointOpportunityNode)
 @Service([PointOpportunityRepository])
@@ -62,34 +62,23 @@ export class PointOpportunityResolver
 
   @AccessControlAuthorized("list", "PointOpportunityNode")
   @Query(() => ListPointOpportunitiesResponse, { name: "pointOpportunities" })
-  async pointOpportunities(
+  pointOpportunities(
     @Args(() => ListPointOpportunitiesArgs) query: ListPointOpportunitiesArgs
-  ): Promise<ListPointOpportunitiesResponse> {
-    const [rows, total] = await Promise.all([
-      this.pointOpportunityRepository.listPointOpportunities({
+  ): AsyncRepositoryResult<ListPointOpportunitiesResponse> {
+    return this.pointOpportunityRepository
+      .findAndCount({
         filters: query.filters,
-        order:
-          query.sortBy?.map((key, i) => [
-            key,
-            query.sortDirection?.[i] ?? SortDirection.desc,
-          ]) ?? [],
-        skip:
-          query.page != null && query.actualPageSize != null
-            ? (query.page - 1) * query.actualPageSize
-            : null,
-        take: query.actualPageSize,
-      }),
-      this.pointOpportunityRepository.countPointOpportunities({
-        filters: query.filters,
-      }),
-    ]);
-
-    return ListPointOpportunitiesResponse.newPaginated({
-      data: rows.map((row) => pointOpportunityModelToResource(row)),
-      total,
-      page: query.page,
-      pageSize: query.actualPageSize,
-    });
+        sortBy: query.sortBy,
+        offset: query.offset,
+        limit: query.limit,
+        search: query.search,
+      })
+      .map(({ selectedRows, total }) => {
+        return ListPointOpportunitiesResponse.newPaginated({
+          data: selectedRows.map((row) => pointOpportunityModelToResource(row)),
+          total,
+        });
+      });
   }
 
   @AccessControlAuthorized("create")
@@ -109,7 +98,7 @@ export class PointOpportunityResolver
       name: input.name,
       type: input.type,
       eventParam: input.eventUuid ? { uuid: input.eventUuid.id } : null,
-      opportunityDate: input.opportunityDate ?? null,
+      opportunityDate: input.opportunityDate?.toJSDate() ?? null,
       marathon: { uuid: input.marathonUuid.id },
     });
 
@@ -136,7 +125,7 @@ export class PointOpportunityResolver
         name: input.name ?? undefined,
         type: input.type ?? undefined,
         eventParam: input.eventUuid ? { uuid: input.eventUuid.id } : undefined,
-        opportunityDate: input.opportunityDate ?? undefined,
+        opportunityDate: input.opportunityDate?.toJSDate() ?? undefined,
       }
     );
 

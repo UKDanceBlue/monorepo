@@ -39,8 +39,8 @@ export class ReportResolver {
           orderBy: { donatedOn: "asc" },
           where: {
             donatedOn: {
-              gte: args.from ?? undefined,
-              lte: args.to ?? undefined,
+              gte: args.from?.toISO() ?? undefined,
+              lte: args.to?.toISO() ?? undefined,
             },
           },
           select: {
@@ -98,8 +98,8 @@ export class ReportResolver {
           },
           where: {
             donatedOn: {
-              gte: args.from ?? undefined,
-              lte: args.to ?? undefined,
+              gte: args.from?.toISO() ?? undefined,
+              lte: args.to?.toISO() ?? undefined,
             },
           },
           orderBy: { donatedOn: "asc" },
@@ -157,8 +157,8 @@ export class ReportResolver {
           },
           where: {
             donatedOn: {
-              gte: args.from ?? undefined,
-              lte: args.to ?? undefined,
+              gte: args.from?.toISO() ?? undefined,
+              lte: args.to?.toISO() ?? undefined,
             },
           },
           orderBy: { donatedOn: "asc" },
@@ -220,8 +220,8 @@ export class ReportResolver {
           },
           where: {
             donatedOn: {
-              gte: args.from ?? undefined,
-              lte: args.to ?? undefined,
+              gte: args.from?.toISO() ?? undefined,
+              lte: args.to?.toISO() ?? undefined,
             },
           },
         });

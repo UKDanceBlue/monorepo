@@ -1,51 +1,15 @@
 import { Service } from "@freshgum/typedi";
 import { Prisma, PrismaClient, SolicitationCode, Team } from "@prisma/client";
+import type { DefaultArgs } from "@prisma/client/runtime/library";
 import type {
   BulkTeamInput,
   FieldsOfListQueryArgs,
   ListTeamsArgs,
-  MarathonYearString,
   TeamType,
 } from "@ukdanceblue/common";
 import { MembershipPositionType, TeamLegacyStatus } from "@ukdanceblue/common";
 import { ConcreteResult, optionOf } from "@ukdanceblue/common/error";
 import { None, Ok, Option, Result, Some } from "ts-results-es";
-
-import type { UniqueMarathonParam } from "#repositories/marathon/MarathonRepository.js";
-import {
-  type AsyncRepositoryResult,
-  handleRepositoryError,
-  RepositoryError,
-  type SimpleUniqueParam,
-} from "#repositories/shared.js";
-
-type MarathonParam = SimpleUniqueParam | { year: MarathonYearString };
-
-function makeMarathonWhere(param: MarathonParam[]) {
-  const marathonIds: number[] = [];
-  const marathonUuids: string[] = [];
-  const marathonYears: MarathonYearString[] = [];
-  for (const m of param) {
-    if ("id" in m) {
-      marathonIds.push(m.id);
-    } else if ("uuid" in m) {
-      marathonUuids.push(m.uuid);
-    } else if ("year" in m) {
-      marathonYears.push(m.year);
-    } else {
-      m satisfies never;
-    }
-  }
-  return {
-    OR: [
-      { id: { in: marathonIds } },
-      { uuid: { in: marathonUuids } },
-      { year: { in: marathonYears } },
-    ],
-  };
-}
-
-import type { DefaultArgs } from "@prisma/client/runtime/library";
 
 import { prismaToken } from "#lib/typediTokens.js";
 import {
@@ -53,16 +17,47 @@ import {
   type FindAndCountParams,
   type FindAndCountResult,
 } from "#repositories/Default.js";
+import {
+  MarathonRepository,
+  type UniqueMarathonParam,
+} from "#repositories/marathon/MarathonRepository.js";
+import {
+  type AsyncRepositoryResult,
+  handleRepositoryError,
+  RepositoryError,
+  type SimpleUniqueParam,
+} from "#repositories/shared.js";
 
 type TeamUniqueParam = SimpleUniqueParam;
 
-@Service([prismaToken])
+@Service([prismaToken, MarathonRepository])
 export class TeamRepository extends buildDefaultRepository<
   PrismaClient["team"],
   TeamUniqueParam,
   FieldsOfListQueryArgs<ListTeamsArgs>
->("Team", {}) {
-  constructor(protected readonly prisma: PrismaClient) {
+>("Team", {
+  name: {
+    getWhere: (name) => Ok({ name }),
+    getOrderBy: (name) => Ok({ name }),
+    searchable: true,
+  },
+  legacyStatus: {
+    getWhere: (legacyStatus) => Ok({ legacyStatus }),
+    getOrderBy: (legacyStatus) => Ok({ legacyStatus }),
+  },
+  marathonId: {
+    getWhere: (marathonId) => Ok({ marathonId }),
+    getOrderBy: (marathonId) => Ok({ marathonId }),
+  },
+  type: {
+    getWhere: (type) => Ok({ type }),
+    getOrderBy: (type) => Ok({ type }),
+  },
+}) {
+  constructor(
+    protected readonly prisma: PrismaClient,
+    private readonly marathonRepository: MarathonRepository
+  ) {
     super(prisma);
   }
 
@@ -99,16 +94,45 @@ export class TeamRepository extends buildDefaultRepository<
 
   findAndCount({
     tx,
+    legacyStatus,
+    marathon,
+    type,
     ...params
-  }: FindAndCountParams<
-    "name" | "type" | "legacyStatus" | "marathonId"
-  >): AsyncRepositoryResult<
+  }: FindAndCountParams<"name" | "type" | "legacyStatus" | "marathonId"> & {
+    legacyStatus?: TeamLegacyStatus[];
+    marathon?: UniqueMarathonParam[];
+    type?: TeamType[];
+  }): AsyncRepositoryResult<
     FindAndCountResult<
       Prisma.TeamDelegate<DefaultArgs, Prisma.PrismaClientOptions>,
       { include: Record<string, never> }
     >
   > {
-    return this.parseFindManyParams(params)
+    const where: Prisma.TeamWhereInput[] = [];
+
+    if (legacyStatus) {
+      where.push({
+        legacyStatus: {
+          in: legacyStatus,
+        },
+      });
+    }
+    if (marathon) {
+      where.push({
+        OR: marathon.map((m) => ({
+          marathon: this.marathonRepository.uniqueToWhere(m),
+        })),
+      });
+    }
+    if (type) {
+      where.push({
+        type: {
+          in: type,
+        },
+      });
+    }
+
+    return this.parseFindManyParams(params, where)
       .toAsyncResult()
       .andThen((params) =>
         this.handleQueryError((tx ?? this.prisma).team.findMany(params)).map(

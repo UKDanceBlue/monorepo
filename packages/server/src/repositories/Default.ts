@@ -271,9 +271,10 @@ export function buildDefaultRepository<
     }
 
     protected parseFindManyParams(
-      param: FindManyParams<(typeof DefaultRepository.fields)[number]>
+      param: FindManyParams<(typeof DefaultRepository.fields)[number]>,
+      additionalWhere: Args<T, "findMany">["where"][] = []
     ) {
-      return parseFindManyParamsFunc(param, fieldLookup);
+      return parseFindManyParamsFunc(param, fieldLookup, additionalWhere);
     }
 
     public abstract uniqueToWhere(

@@ -64,14 +64,21 @@ export class MarathonHourResolver
   // TODO: Double check that this access is correct
   @AccessControlAuthorized("list", "MarathonHourNode")
   @Query(() => ListMarathonHoursResponse)
-  async marathonHours(@Args() args: ListMarathonHoursArgs) {
-    const marathons = await this.marathonHourRepository.listMarathonHours(args);
-    const marathonCount =
-      await this.marathonHourRepository.countMarathonHours(args);
-    return ListMarathonHoursResponse.newPaginated({
-      data: marathons.map(marathonHourModelToResource),
-      total: marathonCount,
-    });
+  marathonHours(@Args() query: ListMarathonHoursArgs) {
+    return this.marathonHourRepository
+      .findAndCount({
+        filters: query.filters,
+        sortBy: query.sortBy,
+        offset: query.offset,
+        limit: query.limit,
+        search: query.search,
+      })
+      .map(({ selectedRows, total }) => {
+        return ListMarathonHoursResponse.newPaginated({
+          data: selectedRows.map((row) => marathonHourModelToResource(row)),
+          total,
+        });
+      });
   }
 
   @FieldResolver(() => [ImageNode])

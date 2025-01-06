@@ -9,7 +9,6 @@ import {
   LegacyErrorCode,
   ListDevicesArgs,
   ListDevicesResponse,
-  ListEventsResponse,
   NotificationDeliveriesArgs,
   NotificationDeliveryNode,
   parseGlobalId,
@@ -87,7 +86,7 @@ export class DeviceResolver
         search: query.search,
       })
       .map(({ selectedRows, total }) => {
-        return ListEventsResponse.newPaginated({
+        return ListDevicesResponse.newPaginated({
           data: selectedRows.map((row) => deviceModelToResource(row)),
           total,
         });

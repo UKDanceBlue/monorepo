@@ -5,6 +5,7 @@ import {
   ListFundraisingEntriesArgs,
   ListFundraisingEntriesResponse,
   MarathonNode,
+  TeamLegacyStatus,
 } from "@ukdanceblue/common";
 import {
   AccessControlAuthorized,
@@ -16,7 +17,6 @@ import {
   MembershipNode,
   PointEntryNode,
   SolicitationCodeNode,
-  SortDirection,
   TeamNode,
 } from "@ukdanceblue/common";
 import {
@@ -77,56 +77,31 @@ export class TeamResolver implements CrudResolver<TeamNode, "team"> {
 
   @AccessControlAuthorized("list", "TeamNode")
   @Query(() => ListTeamsResponse, { name: "teams" })
-  async teams(
+  teams(
     @Args(() => ListTeamsArgs) query: ListTeamsArgs,
     @Ctx() ctx: GraphQLContext
-  ): Promise<ListTeamsResponse> {
-    const marathonFilter = query.marathonId?.map(({ id: marathonId }) => ({
-      uuid: marathonId,
-    }));
-
-    const [rows, total] = await Promise.all([
-      this.teamRepository.listTeams({
+  ): AsyncRepositoryResult<ListTeamsResponse> {
+    return this.teamRepository
+      .findAndCount({
         filters: query.filters,
-        order:
-          query.sortBy?.map((key, i) => [
-            key,
-            query.sortDirection?.[i] ?? SortDirection.desc,
-          ]) ?? [],
-        skip:
-          query.page != null && query.actualPageSize != null
-            ? (query.page - 1) * query.actualPageSize
-            : null,
-        take: query.actualPageSize,
-        onlyDemo: ctx.authSource === AuthSource.Demo,
-        legacyStatus: query.legacyStatus,
-        marathon: marathonFilter,
-        type: query.type,
-      }),
-      this.teamRepository.countTeams({
-        filters: query.filters,
-        onlyDemo: ctx.authSource === AuthSource.Demo,
-        legacyStatus: query.legacyStatus,
-        marathon: marathonFilter,
-        type: query.type,
-      }),
-    ]);
+        sortBy: query.sortBy,
+        offset: query.offset,
+        limit: query.limit,
+        search: query.search,
 
-    return ListTeamsResponse.newPaginated({
-      data: rows.map((row) =>
-        teamModelToResource({
-          uuid: row.uuid,
-          name: row.name,
-          legacyStatus: row.legacyStatus,
-          type: row.type,
-          updatedAt: row.updatedAt,
-          createdAt: row.createdAt,
-        })
-      ),
-      total,
-      page: query.page,
-      pageSize: query.actualPageSize,
-    });
+        legacyStatus:
+          ctx.authSource === AuthSource.Demo
+            ? [TeamLegacyStatus.DemoTeam]
+            : (query.legacyStatus ?? undefined),
+        marathon: query.marathonId?.map(({ id }) => ({ uuid: id })),
+        type: query.type ?? undefined,
+      })
+      .map(({ selectedRows, total }) => {
+        return ListTeamsResponse.newPaginated({
+          data: selectedRows.map((row) => teamModelToResource(row)),
+          total,
+        });
+      });
   }
 
   @AccessControlAuthorized("create")

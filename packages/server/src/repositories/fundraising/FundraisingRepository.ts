@@ -241,7 +241,7 @@ export class FundraisingEntryRepository extends buildDefaultRepository<
         ],
       });
     }
-    return this.parseFindManyParams(params)
+    return this.parseFindManyParams(params, where)
       .toAsyncResult()
       .andThen((params) =>
         this.handleQueryError(

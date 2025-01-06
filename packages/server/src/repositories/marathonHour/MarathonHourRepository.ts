@@ -1,23 +1,62 @@
 import { Service } from "@freshgum/typedi";
 import { Prisma, PrismaClient } from "@prisma/client";
-
-type MarathonHourUniqueParam = SimpleUniqueParam;
-
+import type { DefaultArgs } from "@prisma/client/runtime/library";
 import type {
   FieldsOfListQueryArgs,
   ListMarathonHoursArgs,
 } from "@ukdanceblue/common";
+import { Ok } from "ts-results-es";
 
 import { prismaToken } from "#lib/typediTokens.js";
-import { buildDefaultRepository } from "#repositories/Default.js";
-import type { SimpleUniqueParam } from "#repositories/shared.js";
+import {
+  buildDefaultRepository,
+  type FindAndCountParams,
+  type FindAndCountResult,
+} from "#repositories/Default.js";
+import type {
+  AsyncRepositoryResult,
+  SimpleUniqueParam,
+} from "#repositories/shared.js";
+
+type MarathonHourUniqueParam = SimpleUniqueParam;
 
 @Service([prismaToken])
 export class MarathonHourRepository extends buildDefaultRepository<
   PrismaClient["marathonHour"],
-  SimpleUniqueParam,
+  MarathonHourUniqueParam,
   FieldsOfListQueryArgs<ListMarathonHoursArgs>
->("MarathonHour", {}) {
+>("MarathonHour", {
+  title: {
+    getWhere: (title) => Ok({ title }),
+    getOrderBy: (title) => Ok({ title }),
+    searchable: true,
+  },
+  details: {
+    getWhere: (details) => Ok({ details }),
+    getOrderBy: (details) => Ok({ details }),
+    searchable: true,
+  },
+  marathonYear: {
+    getWhere: (marathonYear) => Ok({ marathon: { year: marathonYear } }),
+    getOrderBy: (marathonYear) => Ok({ marathon: { year: marathonYear } }),
+  },
+  durationInfo: {
+    getWhere: (durationInfo) => Ok({ durationInfo }),
+    getOrderBy: (durationInfo) => Ok({ durationInfo }),
+  },
+  shownStartingAt: {
+    getWhere: (shownStartingAt) => Ok({ shownStartingAt }),
+    getOrderBy: (shownStartingAt) => Ok({ shownStartingAt }),
+  },
+  createdAt: {
+    getWhere: (createdAt) => Ok({ createdAt }),
+    getOrderBy: (createdAt) => Ok({ createdAt }),
+  },
+  updatedAt: {
+    getWhere: (updatedAt) => Ok({ updatedAt }),
+    getOrderBy: (updatedAt) => Ok({ updatedAt }),
+  },
+}) {
   constructor(protected readonly prisma: PrismaClient) {
     super(prisma);
   }
@@ -48,6 +87,43 @@ export class MarathonHourRepository extends buildDefaultRepository<
       },
     });
     return rows?.maps.map((map) => map.image);
+  }
+
+  findAndCount({
+    tx,
+    ...params
+  }: FindAndCountParams<
+    | "createdAt"
+    | "updatedAt"
+    | "title"
+    | "details"
+    | "durationInfo"
+    | "marathonYear"
+    | "shownStartingAt"
+  >): AsyncRepositoryResult<
+    FindAndCountResult<
+      Prisma.MarathonHourDelegate<DefaultArgs, Prisma.PrismaClientOptions>,
+      { include: Record<string, never> }
+    >
+  > {
+    return this.parseFindManyParams(params)
+      .toAsyncResult()
+      .andThen((params) =>
+        this.handleQueryError(
+          (tx ?? this.prisma).marathonHour.findMany(params)
+        ).map((rows) => ({ rows, params }))
+      )
+      .andThen(({ rows, params }) =>
+        this.handleQueryError(
+          (tx ?? this.prisma).marathonHour.count({
+            where: params.where,
+            orderBy: params.orderBy,
+          })
+        ).map((total) => ({
+          selectedRows: rows,
+          total,
+        }))
+      );
   }
 
   createMarathonHour({

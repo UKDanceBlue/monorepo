@@ -8,7 +8,6 @@ import {
   PersonNode,
   PointEntryNode,
   PointOpportunityNode,
-  SortDirection,
   TeamNode,
 } from "@ukdanceblue/common";
 import {
@@ -33,6 +32,7 @@ import { PersonRepository } from "#repositories/person/PersonRepository.js";
 import { pointEntryModelToResource } from "#repositories/pointEntry/pointEntryModelToResource.js";
 import { PointEntryRepository } from "#repositories/pointEntry/PointEntryRepository.js";
 import { pointOpportunityModelToResource } from "#repositories/pointOpportunity/pointOpportunityModelToResource.js";
+import type { AsyncRepositoryResult } from "#repositories/shared.js";
 import { teamModelToResource } from "#repositories/team/teamModelToResource.js";
 
 @Resolver(() => PointEntryNode)
@@ -63,34 +63,23 @@ export class PointEntryResolver
 
   @AccessControlAuthorized("list", "PointEntryNode")
   @Query(() => ListPointEntriesResponse, { name: "pointEntries" })
-  async pointEntries(
+  pointEntries(
     @Args(() => ListPointEntriesArgs) query: ListPointEntriesArgs
-  ): Promise<ListPointEntriesResponse> {
-    const [rows, total] = await Promise.all([
-      this.pointEntryRepository.listPointEntries({
+  ): AsyncRepositoryResult<ListPointEntriesResponse> {
+    return this.pointEntryRepository
+      .findAndCount({
         filters: query.filters,
-        order:
-          query.sortBy?.map((key, i) => [
-            key,
-            query.sortDirection?.[i] ?? SortDirection.desc,
-          ]) ?? [],
-        skip:
-          query.page != null && query.actualPageSize != null
-            ? (query.page - 1) * query.actualPageSize
-            : null,
-        take: query.actualPageSize,
-      }),
-      this.pointEntryRepository.countPointEntries({
-        filters: query.filters,
-      }),
-    ]);
-
-    return ListPointEntriesResponse.newPaginated({
-      data: rows.map((row) => pointEntryModelToResource(row)),
-      total,
-      page: query.page,
-      pageSize: query.actualPageSize,
-    });
+        sortBy: query.sortBy,
+        offset: query.offset,
+        limit: query.limit,
+        search: query.search,
+      })
+      .map(({ selectedRows, total }) => {
+        return ListPointEntriesResponse.newPaginated({
+          data: selectedRows.map((row) => pointEntryModelToResource(row)),
+          total,
+        });
+      });
   }
 
   @AccessControlAuthorized("create")

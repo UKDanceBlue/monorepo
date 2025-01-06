@@ -37,22 +37,56 @@ function normalizeReceiptErrorCode(
   return normalizedCode;
 }
 
+import type { DefaultArgs } from "@prisma/client/runtime/library";
 import type {
   FieldsOfListQueryArgs,
   ListNotificationDeliveriesArgs,
 } from "@ukdanceblue/common";
+import { Ok } from "ts-results-es";
 
 import { prismaToken } from "#lib/typediTokens.js";
-import { buildDefaultRepository } from "#repositories/Default.js";
-import type { SimpleUniqueParam } from "#repositories/shared.js";
+import {
+  buildDefaultRepository,
+  type FindAndCountParams,
+  type FindAndCountResult,
+} from "#repositories/Default.js";
+import { NotificationRepository } from "#repositories/notification/NotificationRepository.js";
+import type {
+  AsyncRepositoryResult,
+  SimpleUniqueParam,
+} from "#repositories/shared.js";
 
-@Service([prismaToken])
+@Service([prismaToken, NotificationRepository])
 export class NotificationDeliveryRepository extends buildDefaultRepository<
   PrismaClient["notificationDelivery"],
   SimpleUniqueParam,
   FieldsOfListQueryArgs<ListNotificationDeliveriesArgs>
->("NotificationDelivery", {}) {
-  constructor(protected readonly prisma: PrismaClient) {
+>("NotificationDelivery", {
+  deliveryError: {
+    getWhere: (deliveryError) => Ok({ deliveryError }),
+    getOrderBy: (deliveryError) => Ok({ deliveryError }),
+  },
+  sentAt: {
+    getWhere: (sentAt) => Ok({ sentAt }),
+    getOrderBy: (sentAt) => Ok({ sentAt }),
+  },
+  receiptCheckedAt: {
+    getWhere: (receiptCheckedAt) => Ok({ receiptCheckedAt }),
+    getOrderBy: (receiptCheckedAt) => Ok({ receiptCheckedAt }),
+  },
+  createdAt: {
+    getWhere: (createdAt) => Ok({ createdAt }),
+    getOrderBy: (createdAt) => Ok({ createdAt }),
+  },
+  updatedAt: {
+    getWhere: (updatedAt) => Ok({ updatedAt }),
+    getOrderBy: (updatedAt) => Ok({ updatedAt }),
+  },
+}) {
+  constructor(
+    protected readonly prisma: PrismaClient,
+    private readonly notificationRepository: NotificationRepository
+  ) {
     super(prisma);
   }
 
@@ -98,6 +132,53 @@ export class NotificationDeliveryRepository extends buildDefaultRepository<
     return returnVal as (Omit<(typeof returnVal)[number], "receiptId"> & {
       receiptId: NonNullable<(typeof returnVal)[number]["receiptId"]>;
     })[];
+  }
+
+  findAndCount({
+    tx,
+    notification,
+    ...params
+  }: FindAndCountParams<
+    "createdAt" | "updatedAt" | "sentAt" | "receiptCheckedAt" | "deliveryError"
+  > & {
+    notification?: SimpleUniqueParam;
+  }): AsyncRepositoryResult<
+    FindAndCountResult<
+      Prisma.NotificationDeliveryDelegate<
+        DefaultArgs,
+        Prisma.PrismaClientOptions
+      >,
+      { include: Record<string, never> }
+    >
+  > {
+    return this.parseFindManyParams(
+      params,
+      notification
+        ? [
+            {
+              notification:
+                this.notificationRepository.uniqueToWhere(notification),
+            },
+          ]
+        : undefined
+    )
+      .toAsyncResult()
+      .andThen((params) =>
+        this.handleQueryError(
+          (tx ?? this.prisma).notificationDelivery.findMany(params)
+        ).map((rows) => ({ rows, params }))
+      )
+      .andThen(({ rows, params }) =>
+        this.handleQueryError(
+          (tx ?? this.prisma).notificationDelivery.count({
+            where: params.where,
+            orderBy: params.orderBy,
+          })
+        ).map((total) => ({
+          selectedRows: rows,
+          total,
+        }))
+      );
   }
 
   async createNotificationDeliveries({

@@ -6,7 +6,6 @@ import {
   GlobalIdScalar,
   MarathonHourNode,
   MarathonNode,
-  SortDirection,
   TeamNode,
 } from "@ukdanceblue/common";
 import {
@@ -125,29 +124,21 @@ export class MarathonResolver
 
   @AccessControlAuthorized("list", "MarathonNode")
   @Query(() => ListMarathonsResponse)
-  async marathons(@Args() args: ListMarathonsArgs) {
-    const marathons = await this.marathonRepository.listMarathons({
-      filters: args.filters,
-      order:
-        args.sortBy?.map((key, i) => [
-          key,
-          args.sortDirection?.[i] ?? SortDirection.desc,
-        ]) ?? [],
-      skip:
-        args.page != null && args.actualPageSize != null
-          ? (args.page - 1) * args.actualPageSize
-          : null,
-      take: args.actualPageSize,
-    });
-    const marathonCount = await this.marathonRepository.countMarathons({
-      filters: args.filters,
-    });
-    return ListMarathonsResponse.newPaginated({
-      data: marathons.map(marathonModelToResource),
-      total: marathonCount,
-      page: args.page,
-      pageSize: args.actualPageSize,
-    });
+  marathons(@Args() query: ListMarathonsArgs) {
+    return this.marathonRepository
+      .findAndCount({
+        filters: query.filters,
+        sortBy: query.sortBy,
+        offset: query.offset,
+        limit: query.limit,
+        search: query.search,
+      })
+      .map(({ selectedRows, total }) => {
+        return ListMarathonsResponse.newPaginated({
+          data: selectedRows.map((row) => marathonModelToResource(row)),
+          total,
+        });
+      });
   }
 
   @AccessControlAuthorized("readActive")
@@ -176,7 +167,11 @@ export class MarathonResolver
   @Mutation(() => MarathonNode)
   async createMarathon(@Arg("input") input: CreateMarathonInput) {
     return new AsyncResult(
-      this.marathonRepository.createMarathon(input)
+      this.marathonRepository.createMarathon({
+        ...input,
+        startDate: input.startDate?.toJSDate() ?? null,
+        endDate: input.endDate?.toJSDate() ?? null,
+      })
     ).andThen(async (marathon) => {
       const result = await this.committeeRepository.ensureCommittees([
         { id: marathon.id },
@@ -193,7 +188,11 @@ export class MarathonResolver
   ) {
     const marathon = await this.marathonRepository.updateMarathon(
       { uuid: id },
-      input
+      {
+        ...input,
+        startDate: input.startDate?.toJSDate() ?? null,
+        endDate: input.endDate?.toJSDate() ?? null,
+      }
     );
     return marathon.map(marathonModelToResource);
   }

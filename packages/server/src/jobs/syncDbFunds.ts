@@ -48,9 +48,13 @@ async function doSyncForPastMarathons(): Promise<Result<None, ConcreteError>> {
     return activeMarathon;
   }
 
-  const allMarathons = await marathonRepository.listMarathons({});
+  const allMarathons = await marathonRepository.findAndCount({}).promise;
 
-  const pastMarathons = allMarathons.filter(
+  if (allMarathons.isErr()) {
+    return allMarathons;
+  }
+
+  const pastMarathons = allMarathons.value.selectedRows.filter(
     (marathon) => marathon.id !== activeMarathon.value.id
   );
 

@@ -1,6 +1,7 @@
 import { Service } from "@freshgum/typedi";
 import { Notification, Prisma, PrismaClient } from "@prisma/client";
 import { NotificationError } from "@prisma/client";
+import type { DefaultArgs } from "@prisma/client/runtime/library";
 import type {
   FieldsOfListQueryArgs,
   ListNotificationsArgs,
@@ -9,8 +10,13 @@ import { NotFoundError } from "@ukdanceblue/common/error";
 import { AsyncResult, Err, Ok, Result } from "ts-results-es";
 
 import { prismaToken } from "#lib/typediTokens.js";
-import { buildDefaultRepository } from "#repositories/Default.js";
 import {
+  buildDefaultRepository,
+  type FindAndCountParams,
+  type FindAndCountResult,
+} from "#repositories/Default.js";
+import {
+  type AsyncRepositoryResult,
   handleRepositoryError,
   RepositoryError,
   type SimpleUniqueParam,
@@ -21,7 +27,44 @@ export class NotificationRepository extends buildDefaultRepository<
   PrismaClient["notification"],
   SimpleUniqueParam,
   FieldsOfListQueryArgs<ListNotificationsArgs>
->("Notification", {}) {
+>("Notification", {
+  title: {
+    getWhere: (title) => Ok({ title }),
+    getOrderBy: (title) => Ok({ title }),
+    searchable: true,
+  },
+  body: {
+    getWhere: (body) => Ok({ body }),
+    getOrderBy: (body) => Ok({ body }),
+    searchable: true,
+  },
+  deliveryIssue: {
+    getWhere: (deliveryIssue) => Ok({ deliveryIssue }),
+    getOrderBy: (deliveryIssue) => Ok({ deliveryIssue }),
+  },
+  deliveryIssueAcknowledgedAt: {
+    getWhere: (deliveryIssueAcknowledgedAt) =>
+      Ok({ deliveryIssueAcknowledgedAt }),
+    getOrderBy: (deliveryIssueAcknowledgedAt) =>
+      Ok({ deliveryIssueAcknowledgedAt }),
+  },
+  startedSendingAt: {
+    getWhere: (startedSendingAt) => Ok({ startedSendingAt }),
+    getOrderBy: (startedSendingAt) => Ok({ startedSendingAt }),
+  },
+  sendAt: {
+    getWhere: (sendAt) => Ok({ sendAt }),
+    getOrderBy: (sendAt) => Ok({ sendAt }),
+  },
+  createdAt: {
+    getWhere: (createdAt) => Ok({ createdAt }),
+    getOrderBy: (createdAt) => Ok({ createdAt }),
+  },
+  updatedAt: {
+    getWhere: (updatedAt) => Ok({ updatedAt }),
+    getOrderBy: (updatedAt) => Ok({ updatedAt }),
+  },
+}) {
   constructor(protected readonly prisma: PrismaClient) {
     super(prisma);
   }
@@ -64,6 +107,44 @@ export class NotificationRepository extends buildDefaultRepository<
     } catch (error) {
       return handleRepositoryError(error);
     }
+  }
+
+  findAndCount({
+    tx,
+    ...params
+  }: FindAndCountParams<
+    | "createdAt"
+    | "updatedAt"
+    | "title"
+    | "body"
+    | "deliveryIssue"
+    | "sendAt"
+    | "startedSendingAt"
+    | "deliveryIssueAcknowledgedAt"
+  >): AsyncRepositoryResult<
+    FindAndCountResult<
+      Prisma.NotificationDelegate<DefaultArgs, Prisma.PrismaClientOptions>,
+      { include: Record<string, never> }
+    >
+  > {
+    return this.parseFindManyParams(params)
+      .toAsyncResult()
+      .andThen((params) =>
+        this.handleQueryError(
+          (tx ?? this.prisma).notification.findMany(params)
+        ).map((rows) => ({ rows, params }))
+      )
+      .andThen(({ rows, params }) =>
+        this.handleQueryError(
+          (tx ?? this.prisma).notification.count({
+            where: params.where,
+            orderBy: params.orderBy,
+          })
+        ).map((total) => ({
+          selectedRows: rows,
+          total,
+        }))
+      );
   }
 
   countDeliveriesForNotification(param: Prisma.NotificationWhereUniqueInput) {

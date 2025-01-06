@@ -4,22 +4,57 @@ import { Prisma, PrismaClient } from "@prisma/client";
 
 type UniquePointOpportunityParam = SimpleUniqueParam;
 
+import type { DefaultArgs } from "@prisma/client/runtime/library";
 import type {
   FieldsOfListQueryArgs,
   ListPointOpportunitiesArgs,
 } from "@ukdanceblue/common";
+import { Ok } from "ts-results-es";
 
 import { prismaToken } from "#lib/typediTokens.js";
-import { buildDefaultRepository } from "#repositories/Default.js";
+import {
+  buildDefaultRepository,
+  type FindAndCountParams,
+  type FindAndCountResult,
+} from "#repositories/Default.js";
 import { UniqueMarathonParam } from "#repositories/marathon/MarathonRepository.js";
-import { SimpleUniqueParam } from "#repositories/shared.js";
+import {
+  type AsyncRepositoryResult,
+  SimpleUniqueParam,
+} from "#repositories/shared.js";
 
 @Service([prismaToken])
 export class PointOpportunityRepository extends buildDefaultRepository<
   PrismaClient["pointOpportunity"],
   SimpleUniqueParam,
   FieldsOfListQueryArgs<ListPointOpportunitiesArgs>
->("PointOpportunity", {}) {
+>("PointOpportunity", {
+  name: {
+    getWhere: (name) => Ok({ name }),
+    getOrderBy: (name) => Ok({ name }),
+    searchable: true,
+  },
+  type: {
+    getWhere: (type) => Ok({ type }),
+    getOrderBy: (type) => Ok({ type }),
+  },
+  opportunityDate: {
+    getWhere: (opportunityDate) => Ok({ opportunityDate }),
+    getOrderBy: (opportunityDate) => Ok({ opportunityDate }),
+  },
+  marathonUuid: {
+    getWhere: (marathonUuid) => Ok({ marathon: { uuid: marathonUuid } }),
+    getOrderBy: (marathonUuid) => Ok({ marathon: { uuid: marathonUuid } }),
+  },
+  createdAt: {
+    getWhere: (createdAt) => Ok({ createdAt }),
+    getOrderBy: (createdAt) => Ok({ createdAt }),
+  },
+  updatedAt: {
+    getWhere: (updatedAt) => Ok({ updatedAt }),
+    getOrderBy: (updatedAt) => Ok({ updatedAt }),
+  },
+}) {
   constructor(protected readonly prisma: PrismaClient) {
     super(prisma);
   }
@@ -38,6 +73,42 @@ export class PointOpportunityRepository extends buildDefaultRepository<
         where: param,
       })
       .event();
+  }
+
+  findAndCount({
+    tx,
+    ...params
+  }: FindAndCountParams<
+    | "createdAt"
+    | "updatedAt"
+    | "name"
+    | "opportunityDate"
+    | "type"
+    | "marathonUuid"
+  >): AsyncRepositoryResult<
+    FindAndCountResult<
+      Prisma.PointOpportunityDelegate<DefaultArgs, Prisma.PrismaClientOptions>,
+      { include: Record<string, never> }
+    >
+  > {
+    return this.parseFindManyParams(params)
+      .toAsyncResult()
+      .andThen((params) =>
+        this.handleQueryError(
+          (tx ?? this.prisma).pointOpportunity.findMany(params)
+        ).map((rows) => ({ rows, params }))
+      )
+      .andThen(({ rows, params }) =>
+        this.handleQueryError(
+          (tx ?? this.prisma).pointOpportunity.count({
+            where: params.where,
+            orderBy: params.orderBy,
+          })
+        ).map((total) => ({
+          selectedRows: rows,
+          total,
+        }))
+      );
   }
 
   createPointOpportunity({

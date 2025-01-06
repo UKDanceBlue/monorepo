@@ -1,9 +1,21 @@
 import { Service } from "@freshgum/typedi";
 import { Marathon, MarathonHour, Prisma, PrismaClient } from "@prisma/client";
+import type { DefaultArgs } from "@prisma/client/runtime/library";
+import type {
+  FieldsOfListQueryArgs,
+  ListMarathonsArgs,
+} from "@ukdanceblue/common";
 import { NotFoundError, optionOf } from "@ukdanceblue/common/error";
 import { Err, Ok, Option, Result } from "ts-results-es";
 
+import { prismaToken } from "#lib/typediTokens.js";
 import {
+  buildDefaultRepository,
+  type FindAndCountParams,
+  type FindAndCountResult,
+} from "#repositories/Default.js";
+import {
+  type AsyncRepositoryResult,
   handleRepositoryError,
   type RepositoryError,
   type SimpleUniqueParam,
@@ -11,25 +23,42 @@ import {
 
 export type UniqueMarathonParam = SimpleUniqueParam | { year: string };
 
-import type {
-  FieldsOfListQueryArgs,
-  ListMarathonsArgs,
-} from "@ukdanceblue/common";
-
-import { prismaToken } from "#lib/typediTokens.js";
-import { buildDefaultRepository } from "#repositories/Default.js";
-
 @Service([prismaToken])
 export class MarathonRepository extends buildDefaultRepository<
   PrismaClient["marathon"],
-  SimpleUniqueParam,
+  UniqueMarathonParam,
   FieldsOfListQueryArgs<ListMarathonsArgs>
->("Marathon", {}) {
+>("Marathon", {
+  year: {
+    getWhere: (year) => Ok({ year }),
+    getOrderBy: (year) => Ok({ year }),
+    searchable: true,
+  },
+  startDate: {
+    getWhere: (startDate) => Ok({ startDate }),
+    getOrderBy: (startDate) => Ok({ startDate }),
+  },
+  endDate: {
+    getWhere: (endDate) => Ok({ endDate }),
+    getOrderBy: (endDate) => Ok({ endDate }),
+  },
+  createdAt: {
+    getWhere: (createdAt) => Ok({ createdAt }),
+    getOrderBy: (createdAt) => Ok({ createdAt }),
+  },
+  updatedAt: {
+    getWhere: (updatedAt) => Ok({ updatedAt }),
+    getOrderBy: (updatedAt) => Ok({ updatedAt }),
+  },
+}) {
   constructor(protected readonly prisma: PrismaClient) {
     super(prisma);
   }
 
-  public uniqueToWhere(by: SimpleUniqueParam) {
+  public uniqueToWhere(by: UniqueMarathonParam) {
+    if ("year" in by) {
+      return { year: by.year };
+    }
     return MarathonRepository.simpleUniqueToWhere(by);
   }
 
@@ -96,6 +125,37 @@ export class MarathonRepository extends buildDefaultRepository<
     } catch (error) {
       return handleRepositoryError(error);
     }
+  }
+
+  findAndCount({
+    tx,
+    ...params
+  }: FindAndCountParams<
+    "createdAt" | "updatedAt" | "year" | "startDate" | "endDate"
+  >): AsyncRepositoryResult<
+    FindAndCountResult<
+      Prisma.MarathonDelegate<DefaultArgs, Prisma.PrismaClientOptions>,
+      { include: Record<string, never> }
+    >
+  > {
+    return this.parseFindManyParams(params)
+      .toAsyncResult()
+      .andThen((params) =>
+        this.handleQueryError(
+          (tx ?? this.prisma).marathon.findMany(params)
+        ).map((rows) => ({ rows, params }))
+      )
+      .andThen(({ rows, params }) =>
+        this.handleQueryError(
+          (tx ?? this.prisma).marathon.count({
+            where: params.where,
+            orderBy: params.orderBy,
+          })
+        ).map((total) => ({
+          selectedRows: rows,
+          total,
+        }))
+      );
   }
 
   async createMarathon({

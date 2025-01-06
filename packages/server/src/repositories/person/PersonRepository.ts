@@ -116,7 +116,6 @@ export class PersonRepository extends buildDefaultRepository<
           },
         },
       }),
-    searchable: false,
   },
   committeeRole: {
     getOrderBy: () =>
@@ -129,7 +128,6 @@ export class PersonRepository extends buildDefaultRepository<
           },
         },
       }),
-    searchable: false,
   },
 }) {
   constructor(

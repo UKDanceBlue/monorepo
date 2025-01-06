@@ -34,7 +34,7 @@ export type GetOrderFn<T> = (
 export interface FieldLookupItem<T> {
   getWhere: GetWhereFn<T>;
   getOrderBy: GetOrderFn<T>;
-  searchable?: boolean;
+  searchable?: true;
 }
 
 export type FieldLookup<T, Field extends string> = Record<
@@ -579,7 +579,8 @@ export interface FindManyParams<Field extends string> extends PaginationParams {
 
 export function parseFindManyParams<T, Field extends string>(
   params: FindManyParams<Field>,
-  fieldLookup: FieldLookup<T, Field>
+  fieldLookup: FieldLookup<T, Field>,
+  additionalWhere: Args<T, "findMany">["where"][]
 ): RepositoryResult<{
   where: Args<T, "findMany">["where"] | undefined;
   orderBy: Args<T, "findMany">["orderBy"] | undefined;
@@ -639,7 +640,9 @@ export function parseFindManyParams<T, Field extends string>(
   }
 
   return Ok({
-    where: where?.value,
+    where: where?.value
+      ? { AND: [where.value, ...additionalWhere] }
+      : { AND: additionalWhere },
     orderBy: order?.value,
     skip: params.offset ?? undefined,
     take: params.limit ?? undefined,

@@ -7,7 +7,6 @@ import {
   LegacyErrorCode,
   NotificationDeliveryNode,
   NotificationNode,
-  SortDirection,
 } from "@ukdanceblue/common";
 import {
   ListNotificationDeliveriesArgs,
@@ -42,7 +41,10 @@ import { notificationModelToResource } from "#repositories/notification/notifica
 import { NotificationRepository } from "#repositories/notification/NotificationRepository.js";
 import { notificationDeliveryModelToResource } from "#repositories/notificationDelivery/notificationDeliveryModelToResource.js";
 import { NotificationDeliveryRepository } from "#repositories/notificationDelivery/NotificationDeliveryRepository.js";
-import { handleRepositoryError } from "#repositories/shared.js";
+import {
+  type AsyncRepositoryResult,
+  handleRepositoryError,
+} from "#repositories/shared.js";
 
 @Resolver(() => NotificationNode)
 @Service([
@@ -75,73 +77,51 @@ export class NotificationResolver
 
   @AccessControlAuthorized("list", "NotificationNode")
   @Query(() => ListNotificationsResponse, { name: "notifications" })
-  async notifications(
+  notifications(
     @Args(() => ListNotificationsArgs) query: ListNotificationsArgs
-  ): Promise<ListNotificationsResponse> {
-    const rows = await this.notificationRepository.listNotifications({
-      filters: query.filters,
-      order:
-        query.sortBy?.map((key, i) => [
-          key,
-          query.sortDirection?.[i] ?? SortDirection.desc,
-        ]) ?? [],
-      skip:
-        query.page != null && query.actualPageSize != null
-          ? (query.page - 1) * query.actualPageSize
-          : null,
-      take: query.actualPageSize,
-    });
-
-    return ListNotificationsResponse.newPaginated({
-      data: rows.map(notificationModelToResource),
-      total: await this.notificationRepository.countNotifications({
+  ): AsyncRepositoryResult<ListNotificationsResponse> {
+    return this.notificationRepository
+      .findAndCount({
         filters: query.filters,
-      }),
-      page: query.page,
-      pageSize: query.actualPageSize,
-    });
+        sortBy: query.sortBy,
+        offset: query.offset,
+        limit: query.limit,
+        search: query.search,
+      })
+      .map(({ selectedRows, total }) => {
+        return ListNotificationsResponse.newPaginated({
+          data: selectedRows.map((row) => notificationModelToResource(row)),
+          total,
+        });
+      });
   }
 
   @AccessControlAuthorized("list", "NotificationDeliveryNode")
   @Query(() => ListNotificationDeliveriesResponse, {
     name: "notificationDeliveries",
   })
-  async listDeliveries(
+  listDeliveries(
     @Args(() => ListNotificationDeliveriesArgs)
     query: ListNotificationDeliveriesArgs
-  ): Promise<ListNotificationDeliveriesResponse> {
-    const rows =
-      await this.notificationDeliveryRepository.listNotificationDeliveries(
-        { uuid: query.notificationUuid.id },
-        {
-          filters: query.filters,
-          order:
-            query.sortBy?.map((key, i) => [
-              key,
-              query.sortDirection?.[i] ?? SortDirection.desc,
-            ]) ?? [],
-          skip:
-            query.page != null && query.actualPageSize != null
-              ? (query.page - 1) * query.actualPageSize
-              : null,
-          take: query.actualPageSize,
-        }
-      );
+  ): AsyncRepositoryResult<ListNotificationDeliveriesResponse> {
+    return this.notificationDeliveryRepository
+      .findAndCount({
+        filters: query.filters,
+        sortBy: query.sortBy,
+        offset: query.offset,
+        limit: query.limit,
+        search: query.search,
 
-    return ListNotificationDeliveriesResponse.newPaginated({
-      data: rows.map(notificationDeliveryModelToResource),
-      total:
-        await this.notificationDeliveryRepository.countNotificationDeliveries(
-          {
-            uuid: query.notificationUuid.id,
-          },
-          {
-            filters: query.filters,
-          }
-        ),
-      page: query.page,
-      pageSize: query.actualPageSize,
-    });
+        notification: { uuid: query.notificationUuid.id },
+      })
+      .map(({ selectedRows, total }) => {
+        return ListNotificationDeliveriesResponse.newPaginated({
+          data: selectedRows.map((row) =>
+            notificationDeliveryModelToResource(row)
+          ),
+          total,
+        });
+      });
   }
 
   @AccessControlAuthorized("create")
