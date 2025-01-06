@@ -18,7 +18,6 @@ export class ListFundraisingEntriesArgs extends FilteredListQueryArgs(
     "amountUnassigned",
     "donatedTo",
     "donatedBy",
-    "teamId",
     "batchType",
     "createdAt",
     "updatedAt",

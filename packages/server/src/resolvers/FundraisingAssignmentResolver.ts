@@ -397,7 +397,7 @@ export class FundraisingAssignmentResolver
   @FieldResolver(() => FundraisingEntryNode)
   async entry(
     @Root() { id: { id } }: FundraisingAssignmentNode
-  ): Promise<ConcreteResult<Promise<FundraisingEntryNode>>> {
+  ): Promise<ConcreteResult<FundraisingEntryNode>> {
     const entry = await this.fundraisingEntryRepository.getEntryForAssignment({
       uuid: id,
     });

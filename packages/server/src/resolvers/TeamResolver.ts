@@ -49,6 +49,7 @@ import { FundraisingEntryRepository } from "#repositories/fundraising/Fundraisin
 import { marathonModelToResource } from "#repositories/marathon/marathonModelToResource.js";
 import { membershipModelToResource } from "#repositories/membership/membershipModelToResource.js";
 import { pointEntryModelToResource } from "#repositories/pointEntry/pointEntryModelToResource.js";
+import type { AsyncRepositoryResult } from "#repositories/shared.js";
 import { teamModelToResource } from "#repositories/team/teamModelToResource.js";
 import { TeamRepository } from "#repositories/team/TeamRepository.js";
 
@@ -265,55 +266,25 @@ export class TeamResolver implements CrudResolver<TeamNode, "team"> {
 
   @AccessControlAuthorized("get", "TeamNode", ".fundraisingEntries")
   @FieldResolver(() => ListFundraisingEntriesResponse)
-  async fundraisingEntries(
+  fundraisingEntries(
     @Root() { id: { id } }: TeamNode,
     @Args(() => ListFundraisingEntriesArgs) args: ListFundraisingEntriesArgs
-  ): Promise<ConcreteResult<ListFundraisingEntriesResponse>> {
-    const entries = await this.fundraisingEntryRepository.listEntries(
-      {
+  ): AsyncRepositoryResult<ListFundraisingEntriesResponse> {
+    return this.fundraisingEntryRepository
+      .findAndCount({
         filters: args.filters,
-        order:
-          args.sortBy?.map((key, i) => [
-            key,
-            args.sortDirection?.[i] ?? SortDirection.desc,
-          ]) ?? [],
-        skip:
-          args.page != null && args.actualPageSize != null
-            ? (args.page - 1) * args.actualPageSize
-            : null,
-        take: args.actualPageSize,
-      },
-      {
-        // EXTREMELY IMPORTANT FOR SECURITY
-        forTeam: { uuid: id },
-      }
-    );
-    const count = await this.fundraisingEntryRepository.countEntries(
-      {
-        filters: args.filters,
-      },
-      {
-        forTeam: { uuid: id },
-      }
-    );
+        limit: args.limit,
+        offset: args.offset,
+        search: args.search,
+        sortBy: args.sortBy,
 
-    if (entries.isErr()) {
-      return entries;
-    }
-    if (count.isErr()) {
-      return count;
-    }
-
-    return Ok(
-      ListFundraisingEntriesResponse.newPaginated({
-        data: await Promise.all(
-          entries.value.map((model) => fundraisingEntryModelToNode(model))
-        ),
-        total: count.value,
-        page: args.page,
-        pageSize: args.actualPageSize,
+        // Extremely important for security
+        forTeam: { uuid: id },
       })
-    );
+      .map(({ selectedRows, total }) => ({
+        data: selectedRows.map(fundraisingEntryModelToNode),
+        total,
+      }));
   }
 
   @AccessControlAuthorized("get", "TeamNode", ".solicitationCode")

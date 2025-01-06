@@ -71,8 +71,6 @@ export class MarathonHourResolver
     return ListMarathonHoursResponse.newPaginated({
       data: marathons.map(marathonHourModelToResource),
       total: marathonCount,
-      page: args.page,
-      pageSize: args.actualPageSize,
     });
   }
 
@@ -90,6 +88,7 @@ export class MarathonHourResolver
     const marathonHour = await this.marathonHourRepository.createMarathonHour({
       ...input,
       marathon: { uuid: marathonUuid.id },
+      shownStartingAt: input.shownStartingAt.toJSDate(),
     });
     return marathonHourModelToResource(marathonHour);
   }
@@ -102,7 +101,10 @@ export class MarathonHourResolver
   ) {
     const marathonHour = await this.marathonHourRepository.updateMarathonHour(
       { uuid: id },
-      input
+      {
+        ...input,
+        shownStartingAt: input.shownStartingAt.toJSDate(),
+      }
     );
     if (marathonHour == null) {
       throw new LegacyError(LegacyErrorCode.NotFound, "MarathonHour not found");

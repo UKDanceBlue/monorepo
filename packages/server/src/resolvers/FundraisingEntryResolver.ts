@@ -12,13 +12,13 @@ import {
   FundraisingEntryNode,
   GlobalIdScalar,
   SolicitationCodeNode,
-  SortDirection,
 } from "@ukdanceblue/common";
 import {
   ListFundraisingEntriesArgs,
   ListFundraisingEntriesResponse,
 } from "@ukdanceblue/common";
 import { ConcreteResult } from "@ukdanceblue/common/error";
+import { DateTime } from "luxon";
 import { AsyncResult, Ok, Option } from "ts-results-es";
 import {
   Arg,
@@ -37,6 +37,7 @@ import { dailyDepartmentNotificationModelToResource } from "#repositories/dailyD
 import { fundraisingAssignmentModelToNode } from "#repositories/fundraising/fundraisingAssignmentModelToNode.js";
 import { fundraisingEntryModelToNode } from "#repositories/fundraising/fundraisingEntryModelToNode.js";
 import { FundraisingEntryRepository } from "#repositories/fundraising/FundraisingRepository.js";
+import type { AsyncRepositoryResult } from "#repositories/shared.js";
 import { SolicitationCodeRepository } from "#repositories/solicitationCode/SolicitationCodeRepository.js";
 
 @Resolver(() => FundraisingEntryNode)
@@ -68,54 +69,28 @@ export class FundraisingEntryResolver
 
   @AccessControlAuthorized("list", "FundraisingEntryNode")
   @Query(() => ListFundraisingEntriesResponse)
-  async fundraisingEntries(
+  fundraisingEntries(
     @Args(() => ListFundraisingEntriesArgs) args: ListFundraisingEntriesArgs,
     solicitationCodeId?: GlobalId
-  ): Promise<ConcreteResult<ListFundraisingEntriesResponse>> {
-    const entries = await this.fundraisingEntryRepository.listEntries(
-      {
+  ): AsyncRepositoryResult<ListFundraisingEntriesResponse> {
+    return this.fundraisingEntryRepository
+      .findAndCount({
         filters: args.filters,
-        order:
-          args.sortBy?.map((key, i) => [
-            key,
-            args.sortDirection?.[i] ?? SortDirection.desc,
-          ]) ?? [],
-        skip:
-          args.page != null && args.actualPageSize != null
-            ? (args.page - 1) * args.actualPageSize
+        limit: args.limit,
+        offset: args.offset,
+        solicitationCode:
+          solicitationCodeId?.id != null
+            ? {
+                uuid: solicitationCodeId.id,
+              }
             : null,
-        take: args.actualPageSize,
-      },
-      solicitationCodeId
-        ? { solicitationCode: { uuid: solicitationCodeId.id } }
-        : undefined
-    );
-    const count = await this.fundraisingEntryRepository.countEntries(
-      {
-        filters: args.filters,
-      },
-      solicitationCodeId
-        ? { solicitationCode: { uuid: solicitationCodeId.id } }
-        : undefined
-    );
-
-    if (entries.isErr()) {
-      return entries;
-    }
-    if (count.isErr()) {
-      return count;
-    }
-
-    return Ok(
-      ListFundraisingEntriesResponse.newPaginated({
-        data: await Promise.all(
-          entries.value.map((model) => fundraisingEntryModelToNode(model))
-        ),
-        total: count.value,
-        page: args.page,
-        pageSize: args.actualPageSize,
+        search: args.search,
+        sortBy: args.sortBy,
       })
-    );
+      .map(({ selectedRows, total }) => ({
+        data: selectedRows.map(fundraisingEntryModelToNode),
+        total,
+      }));
   }
 
   // @CustomQueryAccessControl<FundraisingEntryNode>(
@@ -280,12 +255,15 @@ export class FundraisingEntryResolver
       await this.solicitationCodeRepository.getSolicitationCodeForEntry({
         uuid,
       });
-    return new AsyncResult(solicitationCode).map(
-      ({ uuid, id, ...solicitationCode }) =>
-        SolicitationCodeNode.init({
-          ...solicitationCode,
-          id: uuid,
-        })
+    return new AsyncResult(solicitationCode).map((solicitationCode) =>
+      SolicitationCodeNode.init({
+        id: solicitationCode.uuid,
+        prefix: solicitationCode.prefix,
+        code: solicitationCode.code,
+        name: solicitationCode.name,
+        createdAt: DateTime.fromJSDate(solicitationCode.createdAt),
+        updatedAt: DateTime.fromJSDate(solicitationCode.updatedAt),
+      })
     ).promise;
   }
 }

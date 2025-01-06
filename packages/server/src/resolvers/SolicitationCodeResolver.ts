@@ -16,6 +16,7 @@ import {
 } from "@ukdanceblue/common";
 import { ConcreteResult } from "@ukdanceblue/common/error";
 import { VoidResolver } from "graphql-scalars";
+import { DateTime } from "luxon";
 import { AsyncResult } from "ts-results-es";
 import {
   Arg,
@@ -27,6 +28,7 @@ import {
   Root,
 } from "type-graphql";
 
+import type { AsyncRepositoryResult } from "#repositories/shared.js";
 import { SolicitationCodeRepository } from "#repositories/solicitationCode/SolicitationCodeRepository.js";
 import { teamModelToResource } from "#repositories/team/teamModelToResource.js";
 
@@ -55,6 +57,8 @@ export class SolicitationCodeResolver
       SolicitationCodeNode.init({
         ...code,
         id: uuid,
+        createdAt: DateTime.fromJSDate(code.createdAt),
+        updatedAt: DateTime.fromJSDate(code.updatedAt),
       })
     ).promise;
   }
@@ -72,6 +76,8 @@ export class SolicitationCodeResolver
           SolicitationCodeNode.init({
             ...code,
             id: uuid,
+            createdAt: DateTime.fromJSDate(code.createdAt),
+            updatedAt: DateTime.fromJSDate(code.updatedAt),
           })
         ),
         total: codes.length,
@@ -94,6 +100,8 @@ export class SolicitationCodeResolver
       SolicitationCodeNode.init({
         id: uuid,
         ...code,
+        createdAt: DateTime.fromJSDate(code.createdAt),
+        updatedAt: DateTime.fromJSDate(code.updatedAt),
       })
     ).promise;
   }
@@ -113,16 +121,18 @@ export class SolicitationCodeResolver
       SolicitationCodeNode.init({
         id: uuid,
         ...code,
+        createdAt: DateTime.fromJSDate(code.createdAt),
+        updatedAt: DateTime.fromJSDate(code.updatedAt),
       })
     ).promise;
   }
 
   @AccessControlAuthorized("list", "FundraisingEntryNode")
   @FieldResolver(() => ListFundraisingEntriesResponse)
-  async entries(
+  entries(
     @Root() { id }: SolicitationCodeNode,
     @Args(() => ListFundraisingEntriesArgs) args: ListFundraisingEntriesArgs
-  ): Promise<ConcreteResult<ListFundraisingEntriesResponse>> {
+  ): AsyncRepositoryResult<ListFundraisingEntriesResponse> {
     return this.fundraisingEntryResolver.fundraisingEntries(args, id);
   }
 

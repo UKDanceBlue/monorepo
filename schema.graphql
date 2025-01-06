@@ -600,7 +600,6 @@ enum FundraisingEntryResolverFilterFields {
   donatedOn
   donatedTo
   solicitationCode
-  teamId
   updatedAt
 }
 
