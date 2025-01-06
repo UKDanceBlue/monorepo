@@ -214,7 +214,7 @@ export class EventResolver implements CrudResolver<EventNode, "event"> {
       row.image.file,
       this.fileManager,
       serverUrl
-    );
+    ).promise.then((result) => result.unwrap());
   }
 
   @FieldResolver(() => [ImageNode], {
@@ -235,7 +235,7 @@ export class EventResolver implements CrudResolver<EventNode, "event"> {
           row.image.file,
           this.fileManager,
           serverUrl
-        )
+        ).promise.then((result) => result.unwrap())
       )
     );
   }

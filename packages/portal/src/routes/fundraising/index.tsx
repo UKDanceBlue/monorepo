@@ -8,7 +8,6 @@ import {
   FundraisingEntryTableFragment,
 } from "#elements/tables/fundraising/FundraisingEntriesTable";
 import { graphql } from "#graphql/index";
-import { useListQuery } from "#hooks/useListQuery";
 import { useQueryStatusWatcher } from "#hooks/useQueryStatusWatcher";
 
 const ViewTeamFundraisingDocument = graphql(

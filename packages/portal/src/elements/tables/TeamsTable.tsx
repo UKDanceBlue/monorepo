@@ -13,8 +13,6 @@ import { useEffect } from "react";
 import { PaginationFragment } from "#documents/shared.ts";
 import type { FragmentOf } from "#graphql/index.js";
 import { graphql, readFragment } from "#graphql/index.js";
-import type { UseListQueryHookReturn } from "#hooks/useListQuery.js";
-import { useMakeStringSearchFilterProps } from "#hooks/useMakeSearchFilterProps.js";
 
 export const TeamsTableFragment = graphql(/* GraphQL */ `
   fragment TeamsTableFragment on TeamNode {

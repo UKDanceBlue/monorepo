@@ -78,7 +78,7 @@ export class FeedResolver {
       ...instagramFeed,
     ].sort(
       ({ createdAt: createdAtA }, { createdAt: createdAtB }) =>
-        createdAtB.getTime() - createdAtA.getTime()
+        createdAtB.toMillis() - createdAtA.toMillis()
     );
 
     const mostRecentNItems: FeedItem[] = fullFeed.slice(0, limit);

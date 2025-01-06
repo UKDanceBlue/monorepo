@@ -1,4 +1,5 @@
 import crypto from "node:crypto";
+import { promisify } from "node:util";
 
 import { Service } from "@freshgum/typedi";
 import type {
@@ -9,14 +10,16 @@ import type {
   Team,
 } from "@prisma/client";
 import { Prisma, PrismaClient } from "@prisma/client";
+import type { DefaultArgs } from "@prisma/client/runtime/library";
 import {
   AuthSource,
   CommitteeIdentifier,
   CommitteeRole,
   DbRole,
   EffectiveCommitteeRole,
+  type FieldsOfListQueryArgs,
+  type ListPeopleArgs,
   MembershipPositionType,
-  SortDirection,
   TeamLegacyStatus,
   TeamType,
 } from "@ukdanceblue/common";
@@ -41,53 +44,28 @@ import {
 } from "ts-results-es";
 
 import { findPersonForLogin } from "#auth/findPersonForLogin.js";
+import { prismaToken } from "#lib/typediTokens.js";
+import { CommitteeRepository } from "#repositories/committee/CommitteeRepository.js";
+import {
+  buildDefaultRepository,
+  type FindAndCountParams,
+  type FindAndCountResult,
+} from "#repositories/Default.js";
 import {
   MarathonRepository,
   UniqueMarathonParam,
 } from "#repositories/marathon/MarathonRepository.js";
 import { MembershipRepository } from "#repositories/membership/MembershipRepository.js";
 import {
+  type AsyncRepositoryResult,
   handleRepositoryError,
   type RepositoryError,
   type SimpleUniqueParam,
   unwrapRepositoryError,
 } from "#repositories/shared.js";
 
-const personStringKeys = ["name", "email", "linkblue"] as const;
-type PersonStringKey = (typeof personStringKeys)[number];
-
-const personOneOfKeys = ["committeeRole", "committeeName", "dbRole"] as const;
-type PersonOneOfKey = (typeof personOneOfKeys)[number];
-
-const personDateKeys = ["createdAt", "updatedAt"] as const;
-type PersonDateKey = (typeof personDateKeys)[number];
-
-export type PersonFilters = FilterItems<
-  never,
-  PersonDateKey,
-  never,
-  never,
-  PersonOneOfKey,
-  PersonStringKey
->;
-
-export type PersonOrderKeys =
-  | "name"
-  | "email"
-  | "linkblue"
-  | "committeeRole"
-  | "committeeName"
-  | "dbRole"
-  | "createdAt"
-  | "updatedAt";
-
 export type UniquePersonParam =
-  | {
-      uuid: string;
-    }
-  | {
-      id: number;
-    }
+  | SimpleUniqueParam
   | {
       email: string;
     }
@@ -95,24 +73,83 @@ export type UniquePersonParam =
       linkblue: string;
     };
 
-import { promisify } from "node:util";
-
-import { prismaToken } from "#lib/typediTokens.js";
-import { CommitteeRepository } from "#repositories/committee/CommitteeRepository.js";
-
 @Service([
   prismaToken,
   MembershipRepository,
   CommitteeRepository,
   MarathonRepository,
 ])
-export class PersonRepository {
+export class PersonRepository extends buildDefaultRepository<
+  PrismaClient["person"],
+  UniquePersonParam,
+  FieldsOfListQueryArgs<ListPeopleArgs>
+>("Person", {
+  name: {
+    getOrderBy: (sort) => Ok({ name: sort }),
+    getWhere: (value) => Ok({ name: { contains: value, mode: "insensitive" } }),
+    searchable: true,
+  },
+  email: {
+    getOrderBy: (sort) => Ok({ email: sort }),
+    getWhere: (value) =>
+      Ok({ email: { contains: value, mode: "insensitive" } }),
+    searchable: true,
+  },
+  linkblue: {
+    getOrderBy: (sort) => Ok({ linkblue: sort }),
+    getWhere: (value) =>
+      Ok({ linkblue: { contains: value, mode: "insensitive" } }),
+    searchable: true,
+  },
+  committeeName: {
+    getOrderBy: () =>
+      Err(new InvalidArgumentError("Cannot sort by committee name")),
+    getWhere: (value) =>
+      Ok({
+        memberships: {
+          some: {
+            team: {
+              correspondingCommittee: {
+                identifier: value,
+              },
+            },
+          },
+        },
+      }),
+    searchable: false,
+  },
+  committeeRole: {
+    getOrderBy: () =>
+      Err(new InvalidArgumentError("Cannot sort by committee role")),
+    getWhere: (value) =>
+      Ok({
+        memberships: {
+          some: {
+            committeeRole: value,
+          },
+        },
+      }),
+    searchable: false,
+  },
+}) {
   constructor(
-    private prisma: PrismaClient,
+    protected readonly prisma: PrismaClient,
     private membershipRepository: MembershipRepository,
     private committeeRepository: CommitteeRepository,
     private marathonRepository: MarathonRepository
-  ) {}
+  ) {
+    super(prisma);
+  }
+
+  public uniqueToWhere(by: UniquePersonParam): Prisma.PersonWhereUniqueInput {
+    if ("linkblue" in by) {
+      return { linkblue: by.linkblue };
+    } else if ("email" in by) {
+      return { email: by.email };
+    } else {
+      return PersonRepository.simpleUniqueToWhere(by);
+    }
+  }
 
   // Finders
 
@@ -426,52 +463,35 @@ export class PersonRepository {
     }
   }
 
-  async listPeople({
-    filters,
-    order,
-    skip,
-    take,
-  }: {
-    filters?: readonly PersonFilters[] | undefined | null;
-    order?:
-      | readonly [key: PersonOrderKeys, sort: SortDirection][]
-      | undefined
-      | null;
-    skip?: number | undefined | null;
-    take?: number | undefined | null;
-  }): Promise<Result<Person[], RepositoryError | ActionDeniedError>> {
-    try {
-      const where: Prisma.PersonWhereInput = buildPersonWhere(filters);
-      const orderBy = buildPersonOrder(order);
-      if (orderBy.isErr()) {
-        return Err(orderBy.error);
-      }
-
-      const rows = await this.prisma.person.findMany({
-        where,
-        orderBy: orderBy.value,
-        skip: skip ?? undefined,
-        take: take ?? undefined,
-      });
-
-      return Ok(rows);
-    } catch (error) {
-      return handleRepositoryError(error);
-    }
-  }
-
-  async countPeople({
-    filters,
-  }: {
-    filters?: readonly PersonFilters[] | undefined | null;
-  }): Promise<Result<number, RepositoryError>> {
-    try {
-      const where: Prisma.PersonWhereInput = buildPersonWhere(filters);
-
-      return Ok(await this.prisma.person.count({ where }));
-    } catch (error) {
-      return handleRepositoryError(error);
-    }
+  findAndCount({
+    tx,
+    ...params
+  }: FindAndCountParams<
+    "name" | "email" | "linkblue" | "committeeRole" | "committeeName"
+  >): AsyncRepositoryResult<
+    FindAndCountResult<
+      Prisma.PersonDelegate<DefaultArgs, Prisma.PrismaClientOptions>,
+      { include: Record<string, never> }
+    >
+  > {
+    return this.parseFindManyParams(params)
+      .toAsyncResult()
+      .andThen((params) =>
+        this.handleQueryError((tx ?? this.prisma).person.findMany(params)).map(
+          (rows) => ({ rows, params })
+        )
+      )
+      .andThen(({ rows, params }) =>
+        this.handleQueryError(
+          (tx ?? this.prisma).person.count({
+            where: params.where,
+            orderBy: params.orderBy,
+          })
+        ).map((total) => ({
+          selectedRows: rows,
+          total,
+        }))
+      );
   }
 
   async searchByName(name: string): Promise<Result<Person[], RepositoryError>> {

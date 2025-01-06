@@ -10,7 +10,6 @@ import {
   MembershipPositionType,
   PersonNode,
   SetPasswordInput,
-  SortDirection,
   TeamType,
 } from "@ukdanceblue/common";
 import {
@@ -49,7 +48,6 @@ import {
 } from "type-graphql";
 
 import type { GraphQLContext } from "#auth/context.js";
-import { WithAuditLogging } from "#lib/logging/auditLogging.js";
 import { fundraisingAssignmentModelToNode } from "#repositories/fundraising/fundraisingAssignmentModelToNode.js";
 import { FundraisingEntryRepository } from "#repositories/fundraising/FundraisingRepository.js";
 import {
@@ -59,6 +57,7 @@ import {
 import { MembershipRepository } from "#repositories/membership/MembershipRepository.js";
 import { personModelToResource } from "#repositories/person/personModelToResource.js";
 import { PersonRepository } from "#repositories/person/PersonRepository.js";
+import type { AsyncRepositoryResult } from "#repositories/shared.js";
 
 @Resolver(() => PersonNode)
 @Service([PersonRepository, MembershipRepository, FundraisingEntryRepository])
@@ -106,50 +105,25 @@ export class PersonResolver
 
   @AccessControlAuthorized("list")
   @Query(() => ListPeopleResponse, { name: "people" })
-  async people(
-    @Args(() => ListPeopleArgs) args: ListPeopleArgs
-  ): Promise<ConcreteResult<ListPeopleResponse>> {
-    const [rows, total] = await Promise.all([
-      this.personRepository.listPeople({
-        filters: args.filters,
-        order:
-          args.sortBy?.map((key, i) => [
-            key,
-            args.sortDirection?.[i] ?? SortDirection.desc,
-          ]) ?? [],
-        skip:
-          args.page != null && args.actualPageSize != null
-            ? (args.page - 1) * args.actualPageSize
-            : null,
-        take: args.actualPageSize,
-      }),
-      this.personRepository.countPeople({ filters: args.filters }),
-    ]);
-
-    return Result.all([
-      await rows
-        .toAsyncResult()
-        .andThen(async (rows) =>
-          Result.all(
-            await Promise.all(
-              rows.map(
-                (row) =>
-                  personModelToResource(row, this.personRepository).promise
-              )
-            )
+  people(
+    @Args(() => ListPeopleArgs) query: ListPeopleArgs
+  ): AsyncRepositoryResult<ListPeopleResponse> {
+    return this.personRepository
+      .findAndCount({
+        filters: query.filters,
+        sortBy: query.sortBy,
+        offset: query.offset,
+        limit: query.limit,
+        search: query.search,
+      })
+      .andThen(async (result) => {
+        return Result.all(
+          await Promise.all(
+            result.selectedRows.map((row) => personModelToResource(row).promise)
           )
-        ).promise,
-      total,
-    ]).andThen<ListPeopleResponse, ConcreteError>(([rows, total]) => {
-      return Ok(
-        ListPeopleResponse.newPaginated({
-          data: rows,
-          total,
-          page: args.page,
-          pageSize: args.actualPageSize,
-        })
-      );
-    });
+        ).map((data) => ({ data, total: result.total }));
+      })
+      .map((obj) => ListPeopleResponse.newPaginated(obj));
   }
 
   @Query(() => PersonNode, { name: "me", nullable: true })

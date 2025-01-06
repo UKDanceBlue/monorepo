@@ -5,15 +5,12 @@ import {
   committeeNames,
   CommitteeRole,
   SortDirection,
-  stringifyDbRole,
 } from "@ukdanceblue/common";
 import { Button, Flex, Table } from "antd";
-import { useQuery } from "urql";
 
-import { graphql, readFragment } from "#graphql/index.js";
-import { useListQuery } from "#hooks/useListQuery.js";
-import { useMakeStringSearchFilterProps } from "#hooks/useMakeSearchFilterProps.js";
-import { useQueryStatusWatcher } from "#hooks/useQueryStatusWatcher.js";
+import { RefineSearchForm } from "#elements/components/RefineSearchForm.tsx";
+import { graphql } from "#graphql/index.js";
+import { useTypedTable } from "#hooks/useTypedRefine.ts";
 
 const PeopleTableFragment = graphql(/* GraphQL */ `
   fragment PeopleTableFragment on PersonNode {
@@ -28,190 +25,45 @@ const PeopleTableFragment = graphql(/* GraphQL */ `
   }
 `);
 
-const peopleTableDocument = graphql(
-  /* GraphQL */ `
-    query PeopleTable(
-      $page: Int
-      $pageSize: Int
-      $sortBy: [String!]
-      $sortDirection: [SortDirection!]
-      $isNullFilters: [PersonResolverKeyedIsNullFilterItem!]
-      $oneOfFilters: [PersonResolverKeyedOneOfFilterItem!]
-      $stringFilters: [PersonResolverKeyedStringFilterItem!]
-    ) {
-      people(
-        page: $page
-        pageSize: $pageSize
-        sortBy: $sortBy
-        sortDirection: $sortDirection
-        isNullFilters: $isNullFilters
-        oneOfFilters: $oneOfFilters
-        stringFilters: $stringFilters
-      ) {
-        page
-        pageSize
-        total
-        data {
-          ...PeopleTableFragment
-        }
-      }
-    }
-  `,
-  [PeopleTableFragment]
-);
-
 export const PeopleTable = () => {
-  const {
-    queryOptions,
-    updatePagination,
-    clearSorting,
-    pushSorting,
-    clearFilters,
-    updateFilter,
-    clearFilter,
-  } = useListQuery(
+  const { tableProps, searchFormProps } = useTypedTable(
+    PeopleTableFragment,
     {
-      initPage: 1,
-      initPageSize: 20,
-      initSorting: [],
+      sorters: {
+        initial: [
+          {
+            field: "name",
+            order: SortDirection.asc,
+          },
+        ],
+      },
     },
     {
-      allFields: [
-        "name",
-        "email",
-        "linkblue",
-        "dbRole",
-        "committeeRole",
-        "committeeName",
-      ],
-      dateFields: [],
-      booleanFields: [],
-      isNullFields: [],
-      numericFields: [],
-      oneOfFields: ["dbRole", "committeeRole", "committeeName"],
-      stringFields: ["name", "email", "linkblue"],
+      committeeRole: "string",
+      committeeName: "string",
     }
   );
 
-  const [{ fetching, error, data: peopleDocument }] = useQuery({
-    query: peopleTableDocument,
-    variables: queryOptions,
-  });
-  useQueryStatusWatcher({
-    error,
-    fetching,
-    loadingMessage: "Loading people...",
-  });
-
-  const listPeopleData =
-    peopleDocument?.people.data &&
-    readFragment(PeopleTableFragment, peopleDocument.people.data);
-
   return (
     <>
+      <RefineSearchForm searchFormProps={searchFormProps} />
       <Table
-        dataSource={listPeopleData ?? undefined}
-        loading={fetching}
-        onChange={(pagination, filters, sorter, _extra) => {
-          updatePagination({
-            page: pagination.current,
-            pageSize: pagination.pageSize,
-          });
-          clearSorting();
-          for (const sort of Array.isArray(sorter) ? sorter : [sorter]) {
-            if (!sort.order) {
-              continue;
-            }
-            pushSorting({
-              field: sort.field as
-                | "name"
-                | "email"
-                | "linkblue"
-                | "dbRole"
-                | "committeeRole"
-                | "committeeName",
-              direction:
-                sort.order === "ascend"
-                  ? SortDirection.asc
-                  : SortDirection.desc,
-            });
-          }
-          clearFilters();
-          for (const key of Object.keys(filters)) {
-            const value = filters[key];
-            if (!value) {
-              continue;
-            }
-            switch (key) {
-              case "dbRole": {
-                updateFilter("dbRole", {
-                  field: "dbRole",
-                  value: value.map((v) => v.toString()),
-                });
-                break;
-              }
-              case "committeeRole": {
-                updateFilter("committeeRole", {
-                  field: "committeeRole",
-                  value: value.map((v) => v.toString()),
-                });
-                break;
-              }
-              case "committeeName": {
-                updateFilter("committeeName", {
-                  field: "committeeName",
-                  value: value.map((v) => v.toString()),
-                });
-                break;
-              }
-            }
-          }
-        }}
-        pagination={
-          peopleDocument
-            ? {
-                current: peopleDocument.people.page,
-                pageSize: peopleDocument.people.pageSize,
-                total: peopleDocument.people.total,
-                showSizeChanger: true,
-              }
-            : false
-        }
-        rowKey={({ id }) => id}
-        sortDirections={["ascend", "descend"]}
+        {...tableProps}
         columns={[
           {
             title: "Name",
             dataIndex: "name",
             sorter: true,
-            sortDirections: ["ascend", "descend"],
-            ...useMakeStringSearchFilterProps(
-              "name",
-              updateFilter,
-              clearFilter
-            ),
           },
           {
             title: "Email",
             dataIndex: "email",
             sorter: true,
-            sortDirections: ["ascend", "descend"],
-            ...useMakeStringSearchFilterProps(
-              "email",
-              updateFilter,
-              clearFilter
-            ),
           },
           {
             title: "Linkblue",
             dataIndex: "linkblue",
             sorter: true,
-            sortDirections: ["ascend", "descend"],
-            ...useMakeStringSearchFilterProps(
-              "linkblue",
-              updateFilter,
-              clearFilter
-            ),
           },
           {
             title: "Committee Role",

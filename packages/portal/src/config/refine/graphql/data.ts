@@ -34,7 +34,7 @@ function getOperationName(
   return getCrudOperationNames(resource, pluralize(resource))[operation];
 }
 
-export type FieldTypes = Record<string, "string" | "number" | "date" | "oneOf">;
+export type FieldTypes = Record<string, "string" | "number" | "date">;
 
 const postgresFtsOperators = /[!&():|]/g;
 

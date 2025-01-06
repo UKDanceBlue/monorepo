@@ -9,13 +9,13 @@ import {
   LegacyErrorCode,
   ListDevicesArgs,
   ListDevicesResponse,
+  ListEventsResponse,
   NotificationDeliveriesArgs,
   NotificationDeliveryNode,
   parseGlobalId,
   PersonNode,
   RegisterDeviceInput,
   RegisterDeviceResponse,
-  SortDirection,
 } from "@ukdanceblue/common";
 import { ConcreteResult } from "@ukdanceblue/common/error";
 import {
@@ -34,6 +34,7 @@ import { DeviceRepository } from "#repositories/device/DeviceRepository.js";
 import { notificationDeliveryModelToResource } from "#repositories/notificationDelivery/notificationDeliveryModelToResource.js";
 import { personModelToResource } from "#repositories/person/personModelToResource.js";
 import { PersonRepository } from "#repositories/person/PersonRepository.js";
+import type { AsyncRepositoryResult } from "#repositories/shared.js";
 
 @Resolver(() => DeviceNode)
 @Service([DeviceRepository, PersonRepository])
@@ -74,32 +75,23 @@ export class DeviceResolver
     name: "devices",
     description: "List all devices",
   })
-  async devices(
+  devices(
     @Args(() => ListDevicesArgs) query: ListDevicesArgs
-  ): Promise<ListDevicesResponse> {
-    const [rows, count] = await Promise.all([
-      this.deviceRepository.listDevices({
+  ): AsyncRepositoryResult<ListDevicesResponse> {
+    return this.deviceRepository
+      .findAndCount({
         filters: query.filters,
-        orderBy:
-          query.sortBy?.map((key, i) => [
-            key,
-            query.sortDirection?.[i] ?? SortDirection.desc,
-          ]) ?? [],
-        skip:
-          query.page != null && query.actualPageSize != null
-            ? (query.page - 1) * query.actualPageSize
-            : null,
-        take: query.actualPageSize,
-      }),
-      this.deviceRepository.countDevices({ filters: query.filters }),
-    ]);
-
-    return ListDevicesResponse.newPaginated({
-      data: rows.map((row) => deviceModelToResource(row)),
-      total: count,
-      page: query.page,
-      pageSize: query.actualPageSize,
-    });
+        sortBy: query.sortBy,
+        offset: query.offset,
+        limit: query.limit,
+        search: query.search,
+      })
+      .map(({ selectedRows, total }) => {
+        return ListEventsResponse.newPaginated({
+          data: selectedRows.map((row) => deviceModelToResource(row)),
+          total,
+        });
+      });
   }
 
   @Mutation(() => RegisterDeviceResponse, {

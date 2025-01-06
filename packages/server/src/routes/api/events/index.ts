@@ -113,7 +113,9 @@ export default class EventsRouter extends RouterService {
 
                 return {
                   alt: image.alt ?? null,
-                  thumbHash: image.thumbHash?.toString("base64") ?? null,
+                  thumbHash:
+                    image.thumbHash &&
+                    Buffer.from(image.thumbHash).toString("base64"),
                   width: image.width,
                   height: image.height,
                   url: fileData.url.toString(),

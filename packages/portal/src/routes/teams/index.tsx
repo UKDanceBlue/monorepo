@@ -8,7 +8,6 @@ import { useMarathon } from "#config/marathonContext.js";
 import { PaginationFragment } from "#documents/shared.ts";
 import { TeamsTable, TeamsTableFragment } from "#elements/tables/TeamsTable.js";
 import { graphql } from "#graphql/index";
-import { useListQuery } from "#hooks/useListQuery";
 import { useAuthorizationRequirement } from "#hooks/useLoginState.js";
 import { useQueryStatusWatcher } from "#hooks/useQueryStatusWatcher";
 

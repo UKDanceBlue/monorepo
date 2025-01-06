@@ -4,7 +4,6 @@ import { DateTime } from "luxon";
 import { useQuery } from "urql";
 
 import { graphql, readFragment } from "#graphql/index.js";
-import { useListQuery } from "#hooks/useListQuery.js";
 import { useQueryStatusWatcher } from "#hooks/useQueryStatusWatcher.js";
 import { renderDateTime } from "#tools/luxonTools.js";
 

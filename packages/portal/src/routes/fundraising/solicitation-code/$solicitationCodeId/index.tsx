@@ -21,7 +21,6 @@ import { TeamsTable, TeamsTableFragment } from "#elements/tables/TeamsTable";
 import type { ResultOf, VariablesOf } from "#graphql/index";
 import { graphql } from "#graphql/index";
 import { useAntFeedback, useAskConfirm } from "#hooks/useAntFeedback";
-import { useListQuery } from "#hooks/useListQuery";
 import { useQueryStatusWatcher } from "#hooks/useQueryStatusWatcher";
 
 export const Route = createFileRoute(
