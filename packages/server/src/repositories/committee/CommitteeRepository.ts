@@ -4,7 +4,6 @@ import {
   CommitteeIdentifier,
   committeeNames,
   CommitteeRole,
-  SortDirection,
   TeamLegacyStatus,
   TeamType,
 } from "@ukdanceblue/common";
@@ -32,21 +31,6 @@ CommitteeDescriptions[
   "" as CommitteeIdentifier
 ] satisfies Prisma.CommitteeUpsertWithoutChildCommitteesInput;
 
-const CommitteeOneOfKeys = ["identifier"] as const;
-type CommitteeOneOfKeys = (typeof CommitteeOneOfKeys)[number];
-
-const CommitteeDateKeys = ["createdAt", "updatedAt"] as const;
-type CommitteeDateKey = (typeof CommitteeDateKeys)[number];
-
-export type CommitteeFilters = FilterItems<
-  never,
-  CommitteeDateKey,
-  never,
-  never,
-  CommitteeOneOfKeys,
-  never
->;
-
 type CommitteeUniqueParam =
   | SimpleUniqueParam
   | { identifier: CommitteeIdentifier };
@@ -62,30 +46,6 @@ export class CommitteeRepository {
   ) {}
 
   // Finders
-
-  async findCommittees(
-    filters: readonly CommitteeFilters[] | null | undefined,
-    order: readonly [key: string, sort: SortDirection][] | null | undefined,
-    limit?: number,
-    offset?: number
-  ): Promise<Result<Committee[], RepositoryError>> {
-    try {
-      const where = buildCommitteeWhere(filters);
-      const orderBy = buildCommitteeOrder(order);
-
-      const committees = await this.prisma.committee.findMany({
-        where,
-        orderBy,
-        take: limit,
-        skip: offset,
-      });
-
-      return Ok(committees);
-    } catch (error) {
-      return handleRepositoryError(error);
-    }
-  }
-
   async findCommitteeByUnique(
     param: CommitteeUniqueParam
   ): Promise<Result<Committee | null, RepositoryError>> {
@@ -341,7 +301,7 @@ export class CommitteeRepository {
         });
 
       if (result?.length === 1) {
-        return Ok(result[0]);
+        return Ok(result[0]!);
       } else if (result?.length === 0) {
         return Err(
           new NotFoundError({
