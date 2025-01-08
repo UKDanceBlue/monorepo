@@ -50,6 +50,7 @@ export const PeopleTable = () => {
       <RefineSearchForm searchFormProps={searchFormProps} />
       <Table
         {...tableProps}
+        rowKey="id"
         columns={[
           {
             title: "Name",

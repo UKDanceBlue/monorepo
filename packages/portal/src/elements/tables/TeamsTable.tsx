@@ -64,6 +64,7 @@ export const TeamsTable = ({
       <RefineSearchForm searchFormProps={searchFormProps} />
       <Table
         {...tableProps}
+        rowKey="id"
         columns={[
           {
             title: "Name",

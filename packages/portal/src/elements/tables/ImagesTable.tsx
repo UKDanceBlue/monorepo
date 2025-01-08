@@ -124,6 +124,7 @@ export const ImagesTable = () => {
 
       <Table
         {...tableProps}
+        rowKey="id"
         columns={[
           {
             title: "Preview",

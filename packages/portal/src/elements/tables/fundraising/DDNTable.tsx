@@ -54,6 +54,7 @@ export const DDNTable = () => {
       <RefineSearchForm searchFormProps={searchFormProps} />
       <Table
         {...tableProps}
+        rowKey="id"
         columns={[
           {
             title: "Donor",

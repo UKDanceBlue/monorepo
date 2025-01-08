@@ -86,6 +86,7 @@ export function FundraisingEntriesTable<T extends Record<string, unknown>>({
       <Table
         {...tableProps}
         style={{ width: "100%" }}
+        rowKey="id"
         columns={[
           {
             title: "Donated By",

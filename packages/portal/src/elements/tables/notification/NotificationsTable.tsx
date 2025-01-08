@@ -33,6 +33,7 @@ export const NotificationsTable = () => {
       <RefineSearchForm searchFormProps={searchFormProps} />
       <Table
         {...tableProps}
+        rowKey="id"
         columns={[
           {
             title: "Title",

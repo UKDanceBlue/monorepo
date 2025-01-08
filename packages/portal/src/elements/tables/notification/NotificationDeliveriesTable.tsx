@@ -62,6 +62,7 @@ export const NotificationDeliveriesTable = ({
   return (
     <Table
       {...tableProps}
+      rowKey="id"
       columns={[
         {
           title: "Sent At",

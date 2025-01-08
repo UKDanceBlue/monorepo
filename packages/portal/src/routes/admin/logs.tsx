@@ -107,6 +107,7 @@ function LogsPage() {
       <Space direction="vertical" style={{ width: "100%" }}>
         <Table
           {...tableProps}
+          rowKey="id"
           columns={[
             {
               title: "Summary",
