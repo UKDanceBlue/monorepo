@@ -61,7 +61,7 @@ export function FundraisingEntriesTable<T extends Record<string, unknown>>({
   } = useTypedTable({
     fragment: FundraisingEntryTableFragment,
     props: {
-      resource: "fundraising",
+      resource: "fundraisingEntry",
       sorters: {
         initial: [
           {

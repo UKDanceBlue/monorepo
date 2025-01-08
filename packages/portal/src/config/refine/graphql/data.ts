@@ -228,14 +228,22 @@ export const dataProvider: Required<DataProvider> = {
     if (meta?.gqlQuery) {
       query = meta.gqlQuery;
     } else if (meta?.gqlFragment) {
-      const fragmentDefinition = (meta.gqlFragment as Partial<DocumentNode>)
-        .definitions?.[0];
-      if (fragmentDefinition?.kind === Kind.FRAGMENT_DEFINITION) {
+      const gqlDefinitions =
+        (meta.gqlFragment as Partial<DocumentNode>).definitions ?? [];
+      const fragmentDefinition = gqlDefinitions.find(
+        (def) => def.kind === Kind.FRAGMENT_DEFINITION
+      );
+      if (fragmentDefinition) {
         const pascalResource = camelcase(singular(resource), {
           pascalCase: true,
         });
 
-        query = makeListDocument(pascalResource, resource, fragmentDefinition);
+        query = makeListDocument(
+          pascalResource,
+          resource,
+          fragmentDefinition.name.value,
+          gqlDefinitions
+        );
       }
     }
 

@@ -4,7 +4,7 @@ import type {
   AbstractSortItem,
 } from "@ukdanceblue/common";
 import type { ResultOf, TadaDocumentNode } from "gql.tada";
-import type { FragmentDefinitionNode } from "graphql";
+import type { DefinitionNode } from "graphql";
 import { Kind, OperationTypeNode } from "graphql";
 import pluralize from "pluralize";
 
@@ -13,7 +13,8 @@ import { PaginationFragment } from "#documents/shared.ts";
 export function makeListDocument(
   pascalResource: string,
   resource: string,
-  fragmentDefinition: FragmentDefinitionNode
+  fragmentName: string,
+  definitions: readonly DefinitionNode[]
 ): TadaDocumentNode<
   {
     data: unknown;
@@ -170,7 +171,7 @@ export function makeListDocument(
                           kind: Kind.FRAGMENT_SPREAD,
                           name: {
                             kind: Kind.NAME,
-                            value: fragmentDefinition.name.value,
+                            value: fragmentName,
                           },
                         },
                       ],
@@ -182,7 +183,7 @@ export function makeListDocument(
           ],
         },
       },
-      fragmentDefinition,
+      ...definitions,
       ...PaginationFragment.definitions,
     ],
   };

@@ -78,7 +78,7 @@ export const refineResources = [
     list: "/fundraising/dbfunds",
   },
   {
-    name: "fundraising",
+    name: "fundraisingEntry",
     meta: {
       label: "Entries",
       modelName: "FundraisingEntryNode",

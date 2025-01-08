@@ -141,7 +141,7 @@ function ViewTeamFundraising() {
   const { data } = useTypedOne({
     fragment: TeamFundraisingFragment,
     props: {
-      resource: "fundraising",
+      resource: "fundraisingEntry",
       id: useParams({ from: "/teams/$teamId/_layout/fundraising" }).teamId,
     },
   });
