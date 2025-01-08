@@ -1,4 +1,5 @@
 import { EditOutlined, EyeOutlined } from "@ant-design/icons";
+import { MarkdownField } from "@refinedev/antd";
 import { Link } from "@tanstack/react-router";
 import {
   parsedEventOccurrenceToStrings,
@@ -51,6 +52,12 @@ export const EventsTable = () => {
       <RefineSearchForm searchFormProps={searchFormProps} />
       <Table
         {...tableProps}
+        expandable={{
+          rowExpandable: (record) => record.description !== null,
+          expandedRowRender: (record) => (
+            <MarkdownField value={record.description ?? "N/A"} />
+          ),
+        }}
         rowKey="id"
         columns={[
           {
