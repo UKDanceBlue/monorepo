@@ -292,7 +292,7 @@ export class SomeFilter {
   @Field(() => ArrayBooleanFilter, { nullable: true })
   arrayBooleanFilter?: ArrayBooleanFilter;
 
-  get filter(): SomeFilterType {
+  static getFilter(some: SomeFilter): SomeFilterType {
     const {
       nullFilter,
       singleStringFilter,
@@ -305,7 +305,7 @@ export class SomeFilter {
       arrayNumberFilter,
       arrayDateFilter,
       arrayBooleanFilter,
-    } = this as Partial<typeof this>;
+    } = some;
 
     return (nullFilter ??
       singleStringFilter ??

@@ -141,10 +141,12 @@ export class DailyDepartmentNotificationRepository extends buildDefaultRepositor
   Comment: {
     getOrderBy: (sort) => Ok({ comment: sort }),
     getWhere: (value) => Ok({ comment: value }),
+    searchable: true,
   },
   Donor: {
     getOrderBy: (sort) => Ok({ combinedDonorSort: sort }),
     getWhere: (value) => Ok({ combinedDonorSort: value }),
+    searchable: true,
   },
   SolicitationCodeName: {
     getOrderBy: (sort) => Ok({ solicitationCode: { name: sort } }),

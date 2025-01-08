@@ -1,5 +1,38 @@
-ALTER TABLE "danceblue"."SolicitationCode"
-ADD COLUMN "text" text GENERATED ALWAYS AS (format_solicitation_code(prefix, code, name)) STORED;
+/*
+ Warnings:
+ 
+ - A unique constraint covering the columns `[idSorter,processDate,batchId,solicitationCodeId,combinedAmount]` on the table `DailyDepartmentNotification` will be added. If there are existing duplicate values, this will fail.
+ - A unique constraint covering the columns `[marathonId,correspondingCommitteeId]` on the table `Team` will be added. If there are existing duplicate values, this will fail.
+ 
+ */
+-- DropForeignKey
+ALTER TABLE "PointEntry" DROP CONSTRAINT "PointEntry_pointOpportunityId_fkey";
+
+-- DropIndex
+DROP INDEX "Team_correspondingCommitteeId_key";
+
+-- AlterTable
+ALTER TABLE "PointEntry"
+ALTER COLUMN "pointOpportunityId" DROP NOT NULL;
+
+-- CreateIndex
+CREATE UNIQUE INDEX "DailyDepartmentNotification_idSorter_processDate_batchId_so_key" ON "DailyDepartmentNotification"(
+  "idSorter",
+  "processDate",
+  "batchId",
+  "solicitationCodeId",
+  "combinedAmount"
+);
+
+-- CreateIndex
+CREATE UNIQUE INDEX "Team_marathonId_correspondingCommitteeId_key" ON "Team"("marathonId", "correspondingCommitteeId");
+
+-- AddForeignKey
+ALTER TABLE "PointEntry"
+ADD CONSTRAINT "PointEntry_pointOpportunityId_fkey" FOREIGN KEY ("pointOpportunityId") REFERENCES "PointOpportunity"("id") ON DELETE
+SET NULL ON UPDATE CASCADE;
+
+DROP VIEW "danceblue"."FundraisingEntryWithMeta";
 
 CREATE VIEW "danceblue"."FundraisingEntryWithMeta" AS (
   SELECT "danceblue"."FundraisingEntry"."id",

@@ -12,7 +12,7 @@ const viewPersonPageDocument = graphql(
       person(id: $id) {
         ...PersonEditorFragment
       }
-      teams(sendAll: true, sortBy: ["name"], sortDirection: [asc]) {
+      teams(sendAll: true, sortBy: [{ field: name, direction: asc }]) {
         data {
           ...TeamNameFragment
         }

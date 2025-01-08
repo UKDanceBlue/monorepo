@@ -2,7 +2,6 @@ import type { CrudFilter, LogicalFilter } from "@refinedev/core";
 import type {
   AbstractFilterGroup,
   AbstractFilterItem,
-  SomeFilter,
 } from "@ukdanceblue/common";
 import { FilterGroupOperator } from "@ukdanceblue/common";
 import {
@@ -15,28 +14,28 @@ import { DateTime } from "luxon";
 
 import type { FieldTypes } from "./data";
 
-export type FilterItem = Omit<AbstractFilterItem<string>, "filter"> & {
-  filter: Omit<SomeFilter, "filter">;
-};
-export type FilterGroup = Omit<
-  AbstractFilterGroup<string>,
-  "filters" | "children"
-> & {
-  filters: FilterItem[];
-  children: FilterGroup[];
-};
+export type FilterItem = AbstractFilterItem<string>;
+export type FilterGroup = AbstractFilterGroup<string>;
 
 export function crudFilterToFilterObject(
   crudFilter: LogicalFilter,
   fieldTypes: FieldTypes | undefined
 ): FilterItem {
+  let filterItem: FilterItem;
+  const fieldTypeEntry = fieldTypes?.[crudFilter.field];
+  const [field, fieldType] = fieldTypeEntry
+    ? Array.isArray(fieldTypeEntry)
+      ? fieldTypeEntry
+      : [crudFilter.field, fieldTypeEntry]
+    : [crudFilter.field, undefined];
+
   switch (crudFilter.operator) {
     case "eq":
     case "ne": {
       switch (typeof crudFilter.value) {
         case "string": {
-          return {
-            field: crudFilter.field,
+          filterItem = {
+            field,
             filter: {
               singleStringFilter: {
                 comparison:
@@ -47,10 +46,11 @@ export function crudFilterToFilterObject(
               },
             },
           };
+          break;
         }
         case "number": {
-          return {
-            field: crudFilter.field,
+          filterItem = {
+            field,
             filter: {
               singleNumberFilter: {
                 comparison:
@@ -61,10 +61,11 @@ export function crudFilterToFilterObject(
               },
             },
           };
+          break;
         }
         case "boolean": {
-          return {
-            field: crudFilter.field,
+          filterItem = {
+            field,
             filter: {
               singleBooleanFilter: {
                 comparison:
@@ -75,12 +76,13 @@ export function crudFilterToFilterObject(
               },
             },
           };
+          break;
         }
         case "undefined":
         case "object": {
           if (crudFilter.value == null) {
-            return {
-              field: crudFilter.field,
+            filterItem = {
+              field,
 
               filter: {
                 nullFilter: {
@@ -98,6 +100,7 @@ export function crudFilterToFilterObject(
           throw new Error("Unsupported filter value type");
         }
       }
+      break;
     }
     case "lt":
     case "gt":
@@ -113,8 +116,8 @@ export function crudFilterToFilterObject(
               : SingleTargetOperators.GREATER_THAN_OR_EQUAL_TO;
       switch (typeof crudFilter.value) {
         case "number": {
-          return {
-            field: crudFilter.field,
+          filterItem = {
+            field,
 
             filter: {
               singleNumberFilter: {
@@ -123,17 +126,18 @@ export function crudFilterToFilterObject(
               },
             },
           };
+          break;
         }
         case "string": {
-          if (!fieldTypes) {
+          if (!fieldType) {
             throw new Error(
               "Field types are required to filter a string by lt, gt, lte, or gte"
             );
           }
-          switch (fieldTypes[crudFilter.field]) {
+          switch (fieldType) {
             case "date": {
-              return {
-                field: crudFilter.field,
+              filterItem = {
+                field,
 
                 filter: {
                   singleDateFilter: {
@@ -142,10 +146,11 @@ export function crudFilterToFilterObject(
                   },
                 },
               };
+              break;
             }
             case "string": {
-              return {
-                field: crudFilter.field,
+              filterItem = {
+                field,
 
                 filter: {
                   singleStringFilter: {
@@ -154,21 +159,24 @@ export function crudFilterToFilterObject(
                   },
                 },
               };
+              break;
             }
             default: {
               throw new Error("Unsupported field type");
             }
           }
+          break;
         }
         default: {
           throw new Error("Unsupported filter value type");
         }
       }
+      break;
     }
     case "in":
     case "nin": {
-      return {
-        field: crudFilter.field,
+      filterItem = {
+        field,
 
         filter: {
           arrayStringFilter: {
@@ -182,6 +190,7 @@ export function crudFilterToFilterObject(
           },
         },
       };
+      break;
     }
     case "ina":
     case "nina": {
@@ -189,8 +198,8 @@ export function crudFilterToFilterObject(
     }
     case "contains":
     case "ncontains": {
-      return {
-        field: crudFilter.field,
+      filterItem = {
+        field,
 
         filter: {
           singleStringFilter: {
@@ -202,11 +211,12 @@ export function crudFilterToFilterObject(
           },
         },
       };
+      break;
     }
     case "containss":
     case "ncontainss": {
-      return {
-        field: crudFilter.field,
+      filterItem = {
+        field,
         filter: {
           singleStringFilter: {
             comparison:
@@ -217,14 +227,15 @@ export function crudFilterToFilterObject(
           },
         },
       };
+      break;
     }
     case "between":
     case "nbetween": {
       const [min, max] = crudFilter.value as [unknown, unknown];
       switch (typeof min) {
         case "number": {
-          return {
-            field: crudFilter.field,
+          filterItem = {
+            field,
             filter: {
               twoNumberFilter: {
                 comparison:
@@ -236,17 +247,18 @@ export function crudFilterToFilterObject(
               },
             },
           };
+          break;
         }
         case "string": {
-          if (!fieldTypes) {
+          if (!fieldType) {
             throw new Error(
               "Field types are required to filter a string by between"
             );
           }
-          switch (fieldTypes[crudFilter.field]) {
+          switch (fieldType) {
             case "date": {
-              return {
-                field: crudFilter.field,
+              filterItem = {
+                field,
                 filter: {
                   twoDateFilter: {
                     comparison:
@@ -258,21 +270,24 @@ export function crudFilterToFilterObject(
                   },
                 },
               };
+              break;
             }
             default: {
               throw new Error("Unsupported field type");
             }
           }
+          break;
         }
         default: {
           throw new Error("Unsupported filter value type");
         }
       }
+      break;
     }
     case "null":
     case "nnull": {
-      return {
-        field: crudFilter.field,
+      filterItem = {
+        field,
         filter: {
           nullFilter: {
             comparison:
@@ -282,11 +297,12 @@ export function crudFilterToFilterObject(
           },
         },
       };
+      break;
     }
     case "startswith":
     case "nstartswith": {
-      return {
-        field: crudFilter.field,
+      filterItem = {
+        field,
         filter: {
           singleStringFilter: {
             comparison:
@@ -297,11 +313,12 @@ export function crudFilterToFilterObject(
           },
         },
       };
+      break;
     }
     case "startswiths":
     case "nstartswiths": {
-      return {
-        field: crudFilter.field,
+      filterItem = {
+        field,
         filter: {
           singleStringFilter: {
             comparison:
@@ -312,11 +329,12 @@ export function crudFilterToFilterObject(
           },
         },
       };
+      break;
     }
     case "endswith":
     case "nendswith": {
-      return {
-        field: crudFilter.field,
+      filterItem = {
+        field,
         filter: {
           singleStringFilter: {
             comparison:
@@ -327,11 +345,12 @@ export function crudFilterToFilterObject(
           },
         },
       };
+      break;
     }
     case "endswiths":
     case "nendswiths": {
-      return {
-        field: crudFilter.field,
+      filterItem = {
+        field,
         filter: {
           singleStringFilter: {
             comparison:
@@ -342,12 +361,15 @@ export function crudFilterToFilterObject(
           },
         },
       };
+      break;
     }
     default: {
       crudFilter.operator satisfies never;
       throw new Error("Unsupported filter operator");
     }
   }
+
+  return filterItem;
 }
 
 export function crudFiltersToFilterObject(

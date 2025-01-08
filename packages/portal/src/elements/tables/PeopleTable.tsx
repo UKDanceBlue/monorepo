@@ -26,9 +26,10 @@ const PeopleTableFragment = graphql(/* GraphQL */ `
 `);
 
 export const PeopleTable = () => {
-  const { tableProps, searchFormProps } = useTypedTable(
-    PeopleTableFragment,
-    {
+  const { tableProps, searchFormProps } = useTypedTable({
+    fragment: PeopleTableFragment,
+    props: {
+      resource: "person",
       sorters: {
         initial: [
           {
@@ -38,11 +39,11 @@ export const PeopleTable = () => {
         ],
       },
     },
-    {
+    fieldTypes: {
       committeeRole: "string",
       committeeName: "string",
-    }
-  );
+    },
+  });
 
   return (
     <>

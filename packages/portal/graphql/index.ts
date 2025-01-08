@@ -47,6 +47,7 @@ export const graphql = initGraphQLTada<{
     SortDirection: SortDirection;
     // Comparator: Comparator,
     // IsComparator: IsComparator,
+    MarathonYear: string;
     BatchType: BatchType;
     JSONObject: Record<string, Primitive | PrimitiveObject>;
     PositiveFloat: number;

@@ -188,7 +188,7 @@ input CreateMarathonHourInput {
 input CreateMarathonInput {
   endDate: LuxonDateTime
   startDate: LuxonDateTime
-  year: NonEmptyString!
+  year: MarathonYear!
 }
 
 input CreatePersonInput {
@@ -832,7 +832,7 @@ type LoginState {
 }
 
 """Cursor custom scalar type"""
-scalar LuxonDateTime
+scalar LuxonDateTime @specifiedBy(url: "https://datatracker.ietf.org/doc/html/rfc3339")
 
 type MarathonHourNode implements Node {
   createdAt: LuxonDateTime
@@ -898,7 +898,7 @@ type MarathonNode implements Node {
   techCommitteeTeam: TeamNode!
   updatedAt: LuxonDateTime
   viceCommitteeTeam: TeamNode!
-  year: String!
+  year: MarathonYear!
 }
 
 enum MarathonResolverFilterFields {
@@ -932,6 +932,9 @@ input MarathonResolverSort {
   direction: SortDirection! = asc
   field: MarathonResolverFilterFields!
 }
+
+"""MarathonYear custom scalar type"""
+scalar MarathonYear
 
 input MemberOf {
   committeeRole: CommitteeRole
@@ -1671,8 +1674,6 @@ type Query {
   team(id: GlobalId!): TeamNode!
   teams(
     filters: TeamResolverFilterGroup
-    legacyStatus: [TeamLegacyStatus!]
-    marathonId: [GlobalId!]
 
     """The page number to return, defaults to 1"""
     page: PositiveInt! = 1
@@ -1690,8 +1691,6 @@ type Query {
     The fields to sort by, in order of priority. If unspecified, the sort order is undefined
     """
     sortBy: [TeamResolverSort!]
-    type: [TeamType!]
-    visibility: [DbRole!] @deprecated(reason: "Use type")
   ): ListTeamsResponse!
 }
 
@@ -1767,7 +1766,7 @@ input SetMarathonHourInput {
 input SetMarathonInput {
   endDate: LuxonDateTime
   startDate: LuxonDateTime
-  year: NonEmptyString!
+  year: MarathonYear!
 }
 
 input SetPasswordInput {
@@ -1971,7 +1970,7 @@ type TeamNode implements Node {
 
 enum TeamResolverFilterFields {
   legacyStatus
-  marathonId
+  marathonYear
   name
   type
 }

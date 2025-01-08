@@ -3,6 +3,7 @@ import { DateTime } from "luxon";
 
 export const DateTimeScalar = new GraphQLScalarType<DateTime<true>, string>({
   name: "LuxonDateTime",
+  specifiedByURL: "https://datatracker.ietf.org/doc/html/rfc3339",
   description: "Cursor custom scalar type",
   parseValue(value): DateTime<true> {
     if (typeof value === "string") {

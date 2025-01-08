@@ -1,11 +1,11 @@
-import { Matches } from "class-validator";
-import { GraphQLNonEmptyString } from "graphql-scalars";
 import { DateTime } from "luxon";
 import { ArgsType, Field, InputType, ObjectType } from "type-graphql";
 
+import type { MarathonYearString } from "../../utility/primitive/SimpleTypes.js";
 import { FilteredListQueryArgs } from "../filtering/FilteredListQueryArgs.js";
 import { MarathonNode } from "../resources/Marathon.js";
 import { DateTimeScalar } from "../scalars/DateTimeISO.js";
+import { MarathonYearScalar } from "../scalars/MarathonYear.js";
 import {
   IsAfterDateTime,
   IsBeforeDateTime,
@@ -22,9 +22,8 @@ export class ListMarathonsResponse extends AbstractGraphQLPaginatedResponse<Mara
 
 @InputType()
 export class CreateMarathonInput {
-  @Matches(/^DB\d{2}$/, { message: "Year must be in the format DByy" })
-  @Field(() => GraphQLNonEmptyString)
-  year!: string;
+  @Field(() => MarathonYearScalar)
+  year!: MarathonYearString;
 
   @IsBeforeDateTime("endDate")
   @Field(() => DateTimeScalar, { nullable: true })
@@ -37,9 +36,8 @@ export class CreateMarathonInput {
 
 @InputType()
 export class SetMarathonInput {
-  @Matches(/^DB\d{2}$/, { message: "Year must be in the format DByy" })
-  @Field(() => GraphQLNonEmptyString)
-  year!: string;
+  @Field(() => MarathonYearScalar)
+  year!: MarathonYearString;
 
   @IsBeforeDateTime("endDate")
   @Field(() => DateTimeScalar, { nullable: true })

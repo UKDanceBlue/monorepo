@@ -38,9 +38,10 @@ export const ImagesTable = () => {
     pageSize,
     current,
     setCurrent,
-  } = useTypedTable(
-    ImagesTableFragment,
-    {
+  } = useTypedTable({
+    fragment: ImagesTableFragment,
+    props: {
+      resource: "image",
       sorters: {
         initial: [
           {
@@ -50,10 +51,10 @@ export const ImagesTable = () => {
         ],
       },
     },
-    {
+    fieldTypes: {
       createdAt: "date",
-    }
-  );
+    },
+  });
 
   useEffect(() => {
     function setIdxTo(offset: number) {

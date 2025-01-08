@@ -9,6 +9,7 @@ import {
   type useTableReturnType,
 } from "@refinedev/antd";
 import type {
+  BaseKey,
   BaseOption,
   BaseRecord,
   CrudFilter,
@@ -32,10 +33,61 @@ import {
   useDelete,
   useOne,
 } from "@refinedev/core";
-import type { ResultOf, VariablesOf } from "gql.tada";
+import type {
+  AbstractSearchFilter,
+  AbstractSortItem,
+  FilterGroupOperator,
+} from "@ukdanceblue/common";
+import type { ResultOf, TadaDocumentNode, VariablesOf } from "gql.tada";
 import type { DocumentNode } from "graphql";
 
-import type { FieldTypes } from "#config/refine/graphql/data.ts";
+import { dataProvider, type FieldTypes } from "#config/refine/graphql/data.ts";
+import type { RefineResourceName } from "#config/refine/resources.tsx";
+
+export interface UseTypedTableMeta<
+  T extends Record<string, unknown>,
+  Fields extends string,
+> {
+  targetPath?: string[];
+  gqlQuery?: TadaDocumentNode<
+    unknown,
+    {
+      page: number;
+      pageSize: number;
+      sortBy?: AbstractSortItem<Fields>[];
+      filters?: {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        filters: any[];
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        children: any[];
+        operator: FilterGroupOperator;
+      };
+      search?: AbstractSearchFilter<Fields>;
+    } & T
+  >;
+  gqlVariables?: T;
+}
+
+type PropsWithRequired<T> = T extends { id?: BaseKey }
+  ? Omit<T, "id" | "resource"> & { id: string; resource: RefineResourceName }
+  : T extends { resource?: string }
+    ? Omit<T, "resource"> & { resource: RefineResourceName }
+    : T;
+
+interface TypedTableParams<
+  Document,
+  TQueryFnData extends ResultOf<Document> & BaseRecord = ResultOf<Document> &
+    BaseRecord,
+  TSearchVariables extends Record<string, string> = Record<string, string>,
+  TData extends BaseRecord = TQueryFnData,
+  TExtraVariables extends Record<string, unknown> = Record<string, never>,
+> extends UseTypedTableMeta<TExtraVariables, never> {
+  fragment: Document;
+  props: PropsWithRequired<
+    useTableProps<TQueryFnData, HttpError, TSearchVariables, TData>
+  >;
+  fieldTypes?: FieldTypes;
+}
 
 export function useTypedTable<
   Document,
@@ -43,11 +95,21 @@ export function useTypedTable<
     BaseRecord,
   TSearchVariables extends Record<string, string> = Record<string, string>,
   TData extends BaseRecord = TQueryFnData,
->(
-  fragment: Document,
-  props: useTableProps<TQueryFnData, HttpError, TSearchVariables, TData>,
-  fieldTypes?: FieldTypes
-): useTableReturnType<TData, HttpError, TSearchVariables> {
+  TExtraVariables extends Record<string, unknown> = Record<string, never>,
+>({
+  fragment,
+  props,
+  fieldTypes,
+  targetPath,
+  gqlQuery,
+  gqlVariables,
+}: TypedTableParams<
+  Document,
+  TQueryFnData,
+  TSearchVariables,
+  TData,
+  TExtraVariables
+>): useTableReturnType<TData, HttpError, TSearchVariables> {
   return useTable({
     syncWithLocation: true,
     onSearch(data) {
@@ -64,10 +126,78 @@ export function useTypedTable<
     ...props,
     meta: {
       ...props.meta,
+      targetPath,
+      gqlQuery,
+      gqlVariables:
+        props.meta?.gqlVariables || gqlVariables
+          ? {
+              ...props.meta?.gqlVariables,
+              ...gqlVariables,
+            }
+          : undefined,
       gqlFragment: fragment,
       fieldTypes,
     },
   });
+}
+
+export function prefetchTypedTable<
+  Document,
+  TQueryFnData extends ResultOf<Document> & BaseRecord = ResultOf<Document> &
+    BaseRecord,
+  TSearchVariables extends Record<string, string> = Record<string, string>,
+  TData extends BaseRecord = TQueryFnData,
+  TExtraVariables extends Record<string, unknown> = Record<string, never>,
+>({
+  fragment,
+  props,
+  fieldTypes,
+  gqlQuery,
+  gqlVariables,
+  targetPath,
+}: TypedTableParams<
+  Document,
+  TQueryFnData,
+  TSearchVariables,
+  TData,
+  TExtraVariables
+>) {
+  return dataProvider.getList({
+    resource: props.resource,
+    filters: [
+      ...(props.filters?.permanent ?? []),
+      ...(props.filters?.initial ?? []),
+    ],
+    pagination: props.pagination,
+    sorters: [
+      ...(props.sorters?.permanent ?? []),
+      ...(props.sorters?.initial ?? []),
+    ],
+    meta: {
+      ...props.meta,
+      targetPath,
+      gqlQuery,
+      gqlVariables:
+        props.meta?.gqlVariables || gqlVariables
+          ? {
+              ...props.meta?.gqlVariables,
+              ...gqlVariables,
+            }
+          : undefined,
+      gqlFragment: fragment,
+      fieldTypes,
+    },
+  });
+}
+
+interface TypedSelectParams<
+  Document,
+  TQueryFnData extends ResultOf<Document> & BaseRecord = ResultOf<Document> &
+    BaseRecord,
+  TData extends BaseRecord = TQueryFnData,
+> {
+  fragment: Document;
+  props: PropsWithRequired<UseSelectProps<TQueryFnData, HttpError, TData>>;
 }
 
 export function useTypedSelect<
@@ -76,10 +206,13 @@ export function useTypedSelect<
     BaseRecord,
   TData extends BaseRecord = TQueryFnData,
   TOption extends BaseOption = BaseOption,
->(
-  fragment: Document,
-  props: UseSelectProps<TQueryFnData, HttpError, TData>
-): UseSelectReturnType<TData, TOption> {
+>({
+  fragment,
+  props,
+}: TypedSelectParams<Document, TQueryFnData, TData>): UseSelectReturnType<
+  TData,
+  TOption
+> {
   return useSelect({
     ...props,
     meta: {
@@ -89,23 +222,52 @@ export function useTypedSelect<
   });
 }
 
+export function prefetchTypedSelect<
+  Document,
+  TQueryFnData extends ResultOf<Document> & BaseRecord = ResultOf<Document> &
+    BaseRecord,
+  TData extends BaseRecord = TQueryFnData,
+>(params: TypedSelectParams<Document, TQueryFnData, TData>) {
+  return dataProvider.getList({
+    resource: params.props.resource,
+    filters: params.props.filters,
+    sorters: params.props.sorters,
+    pagination: params.props.pagination,
+    meta: {
+      ...params.props.meta,
+      gqlFragment: params.fragment,
+    },
+  });
+}
+
+interface TypedFormParams<
+  Document,
+  TQueryFnData extends ResultOf<Document> & BaseRecord = ResultOf<Document> &
+    BaseRecord,
+  TVariables extends VariablesOf<Document> = VariablesOf<Document>,
+  TData extends BaseRecord = TQueryFnData,
+> {
+  fragment: Document;
+  props: PropsWithRequired<
+    UseFormProps<TQueryFnData, HttpError, TVariables, TData, TData, HttpError>
+  >;
+}
+
 export function useTypedForm<
   Document,
   TQueryFnData extends ResultOf<Document> & BaseRecord = ResultOf<Document> &
     BaseRecord,
   TVariables extends VariablesOf<Document> = VariablesOf<Document>,
   TData extends BaseRecord = TQueryFnData,
->(
-  fragment: Document,
-  props: UseFormProps<
-    TQueryFnData,
-    HttpError,
-    TVariables,
-    TData,
-    TData,
-    HttpError
-  >
-): UseFormReturnType<
+>({
+  fragment,
+  props,
+}: TypedFormParams<
+  Document,
+  TQueryFnData,
+  TVariables,
+  TData
+>): UseFormReturnType<
   TQueryFnData,
   HttpError,
   TVariables,
@@ -122,15 +284,46 @@ export function useTypedForm<
   });
 }
 
+export function prefetchTypedForm<
+  Document,
+  TQueryFnData extends ResultOf<Document> & BaseRecord = ResultOf<Document> &
+    BaseRecord,
+  TVariables extends VariablesOf<Document> = VariablesOf<Document>,
+  TData extends BaseRecord = TQueryFnData,
+>(params: TypedFormParams<Document, TQueryFnData, TVariables, TData>) {
+  return dataProvider.getOne({
+    resource: params.props.resource,
+    id: params.props.id,
+    meta: {
+      ...params.props.meta,
+      gqlFragment: params.fragment,
+    },
+  });
+}
+
+interface TypedCreateParams<
+  Document extends DocumentNode,
+  TData extends BaseRecord & ResultOf<Document> = BaseRecord &
+    ResultOf<Document>,
+  TVariables extends VariablesOf<Document> = VariablesOf<Document>,
+> {
+  document: Document;
+  props: PropsWithRequired<UseCreateProps<TData, HttpError, TVariables>>;
+}
+
 export function useTypedCreate<
   Document extends DocumentNode,
   TData extends BaseRecord & ResultOf<Document> = BaseRecord &
     ResultOf<Document>,
   TVariables extends VariablesOf<Document> = VariablesOf<Document>,
->(
-  document: Document,
-  props: UseCreateProps<TData, HttpError, TVariables>
-): UseCreateReturnType<TData, HttpError, TVariables> {
+>({
+  document,
+  props,
+}: TypedCreateParams<Document, TData, TVariables>): UseCreateReturnType<
+  TData,
+  HttpError,
+  TVariables
+> {
   return useCreate({
     ...props,
     meta: {
@@ -139,16 +332,29 @@ export function useTypedCreate<
     },
   });
 }
+interface TypedDeleteParams<
+  Document extends DocumentNode,
+  TData extends BaseRecord & ResultOf<Document> = BaseRecord &
+    ResultOf<Document>,
+  TVariables extends VariablesOf<Document> = VariablesOf<Document>,
+> {
+  document: Document;
+  props: PropsWithRequired<UseDeleteProps<TData, HttpError, TVariables>>;
+}
 
 export function useTypedDelete<
   Document extends DocumentNode,
   TData extends BaseRecord & ResultOf<Document> = BaseRecord &
     ResultOf<Document>,
   TVariables extends VariablesOf<Document> = VariablesOf<Document>,
->(
-  document: Document,
-  props: UseDeleteProps<TData, HttpError, TVariables>
-): UseDeleteReturnType<TData, HttpError, TVariables> {
+>({
+  document,
+  props,
+}: TypedDeleteParams<Document, TData, TVariables>): UseDeleteReturnType<
+  TData,
+  HttpError,
+  TVariables
+> {
   return useDelete({
     ...props,
     mutationOptions: {
@@ -161,12 +367,22 @@ export function useTypedDelete<
   });
 }
 
+interface TypedOneParams<
+  Document,
+  TQueryFnData extends BaseRecord & ResultOf<Document> = BaseRecord &
+    ResultOf<Document>,
+  TData extends BaseRecord = TQueryFnData,
+> {
+  fragment: Document;
+  props: PropsWithRequired<UseOneProps<TQueryFnData, HttpError, TData>>;
+}
+
 export function useTypedOne<
   Document,
   TQueryFnData extends BaseRecord & ResultOf<Document> = BaseRecord &
     ResultOf<Document>,
   TData extends BaseRecord = TQueryFnData,
->(fragment: Document, props: UseOneProps<TQueryFnData, HttpError, TData>) {
+>({ fragment, props }: TypedOneParams<Document, TQueryFnData, TData>) {
   return useOne({
     ...props,
     meta: {
@@ -176,22 +392,71 @@ export function useTypedOne<
   });
 }
 
+export function prefetchTypedOne<
+  Document,
+  TQueryFnData extends BaseRecord & ResultOf<Document> = BaseRecord &
+    ResultOf<Document>,
+  TData extends BaseRecord = TQueryFnData,
+>({ fragment, props }: TypedOneParams<Document, TQueryFnData, TData>) {
+  return dataProvider.getOne({
+    resource: props.resource,
+    id: props.id,
+    meta: {
+      ...props.meta,
+      gqlFragment: fragment,
+    },
+  });
+}
+
+interface TypedCustomParams<
+  Document extends DocumentNode,
+  TQueryFnData extends BaseRecord & ResultOf<Document> = BaseRecord &
+    ResultOf<Document>,
+  TData extends BaseRecord = TQueryFnData,
+> {
+  document: Document;
+  props: UseCustomProps<TQueryFnData, HttpError, never, never, TData>;
+}
+
 export function useTypedCustomQuery<
   Document extends DocumentNode,
   TQueryFnData extends BaseRecord & ResultOf<Document> = BaseRecord &
     ResultOf<Document>,
   TData extends BaseRecord = TQueryFnData,
->(
-  document: Document,
-  props: UseCustomProps<TQueryFnData, HttpError, never, never, TData>
-) {
+>({ document, props }: TypedCustomParams<Document, TQueryFnData, TData>) {
   return useCustom({
     ...props,
     meta: {
-      ...props.meta,
       gqlQuery: document,
+      ...props.meta,
     },
   });
+}
+
+export function prefetchTypedCustomQuery<
+  Document extends DocumentNode,
+  TQueryFnData extends BaseRecord & ResultOf<Document> = BaseRecord &
+    ResultOf<Document>,
+  TData extends BaseRecord = TQueryFnData,
+>({ document, props }: TypedCustomParams<Document, TQueryFnData, TData>) {
+  return dataProvider.custom({
+    method: "get",
+    url: "",
+    meta: {
+      gqlQuery: document,
+      ...props.meta,
+    },
+  });
+}
+
+interface TypedCustomMutationParams<
+  Document extends DocumentNode,
+  TQueryFnData extends BaseRecord & ResultOf<Document> = BaseRecord &
+    ResultOf<Document>,
+  TVariables extends VariablesOf<Document> = VariablesOf<Document>,
+> {
+  document: Document;
+  props: UseCustomMutationProps<TQueryFnData, HttpError, TVariables>;
 }
 
 export function useTypedCustomMutation<
@@ -199,17 +464,21 @@ export function useTypedCustomMutation<
   TQueryFnData extends BaseRecord & ResultOf<Document> = BaseRecord &
     ResultOf<Document>,
   TVariables extends VariablesOf<Document> = VariablesOf<Document>,
->(
-  document: Document,
-  props: UseCustomMutationProps<TQueryFnData, HttpError, TVariables>
-): UseCustomMutationReturnType<TQueryFnData, HttpError, TVariables> {
+>({
+  document,
+  props,
+}: TypedCustomMutationParams<
+  Document,
+  TQueryFnData,
+  TVariables
+>): UseCustomMutationReturnType<TQueryFnData, HttpError, TVariables> {
   return useCustomMutation({
     ...props,
     mutationOptions: {
       ...props.mutationOptions,
       meta: {
-        ...props.mutationOptions?.meta,
         gqlMutation: document,
+        ...props.mutationOptions?.meta,
       },
     },
   });

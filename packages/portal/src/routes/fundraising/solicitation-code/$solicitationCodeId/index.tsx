@@ -1,10 +1,21 @@
-import { MinusCircleOutlined } from "@ant-design/icons";
+import {
+  DollarOutlined,
+  EditOutlined,
+  EyeOutlined,
+  MinusCircleOutlined,
+} from "@ant-design/icons";
 import { useForm } from "@refinedev/antd";
-import type { HttpError } from "@refinedev/core";
-import { createFileRoute, useParams } from "@tanstack/react-router";
-import { Button, Flex, Form, Input } from "antd";
-import { useMutation, useQuery } from "urql";
+import { type HttpError, useInvalidate } from "@refinedev/core";
+import { createFileRoute, Link, useParams } from "@tanstack/react-router";
+import {
+  TeamLegacyStatus,
+  TeamLegacyStatusValues,
+  TeamTypeValues,
+} from "@ukdanceblue/common";
+import { Button, Flex, Form, Input, Table } from "antd";
+import { useMutation } from "urql";
 
+import { PaginationFragment } from "#documents/shared.ts";
 import {
   AssignTeamToSolicitationCodeDocument,
   setSolicitationCodeDocument,
@@ -17,11 +28,12 @@ import {
   FundraisingEntriesTable,
   FundraisingEntryTableFragment,
 } from "#elements/tables/fundraising/FundraisingEntriesTable";
-import { TeamsTable, TeamsTableFragment } from "#elements/tables/TeamsTable";
+import { TeamsTableFragment } from "#elements/tables/TeamsTable";
 import type { ResultOf, VariablesOf } from "#graphql/index";
-import { graphql } from "#graphql/index";
+import { graphql, readFragment } from "#graphql/index";
 import { useAntFeedback, useAskConfirm } from "#hooks/useAntFeedback";
 import { useQueryStatusWatcher } from "#hooks/useQueryStatusWatcher";
+import { useTypedOne } from "#hooks/useTypedRefine.ts";
 
 export const Route = createFileRoute(
   "/fundraising/solicitation-code/$solicitationCodeId/"
@@ -29,57 +41,58 @@ export const Route = createFileRoute(
   component: RouteComponent,
 });
 
-const SolicitationCodeDocument = graphql(
+const SolicitationCodePageFragment = graphql(
   /* GraphQL */ `
-    query SolicitationCodeDocument(
-      $solicitationCodeId: GlobalId!
-      $page: Int
-      $pageSize: Int
-      $sortBy: [String!]
-      $sortDirection: [SortDirection!]
-      $dateFilters: [FundraisingEntryResolverKeyedDateFilterItem!]
-      $oneOfFilters: [FundraisingEntryResolverKeyedOneOfFilterItem!]
-      $stringFilters: [FundraisingEntryResolverKeyedStringFilterItem!]
-      $numericFilters: [FundraisingEntryResolverKeyedNumericFilterItem!]
-    ) {
-      solicitationCode(id: $solicitationCodeId) {
-        prefix
-        code
-        name
-        text
-        ...SetSolicitationCode
-        teams {
-          ...TeamsTableFragment
-          members {
+    fragment SolicitationCodePage on SolicitationCodeNode {
+      prefix
+      code
+      name
+      text
+      ...SetSolicitationCode
+      teams {
+        ...TeamsTableFragment
+        members {
+          id
+          person {
             id
-            person {
-              id
-              name
-              linkblue
-              email
-            }
+            name
+            linkblue
+            email
           }
-        }
-        entries(
-          page: $page
-          pageSize: $pageSize
-          sortBy: $sortBy
-          sortDirection: $sortDirection
-          dateFilters: $dateFilters
-          oneOfFilters: $oneOfFilters
-          stringFilters: $stringFilters
-          numericFilters: $numericFilters
-        ) {
-          ...FundraisingEntryTableFragment
         }
       }
     }
   `,
-  [
-    TeamsTableFragment,
-    FundraisingEntryTableFragment,
-    SetSolicitationCodeFragment,
-  ]
+  [TeamsTableFragment, SetSolicitationCodeFragment]
+);
+
+const SolicitationCodeFundraisingEntryDocument = graphql(
+  /* GraphQL */ `
+    query SolicitationCodeFundraisingEntryDocument(
+      $solicitationCodeId: GlobalId!
+      $page: PositiveInt!
+      $pageSize: NonNegativeInt!
+      $sortBy: [FundraisingEntryResolverSort!]
+      $filters: FundraisingEntryResolverFilterGroup
+      $search: FundraisingEntryResolverSearchFilter
+    ) {
+      solicitationCode(id: $solicitationCodeId) {
+        entries(
+          page: $page
+          pageSize: $pageSize
+          sortBy: $sortBy
+          filters: $filters
+          search: $search
+        ) {
+          data {
+            ...FundraisingEntryTableFragment
+          }
+          ...PaginationFragment
+        }
+      }
+    }
+  `,
+  [FundraisingEntryTableFragment, PaginationFragment]
 );
 
 function RouteComponent() {
@@ -87,34 +100,6 @@ function RouteComponent() {
   const { solicitationCodeId } = useParams({
     from: "/fundraising/solicitation-code/$solicitationCodeId/",
   });
-
-  const listQuery = useListQuery(
-    {
-      initPage: 1,
-      initPageSize: 10,
-      initSorting: [],
-    },
-    {
-      allFields: [
-        "donatedOn",
-        "createdAt",
-        "updatedAt",
-        "amount",
-        "amountUnassigned",
-        "teamId",
-        "batchType",
-        "donatedTo",
-        "donatedBy",
-        "solicitationCode",
-      ],
-      dateFields: ["donatedOn", "createdAt", "updatedAt"],
-      numericFields: ["amount", "amountUnassigned"],
-      oneOfFields: ["teamId", "batchType"],
-      stringFields: ["donatedTo", "donatedBy", "solicitationCode"],
-      booleanFields: [],
-      isNullFields: [],
-    }
-  );
 
   const { formProps } = useForm<
     ResultOf<typeof solicitationCodeDocument>,
@@ -131,14 +116,14 @@ function RouteComponent() {
     id: solicitationCodeId,
   });
 
-  const [result, refresh] = useQuery({
-    query: SolicitationCodeDocument,
-    variables: {
-      solicitationCodeId,
-      ...listQuery.queryOptions,
+  const { data } = useTypedOne({
+    fragment: SolicitationCodePageFragment,
+    props: {
+      resource: "solicitationCode",
+      id: solicitationCodeId,
     },
   });
-  useQueryStatusWatcher(result);
+  const invalidate = useInvalidate();
 
   const [assignTeamToSolicitationCodeStatus, assignTeamToSolicitationCode] =
     useMutation(AssignTeamToSolicitationCodeDocument);
@@ -158,7 +143,11 @@ function RouteComponent() {
         teamId: id,
         solicitationCodeId,
       });
-      refresh({ requestPolicy: "network-only" });
+      await invalidate({
+        invalidates: ["detail"],
+        resource: "solicitationCode",
+        id: solicitationCodeId,
+      });
     },
   });
 
@@ -169,14 +158,18 @@ function RouteComponent() {
       await unassignTeamFromSolicitationCode({
         teamId: id,
       });
-      refresh({ requestPolicy: "network-only" });
+      await invalidate({
+        invalidates: ["detail"],
+        resource: "solicitationCode",
+        id: solicitationCodeId,
+      });
     },
   });
 
   return (
     <>
       <Flex justify="space-between" align="center">
-        <h1>Solicitation Code {result.data?.solicitationCode.text}</h1>
+        <h1>Solicitation Code {data?.data.text}</h1>
         <Flex justify="flex-end" align="flex-end" vertical>
           <Form
             {...formProps}
@@ -217,9 +210,7 @@ function RouteComponent() {
               }}
             />
           </Flex>
-          <TeamsTable
-            dataFragment={result.data?.solicitationCode.teams}
-            loading={result.fetching}
+          {/* <TeamsTable
             additionalActions={[
               {
                 key: "unassign",
@@ -238,6 +229,118 @@ function RouteComponent() {
                 },
               },
             ]}
+          /> */}
+          <Table
+            dataSource={readFragment(
+              TeamsTableFragment,
+              data?.data.teams ?? []
+            )}
+            columns={[
+              {
+                title: "Name",
+                dataIndex: "name",
+                sorter: true,
+              },
+              {
+                title: "Type",
+                dataIndex: "type",
+                sorter: true,
+                filters: TeamTypeValues.map((key) => ({
+                  text: key,
+                  value: key,
+                })),
+              },
+              {
+                title: "Legacy Status",
+                dataIndex: "legacyStatus",
+                sorter: true,
+                filters: TeamLegacyStatusValues.map((value) => {
+                  let text: string;
+                  switch (value) {
+                    case TeamLegacyStatus.NewTeam: {
+                      text = "New Team";
+                      break;
+                    }
+                    case TeamLegacyStatus.ReturningTeam: {
+                      text = "Returning Team";
+                      break;
+                    }
+                    case TeamLegacyStatus.DemoTeam: {
+                      text = "Demo Team";
+                      break;
+                    }
+                    default: {
+                      value satisfies never;
+                      text = String(value);
+                      break;
+                    }
+                  }
+                  return {
+                    text,
+                    value,
+                  };
+                }),
+                render: (value) => {
+                  switch (value) {
+                    case "NewTeam": {
+                      return "New Team";
+                    }
+                    case "ReturningTeam": {
+                      return "Returning Team";
+                    }
+                    default: {
+                      return String(value);
+                    }
+                  }
+                },
+              },
+              {
+                title: "Total Points",
+                dataIndex: "totalPoints",
+                sorter: true,
+              },
+              {
+                title: "Actions",
+                key: "actions",
+                render: (_text, record) => (
+                  <Flex gap="small" align="center">
+                    <Link
+                      to="/teams/$teamId/points"
+                      params={{ teamId: record.id }}
+                    >
+                      <Button icon={<EyeOutlined />} />
+                    </Link>
+                    <Link
+                      to="/teams/$teamId/fundraising"
+                      params={{ teamId: record.id }}
+                    >
+                      <Button icon={<DollarOutlined />} />
+                    </Link>
+                    <Link
+                      to="/teams/$teamId/edit"
+                      params={{ teamId: record.id }}
+                    >
+                      <Button icon={<EditOutlined />} />
+                    </Link>
+                    <Button
+                      icon={<MinusCircleOutlined />}
+                      onClick={() => {
+                        openConfirmUnassignModal(record.id).catch(
+                          (error: unknown) => {
+                            console.error(error);
+                            showErrorMessage(
+                              `Failed to unassign team from solicitation code\n${String(
+                                error
+                              )}`
+                            );
+                          }
+                        );
+                      }}
+                    />
+                  </Flex>
+                ),
+              },
+            ]}
           />
         </div>
         <div>
@@ -245,11 +348,7 @@ function RouteComponent() {
             <h2>Entries</h2>
           </Flex>
           <FundraisingEntriesTable
-            data={result.data?.solicitationCode.entries}
-            form={listQuery}
-            refresh={() => refresh({ requestPolicy: "network-only" })}
-            loading={result.fetching}
-            potentialAssignees={result.data?.solicitationCode.teams.reduce<
+            potentialAssignees={data?.data.teams.reduce<
               { value: string; label: string }[]
             >((acc, team) => {
               acc.push(
@@ -260,6 +359,13 @@ function RouteComponent() {
               );
               return acc;
             }, [])}
+            extraMeta={{
+              gqlQuery: SolicitationCodeFundraisingEntryDocument,
+              gqlVariables: {
+                solicitationCodeId,
+              },
+              targetPath: ["solicitationCode", "entries"],
+            }}
           />
         </div>
       </Flex>

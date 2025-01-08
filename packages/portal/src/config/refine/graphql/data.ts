@@ -1,15 +1,18 @@
 /* eslint-disable @typescript-eslint/only-throw-error */
 /* eslint-disable @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-member-access */
-import type { DataProvider, HttpError } from "@refinedev/core";
+import type { DataProvider, HttpError, MetaQuery } from "@refinedev/core";
 import type { Pagination } from "@refinedev/core";
 import type {
   AbstractFilteredListQueryArgs,
+  AbstractFilterGroup,
+  AbstractSearchFilter,
   AbstractSortItem,
 } from "@ukdanceblue/common";
 import { getCrudOperationNames } from "@ukdanceblue/common";
 import type { CombinedError } from "@urql/core";
 import { gql } from "@urql/core";
 import camelcase from "camelcase";
+import type { ResultOf, TadaDocumentNode } from "gql.tada";
 import {
   type DocumentNode,
   type FieldNode,
@@ -19,6 +22,8 @@ import {
   visit,
 } from "graphql";
 import pluralize, { singular } from "pluralize";
+
+import type { PaginationFragment } from "#documents/shared.ts";
 
 import { API_BASE_URL, urqlClient } from "../../api";
 import {
@@ -34,7 +39,8 @@ function getOperationName(
   return getCrudOperationNames(resource, pluralize(resource))[operation];
 }
 
-export type FieldTypes = Record<string, "string" | "number" | "date">;
+type FieldType = "string" | "number" | "date";
+export type FieldTypes = Record<string, FieldType | [string, FieldType]>;
 
 const postgresFtsOperators = /[!&():|]/g;
 
@@ -63,6 +69,24 @@ function combinedToHttpError(error: CombinedError): HttpError {
   }
 }
 
+function extractTarget(val: any, operationName: string, meta?: MetaQuery) {
+  if (Array.isArray(meta?.targetPath)) {
+    let iter = val;
+    for (const key of meta.targetPath as string[]) {
+      if (!iter) {
+        break;
+      } else {
+        iter = iter[key];
+      }
+    }
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+    return iter;
+  } else {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+    return val?.[operationName];
+  }
+}
+
 // We alias gql to gqlButDifferentName to avoid the GraphQL plugin giving us an error about the invalid syntax
 const gqlButDifferentName = gql;
 export const dataProvider: Required<DataProvider> = {
@@ -88,8 +112,11 @@ export const dataProvider: Required<DataProvider> = {
       throw combinedToHttpError(response.error);
     }
 
-    const key = getOperationName(resource, "createOne");
-    const data = response.data?.[key];
+    const data = extractTarget(
+      response.data,
+      getOperationName(resource, "createOne"),
+      meta
+    );
 
     return { data };
   },
@@ -148,14 +175,18 @@ export const dataProvider: Required<DataProvider> = {
       throw combinedToHttpError(response.error);
     }
 
-    const key = getOperationName(resource, "getOne");
-    const data = response.data?.[key];
+    const data = extractTarget(
+      response.data,
+      getOperationName(resource, "getOne"),
+      meta
+    );
 
     return { data };
   },
 
   getList: async (params) => {
     const { meta, sorters, filters, pagination, resource } = params;
+    const fieldTypes = meta?.fieldTypes as FieldTypes | undefined;
 
     let filterGroup: FilterGroup | undefined;
     let search: string | undefined;
@@ -165,7 +196,7 @@ export const dataProvider: Required<DataProvider> = {
           operator: "and",
           value: filters,
         },
-        meta?.fieldTypes as FieldTypes | undefined
+        fieldTypes
       ));
 
       if (search) {
@@ -180,7 +211,20 @@ export const dataProvider: Required<DataProvider> = {
       }
     }
 
-    let query: DocumentNode | undefined;
+    let query:
+      | TadaDocumentNode<
+          {
+            data: unknown;
+          } & ResultOf<typeof PaginationFragment>,
+          {
+            page?: number;
+            pageSize?: number;
+            sortBy?: AbstractSortItem<string>[];
+            filters?: AbstractFilterGroup<string>;
+            search?: AbstractSearchFilter<string>;
+          }
+        >
+      | undefined;
     if (meta?.gqlQuery) {
       query = meta.gqlQuery;
     } else if (meta?.gqlFragment) {
@@ -204,7 +248,9 @@ export const dataProvider: Required<DataProvider> = {
         sortBy:
           sorters?.map(
             (sorter): AbstractSortItem<string> => ({
-              field: sorter.field,
+              field: Array.isArray(fieldTypes?.[sorter.field])
+                ? fieldTypes[sorter.field]![0]
+                : sorter.field,
               direction: sorter.order,
             })
           ) ?? undefined,
@@ -230,7 +276,22 @@ export const dataProvider: Required<DataProvider> = {
       throw combinedToHttpError(response.error);
     }
 
-    const val = response.data[getOperationName(resource, "getList")];
+    const val = extractTarget(
+      response.data,
+      getOperationName(resource, "getList"),
+      meta
+    );
+
+    if (!val) {
+      console.error("Invalid response: no data", response.data);
+      throw new TypeError("Invalid response: no data");
+    }
+
+    if (typeof val !== "object") {
+      console.error("Invalid response: no data", response.data);
+      throw new TypeError("Invalid response: data is not an object");
+    }
+
     let total: number;
     let data;
     if (Array.isArray(val)) {
@@ -240,7 +301,8 @@ export const dataProvider: Required<DataProvider> = {
       total = val.total;
       data = val.data;
     } else {
-      throw new Error("Invalid response");
+      console.error("Invalid response: no data", response.data);
+      throw new TypeError("Invalid response: malformed data");
     }
     return {
       data,
@@ -275,12 +337,15 @@ export const dataProvider: Required<DataProvider> = {
       })
       .toPromise();
 
-    const key = getOperationName(resource, "setOne");
-    const data = response.data?.[key];
-
     if (response.error) {
       throw combinedToHttpError(response.error);
     }
+
+    const data = extractTarget(
+      response.data,
+      getOperationName(resource, "setOne"),
+      meta
+    );
 
     return { data };
   },
@@ -338,8 +403,11 @@ export const dataProvider: Required<DataProvider> = {
       throw combinedToHttpError(response.error);
     }
 
-    const key = getOperationName(resource, "deleteOne");
-    const data = response.data?.[key];
+    const data = extractTarget(
+      response.data,
+      getOperationName(resource, "deleteOne"),
+      meta
+    );
 
     return { data };
   },

@@ -1,4 +1,10 @@
-import type { DocumentNode, FragmentDefinitionNode } from "graphql";
+import type {
+  AbstractFilterGroup,
+  AbstractSearchFilter,
+  AbstractSortItem,
+} from "@ukdanceblue/common";
+import type { ResultOf, TadaDocumentNode } from "gql.tada";
+import type { FragmentDefinitionNode } from "graphql";
 import { Kind, OperationTypeNode } from "graphql";
 import pluralize from "pluralize";
 
@@ -8,7 +14,18 @@ export function makeListDocument(
   pascalResource: string,
   resource: string,
   fragmentDefinition: FragmentDefinitionNode
-): DocumentNode {
+): TadaDocumentNode<
+  {
+    data: unknown;
+  } & ResultOf<typeof PaginationFragment>,
+  {
+    page?: number;
+    pageSize?: number;
+    sortBy?: AbstractSortItem<string>[];
+    filters?: AbstractFilterGroup<string>;
+    search?: AbstractSearchFilter<string>;
+  }
+> {
   return {
     kind: Kind.DOCUMENT,
     definitions: [

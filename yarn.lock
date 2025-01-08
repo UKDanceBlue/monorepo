@@ -41,6 +41,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@aliemir/react-live@npm:^4.0.0":
+  version: 4.0.1
+  resolution: "@aliemir/react-live@npm:4.0.1"
+  dependencies:
+    prism-react-renderer: "npm:^1.3.1"
+    sucrase: "npm:^3.29.0"
+    use-editable: "npm:^2.3.3"
+  checksum: 10/f6c117e0e4402356419a2390d9e3a1a96d82ea1c2706c1a06e208fdeb70e8567b3c51cc50382c2375c277fb32e31b58b14f81b9e0defdb1c41f33b78e78a3030
+  languageName: node
+  linkType: hard
+
 "@ampproject/remapping@npm:^2.2.0, @ampproject/remapping@npm:^2.3.0":
   version: 2.3.0
   resolution: "@ampproject/remapping@npm:2.3.0"
@@ -9129,6 +9140,96 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@refinedev/inferencer@npm:^5.0.1":
+  version: 5.0.1
+  resolution: "@refinedev/inferencer@npm:5.0.1"
+  dependencies:
+    "@aliemir/react-live": "npm:^4.0.0"
+    "@refinedev/core": "npm:^4.57.1"
+    "@tabler/icons-react": "npm:^3.1.0"
+    dayjs: "npm:^1.10.7"
+    graphql: "npm:^15.6.1"
+    graphql-tag: "npm:^2.12.6"
+    lodash: "npm:^4.17.21"
+    lodash-es: "npm:^4.17.21"
+    pluralize: "npm:^8.0.0"
+    prettier: "npm:^2.7.1"
+    prism-react-renderer: "npm:^1.3.5"
+    react-markdown: "npm:^6.0.1"
+    remark-gfm: "npm:^1.0.0"
+    tslib: "npm:^2.6.2"
+  peerDependencies:
+    "@ant-design/icons": ^5.5.1
+    "@chakra-ui/react": ^2.5.1
+    "@emotion/react": ^11.8.2
+    "@emotion/styled": ^11.8.1
+    "@mantine/core": ^5.10.4
+    "@mantine/form": ^5.10.4
+    "@mantine/hooks": ^5.10.4
+    "@mantine/notifications": ^5.10.4
+    "@mui/lab": ^6.0.0-beta.14
+    "@mui/material": ^6.1.7
+    "@mui/x-data-grid": ^7.22.2
+    "@refinedev/antd": ^5.0.0
+    "@refinedev/chakra-ui": ^2.0.0
+    "@refinedev/core": ^4.54.0
+    "@refinedev/mantine": ^2.0.0
+    "@refinedev/mui": ^6.0.0
+    "@refinedev/react-hook-form": ^4.0.0
+    "@refinedev/react-table": ^5.0.0
+    "@tanstack/react-table": ^8.2.6
+    "@types/react": ^17.0.0 || ^18.0.0
+    "@types/react-dom": ^17.0.0 || ^18.0.0
+    antd: ^5.0.3
+    dayjs: ^1.10.7
+    react: ^17.0.0 || ^18.0.0
+    react-dom: ^17.0.0 || ^18.0.0
+    react-hook-form: ^7.43.5
+  peerDependenciesMeta:
+    "@chakra-ui/react":
+      optional: true
+    "@emotion/react":
+      optional: true
+    "@emotion/styled":
+      optional: true
+    "@mantine/core":
+      optional: true
+    "@mantine/form":
+      optional: true
+    "@mantine/hooks":
+      optional: true
+    "@mantine/notifications":
+      optional: true
+    "@mui/lab":
+      optional: true
+    "@mui/material":
+      optional: true
+    "@mui/x-data-grid":
+      optional: true
+    "@refinedev/antd":
+      optional: true
+    "@refinedev/chakra-ui":
+      optional: true
+    "@refinedev/mantine":
+      optional: true
+    "@refinedev/mui":
+      optional: true
+    "@refinedev/react-hook-form":
+      optional: true
+    "@refinedev/react-table":
+      optional: true
+    "@tanstack/react-table":
+      optional: true
+    antd:
+      optional: true
+    dayjs:
+      optional: true
+    react-hook-form:
+      optional: true
+  checksum: 10/3f60125fd733f33c4a6ebfec43d4d22879c782938fb62d7488a00015e75310e8c5b4dc4b16ab057db60bc653d9652cbb6355fb6e7a1ef6efefc992eee45e745b
+  languageName: node
+  linkType: hard
+
 "@refinedev/ui-types@npm:^1.23.1":
   version: 1.23.1
   resolution: "@refinedev/ui-types@npm:1.23.1"
@@ -10147,6 +10248,24 @@ __metadata:
   dependencies:
     defer-to-connect: "npm:^2.0.0"
   checksum: 10/c29df3bcec6fc3bdec2b17981d89d9c9fc9bd7d0c9bcfe92821dc533f4440bc890ccde79971838b4ceed1921d456973c4180d7175ee1d0023ad0562240a58d95
+  languageName: node
+  linkType: hard
+
+"@tabler/icons-react@npm:^3.1.0":
+  version: 3.27.1
+  resolution: "@tabler/icons-react@npm:3.27.1"
+  dependencies:
+    "@tabler/icons": "npm:3.27.1"
+  peerDependencies:
+    react: ">= 16"
+  checksum: 10/507144f689b53fd97aae04eb198b0ab425bfb9e7871c9654e3dc1e849b5af4450a0c01119e11e24332869cf8d1720e0ab423e51d14a8b6479c51d25c77cbe403
+  languageName: node
+  linkType: hard
+
+"@tabler/icons@npm:3.27.1":
+  version: 3.27.1
+  resolution: "@tabler/icons@npm:3.27.1"
+  checksum: 10/d698a03edf4ac13dd92e8d5d1e332deab7d6a72e7766a7d1bce4acad96eca5cd34b5a73ca79c843082c3d57a0d0f20ea6e9c890826e2c44ceaa156b57218a257
   languageName: node
   linkType: hard
 
@@ -11652,6 +11771,7 @@ __metadata:
     "@refinedev/cli": "npm:^2.16.42"
     "@refinedev/core": "npm:^4.57.1"
     "@refinedev/devtools": "npm:^1.2.12"
+    "@refinedev/inferencer": "npm:^5.0.1"
     "@sentry/react": "npm:^8.38.0"
     "@sentry/vite-plugin": "npm:^2.22.6"
     "@tanstack/react-form": "npm:^0.41.0"
@@ -19361,6 +19481,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"graphql@npm:^15.6.1":
+  version: 15.9.0
+  resolution: "graphql@npm:15.9.0"
+  checksum: 10/ce1f50672bcb369395d07a47048bcbb429ed1ce06dbcafb7a0999df791cb7aa7206be21497907973dbc8a01df3cd7f632f43c583f248538f186f5adfa1a0d1c5
+  languageName: node
+  linkType: hard
+
 "graphql@npm:^16.10.0":
   version: 16.10.0
   resolution: "graphql@npm:16.10.0"
@@ -26423,6 +26550,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"prism-react-renderer@npm:^1.3.1, prism-react-renderer@npm:^1.3.5":
+  version: 1.3.5
+  resolution: "prism-react-renderer@npm:1.3.5"
+  peerDependencies:
+    react: ">=0.14.9"
+  checksum: 10/6deeef1bf497b5ce2ea5113f253f5d5e0842caa74eee385f15f17b75012fdea994cddf097759d0a2a9426ff857ea44bf2febe219392be4c72f887c7df88cc34d
+  languageName: node
+  linkType: hard
+
 "prisma@npm:^6.1.0":
   version: 6.1.0
   resolution: "prisma@npm:6.1.0"
@@ -30404,7 +30540,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"sucrase@npm:3.35.0":
+"sucrase@npm:3.35.0, sucrase@npm:^3.29.0":
   version: 3.35.0
   resolution: "sucrase@npm:3.35.0"
   dependencies:
@@ -32050,6 +32186,15 @@ __metadata:
   peerDependencies:
     react: "*"
   checksum: 10/e193bbed307204b655abab545704ca608b23db10680f299f4b9b48b935a9fd68b68827c79de3bf5517010524bfa15709bf6b0ab1f915d6305b5d2ce27bf11ad7
+  languageName: node
+  linkType: hard
+
+"use-editable@npm:^2.3.3":
+  version: 2.3.3
+  resolution: "use-editable@npm:2.3.3"
+  peerDependencies:
+    react: ">= 16.8.0"
+  checksum: 10/626ae826f0d1258d71026d0fc8cc96613f0b8f38b7bb489d6376f678cddc7e37db008cf87e0653c40116be984266dbc93bd9603e55413b38de8ad91ec8882545
   languageName: node
   linkType: hard
 

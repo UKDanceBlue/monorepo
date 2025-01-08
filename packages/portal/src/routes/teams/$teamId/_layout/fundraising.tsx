@@ -1,8 +1,10 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { useInvalidate } from "@refinedev/core";
+import { createFileRoute, useParams } from "@tanstack/react-router";
 import { AutoComplete, Button, Card, Flex, Form, Space } from "antd";
 import { useState } from "react";
 import { useMutation, useQuery } from "urql";
 
+import { PaginationFragment } from "#documents/shared.ts";
 import {
   FundraisingEntriesTable,
   FundraisingEntryTableFragment,
@@ -10,52 +12,58 @@ import {
 import { graphql } from "#graphql/index.js";
 import { useAuthorizationRequirement } from "#hooks/useLoginState.js";
 import { useQueryStatusWatcher } from "#hooks/useQueryStatusWatcher.js";
+import { useTypedOne } from "#hooks/useTypedRefine.ts";
 
-const ViewTeamFundraisingDocument = graphql(
+const TeamFundraisingEntriesDocument = graphql(
   /* GraphQL */ `
     query ViewTeamFundraisingDocument(
       $teamUuid: GlobalId!
-      $page: Int
-      $pageSize: Int
-      $sortBy: [String!]
-      $sortDirection: [SortDirection!]
-      $dateFilters: [FundraisingEntryResolverKeyedDateFilterItem!]
-      $oneOfFilters: [FundraisingEntryResolverKeyedOneOfFilterItem!]
-      $stringFilters: [FundraisingEntryResolverKeyedStringFilterItem!]
-      $numericFilters: [FundraisingEntryResolverKeyedNumericFilterItem!]
+      $page: PositiveInt
+      $pageSize: NonNegativeInt
+      $sortBy: [FundraisingEntryResolverSort!]
+      $filter: FundraisingEntryResolverFilterGroup
+      $search: FundraisingEntryResolverSearchFilter
     ) {
       team(id: $teamUuid) {
-        fundraisingTotalAmount
-        solicitationCode {
-          id
-          name
-          prefix
-          code
-        }
-        members {
-          id
-          person {
-            id
-            name
-            linkblue
-          }
-        }
         fundraisingEntries(
           page: $page
           pageSize: $pageSize
           sortBy: $sortBy
-          sortDirection: $sortDirection
-          dateFilters: $dateFilters
-          oneOfFilters: $oneOfFilters
-          stringFilters: $stringFilters
-          numericFilters: $numericFilters
+          filters: $filter
+          search: $search
         ) {
-          ...FundraisingEntryTableFragment
+          data {
+            ...FundraisingEntryTableFragment
+          }
+          ...PaginationFragment
         }
       }
     }
   `,
-  [FundraisingEntryTableFragment]
+  [FundraisingEntryTableFragment, PaginationFragment]
+);
+
+const TeamFundraisingFragment = graphql(
+  /* GraphQL */ `
+    fragment TeamFundraisingFragment on TeamNode {
+      fundraisingTotalAmount
+      solicitationCode {
+        id
+        name
+        prefix
+        code
+      }
+      members {
+        id
+        person {
+          id
+          name
+          linkblue
+        }
+      }
+    }
+  `,
+  [FundraisingEntryTableFragment, PaginationFragment]
 );
 
 const SolicitationCodesDocument = graphql(/* GraphQL */ `
@@ -99,39 +107,7 @@ function ViewTeamFundraising() {
     "SolicitationCodeNode"
   );
 
-  const listQuery = useListQuery(
-    {
-      initPage: 1,
-      initPageSize: 10,
-      initSorting: [{ field: "donatedOn", direction: "desc" }],
-    },
-    {
-      allFields: [
-        "donatedOn",
-        "createdAt",
-        "updatedAt",
-        "amount",
-        "amountUnassigned",
-        "teamId",
-        "batchType",
-        "donatedTo",
-        "donatedBy",
-        "solicitationCode",
-      ],
-      dateFields: ["donatedOn", "createdAt", "updatedAt"],
-      numericFields: ["amount", "amountUnassigned"],
-      oneOfFields: ["teamId", "batchType"],
-      stringFields: ["donatedTo", "donatedBy", "solicitationCode"],
-      booleanFields: [],
-      isNullFields: [],
-    }
-  );
-
-  const [{ data, fetching, error }, refreshFundraisingEntries] = useQuery({
-    query: ViewTeamFundraisingDocument,
-    variables: { ...listQuery.queryOptions, teamUuid },
-  });
-  useQueryStatusWatcher({ fetching, error });
+  const invalidate = useInvalidate();
 
   const [{ data: solicitationCodesData, ...solicitationCodesState }] = useQuery(
     {
@@ -162,7 +138,15 @@ function ViewTeamFundraising() {
     label.toLowerCase().includes(solCodeSearch.toLowerCase())
   );
 
-  if (!canSetSolicitationCode && !data?.team.solicitationCode) {
+  const { data } = useTypedOne({
+    fragment: TeamFundraisingFragment,
+    props: {
+      resource: "fundraising",
+      id: useParams({ from: "/teams/$teamId/_layout/fundraising" }).teamId,
+    },
+  });
+
+  if (!canSetSolicitationCode && !data?.data.solicitationCode) {
     return (
       <p>
         Your team has not been assigned any fundraising entries yet. This does
@@ -197,7 +181,7 @@ function ViewTeamFundraising() {
             }}
             style={{ width: "100%" }}
           >
-            ${(data?.team.fundraisingTotalAmount ?? 0).toFixed(2)}
+            ${(data?.data.fundraisingTotalAmount ?? 0).toFixed(2)}
           </Card>
         </Flex>
         <Form.Item label="Solicitation Code">
@@ -220,21 +204,22 @@ function ViewTeamFundraising() {
                         "An error occurred while assigning the team to the solicitation code."
                       );
                     })
-                    .finally(() => {
-                      refreshFundraisingEntries({
-                        requestPolicy: "network-only",
-                      });
-                    });
+                    .finally(() =>
+                      invalidate({
+                        invalidates: ["all"],
+                        resource: "fundraisingEntries",
+                      })
+                    );
                 }
               }}
               value={
-                data?.team.solicitationCode
-                  ? `${data.team.solicitationCode.prefix}${data.team.solicitationCode.code
+                data?.data.solicitationCode
+                  ? `${data.data.solicitationCode.prefix}${data.data.solicitationCode.code
                       .toString()
-                      .padStart(4, "0")} - ${data.team.solicitationCode.name}`
+                      .padStart(4, "0")} - ${data.data.solicitationCode.name}`
                   : undefined
               }
-              disabled={data?.team.solicitationCode != null}
+              disabled={data?.data.solicitationCode != null}
             />
             <Button
               danger
@@ -251,11 +236,12 @@ function ViewTeamFundraising() {
                         "An error occurred while removing the solicitation code from the team."
                       );
                     })
-                    .finally(() => {
-                      refreshFundraisingEntries({
-                        requestPolicy: "network-only",
-                      });
-                    });
+                    .finally(() =>
+                      invalidate({
+                        invalidates: ["all"],
+                        resource: "fundraising",
+                      })
+                    );
                 }
               }}
             >
@@ -264,18 +250,19 @@ function ViewTeamFundraising() {
           </Space.Compact>
         </Form.Item>
         <FundraisingEntriesTable
-          data={data?.team.fundraisingEntries}
-          form={listQuery}
-          refresh={() =>
-            refreshFundraisingEntries({ requestPolicy: "network-only" })
-          }
-          loading={fetching}
           potentialAssignees={
-            data?.team.members.map(({ person: { id, linkblue, name } }) => ({
+            data?.data.members.map(({ person: { id, linkblue, name } }) => ({
               value: id,
               label: name ?? linkblue ?? id,
             })) ?? []
           }
+          extraMeta={{
+            gqlQuery: TeamFundraisingEntriesDocument,
+            gqlVariables: {
+              teamUuid,
+            },
+            targetPath: ["team", "fundraisingEntries"],
+          }}
         />
       </Flex>
     );

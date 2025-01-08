@@ -5,7 +5,6 @@ import {
   ListFundraisingEntriesArgs,
   ListFundraisingEntriesResponse,
   MarathonNode,
-  TeamLegacyStatus,
 } from "@ukdanceblue/common";
 import {
   AccessControlAuthorized,
@@ -89,12 +88,7 @@ export class TeamResolver implements CrudResolver<TeamNode, "team"> {
         limit: query.limit,
         search: query.search,
 
-        legacyStatus:
-          ctx.authSource === AuthSource.Demo
-            ? [TeamLegacyStatus.DemoTeam]
-            : (query.legacyStatus ?? undefined),
-        marathon: query.marathonId?.map(({ id }) => ({ uuid: id })),
-        type: query.type ?? undefined,
+        onlyDemo: ctx.authSource === AuthSource.Demo,
       })
       .map(({ selectedRows, total }) => {
         return ListTeamsResponse.newPaginated({

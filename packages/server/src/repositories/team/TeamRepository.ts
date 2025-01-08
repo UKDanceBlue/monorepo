@@ -17,10 +17,7 @@ import {
   type FindAndCountParams,
   type FindAndCountResult,
 } from "#repositories/Default.js";
-import {
-  MarathonRepository,
-  type UniqueMarathonParam,
-} from "#repositories/marathon/MarathonRepository.js";
+import { type UniqueMarathonParam } from "#repositories/marathon/MarathonRepository.js";
 import {
   type AsyncRepositoryResult,
   handleRepositoryError,
@@ -30,7 +27,7 @@ import {
 
 type TeamUniqueParam = SimpleUniqueParam;
 
-@Service([prismaToken, MarathonRepository])
+@Service([prismaToken])
 export class TeamRepository extends buildDefaultRepository<
   PrismaClient["team"],
   TeamUniqueParam,
@@ -45,19 +42,16 @@ export class TeamRepository extends buildDefaultRepository<
     getWhere: (legacyStatus) => Ok({ legacyStatus }),
     getOrderBy: (legacyStatus) => Ok({ legacyStatus }),
   },
-  marathonId: {
-    getWhere: (marathonId) => Ok({ marathonId }),
-    getOrderBy: (marathonId) => Ok({ marathonId }),
+  marathonYear: {
+    getWhere: (marathonYear) => Ok({ marathon: { year: marathonYear } }),
+    getOrderBy: (marathonYear) => Ok({ marathon: { year: marathonYear } }),
   },
   type: {
     getWhere: (type) => Ok({ type }),
     getOrderBy: (type) => Ok({ type }),
   },
 }) {
-  constructor(
-    protected readonly prisma: PrismaClient,
-    private readonly marathonRepository: MarathonRepository
-  ) {
+  constructor(protected readonly prisma: PrismaClient) {
     super(prisma);
   }
 
@@ -94,14 +88,10 @@ export class TeamRepository extends buildDefaultRepository<
 
   findAndCount({
     tx,
-    legacyStatus,
-    marathon,
-    type,
+    onlyDemo,
     ...params
-  }: FindAndCountParams<"name" | "type" | "legacyStatus" | "marathonId"> & {
-    legacyStatus?: TeamLegacyStatus[];
-    marathon?: UniqueMarathonParam[];
-    type?: TeamType[];
+  }: FindAndCountParams<FieldsOfListQueryArgs<ListTeamsArgs>> & {
+    onlyDemo?: boolean;
   }): AsyncRepositoryResult<
     FindAndCountResult<
       Prisma.TeamDelegate<DefaultArgs, Prisma.PrismaClientOptions>,
@@ -110,24 +100,10 @@ export class TeamRepository extends buildDefaultRepository<
   > {
     const where: Prisma.TeamWhereInput[] = [];
 
-    if (legacyStatus) {
+    if (onlyDemo) {
       where.push({
         legacyStatus: {
-          in: legacyStatus,
-        },
-      });
-    }
-    if (marathon) {
-      where.push({
-        OR: marathon.map((m) => ({
-          marathon: this.marathonRepository.uniqueToWhere(m),
-        })),
-      });
-    }
-    if (type) {
-      where.push({
-        type: {
-          in: type,
+          in: [TeamLegacyStatus.DemoTeam],
         },
       });
     }

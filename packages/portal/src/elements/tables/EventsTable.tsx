@@ -28,9 +28,10 @@ export const EventsTableFragment = graphql(/* GraphQL */ `
 `);
 
 export const EventsTable = () => {
-  const { searchFormProps, tableProps } = useTypedTable(
-    EventsTableFragment,
-    {
+  const { searchFormProps, tableProps } = useTypedTable({
+    fragment: EventsTableFragment,
+    props: {
+      resource: "event",
       sorters: {
         initial: [
           {
@@ -40,10 +41,10 @@ export const EventsTable = () => {
         ],
       },
     },
-    {
+    fieldTypes: {
       occurrences: "date",
-    }
-  );
+    },
+  });
 
   return (
     <List>

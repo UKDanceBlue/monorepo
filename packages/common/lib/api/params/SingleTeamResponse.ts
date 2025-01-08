@@ -1,11 +1,9 @@
 import { GraphQLNonEmptyString } from "graphql-scalars";
 import { ArgsType, Field, InputType, Int, ObjectType } from "type-graphql";
 
-import { DbRole } from "../../authorization/structures.js";
 import { OptionalToNullable } from "../../utility/primitive/TypeUtils.js";
 import { FilteredListQueryArgs } from "../filtering/FilteredListQueryArgs.js";
 import { TeamLegacyStatus, TeamNode, TeamType } from "../resources/Team.js";
-import { type GlobalId, GlobalIdScalar } from "../scalars/GlobalId.js";
 import { AbstractGraphQLPaginatedResponse } from "./ApiResponse.js";
 @ObjectType("ListTeamsResponse", {
   implements: AbstractGraphQLPaginatedResponse<TeamNode>,
@@ -65,20 +63,8 @@ export class ListTeamsArgs extends FilteredListQueryArgs("TeamResolver", [
   "name",
   "type",
   "legacyStatus",
-  "marathonId",
-]) {
-  @Field(() => [TeamType], { nullable: true })
-  type!: [TeamType] | null;
-
-  @Field(() => [TeamLegacyStatus], { nullable: true })
-  legacyStatus!: [TeamLegacyStatus] | null;
-
-  @Field(() => [DbRole], { nullable: true, deprecationReason: "Use type" })
-  visibility!: [DbRole] | null;
-
-  @Field(() => [GlobalIdScalar], { nullable: true })
-  marathonId!: GlobalId[] | null;
-}
+  "marathonYear",
+]) {}
 
 @ObjectType("DbFundsTeamInfo")
 export class DbFundsTeamInfo {

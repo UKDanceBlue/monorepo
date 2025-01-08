@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-base-to-string */
 import {
   BellOutlined,
   CalendarOutlined,
@@ -14,7 +15,7 @@ import type { Action, ResourceProps } from "@refinedev/core";
 import type { GlobalId } from "@ukdanceblue/common";
 import { parseGlobalId } from "@ukdanceblue/common";
 
-export const refineResources: ResourceProps[] = [
+export const refineResources = [
   {
     name: "team",
     meta: {
@@ -111,9 +112,18 @@ export const refineResources: ResourceProps[] = [
       canDelete: true,
     },
     create: "/notifications/create",
-    edit: "/notifications/:id/edit",
+    edit: "/notifications/:id/manage",
     show: "/notifications/:id",
     list: "/notifications",
+  },
+  {
+    name: "notificationDeliveries",
+    meta: {
+      parent: "notification",
+      hide: true,
+      modelName: "NotificationDeliveryNode",
+    },
+    list: "/notifications/:notificationId",
   },
   {
     name: "event",
@@ -180,6 +190,18 @@ export const refineResources: ResourceProps[] = [
     list: "/config",
   },
   {
+    name: "device",
+    meta: {
+      icon: <ToolOutlined />,
+      label: "Devices",
+      modelName: "DeviceNode",
+    },
+    create: "/devices/create",
+    edit: "/devices/:id/edit",
+    show: "/devices/:id",
+    list: "/devices",
+  },
+  {
     name: "auditLog",
     meta: {
       icon: <FileTextOutlined />,
@@ -191,7 +213,13 @@ export const refineResources: ResourceProps[] = [
     show: "/admin/logs/:id",
     list: "/admin/logs",
   },
-] as const;
+] as const satisfies (ResourceProps & {
+  meta: {
+    modelName: string;
+  };
+})[];
+
+export type RefineResourceName = (typeof refineResources)[number]["name"];
 
 export function findResourceByGlobalId(
   globalId: string | GlobalId
@@ -208,7 +236,7 @@ export function findResourceByGlobalId(
   }
 
   for (const resource of refineResources) {
-    if (resource.name === typename && resource.meta?.modelName === typename) {
+    if (resource.name === typename || resource.meta.modelName === typename) {
       return resource;
     }
   }
@@ -217,19 +245,21 @@ export function findResourceByGlobalId(
 }
 
 // An array of objects containing pre-split paths for refine resources as well as the index of the resource in refineResources
-const resourceUrlIndex = refineResources.map((resource, index) => {
-  const listUrl = resource.list?.toString().split("/").filter(Boolean);
-  const createUrl = resource.create?.toString().split("/").filter(Boolean);
-  const editUrl = resource.edit?.toString().split("/").filter(Boolean);
-  const showUrl = resource.show?.toString().split("/").filter(Boolean);
-  return {
-    listUrl,
-    createUrl,
-    editUrl,
-    showUrl,
-    index,
-  };
-});
+const resourceUrlIndex = refineResources.map(
+  (resource: ResourceProps, index) => {
+    const listUrl = resource.list?.toString().split("/").filter(Boolean);
+    const createUrl = resource.create?.toString().split("/").filter(Boolean);
+    const editUrl = resource.edit?.toString().split("/").filter(Boolean);
+    const showUrl = resource.show?.toString().split("/").filter(Boolean);
+    return {
+      listUrl,
+      createUrl,
+      editUrl,
+      showUrl,
+      index,
+    };
+  }
+);
 
 function check(url: string[] | undefined, urlParts: string[]) {
   return url?.every(

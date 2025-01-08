@@ -40,9 +40,8 @@ const SolicitationCodeTableDocument = graphql(
 
 const SearchTeamsDocument = graphql(
   /* GraphQL */ `
-    query SearchTeams($search: String!, $marathonId: GlobalId!) {
+    query SearchTeams($search: String!, $marathonYear: String!) {
       teams(
-        marathonId: [$marathonId]
         filters: {
           operator: AND
           filters: [
@@ -53,6 +52,12 @@ const SearchTeamsDocument = graphql(
                   comparison: INSENSITIVE_CONTAINS
                   value: $search
                 }
+              }
+            }
+            {
+              field: marathonYear
+              filter: {
+                singleStringFilter: { comparison: EQUALS, value: $marathonYear }
               }
             }
           ]
@@ -69,7 +74,7 @@ const SearchTeamsDocument = graphql(
 );
 
 export function SolicitationCodeTable() {
-  const { id: marathonId } = useMarathon() ?? {};
+  const { id: marathonId, year: marathonYear } = useMarathon() ?? {};
 
   const [result, refetch] = useQuery({
     query: SolicitationCodeTableDocument,
@@ -169,7 +174,7 @@ export function SolicitationCodeTable() {
           render(_, record) {
             return (
               <TeamSelect
-                marathonId={marathonId}
+                marathonYear={marathonYear}
                 record={record}
                 loading={result.fetching}
                 refetch={() => refetch({ requestPolicy: "network-only" })}
@@ -196,12 +201,12 @@ export function SolicitationCodeTable() {
 }
 
 function TeamSelect({
-  marathonId,
+  marathonYear,
   record,
   loading,
   refetch,
 }: {
-  marathonId?: string;
+  marathonYear?: string;
   record: {
     text: string;
     key: string;
@@ -228,9 +233,9 @@ function TeamSelect({
     query: SearchTeamsDocument,
     variables: {
       search: assignToTeamSearch,
-      marathonId: marathonId ?? "",
+      marathonYear: marathonYear ?? "",
     },
-    pause: assignToTeamSearch.length < 3 || !marathonId,
+    pause: assignToTeamSearch.length < 3 || !marathonYear,
   });
   useQueryStatusWatcher(searchTeamsDocumentResult);
 
