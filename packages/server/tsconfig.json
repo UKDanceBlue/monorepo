@@ -9,7 +9,7 @@
     "rootDir": ".",
     "sourceMap": true,
     "allowJs": true,
-    "checkJs": true,
+    "checkJs": false,
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true
   },

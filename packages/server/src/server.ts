@@ -1,6 +1,5 @@
-import { readFile } from "node:fs/promises";
 import http from "node:http";
-import { resolve } from "node:path";
+import { dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 
 import type {
@@ -29,6 +28,8 @@ import {
   loggingLevelToken,
 } from "#lib/typediTokens.js";
 import { logger } from "#logging/logger.js";
+
+import { mountPortal } from "./portal.js";
 
 const applicationPort = Container.get(applicationPortToken);
 const loggingLevel = Container.get(loggingLevelToken);
@@ -206,28 +207,40 @@ export async function startServer(
     }
   );
 
-  const portalIndex = await (
-    readFile(
-      resolve(
-        fileURLToPath(import.meta.resolve("@ukdanceblue/portal/index.html"))
-      )
-    ) as Promise<Awaited<ReturnType<typeof readFile>> | undefined>
-  ).catch(() => undefined);
+  // const portalIndex = await (
+  //   readFile(
+  //     resolve(
+  //       fileURLToPath(import.meta.resolve("@ukdanceblue/portal/index.html"))
+  //     )
+  //   ) as Promise<Awaited<ReturnType<typeof readFile>> | undefined>
+  // ).catch(() => undefined);
 
-  if (portalIndex) {
-    app.use(
-      "/assets",
-      express.static(
-        resolve(
-          fileURLToPath(import.meta.resolve("@ukdanceblue/portal/assets"))
-        ),
-        {}
-      )
-    );
+  // if (portalIndex) {
+  //   app.use(
+  //     "/assets",
+  //     express.static(
+  //       resolve(
+  //         fileURLToPath(import.meta.resolve("@ukdanceblue/portal/assets"))
+  //       ),
+  //       {}
+  //     )
+  //   );
 
-    app.get("*", (_req, res) => {
-      res.type("html");
-      res.send(portalIndex);
-    });
-  }
+  //   app.get("*", (_req, res) => {
+  //     res.type("html");
+  //     res.send(portalIndex);
+  //   });
+  // }
+
+  await mountPortal(
+    app,
+    !Container.get(isDevelopmentToken),
+    dirname(
+      dirname(
+        fileURLToPath(import.meta.resolve("@ukdanceblue/portal/src/main.tsx"))
+      )
+    ),
+    3000,
+    false
+  );
 }

@@ -14,8 +14,14 @@
   },
   "type": "module",
   "exports": {
-    "./*": {
-      "import": "./dist/*"
+    "./server/*": {
+      "import": "./dist/server/*"
+    },
+    "./client/*": {
+      "import": "./dist/client/*"
+    },
+    "./src/*": {
+      "import": "./src/*"
     }
   },
   "imports": {
@@ -53,7 +59,8 @@
     "@sentry/react": "^8.38.0",
     "@sentry/vite-plugin": "^2.22.6",
     "@tanstack/react-form": "^0.41.0",
-    "@tanstack/react-router": "^1.95.1",
+    "@tanstack/react-router": "^1.95.3",
+    "@tanstack/start": "^1.95.3",
     "@uidotdev/usehooks": "^2.4.1",
     "@ukdanceblue/common": "workspace:^",
     "@urql/core": "^5.1.0",
@@ -76,6 +83,7 @@
     "react-markdown": "^9.0.1",
     "react-to-print": "^3.0.2",
     "reflect-metadata": "^0.2.2",
+    "superjson": "^2.2.2",
     "thumbhash": "^0.1.1",
     "ts-results-es": "^4.2.0",
     "type-graphql": "^2.0.0-rc.2",
@@ -90,8 +98,8 @@
   },
   "devDependencies": {
     "@refinedev/cli": "^2.16.42",
-    "@tanstack/router-devtools": "^1.95.1",
-    "@tanstack/router-plugin": "^1.95.1",
+    "@tanstack/router-devtools": "^1.95.3",
+    "@tanstack/router-plugin": "^1.95.3",
     "@types/lodash.isequal": "^4.5.8",
     "@types/luxon": "^3.4.2",
     "@types/pluralize": "^0.0.33",
