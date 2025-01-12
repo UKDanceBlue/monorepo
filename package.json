@@ -60,7 +60,9 @@
   "resolutions": {
     "@graphql-codegen/client-preset@npm:^4.4.0": "patch:@graphql-codegen/client-preset@npm%3A4.4.0#~/.yarn/patches/@graphql-codegen-client-preset-npm-4.4.0-d441b92060.patch",
     "promise": "npm:promise@^8.3.0",
-    "urijs": "npm:uri-js-replace"
+    "urijs": "npm:uri-js-replace",
+    "@nivo/core@npm:0.88.0": "patch:@nivo/core@npm%3A0.88.0#~/.yarn/patches/@nivo-core-npm-0.88.0-d0bd18f82f.patch",
+    "@nivo/tooltip@npm:0.88.0": "patch:@nivo/tooltip@npm%3A0.88.0#~/.yarn/patches/@nivo-tooltip-npm-0.88.0-f4440e2fca.patch"
   },
   "devDependencies": {
     "@eslint/compat": "^1.2.4",
@@ -108,5 +110,5 @@
     "typescript-eslint": "^8.19.0",
     "vitest": "^2.1.8"
   },
-  "packageManager": "yarn@4.5.3+sha512.3003a14012e2987072d244c720506549c1aab73ee728208f1b2580a9fd67b92d61ba6b08fe93f6dce68fd771e3af1e59a0afa28dd242dd0940d73b95fedd4e90"
+  "packageManager": "yarn@4.6.0+sha512.5383cc12567a95f1d668fbe762dfe0075c595b4bfff433be478dbbe24e05251a8e8c3eb992a986667c1d53b6c3a9c85b8398c35a960587fbd9fa3a0915406728"
 }

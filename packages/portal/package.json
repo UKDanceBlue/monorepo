@@ -39,8 +39,9 @@
   "scripts": {
     "refine": "refine",
     "refine-devtools": "refine devtools",
-    "dev": "vite --host",
-    "build": "vite build",
+    "build": "npm run build:client && npm run build:server",
+    "build:client": "vite build src/entry-client.tsx --outDir dist/client",
+    "build:server": "vite build --ssr src/entry-server.tsx --outDir dist/server",
     "check": "tsc --noEmit",
     "preview": "vite preview"
   },
@@ -49,7 +50,7 @@
     "@casl/ability": "^6.7.2",
     "@mdxeditor/editor": "^3.20.0",
     "@nivo/bar": "^0.88.0",
-    "@nivo/core": "^0.88.0",
+    "@nivo/core": "patch:@nivo/core@npm%3A0.88.0#~/.yarn/patches/@nivo-core-npm-0.88.0-d0bd18f82f.patch",
     "@nivo/line": "^0.88.0",
     "@nivo/pie": "^0.88.0",
     "@refinedev/antd": "^5.45.1",
@@ -100,6 +101,7 @@
     "@refinedev/cli": "^2.16.42",
     "@tanstack/router-devtools": "^1.95.3",
     "@tanstack/router-plugin": "^1.95.3",
+    "@types/express": "^5.0.0",
     "@types/lodash.isequal": "^4.5.8",
     "@types/luxon": "^3.4.2",
     "@types/pluralize": "^0.0.33",
@@ -111,7 +113,7 @@
     "typescript": "^5.7.2",
     "vite": "^6.0.7"
   },
-  "packageManager": "yarn@4.5.3+sha512.3003a14012e2987072d244c720506549c1aab73ee728208f1b2580a9fd67b92d61ba6b08fe93f6dce68fd771e3af1e59a0afa28dd242dd0940d73b95fedd4e90",
+  "packageManager": "yarn@4.6.0+sha512.5383cc12567a95f1d668fbe762dfe0075c595b4bfff433be478dbbe24e05251a8e8c3eb992a986667c1d53b6c3a9c85b8398c35a960587fbd9fa3a0915406728",
   "refine": {
     "projectId": "DqkUbD-wpgLRK-UO3SFV"
   }

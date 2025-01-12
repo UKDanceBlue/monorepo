@@ -119,6 +119,7 @@ export function createRouter() {
     context: {
       urqlClient,
       antApp: {} as useAppProps,
+      head: "",
     },
     defaultPreload: false,
     Wrap: MainContext,

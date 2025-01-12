@@ -6,6 +6,7 @@ import {
   Link,
   Outlet,
 } from "@tanstack/react-router";
+import { Meta, Scripts } from "@tanstack/start";
 import {
   Button,
   ConfigProvider,
@@ -45,6 +46,7 @@ const TanStackRouterDevtools =
 interface RouterContext {
   urqlClient: UrqlClient;
   antApp: useAppProps;
+  head: string;
 }
 
 function RootComponent() {
@@ -113,66 +115,72 @@ function RootComponent() {
   }
 
   return (
-    <>
-      <Layout style={{ height: "100%" }}>
-        <ConfigProvider
-          theme={{
-            components: {
-              Select: {
-                colorText: "rgba(255, 255, 255, 0.65)",
-                colorIcon: "rgba(255, 255, 255, 0.65)",
+    <html lang="en">
+      <head>
+        <Meta />
+      </head>
+      <body>
+        <Layout style={{ height: "100%" }}>
+          <ConfigProvider
+            theme={{
+              components: {
+                Select: {
+                  colorText: "rgba(255, 255, 255, 0.65)",
+                  colorIcon: "rgba(255, 255, 255, 0.65)",
+                },
               },
-            },
-          }}
-        >
-          <Sider
-            Title={() => (
-              <Link to="/">
-                <img
-                  src={watermark}
-                  alt="DanceBlue Logo"
-                  style={{ width: "100%" }}
-                />
-              </Link>
+            }}
+          >
+            <Sider
+              Title={() => (
+                <Link to="/">
+                  <img
+                    src={watermark}
+                    alt="DanceBlue Logo"
+                    style={{ width: "100%" }}
+                  />
+                </Link>
+              )}
+              getItems={({ items, logout }) => [
+                ...items,
+                {
+                  key: "settings",
+                  icon: <SettingOutlined />,
+                  onClick: () => setSettinsOpen(true),
+                  label: "Settings",
+                },
+                ...(logout ? [logout] : []),
+              ]}
+            />
+          </ConfigProvider>
+          <Layout>
+            {masquerading && (
+              <div
+                style={{
+                  background: "rgba(255, 0, 0, 0.5)",
+                  padding: "1ch",
+                  width: "100%",
+                  textAlign: "center",
+                }}
+              >
+                You are currently masquerading as another user
+              </div>
             )}
-            getItems={({ items, logout }) => [
-              ...items,
-              {
-                key: "settings",
-                icon: <SettingOutlined />,
-                onClick: () => setSettinsOpen(true),
-                label: "Settings",
-              },
-              ...(logout ? [logout] : []),
-            ]}
-          />
-        </ConfigProvider>
-        <Layout>
-          {masquerading && (
-            <div
-              style={{
-                background: "rgba(255, 0, 0, 0.5)",
-                padding: "1ch",
-                width: "100%",
-                textAlign: "center",
-              }}
-            >
-              You are currently masquerading as another user
-            </div>
-          )}
-          <Layout.Content style={{ padding: "1vh 3vw", overflowY: "scroll" }}>
-            <Outlet />
-          </Layout.Content>
+            <Layout.Content style={{ padding: "1vh 3vw", overflowY: "scroll" }}>
+              <Outlet />
+            </Layout.Content>
+          </Layout>
         </Layout>
-      </Layout>
-      <Suspense>
-        <TanStackRouterDevtools position="bottom-right" />
-        <ConfigModal
-          open={settingsOpen}
-          onClose={() => setSettinsOpen(false)}
-        />
-      </Suspense>
-    </>
+        <Suspense>
+          <TanStackRouterDevtools position="bottom-right" />
+          <ConfigModal
+            open={settingsOpen}
+            onClose={() => setSettinsOpen(false)}
+          />
+        </Suspense>
+        <Scripts />
+      </body>
+    </html>
   );
 }
 
@@ -210,4 +218,58 @@ export const Route = createRootRouteWithContext<RouterContext>()({
   staticData: {
     authorizationRules: null,
   },
+  head: () => ({
+    meta: [
+      {
+        title: "DB Admin Portal",
+      },
+      {
+        // eslint-disable-next-line unicorn/text-encoding-identifier-case
+        charSet: "UTF-8",
+      },
+      {
+        name: "viewport",
+        content: "width=device-width, initial-scale=1.0",
+      },
+      {
+        name: "msapplication-TileImage",
+        content: "/assets/watermark-512.png",
+      },
+    ],
+    links: [
+      {
+        rel: "icon",
+        href: "/assets/watermark-256.png",
+        sizes: "256x256",
+      },
+      {
+        rel: "icon",
+        href: "/assets/watermark-512.png",
+        sizes: "512x512",
+      },
+      {
+        rel: "icon",
+        type: "image/svg+xml",
+        href: "/assets/watermark.svg",
+      },
+    ],
+    scripts: [
+      //     {
+      //       type: "module",
+      //       children: `import RefreshRuntime from "/@react-refresh"
+      // RefreshRuntime.injectIntoGlobalHook(window)
+      // window.$RefreshReg$ = () => {}
+      // window.$RefreshSig$ = () => (type) => type
+      // window.__vite_plugin_react_preamble_installed__ = true`,
+      //     },
+      //     {
+      //       type: "module",
+      //       src: "/@vite/client",
+      //     },
+      {
+        type: "module",
+        src: "/src/entry-client.tsx",
+      },
+    ],
+  }),
 });

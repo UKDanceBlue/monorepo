@@ -1,0 +1,22 @@
+diff --git a/package.json b/package.json
+index 2c17f55b399b944cabc70cd2ee8776ca544d3cb9..77d8fbbbf31825e5961f9e5df4cbe9b4155a41b7 100644
+--- a/package.json
++++ b/package.json
+@@ -11,9 +11,15 @@
+         "url": "https://github.com/plouc/nivo.git",
+         "directory": "packages/tooltip"
+     },
+-    "main": "./dist/nivo-tooltip.cjs.js",
+-    "module": "./dist/nivo-tooltip.es.js",
++    "type": "module",
++    "main": "./dist/nivo-tooltip.es.js",
+     "types": "./dist/types/index.d.ts",
++    "exports": {
++        ".": {
++            "import": "./dist/nivo-tooltip.es.js",
++            "require": "./dist/nivo-tooltip.cjs.js"
++        }
++    },
+     "files": [
+         "README.md",
+         "LICENSE.md",

@@ -5922,7 +5922,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@nivo/core@npm:0.88.0, @nivo/core@npm:^0.88.0":
+"@nivo/core@npm:0.88.0":
   version: 0.88.0
   resolution: "@nivo/core@npm:0.88.0"
   dependencies:
@@ -5941,6 +5941,28 @@ __metadata:
   peerDependencies:
     react: ">= 16.14.0 < 19.0.0"
   checksum: 10/14823e5366dec93827e833d789c001124424c7b43a533a7002ac39d4de4edd55a0d7a3e07eca18df30304515b2fe4ba214d243a8abdc793e434f31cbafd85950
+  languageName: node
+  linkType: hard
+
+"@nivo/core@patch:@nivo/core@npm%3A0.88.0#~/.yarn/patches/@nivo-core-npm-0.88.0-d0bd18f82f.patch":
+  version: 0.88.0
+  resolution: "@nivo/core@patch:@nivo/core@npm%3A0.88.0#~/.yarn/patches/@nivo-core-npm-0.88.0-d0bd18f82f.patch::version=0.88.0&hash=a68b3c"
+  dependencies:
+    "@nivo/tooltip": "npm:0.88.0"
+    "@react-spring/web": "npm:9.4.5 || ^9.7.2"
+    "@types/d3-shape": "npm:^3.1.6"
+    d3-color: "npm:^3.1.0"
+    d3-format: "npm:^1.4.4"
+    d3-interpolate: "npm:^3.0.1"
+    d3-scale: "npm:^4.0.2"
+    d3-scale-chromatic: "npm:^3.0.0"
+    d3-shape: "npm:^3.2.0"
+    d3-time-format: "npm:^3.0.0"
+    lodash: "npm:^4.17.21"
+    prop-types: "npm:^15.7.2"
+  peerDependencies:
+    react: ">= 16.14.0 < 19.0.0"
+  checksum: 10/77586bc118d94e9388584be80bc8eddd2d5a1678f2a0d942694294a29eff9d88c45919cd8c8d9431b828108c1aa36f4ae6d390b7de79c964c1ff18c53be24de3
   languageName: node
   linkType: hard
 
@@ -6019,6 +6041,18 @@ __metadata:
   peerDependencies:
     react: ">= 16.14.0 < 19.0.0"
   checksum: 10/1e5c6d72ef47e52b379e5277b615eb893e95814251ef1338ed7a44a080b03a70388f6e92542dd64d6d6fff5df50bf670426622883c21e9b582eb31b37adb08d8
+  languageName: node
+  linkType: hard
+
+"@nivo/tooltip@patch:@nivo/tooltip@npm%3A0.88.0#~/.yarn/patches/@nivo-tooltip-npm-0.88.0-f4440e2fca.patch":
+  version: 0.88.0
+  resolution: "@nivo/tooltip@patch:@nivo/tooltip@npm%3A0.88.0#~/.yarn/patches/@nivo-tooltip-npm-0.88.0-f4440e2fca.patch::version=0.88.0&hash=4d0208"
+  dependencies:
+    "@nivo/core": "npm:0.88.0"
+    "@react-spring/web": "npm:9.4.5 || ^9.7.2"
+  peerDependencies:
+    react: ">= 16.14.0 < 19.0.0"
+  checksum: 10/a5270f963c70f17f21d5a7ec5d6bc6228d6a54b8966640e447cccd55ff62274a74b84e6b2d431b823632d7ff7e050f6110db00e88ed42cd9d8920f90e7efee0c
   languageName: node
   linkType: hard
 
@@ -12425,7 +12459,7 @@ __metadata:
     "@casl/ability": "npm:^6.7.2"
     "@mdxeditor/editor": "npm:^3.20.0"
     "@nivo/bar": "npm:^0.88.0"
-    "@nivo/core": "npm:^0.88.0"
+    "@nivo/core": "patch:@nivo/core@npm%3A0.88.0#~/.yarn/patches/@nivo-core-npm-0.88.0-d0bd18f82f.patch"
     "@nivo/line": "npm:^0.88.0"
     "@nivo/pie": "npm:^0.88.0"
     "@refinedev/antd": "npm:^5.45.1"
@@ -12440,6 +12474,7 @@ __metadata:
     "@tanstack/router-devtools": "npm:^1.95.3"
     "@tanstack/router-plugin": "npm:^1.95.3"
     "@tanstack/start": "npm:^1.95.3"
+    "@types/express": "npm:^5.0.0"
     "@types/lodash.isequal": "npm:^4.5.8"
     "@types/luxon": "npm:^3.4.2"
     "@types/pluralize": "npm:^0.0.33"

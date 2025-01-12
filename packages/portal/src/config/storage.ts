@@ -3,11 +3,17 @@ import { useEffect, useState } from "react";
 export class StorageManager {
   constructor(
     private readonly namespace: string,
-    private readonly storage: Storage
+    private readonly storage: Storage | undefined
   ) {}
 
-  static Local = new StorageManager("local", localStorage);
-  static Session = new StorageManager("session", sessionStorage);
+  static Local = new StorageManager(
+    "local",
+    "localStorage" in globalThis ? globalThis.localStorage : undefined
+  );
+  static Session = new StorageManager(
+    "session",
+    "sessionStorage" in globalThis ? globalThis.sessionStorage : undefined
+  );
 
   static keys = {
     selectedMarathon: "selected-marathon",
@@ -34,6 +40,9 @@ export class StorageManager {
 
   set(id: string, value: string | null) {
     const key = `ukdb-${this.namespace}.${id}`;
+    if (this.storage === undefined) {
+      throw new Error("Storage is not available");
+    }
     if (value === null) {
       this.storage.removeItem(key);
     } else {
@@ -44,6 +53,9 @@ export class StorageManager {
 
   get(id: string) {
     const key = `ukdb-${this.namespace}.${id}`;
+    if (this.storage === undefined) {
+      throw new Error("Storage is not available");
+    }
     return this.storage.getItem(key);
   }
 }

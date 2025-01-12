@@ -1,5 +1,5 @@
 # syntax=docker/dockerfile:1.10-labs
-FROM node:22.4.1 AS build
+FROM node:23 AS build
 
 ENV NODE_ENV="production"
 
@@ -28,7 +28,7 @@ RUN --mount=type=secret,id=SENTRY_AUTH_TOKEN,env=SENTRY_AUTH_TOKEN,required \
   corepack yarn sentry-cli sourcemaps upload --org ukdanceblue --project server ./dist
 
 # Server
-FROM node:22.4.1 AS server
+FROM node:23 AS server
 
 ENV MS_OIDC_URL="https://login.microsoftonline.com/2b30530b-69b6-4457-b818-481cb53d42ae/v2.0/.well-known/openid-configuration"
 ENV APPLICATION_PORT="8000"
