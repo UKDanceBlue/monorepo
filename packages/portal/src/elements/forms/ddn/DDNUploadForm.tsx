@@ -3,7 +3,7 @@ import { useMutation } from "urql";
 import { z } from "zod";
 
 import { SpreadsheetUploader } from "#elements/components/SpreadsheetUploader";
-import { graphql } from "#graphql/index";
+import { graphql } from "#gql/index.js";
 import { useQueryStatusWatcher } from "#hooks/useQueryStatusWatcher";
 
 const defaultStringValidator = z

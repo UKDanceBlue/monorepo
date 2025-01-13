@@ -3,7 +3,7 @@ import { Form, Input, Modal } from "antd";
 import { useClient } from "urql";
 
 import { TanAntFormItem } from "#elements/components/form/TanAntFormItem.js";
-import { graphql } from "#graphql/index.js";
+import { graphql } from "#gql/index.js";
 import { useAntFeedback } from "#hooks/useAntFeedback.js";
 
 const createImageDocument = graphql(/* GraphQL */ `

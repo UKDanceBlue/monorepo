@@ -1,4 +1,4 @@
-import { graphql } from "#graphql/index.js";
+import { graphql } from "#gql/index.js";
 
 export const PointEntryCreatorFragment = graphql(/* GraphQL */ `
   fragment PointEntryCreatorFragment on TeamNode {

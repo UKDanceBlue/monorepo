@@ -1,5 +1,5 @@
-// import { dirname, resolve } from "node:path";
-// import { fileURLToPath } from "node:url";
+import { dirname } from "node:path";
+import { fileURLToPath } from "node:url";
 
 import { sentryVitePlugin } from "@sentry/vite-plugin";
 import { TanStackRouterVite } from "@tanstack/router-plugin/vite";
@@ -7,13 +7,10 @@ import react from "@vitejs/plugin-react-swc";
 import type { UserConfig } from "vite";
 import { defineConfig } from "vite";
 
-// const __dirname = dirname(fileURLToPath(import.meta.url));
-
-// function resolveRelative(...relativePath: string[]) {
-//   return resolve(__dirname, ...relativePath);
-// }
+const __dirname = dirname(fileURLToPath(import.meta.url));
 
 export const literalConfig: UserConfig = {
+  root: __dirname,
   resolve: {
     alias: {
       "type-graphql": "type-graphql/shim",
@@ -36,14 +33,17 @@ export const literalConfig: UserConfig = {
     }),
   ],
   ssr: {
-    external: ["@sentry/profiling-node"],
+    optimizeDeps: {},
     noExternal: [
       "antd",
       /^@ant-design/,
       /^rc-/,
       /^@emoji-mart/,
       /^@emotion/,
-      /@rc-component/,
+      /^@rc-component/,
+      "lexical",
+      /^@lexical/,
+      /^@mdxeditor/,
     ],
   },
 };

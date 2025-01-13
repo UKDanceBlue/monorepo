@@ -3,7 +3,7 @@ import { TeamLegacyStatus, TeamType } from "@ukdanceblue/common";
 import { useMutation } from "urql";
 
 import { teamCreatorDocument } from "#documents/team.js";
-import type { InputOf, ResultOf } from "#graphql/index.js";
+import type { InputOf, ResultOf } from "#gql/index.js";
 import { useAntFeedback } from "#hooks/useAntFeedback.js";
 import { useQueryStatusWatcher } from "#hooks/useQueryStatusWatcher.js";
 

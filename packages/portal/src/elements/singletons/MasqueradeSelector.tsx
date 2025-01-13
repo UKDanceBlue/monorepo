@@ -3,7 +3,7 @@ import { useMemo, useRef, useState } from "react";
 import { useQuery } from "urql";
 
 import { StorageManager, useStorageValue } from "#config/storage.ts";
-import { graphql } from "#graphql/index.js";
+import { graphql } from "#gql/index.js";
 
 export function MasqueradeSelector() {
   const [search, setSearch] = useState("");

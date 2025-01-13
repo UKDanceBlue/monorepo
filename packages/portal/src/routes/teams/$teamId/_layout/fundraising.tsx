@@ -9,7 +9,7 @@ import {
   FundraisingEntriesTable,
   FundraisingEntryTableFragment,
 } from "#elements/tables/fundraising/FundraisingEntriesTable";
-import { graphql } from "#graphql/index.js";
+import { graphql } from "#gql/index.js";
 import { useAuthorizationRequirement } from "#hooks/useLoginState.js";
 import { useQueryStatusWatcher } from "#hooks/useQueryStatusWatcher.js";
 import { useTypedOne } from "#hooks/useTypedRefine.ts";

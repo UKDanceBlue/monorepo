@@ -7,8 +7,8 @@ import {
   personEditorDocument,
   PersonEditorFragment,
 } from "#documents/person.js";
-import type { FragmentOf, ResultOf } from "#graphql/index.js";
-import { readFragment } from "#graphql/index.js";
+import type { FragmentOf, ResultOf } from "#gql/index.js";
+import { readFragment } from "#gql/index.js";
 import { useQueryStatusWatcher } from "#hooks/useQueryStatusWatcher.js";
 
 export function usePersonEditorForm(

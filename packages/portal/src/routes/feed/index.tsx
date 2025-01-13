@@ -14,7 +14,7 @@ import {
 import { useState } from "react";
 import { useClient, useQuery } from "urql";
 
-import { graphql } from "#graphql/index.js";
+import { graphql } from "#gql/index.js";
 import { useImagePicker } from "#hooks/useImagePicker.js";
 import { useQueryStatusWatcher } from "#hooks/useQueryStatusWatcher.js";
 

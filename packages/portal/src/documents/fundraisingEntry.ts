@@ -1,5 +1,5 @@
 import { FundraisingEntryAssignmentTableFragment } from "#elements/tables/fundraising/FundraisingEntryAssignmentsTable.tsx";
-import { graphql } from "#graphql/index.js";
+import { graphql } from "#gql/index.js";
 
 export const FundraisingEntryEditorFragment = graphql(
   /* GraphQL */ `

@@ -1,8 +1,8 @@
 import { useForm } from "@tanstack/react-form";
 import { useMutation } from "urql";
 
-import type { InputOf } from "#graphql/index.js";
-import { type ResultOf } from "#graphql/index.js";
+import type { InputOf } from "#gql/index.js";
+import { type ResultOf } from "#gql/index.js";
 import { useQueryStatusWatcher } from "#hooks/useQueryStatusWatcher.js";
 
 import { personCreatorDocument } from "../../../../documents/person.js";

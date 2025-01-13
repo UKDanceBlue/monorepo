@@ -5,8 +5,8 @@ import { useState } from "react";
 import { useQuery } from "urql";
 
 import { TeamSelectFragment } from "#documents/team.ts";
-import { graphql } from "#graphql/index";
-import { readFragment } from "#graphql/index.js";
+import { graphql } from "#gql/index.js";
+import { readFragment } from "#gql/index.js";
 import { useAntFeedback } from "#hooks/useAntFeedback";
 
 const teamSelectDocument = graphql(

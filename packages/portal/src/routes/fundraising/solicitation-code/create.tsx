@@ -5,7 +5,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { Button, Flex, Form, Input, InputNumber } from "antd";
 
 import { createSolicitationCodeDocument } from "#documents/solicitationCode.ts";
-import type { ResultOf, VariablesOf } from "#graphql/index";
+import type { ResultOf, VariablesOf } from "#gql/index.js";
 
 export const Route = createFileRoute("/fundraising/solicitation-code/create")({
   component: RouteComponent,

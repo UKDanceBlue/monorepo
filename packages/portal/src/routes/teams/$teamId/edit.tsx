@@ -3,7 +3,7 @@ import { useQuery } from "urql";
 
 import { TeamEditorFragment } from "#documents/team.ts";
 import { TeamEditor } from "#elements/forms/team/edit/TeamEditor.js";
-import { graphql } from "#graphql/index.js";
+import { graphql } from "#gql/index.js";
 import { useQueryStatusWatcher } from "#hooks/useQueryStatusWatcher.js";
 
 const viewTeamPageDocument = graphql(

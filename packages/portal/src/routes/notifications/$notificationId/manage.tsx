@@ -3,7 +3,7 @@ import { useQuery } from "urql";
 
 import { SingleNotificationFragment } from "#documents/notification.ts";
 import { ManageNotificationForm } from "#elements/forms/notification/manage/ManageNotificationForm.js";
-import { graphql } from "#graphql/index.js";
+import { graphql } from "#gql/index.js";
 import { useQueryStatusWatcher } from "#hooks/useQueryStatusWatcher.js";
 
 const notificationManagerDocument = graphql(

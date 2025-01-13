@@ -10,8 +10,8 @@ import {
   UnassignTeamFromSolicitationCodeDocument,
 } from "#documents/solicitationCode.ts";
 import { TeamSelectFragment } from "#documents/team.ts";
-import { readFragment } from "#graphql/index";
-import { graphql } from "#graphql/index";
+import { readFragment } from "#gql/index.js";
+import { graphql } from "#gql/index.js";
 import { useQueryStatusWatcher } from "#hooks/useQueryStatusWatcher";
 
 const SolicitationCodeTableFragment = graphql(/* GraphQL */ `

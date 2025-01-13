@@ -2,7 +2,7 @@ import { dateTimeFromSomething } from "@ukdanceblue/common";
 import { useMemo } from "react";
 import { useQuery } from "urql";
 
-import { graphql } from "#graphql/index.js";
+import { graphql } from "#gql/index.js";
 import { useAuthorizationRequirement } from "#hooks/useLoginState.js";
 
 import type { MarathonContextData } from "./marathonContext.js";

@@ -3,7 +3,7 @@ import { useNavigate } from "@tanstack/react-router";
 import type { Interval } from "luxon";
 import { useMutation } from "urql";
 
-import type { InputOf } from "#graphql/index.js";
+import type { InputOf } from "#gql/index.js";
 import { useQueryStatusWatcher } from "#hooks/useQueryStatusWatcher.js";
 
 import { eventCreatorDocument } from "./EventCreatorGQL.js";

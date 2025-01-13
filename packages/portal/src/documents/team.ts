@@ -1,6 +1,6 @@
 import { PointEntryTableFragment } from "#elements/tables/point-entry/PointEntryTable.tsx";
 import { TeamViewerFragment } from "#elements/viewers/team/TeamViewer.tsx";
-import { graphql } from "#graphql/index.js";
+import { graphql } from "#gql/index.js";
 
 import { PointEntryCreatorFragment } from "./pointEntry";
 

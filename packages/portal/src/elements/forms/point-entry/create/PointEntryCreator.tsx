@@ -12,8 +12,8 @@ import {
 } from "antd";
 import { useReducer, useRef, useState } from "react";
 
-import type { FragmentOf } from "#graphql/index.js";
-import { readFragment } from "#graphql/index.js";
+import type { FragmentOf } from "#gql/index.js";
+import { readFragment } from "#gql/index.js";
 
 import { PointEntryCreatorFragment } from "../../../../documents/pointEntry.js";
 import { PointEntryOpportunityLookup } from "./PointEntryOpportunityLookup.js";

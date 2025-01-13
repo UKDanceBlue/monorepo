@@ -3,8 +3,8 @@ import { App, Button, Empty, Flex, Form, Input, Select } from "antd";
 import type { UseQueryExecute } from "urql";
 
 import { TeamEditorFragment } from "#documents/team.js";
-import type { FragmentOf } from "#graphql/index.js";
-import { readFragment } from "#graphql/index.js";
+import type { FragmentOf } from "#gql/index.js";
+import { readFragment } from "#gql/index.js";
 
 import { useTeamEditorForm } from "./useTeamEditorForm.js";
 

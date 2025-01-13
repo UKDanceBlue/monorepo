@@ -10,7 +10,7 @@ import type { ReactNode } from "react";
 
 import { useMarathon } from "#config/marathonContext.ts";
 import { RefineSearchForm } from "#elements/components/RefineSearchForm.tsx";
-import { graphql } from "#graphql/index.js";
+import { graphql } from "#gql/index.js";
 import { useTypedTable } from "#hooks/useTypedRefine.ts";
 
 export const TeamsTableFragment = graphql(/* GraphQL */ `

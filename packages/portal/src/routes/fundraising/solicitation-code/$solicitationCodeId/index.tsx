@@ -29,8 +29,8 @@ import {
   FundraisingEntryTableFragment,
 } from "#elements/tables/fundraising/FundraisingEntriesTable";
 import { TeamsTableFragment } from "#elements/tables/TeamsTable";
-import type { ResultOf, VariablesOf } from "#graphql/index";
-import { graphql, readFragment } from "#graphql/index";
+import type { ResultOf, VariablesOf } from "#gql/index.js";
+import { graphql, readFragment } from "#gql/index.js";
 import { useAntFeedback, useAskConfirm } from "#hooks/useAntFeedback";
 import { useQueryStatusWatcher } from "#hooks/useQueryStatusWatcher";
 import { useTypedOne } from "#hooks/useTypedRefine.ts";

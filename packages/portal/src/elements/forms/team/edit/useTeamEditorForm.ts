@@ -3,8 +3,8 @@ import { TeamType } from "@ukdanceblue/common";
 import { useMutation } from "urql";
 
 import { teamEditorDocument, TeamEditorFragment } from "#documents/team.js";
-import type { FragmentOf, InputOf, ResultOf } from "#graphql/index.js";
-import { readFragment } from "#graphql/index.js";
+import type { FragmentOf, InputOf, ResultOf } from "#gql/index.js";
+import { readFragment } from "#gql/index.js";
 import { useQueryStatusWatcher } from "#hooks/useQueryStatusWatcher.js";
 
 export function useTeamEditorForm(

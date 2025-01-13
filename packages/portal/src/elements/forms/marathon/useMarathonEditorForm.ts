@@ -4,7 +4,7 @@ import { dateTimeFromSomething } from "@ukdanceblue/common";
 import type { DateTime } from "luxon";
 import { useMutation, useQuery } from "urql";
 
-import { graphql } from "#graphql/index.js";
+import { graphql } from "#gql/index.js";
 import { useQueryStatusWatcher } from "#hooks/useQueryStatusWatcher.js";
 
 export function useMarathonCreatorForm({ marathonId }: { marathonId: string }) {

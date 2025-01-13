@@ -9,7 +9,7 @@ import {
 import { Button, Flex, Table } from "antd";
 
 import { RefineSearchForm } from "#elements/components/RefineSearchForm.tsx";
-import { graphql } from "#graphql/index.js";
+import { graphql } from "#gql/index.js";
 import { useTypedTable } from "#hooks/useTypedRefine.ts";
 
 const PeopleTableFragment = graphql(/* GraphQL */ `

@@ -6,8 +6,8 @@ import { useMutation, useQuery } from "urql";
 
 import { useMarathon } from "#config/marathonContext.js";
 import { LuxonDatePicker } from "#elements/components/antLuxonComponents.js";
-import type { VariablesOf } from "#graphql/index.js";
-import { graphql } from "#graphql/index.js";
+import type { VariablesOf } from "#gql/index.js";
+import { graphql } from "#gql/index.js";
 import { useQueryStatusWatcher } from "#hooks/useQueryStatusWatcher.js";
 
 import type { usePointEntryCreatorForm } from "./usePointEntryCreatorForm.js";

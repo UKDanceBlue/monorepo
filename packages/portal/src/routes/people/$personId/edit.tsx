@@ -3,7 +3,7 @@ import { useQuery } from "urql";
 
 import { PersonEditorFragment, TeamNameFragment } from "#documents/person.ts";
 import { PersonEditor } from "#elements/forms/person/edit/PersonEditor.js";
-import { graphql } from "#graphql/index.js";
+import { graphql } from "#gql/index.js";
 import { useQueryStatusWatcher } from "#hooks/useQueryStatusWatcher.js";
 
 const viewPersonPageDocument = graphql(

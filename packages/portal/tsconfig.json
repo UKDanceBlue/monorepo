@@ -23,7 +23,7 @@
       "#tools/*": ["tools/*"],
       "#assets/*": ["../assets/*"],
       "#documents/*": ["documents/*"],
-      "#graphql/*": ["../graphql/*"],
+      "#gql/*": ["../gql/*"],
       "#mocks/*": ["../mocks/*"]
     },
 
@@ -33,12 +33,12 @@
       {
         "name": "gql.tada/ts-plugin",
         "schema": "../../schema.graphql",
-        "tadaOutputLocation": "./graphql/graphql-env.d.ts",
+        "tadaOutputLocation": "./gql/graphql-env.d.ts",
         "shouldCheckForColocatedFragments": false,
         "trackFieldUsage": false
       }
     ]
   },
-  "include": ["./src", "./graphql", "./mocks", "./vite.config.ts"],
+  "include": ["./src", "./gql", "./mocks", "./vite.config.ts"],
   "extends": "../../tsconfig.json"
 }

@@ -22,7 +22,7 @@ import { Button, Flex, Form, Input } from "antd";
 import { DateTime, Interval } from "luxon";
 
 import { EventOccurrencePicker } from "#elements/components/event/EventOccurrencePicker.js";
-import type { ResultOf, VariablesOf } from "#graphql/index.js";
+import type { ResultOf, VariablesOf } from "#gql/index.js";
 
 import type { EventEditorFragment } from "./EventEditorGQL.js";
 import {

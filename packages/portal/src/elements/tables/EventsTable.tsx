@@ -8,7 +8,7 @@ import {
 import { Button, Flex, List, Table } from "antd";
 
 import { RefineSearchForm } from "#elements/components/RefineSearchForm.tsx";
-import { graphql } from "#graphql/index.js";
+import { graphql } from "#gql/index.js";
 import { useTypedTable } from "#hooks/useTypedRefine.ts";
 
 export const EventsTableFragment = graphql(/* GraphQL */ `

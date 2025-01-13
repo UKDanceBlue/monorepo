@@ -4,7 +4,7 @@ import { useMutation } from "urql";
 
 import { useMarathon } from "#config/marathonContext.js";
 import { SpreadsheetUploader } from "#elements/components/SpreadsheetUploader.js";
-import { graphql } from "#graphql/index.js";
+import { graphql } from "#gql/index.js";
 import { useAntFeedback } from "#hooks/useAntFeedback.js";
 import { useQueryStatusWatcher } from "#hooks/useQueryStatusWatcher.js";
 

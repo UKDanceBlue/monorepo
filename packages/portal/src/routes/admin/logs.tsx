@@ -9,8 +9,8 @@ import {
 import { Input, Space, Table } from "antd";
 
 import { findResourceByGlobalId } from "#config/refine/resources.tsx";
-import type { ResultOf, VariablesOf } from "#graphql/index.js";
-import { graphql } from "#graphql/index.js";
+import type { ResultOf, VariablesOf } from "#gql/index.js";
+import { graphql } from "#gql/index.js";
 
 const fragment = graphql(/* GraphQL */ `
   fragment AuditLogFragment on AuditLogNode {

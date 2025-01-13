@@ -4,7 +4,7 @@ import { Descriptions } from "antd";
 import { useQuery } from "urql";
 
 import { LoadingRibbon } from "#elements/components/design/RibbonSpinner";
-import { graphql, readFragment } from "#graphql/index";
+import { graphql, readFragment } from "#gql/index.js";
 import { useQueryStatusWatcher } from "#hooks/useQueryStatusWatcher";
 
 export const Route = createFileRoute("/fundraising/ddn/$ddnId/")({

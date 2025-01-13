@@ -11,7 +11,7 @@ import {
   MarathonViewer,
   MarathonViewerFragment,
 } from "#elements/viewers/marathon/MarathonViewer.js";
-import { graphql } from "#graphql/index.js";
+import { graphql } from "#gql/index.js";
 
 const marathonOverviewPageDocument = graphql(
   /* GraphQL */ `

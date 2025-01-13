@@ -3,7 +3,7 @@ import { Button, Flex, Image, Input } from "antd";
 import { useState } from "react";
 import { useQuery } from "urql";
 
-import { graphql } from "#graphql/index.js";
+import { graphql } from "#gql/index.js";
 import { useQueryStatusWatcher } from "#hooks/useQueryStatusWatcher.js";
 
 const imagePickerDocument = graphql(/* GraphQL */ `

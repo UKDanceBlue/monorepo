@@ -7,8 +7,8 @@ import type { UseQueryExecute } from "urql";
 import { SingleNotificationFragment } from "#documents/notification.js";
 import { LuxonDatePicker } from "#elements/components/antLuxonComponents.js";
 import { NotificationViewer } from "#elements/viewers/notification/NotificationViewer.js";
-import type { FragmentOf } from "#graphql/index.js";
-import { readFragment } from "#graphql/index.js";
+import type { FragmentOf } from "#gql/index.js";
+import { readFragment } from "#gql/index.js";
 import { useAntFeedback } from "#hooks/useAntFeedback.js";
 
 import { useNotificationManagerForm } from "./useNotificationManager.js";

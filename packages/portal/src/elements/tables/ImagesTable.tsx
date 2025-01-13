@@ -7,7 +7,7 @@ import { thumbHashToDataURL } from "thumbhash";
 
 import { API_BASE_URL } from "#config/api.js";
 import { RefineSearchForm } from "#elements/components/RefineSearchForm.tsx";
-import { graphql } from "#graphql/index.js";
+import { graphql } from "#gql/index.js";
 import { useAntFeedback } from "#hooks/useAntFeedback.js";
 import { useTypedTable } from "#hooks/useTypedRefine.ts";
 

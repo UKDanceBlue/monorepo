@@ -3,7 +3,7 @@ import { DateTime, Interval } from "luxon";
 import { useMemo } from "react";
 import { useQuery } from "urql";
 
-import { graphql, readFragment } from "#graphql/index.js";
+import { graphql, readFragment } from "#gql/index.js";
 import { useQueryStatusWatcher } from "#hooks/useQueryStatusWatcher.js";
 
 export const ConfigFragment = graphql(/* GraphQL */ `

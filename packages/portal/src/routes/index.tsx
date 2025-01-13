@@ -6,7 +6,7 @@ import {
   PersonViewer,
   PersonViewerFragment,
 } from "#elements/viewers/person/PersonViewer.js";
-import { graphql } from "#graphql/index.js";
+import { graphql } from "#gql/index.js";
 import { useLoginState } from "#hooks/useLoginState.js";
 import { useQueryStatusWatcher } from "#hooks/useQueryStatusWatcher.js";
 

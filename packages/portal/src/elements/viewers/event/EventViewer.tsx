@@ -13,8 +13,8 @@ import { useMemo } from "react";
 import Markdown from "react-markdown";
 import { thumbHashToDataURL } from "thumbhash";
 
-import type { FragmentOf, ResultOf } from "#graphql/index.js";
-import { graphql } from "#graphql/index.js";
+import type { FragmentOf, ResultOf } from "#gql/index.js";
+import { graphql } from "#gql/index.js";
 
 export const EventViewerFragment = graphql(/* GraphQL */ `
   fragment EventViewerFragment on EventNode {

@@ -3,8 +3,8 @@ import { useForm } from "antd/es/form/Form.js";
 import { useEffect } from "react";
 import { useMutation } from "urql";
 
-import type { FragmentOf } from "#graphql/index.js";
-import { graphql, readFragment } from "#graphql/index.js";
+import type { FragmentOf } from "#gql/index.js";
+import { graphql, readFragment } from "#gql/index.js";
 import { useQueryStatusWatcher } from "#hooks/useQueryStatusWatcher.js";
 
 const AddFundraisingAssignmentDocument = graphql(/* GraphQL */ `

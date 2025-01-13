@@ -9,7 +9,7 @@ import { LuxonDatePicker } from "#elements/components/antLuxonComponents.js";
 import { TanAntForm } from "#elements/components/form/TanAntForm.js";
 import type { TanAntChildInputProps } from "#elements/components/form/TanAntFormItem.js";
 import { TanAntFormItem } from "#elements/components/form/TanAntFormItem.js";
-import { graphql } from "#graphql/index.js";
+import { graphql } from "#gql/index.js";
 import { useQueryStatusWatcher } from "#hooks/useQueryStatusWatcher.js";
 
 function AddMarathonHourPage() {

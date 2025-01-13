@@ -7,7 +7,7 @@ import { useClient, useQuery } from "urql";
 import { utils, writeFile } from "xlsx";
 
 import { useMarathon } from "#config/marathonContext.js";
-import { graphql } from "#graphql/index.js";
+import { graphql } from "#gql/index.js";
 
 interface FundraisingTeam {
   name: string;

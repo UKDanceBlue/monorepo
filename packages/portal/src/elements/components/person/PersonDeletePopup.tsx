@@ -3,7 +3,7 @@ import useNotification from "antd/es/notification/useNotification.js";
 import { useEffect, useState } from "react";
 import { useMutation } from "urql";
 
-import { graphql } from "#graphql/index.js";
+import { graphql } from "#gql/index.js";
 
 const deletePersonDocument = graphql(/* GraphQL */ `
   mutation DeletePerson($id: GlobalId!) {

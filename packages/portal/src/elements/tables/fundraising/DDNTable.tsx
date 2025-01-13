@@ -7,7 +7,7 @@ import { stringifyDDNBatchType } from "@ukdanceblue/common";
 import { Button, Flex, Table } from "antd";
 
 import { RefineSearchForm } from "#elements/components/RefineSearchForm.tsx";
-import { graphql, type ResultOf } from "#graphql/index.js";
+import { graphql, type ResultOf } from "#gql/index.js";
 
 const DDNsTableFragment = graphql(/* GraphQL */ `
   fragment DDNsTableFragment on DailyDepartmentNotificationNode {

@@ -5,8 +5,8 @@ import type { UseQueryExecute } from "urql";
 
 import { SingleNotificationFragment } from "#documents/notification.ts";
 import { NotificationPreview } from "#elements/components/notification/NotificationPreview.js";
-import type { FragmentOf } from "#graphql/index.js";
-import { readFragment } from "#graphql/index.js";
+import type { FragmentOf } from "#gql/index.js";
+import { readFragment } from "#gql/index.js";
 import { renderDateTime } from "#tools/luxonTools.js";
 
 export const NotificationViewer = ({

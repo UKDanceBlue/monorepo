@@ -18,8 +18,8 @@ import { Err, Ok } from "ts-results-es";
 import type { Client, CombinedError, OperationResult } from "urql";
 import { useQuery } from "urql";
 
-import type { ResultOf, VariablesOf } from "#graphql/index.js";
-import { graphql } from "#graphql/index.js";
+import type { ResultOf, VariablesOf } from "#gql/index.js";
+import { graphql } from "#gql/index.js";
 
 const loginStateDocument = graphql(/* GraphQL */ `
   query LoginState {
