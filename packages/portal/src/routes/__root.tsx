@@ -1,6 +1,7 @@
 import { SettingOutlined } from "@ant-design/icons";
 import { AuthPage } from "@refinedev/antd";
 import { Refine, useLogin } from "@refinedev/core";
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import {
   createRootRouteWithContext,
   Link,
@@ -39,12 +40,10 @@ const TanStackRouterDevtools =
         // Lazy load in development
         import("@tanstack/router-devtools").then((res) => ({
           default: res.TanStackRouterDevtools,
-          // For Embedded Mode
-          // default: res.TanStackRouterDevtoolsPanel
         }))
       );
 
-interface RouterContext {
+export interface RouterContext {
   urqlClient: UrqlClient;
   antApp: useAppProps;
   head: string;
@@ -178,7 +177,8 @@ function RootComponent() {
       <body>
         <AntApp style={{ height: "100%" }}>{content}</AntApp>
         <Suspense>
-          <TanStackRouterDevtools position="bottom-right" />
+          <TanStackRouterDevtools position="top-right" />
+          <ReactQueryDevtools initialIsOpen={false} position="right" />
           <ConfigModal
             open={settingsOpen}
             onClose={() => setSettinsOpen(false)}
