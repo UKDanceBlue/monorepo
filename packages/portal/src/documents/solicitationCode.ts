@@ -1,4 +1,4 @@
-import { graphql } from "#graphql/index.ts";
+import { graphql } from "#graphql/index.js";
 
 import { PaginationFragment } from "./shared";
 

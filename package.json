@@ -60,9 +60,7 @@
   "resolutions": {
     "@graphql-codegen/client-preset@npm:^4.4.0": "patch:@graphql-codegen/client-preset@npm%3A4.4.0#~/.yarn/patches/@graphql-codegen-client-preset-npm-4.4.0-d441b92060.patch",
     "promise": "npm:promise@^8.3.0",
-    "urijs": "npm:uri-js-replace",
-    "@nivo/core@npm:0.88.0": "patch:@nivo/core@npm%3A0.88.0#~/.yarn/patches/@nivo-core-npm-0.88.0-d0bd18f82f.patch",
-    "@nivo/tooltip@npm:0.88.0": "patch:@nivo/tooltip@npm%3A0.88.0#~/.yarn/patches/@nivo-tooltip-npm-0.88.0-f4440e2fca.patch"
+    "urijs": "npm:uri-js-replace"
   },
   "devDependencies": {
     "@eslint/compat": "^1.2.4",

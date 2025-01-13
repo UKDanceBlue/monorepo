@@ -21,7 +21,7 @@ import {
   type SelectionSetNode,
   visit,
 } from "graphql";
-import pluralize, { singular } from "pluralize";
+import pluralize from "pluralize";
 
 import type { PaginationFragment } from "#documents/shared.ts";
 
@@ -142,7 +142,7 @@ export const dataProvider: Required<DataProvider> = {
         .definitions?.[0];
       if (fragmentDefinition?.kind === Kind.FRAGMENT_DEFINITION) {
         query = gqlButDifferentName`
-        query Get${camelcase(singular(resource), { pascalCase: true })}($id: GlobalId!) {
+        query Get${camelcase(pluralize.singular(resource), { pascalCase: true })}($id: GlobalId!) {
           ${getOperationName(resource, "getOne")}(id: $id) {
             ...${fragmentDefinition.name.value}
           }
@@ -152,7 +152,7 @@ export const dataProvider: Required<DataProvider> = {
       }
     } else if (meta?.gqlMutation) {
       query = gqlButDifferentName`
-          query Get${camelcase(singular(resource), { pascalCase: true })}($id: GlobalId!) {
+          query Get${camelcase(pluralize.singular(resource), { pascalCase: true })}($id: GlobalId!) {
             ${getOperationName(resource, "getOne")}(id: $id) {
               ${getOperationFields(meta.gqlMutation)}
             }
@@ -234,7 +234,7 @@ export const dataProvider: Required<DataProvider> = {
         (def) => def.kind === Kind.FRAGMENT_DEFINITION
       );
       if (fragmentDefinition) {
-        const pascalResource = camelcase(singular(resource), {
+        const pascalResource = camelcase(pluralize.singular(resource), {
           pascalCase: true,
         });
 
@@ -377,7 +377,7 @@ export const dataProvider: Required<DataProvider> = {
         .definitions?.[0];
       if (fragmentDefinition?.kind === Kind.FRAGMENT_DEFINITION) {
         query = gqlButDifferentName`
-        mutation Delete${camelcase(singular(resource), { pascalCase: true })}($id: GlobalId!) {
+        mutation Delete${camelcase(pluralize.singular(resource), { pascalCase: true })}($id: GlobalId!) {
           ${getOperationName(resource, "deleteOne")}(id: $id) {
             ...${fragmentDefinition.name.value}
           }
@@ -387,7 +387,7 @@ export const dataProvider: Required<DataProvider> = {
       }
     } else {
       query = gqlButDifferentName`
-          mutation Delete${camelcase(singular(resource), { pascalCase: true })}($id: GlobalId!) {
+          mutation Delete${camelcase(pluralize.singular(resource), { pascalCase: true })}($id: GlobalId!) {
             ${getOperationName(resource, "deleteOne")}(id: $id) {
               id
             }

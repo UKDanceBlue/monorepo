@@ -5,8 +5,8 @@ import { useQuery } from "urql";
 import type { ColInfo, WorkBook, WorkSheet } from "xlsx";
 import { utils } from "xlsx";
 
-import { graphql } from "#graphql/index.ts";
-import { useQueryStatusWatcher } from "#hooks/useQueryStatusWatcher.ts";
+import { graphql } from "#graphql/index.js";
+import { useQueryStatusWatcher } from "#hooks/useQueryStatusWatcher.js";
 
 import { LuxonDatePicker } from "../antLuxonComponents";
 

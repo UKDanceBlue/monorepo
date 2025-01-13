@@ -240,7 +240,6 @@ export async function startServer(
         fileURLToPath(import.meta.resolve("@ukdanceblue/portal/src/main.tsx"))
       )
     ),
-    3000,
-    false
+    3000
   );
 }

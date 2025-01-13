@@ -54,7 +54,7 @@ export class StorageManager {
   get(id: string) {
     const key = `ukdb-${this.namespace}.${id}`;
     if (this.storage === undefined) {
-      throw new Error("Storage is not available");
+      return null;
     }
     return this.storage.getItem(key);
   }

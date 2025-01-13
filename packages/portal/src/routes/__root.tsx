@@ -15,6 +15,7 @@ import {
   notification,
   Space,
 } from "antd";
+import { App as AntApp } from "antd";
 import type { useAppProps } from "antd/es/app/context.js";
 import { lazy, Suspense, useState } from "react";
 import type { Client as UrqlClient } from "urql";
@@ -58,8 +59,9 @@ function RootComponent() {
 
   const [settingsOpen, setSettinsOpen] = useState(false);
 
+  let content;
   if (!loggedIn) {
-    return (
+    content = (
       <ConfigProvider form={{ variant: "filled" }}>
         <AuthPage
           forgotPasswordLink={false}
@@ -112,6 +114,60 @@ function RootComponent() {
         />
       </ConfigProvider>
     );
+  } else {
+    content = (
+      <Layout style={{ height: "100%" }}>
+        <ConfigProvider
+          theme={{
+            components: {
+              Select: {
+                colorText: "rgba(255, 255, 255, 0.65)",
+                colorIcon: "rgba(255, 255, 255, 0.65)",
+              },
+            },
+          }}
+        >
+          <Sider
+            Title={() => (
+              <Link to="/">
+                <img
+                  src={watermark}
+                  alt="DanceBlue Logo"
+                  style={{ width: "100%" }}
+                />
+              </Link>
+            )}
+            getItems={({ items, logout }) => [
+              ...items,
+              {
+                key: "settings",
+                icon: <SettingOutlined />,
+                onClick: () => setSettinsOpen(true),
+                label: "Settings",
+              },
+              ...(logout ? [logout] : []),
+            ]}
+          />
+        </ConfigProvider>
+        <Layout>
+          {masquerading && (
+            <div
+              style={{
+                background: "rgba(255, 0, 0, 0.5)",
+                padding: "1ch",
+                width: "100%",
+                textAlign: "center",
+              }}
+            >
+              You are currently masquerading as another user
+            </div>
+          )}
+          <Layout.Content style={{ padding: "1vh 3vw", overflowY: "scroll" }}>
+            <Outlet />
+          </Layout.Content>
+        </Layout>
+      </Layout>
+    );
   }
 
   return (
@@ -120,57 +176,7 @@ function RootComponent() {
         <Meta />
       </head>
       <body>
-        <Layout style={{ height: "100%" }}>
-          <ConfigProvider
-            theme={{
-              components: {
-                Select: {
-                  colorText: "rgba(255, 255, 255, 0.65)",
-                  colorIcon: "rgba(255, 255, 255, 0.65)",
-                },
-              },
-            }}
-          >
-            <Sider
-              Title={() => (
-                <Link to="/">
-                  <img
-                    src={watermark}
-                    alt="DanceBlue Logo"
-                    style={{ width: "100%" }}
-                  />
-                </Link>
-              )}
-              getItems={({ items, logout }) => [
-                ...items,
-                {
-                  key: "settings",
-                  icon: <SettingOutlined />,
-                  onClick: () => setSettinsOpen(true),
-                  label: "Settings",
-                },
-                ...(logout ? [logout] : []),
-              ]}
-            />
-          </ConfigProvider>
-          <Layout>
-            {masquerading && (
-              <div
-                style={{
-                  background: "rgba(255, 0, 0, 0.5)",
-                  padding: "1ch",
-                  width: "100%",
-                  textAlign: "center",
-                }}
-              >
-                You are currently masquerading as another user
-              </div>
-            )}
-            <Layout.Content style={{ padding: "1vh 3vw", overflowY: "scroll" }}>
-              <Outlet />
-            </Layout.Content>
-          </Layout>
-        </Layout>
+        <AntApp style={{ height: "100%" }}>{content}</AntApp>
         <Suspense>
           <TanStackRouterDevtools position="bottom-right" />
           <ConfigModal
@@ -215,61 +221,60 @@ export const Route = createRootRouteWithContext<RouterContext>()({
       notification.error({ message: String(error) })
     );
   },
-  staticData: {
-    authorizationRules: null,
+  head: () => {
+    return {
+      meta: [
+        {
+          title: "DB Admin Portal",
+        },
+        {
+          // eslint-disable-next-line unicorn/text-encoding-identifier-case
+          charSet: "UTF-8",
+        },
+        {
+          name: "viewport",
+          content: "width=device-width, initial-scale=1.0",
+        },
+        {
+          name: "msapplication-TileImage",
+          content: "/assets/watermark-512.png",
+        },
+      ],
+      links: [
+        {
+          rel: "icon",
+          href: "/assets/watermark-256.png",
+          sizes: "256x256",
+        },
+        {
+          rel: "icon",
+          href: "/assets/watermark-512.png",
+          sizes: "512x512",
+        },
+        {
+          rel: "icon",
+          type: "image/svg+xml",
+          href: "/assets/watermark.svg",
+        },
+      ],
+      scripts: [
+        {
+          type: "module",
+          children: `import RefreshRuntime from "/@react-refresh"
+        RefreshRuntime.injectIntoGlobalHook(window)
+        window.$RefreshReg$ = () => {}
+        window.$RefreshSig$ = () => (type) => type
+        window.__vite_plugin_react_preamble_installed__ = true`,
+        },
+        {
+          type: "module",
+          src: "/@vite/client",
+        },
+        {
+          type: "module",
+          src: "/src/entry-client.tsx",
+        },
+      ],
+    };
   },
-  head: () => ({
-    meta: [
-      {
-        title: "DB Admin Portal",
-      },
-      {
-        // eslint-disable-next-line unicorn/text-encoding-identifier-case
-        charSet: "UTF-8",
-      },
-      {
-        name: "viewport",
-        content: "width=device-width, initial-scale=1.0",
-      },
-      {
-        name: "msapplication-TileImage",
-        content: "/assets/watermark-512.png",
-      },
-    ],
-    links: [
-      {
-        rel: "icon",
-        href: "/assets/watermark-256.png",
-        sizes: "256x256",
-      },
-      {
-        rel: "icon",
-        href: "/assets/watermark-512.png",
-        sizes: "512x512",
-      },
-      {
-        rel: "icon",
-        type: "image/svg+xml",
-        href: "/assets/watermark.svg",
-      },
-    ],
-    scripts: [
-      //     {
-      //       type: "module",
-      //       children: `import RefreshRuntime from "/@react-refresh"
-      // RefreshRuntime.injectIntoGlobalHook(window)
-      // window.$RefreshReg$ = () => {}
-      // window.$RefreshSig$ = () => (type) => type
-      // window.__vite_plugin_react_preamble_installed__ = true`,
-      //     },
-      //     {
-      //       type: "module",
-      //       src: "/@vite/client",
-      //     },
-      {
-        type: "module",
-        src: "/src/entry-client.tsx",
-      },
-    ],
-  }),
 });

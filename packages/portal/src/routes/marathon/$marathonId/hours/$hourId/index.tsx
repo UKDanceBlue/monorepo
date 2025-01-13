@@ -2,7 +2,6 @@ import { useForm } from "@tanstack/react-form";
 import { createFileRoute } from "@tanstack/react-router";
 import { useNavigate } from "@tanstack/react-router";
 import { dateTimeFromSomething } from "@ukdanceblue/common";
-import { Editable, useEditor } from "@wysimark/react";
 import { Button, Input } from "antd";
 import type { DateTime } from "luxon";
 import { useMutation, useQuery } from "urql";
@@ -104,8 +103,6 @@ function EditMarathonHourPage() {
     },
   });
 
-  const editor = useEditor({});
-
   return (
     <div>
       <TanAntForm handleSubmit={formApi.handleSubmit}>
@@ -144,10 +141,10 @@ function EditMarathonHourPage() {
             status,
           }: TanAntChildInputProps<string | undefined>) => (
             <>
-              <Editable
-                editor={editor}
-                onChange={onChange}
-                value={value ?? ""}
+              {/* TODO: Convert to mdxeditor */}
+              <Input.TextArea
+                onChange={(e) => onChange(e.target.value)}
+                value={value}
                 placeholder="Hour instructions, etc."
               />
               {status && <div>{status}</div>}

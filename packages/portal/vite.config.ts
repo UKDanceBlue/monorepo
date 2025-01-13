@@ -19,11 +19,6 @@ export const literalConfig: UserConfig = {
       "type-graphql": "type-graphql/shim",
     },
   },
-  server: {
-    watch: {
-      usePolling: true,
-    },
-  },
   build: {
     chunkSizeWarningLimit: 1000,
     sourcemap: true,
@@ -40,6 +35,17 @@ export const literalConfig: UserConfig = {
       disable: process.env.NODE_ENV !== "production",
     }),
   ],
+  ssr: {
+    external: ["@sentry/profiling-node"],
+    noExternal: [
+      "antd",
+      /^@ant-design/,
+      /^rc-/,
+      /^@emoji-mart/,
+      /^@emotion/,
+      /@rc-component/,
+    ],
+  },
 };
 
 // https://vitejs.dev/config/

@@ -8,9 +8,6 @@
 -- DropForeignKey
 ALTER TABLE "PointEntry" DROP CONSTRAINT "PointEntry_pointOpportunityId_fkey";
 
--- DropIndex
-DROP INDEX "Team_correspondingCommitteeId_key";
-
 -- AlterTable
 ALTER TABLE "PointEntry"
 ALTER COLUMN "pointOpportunityId" DROP NOT NULL;

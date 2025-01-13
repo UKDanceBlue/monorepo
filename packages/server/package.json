@@ -35,7 +35,7 @@
     "dev": "tsc --watch & node --enable-source-maps --watch ./dist/src/index.js",
     "lint": "eslint .",
     "migrate-and-start": "yarn dlx prisma migrate deploy && yarn run start",
-    "start": "node  --enable-source-maps ./dist/src/index.js",
+    "start": "node  --enable-source-maps --experimental-require-module ./dist/src/index.js",
     "repl": "node --enable-source-maps ./dist/src/repl.js",
     "test": "jest"
   },

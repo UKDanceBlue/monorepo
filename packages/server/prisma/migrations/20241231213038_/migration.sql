@@ -276,9 +276,6 @@ CREATE UNIQUE INDEX "FundraisingAssignment_personId_fundraisingId_key" ON "Fundr
 -- CreateIndex
 CREATE UNIQUE INDEX "Team_persistentIdentifier_key" ON "Team"("persistentIdentifier");
 
--- CreateIndex
-CREATE UNIQUE INDEX "Team_correspondingCommitteeId_key" ON "Team"("correspondingCommitteeId");
-
 -- AddForeignKey
 ALTER TABLE "Image"
 ADD CONSTRAINT "Image_fileId_fkey" FOREIGN KEY ("fileId") REFERENCES "File"("id") ON DELETE
