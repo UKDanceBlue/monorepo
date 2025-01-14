@@ -2,17 +2,12 @@ import { DevtoolsProvider } from "@refinedev/devtools";
 import { StrictMode } from "react";
 import { Provider as UrqlProvider } from "urql";
 
-import { AntdThemeProvider } from "#config/ant.js";
-import { urqlClient } from "#config/api.js";
-import { MarathonConfigProvider } from "#config/marathon.js";
-import { NivoThemeProvider } from "#config/nivo.js";
+import { AntdThemeProvider } from "#config/ant.tsx";
+import { urqlClient } from "#config/api.ts";
+import { MarathonConfigProvider } from "#config/marathon.tsx";
+import { NivoThemeProvider } from "#config/nivo.tsx";
 
-if (typeof window !== "undefined") {
-  // @ts-expect-error Avoid an annoying log message from a library
-  window.process = { env: {} };
-}
-
-export function MainContext({ children }: { children: React.ReactNode }) {
+export function InnerContext({ children }: { children: React.ReactNode }) {
   return (
     <StrictMode>
       <AntdThemeProvider>
@@ -26,4 +21,8 @@ export function MainContext({ children }: { children: React.ReactNode }) {
       </AntdThemeProvider>
     </StrictMode>
   );
+}
+
+export function OuterContext({ children }: { children: React.ReactNode }) {
+  return <>{children}</>;
 }

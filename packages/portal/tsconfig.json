@@ -39,6 +39,12 @@
       }
     ]
   },
-  "include": ["./src", "./gql", "./mocks", "./vite.config.ts"],
+  "include": [
+    "./src",
+    "./gql",
+    "./mocks",
+    "./vite.config.ts",
+    "./scripts/genAntdCss.tsx"
+  ],
   "extends": "../../tsconfig.json"
 }

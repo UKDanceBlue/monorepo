@@ -1,19 +1,36 @@
 import { pipeline } from "node:stream/promises";
 
+import { extractStyle } from "@ant-design/static-style-extract";
 import {
   createRequestHandler,
   defaultStreamHandler,
 } from "@tanstack/start/server";
+import { ConfigProvider } from "antd";
 import type * as express from "express";
 
+import { makeAntDesignTheme } from "#config/makeAntDesignTheme.ts";
+
 import { createRouter } from "./router";
+
+const cssLight = extractStyle((node) => (
+  <ConfigProvider theme={makeAntDesignTheme({ dark: false })}>
+    {node}
+  </ConfigProvider>
+));
+
+const cssDark = extractStyle((node) => (
+  <ConfigProvider theme={makeAntDesignTheme({ dark: true })}>
+    {node}
+  </ConfigProvider>
+));
+
+console.log("Light theme CSS:", cssLight);
+console.log("Dark theme CSS:", cssDark);
 
 export async function render({
   req,
   res,
-  head,
 }: {
-  head: string;
   req: express.Request;
   res: express.Response;
 }) {
@@ -44,7 +61,6 @@ export async function render({
       router.update({
         context: {
           ...router.options.context,
-          head,
         },
       });
       return router;

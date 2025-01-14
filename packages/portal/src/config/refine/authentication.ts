@@ -63,11 +63,15 @@ function openAuthPopup(
 
 export const authProvider: AuthProvider = {
   // required methods
-  login: async ({ email, password, linkblue }): Promise<AuthActionResponse> => {
+  login: async ({
+    email,
+    password,
+    providerName,
+  }): Promise<AuthActionResponse> => {
     try {
       const result = await openAuthPopup(
         "login",
-        linkblue ? {} : { email, password }
+        providerName === "Linkblue" ? {} : { email, password }
       );
       const loginState = await refreshLoginState(urqlClient);
       return {

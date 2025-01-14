@@ -1,67 +1,19 @@
+import { createCache } from "@ant-design/cssinjs";
 import { createRouter as createTanstackRouter } from "@tanstack/react-router";
 import { Result, Spin } from "antd";
 import type { useAppProps } from "antd/es/app/context";
-import { DateTime, Duration, Interval } from "luxon";
-import { registerCustom, SuperJSON } from "superjson";
 
 import { urqlClient } from "#config/api.js";
 import { LoadingRibbon } from "#elements/components/design/RibbonSpinner.js";
+import { InnerContext, OuterContext } from "#elements/Context.js";
 
-import { MainContext } from "./main.js";
 import { routeTree } from "./routeTree.gen.js";
+import { transformer } from "./transformer.js";
 
-const transformer = new SuperJSON();
-registerCustom<DateTime, string>(
-  {
-    isApplicable(v) {
-      return DateTime.isDateTime(v);
-    },
-    serialize(v: DateTime) {
-      if (v.isValid) {
-        return (v as DateTime<true>).toISO();
-      }
-      throw new Error("Invalid DateTime");
-    },
-    deserialize(v: string) {
-      return DateTime.fromISO(v);
-    },
-  },
-  "DateTime"
-);
-registerCustom<Duration, string>(
-  {
-    isApplicable(v) {
-      return Duration.isDuration(v);
-    },
-    serialize(v: Duration) {
-      if (v.isValid) {
-        return (v as Duration<true>).toISO();
-      }
-      throw new Error("Invalid Duration");
-    },
-    deserialize(v: string) {
-      return Duration.fromISO(v);
-    },
-  },
-  "Duration"
-);
-registerCustom<Interval, string>(
-  {
-    isApplicable(v) {
-      return Interval.isInterval(v);
-    },
-    serialize(v: Interval) {
-      if (v.isValid) {
-        return (v as Interval<true>).toISO();
-      }
-      throw new Error("Invalid Interval");
-    },
-    deserialize(v: string) {
-      return Interval.fromISO(v);
-    },
-  },
-  "Interval"
-);
+if (typeof window !== "undefined") {
+  // @ts-expect-error Avoid an annoying log message from a library
+  window.process = { env: {} };
+}
 
 export function createRouter() {
   return createTanstackRouter({
@@ -80,6 +32,8 @@ export function createRouter() {
         return value;
       },
     },
+    Wrap: OuterContext,
+    InnerWrap: InnerContext,
     defaultPendingComponent: () => (
       <div
         style={{
@@ -119,10 +73,9 @@ export function createRouter() {
     context: {
       urqlClient,
       antApp: {} as useAppProps,
-      head: "",
+      cache: createCache(),
     },
     defaultPreload: false,
-    Wrap: MainContext,
   });
 }
 
