@@ -7,7 +7,7 @@ import { RefreshControl } from "react-native-gesture-handler";
 
 import Breadcrumbs from "@/common/components/Breadcrumbs";
 import { useThemeColors, useThemeFonts } from "@/common/customHooks";
-import type { FragmentType } from "@/graphql/index";
+import type { FragmentOf } from "@/graphql/index";
 import { graphql, readFragment } from "@/graphql/index";
 
 import DanceBlueRibbon from "../../../../../../assets/svgs/DBRibbon";
@@ -34,8 +34,8 @@ const FundraisingScreen = ({
   loading: loading,
   refresh: refresh,
 }: {
-  myTeamFragment: FragmentType<typeof MyTeamFragment> | null;
-  myFundraisingFragment: FragmentType<typeof MyFundraisingFragment> | null;
+  myTeamFragment: FragmentOf<typeof MyTeamFragment> | null;
+  myFundraisingFragment: FragmentOf<typeof MyFundraisingFragment> | null;
   loading: boolean;
   refresh: () => void;
 }) => {
@@ -146,7 +146,7 @@ const FundraisingScreen = ({
                   padding={3}
                 >
                   <ScoreboardItem
-                    name={`${assignment.entry.donatedByText}\n${dateTimeFromSomething(assignment.entry.donatedOn).toLocaleString(DateTime.DATE_SHORT)}`}
+                    name={`${assignment.entry.donatedByText}\n${dateTimeFromSomething(assignment.entry.donatedOn)?.toLocaleString(DateTime.DATE_SHORT)}`}
                     amount={assignment.amount}
                     rank={undefined}
                     amountPrefix="$"

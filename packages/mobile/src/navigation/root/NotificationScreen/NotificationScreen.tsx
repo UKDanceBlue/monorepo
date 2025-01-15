@@ -12,7 +12,7 @@ import JumbotronGeometric from "@/common/components/JumbotronGeometric";
 import { NotificationDeliveryFragment } from "@/common/fragments/NotificationScreenGQL";
 import { Logger } from "@/common/logger/Logger";
 import { universalCatch } from "@/common/logging";
-import type { FragmentType } from "@/graphql/index";
+import type { FragmentOf } from "@/graphql/index";
 import { readFragment } from "@/graphql/index";
 
 import { useDeviceData, useLoading } from "../../../context";
@@ -40,7 +40,7 @@ function NotificationScreen() {
 
   const sections = useMemo(() => {
     const sections: Partial<
-      Record<string, FragmentType<typeof NotificationDeliveryFragment>[]>
+      Record<string, FragmentOf<typeof NotificationDeliveryFragment>[]>
     > = {};
 
     for (const notification of notifications ?? []) {
@@ -60,7 +60,7 @@ function NotificationScreen() {
 
     const sectionsArray: {
       title: string;
-      data: FragmentType<typeof NotificationDeliveryFragment>[];
+      data: FragmentOf<typeof NotificationDeliveryFragment>[];
     }[] = [];
 
     for (const [title, data] of Object.entries(sections)) {

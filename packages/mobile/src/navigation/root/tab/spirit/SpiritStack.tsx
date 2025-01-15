@@ -8,35 +8,50 @@ import { showMessage } from "@/common/util/alertUtils";
 import { graphql } from "@/graphql/index";
 
 import type { SpiritStackParamList } from "../../../../types/navigationTypes";
-import FundraisingScreen from "./FundraisingScreen/FundraisingScreen";
+import FundraisingScreen, {
+  MyFundraisingFragment,
+} from "./FundraisingScreen/FundraisingScreen";
 import ScoreboardScreen from "./ScoreBoardScreen";
+import {
+  HighlightedTeamFragment,
+  ScoreBoardFragment,
+} from "./ScoreBoardScreen/ScoreBoardScreen";
 import TeamScreen from "./TeamScreen";
+import { MyTeamFragment } from "./TeamScreen/TeamScreen";
 
-const scoreBoardDocument = graphql(/* GraphQL */ `
-  query ScoreBoardDocument($type: TeamType!, $marathonId: GlobalId!) {
-    me {
-      id
-      primaryTeam(teamType: $type) {
-        team {
-          ...HighlightedTeamFragment
-          ...MyTeamFragment
+const scoreBoardDocument = graphql(
+  /* GraphQL */ `
+    query ScoreBoardDocument($type: TeamType!, $marathonId: GlobalId!) {
+      me {
+        id
+        primaryTeam(teamType: $type) {
+          team {
+            ...HighlightedTeamFragment
+            ...MyTeamFragment
+          }
+        }
+        ...MyFundraisingFragment
+      }
+      teams(
+        sendAll: true
+        sortBy: ["totalPoints", "name"]
+        sortDirection: [desc, asc]
+        type: [$type]
+        marathonId: [$marathonId]
+      ) {
+        data {
+          ...ScoreBoardFragment
         }
       }
-      ...MyFundraisingFragment
     }
-    teams(
-      sendAll: true
-      sortBy: ["totalPoints", "name"]
-      sortDirection: [desc, asc]
-      type: [$type]
-      marathonId: [$marathonId]
-    ) {
-      data {
-        ...ScoreBoardFragment
-      }
-    }
-  }
-`);
+  `,
+  [
+    ScoreBoardFragment,
+    HighlightedTeamFragment,
+    MyTeamFragment,
+    MyFundraisingFragment,
+  ]
+);
 
 const currentMarathonDocument = graphql(/* GraphQL */ `
   query ActiveMarathonDocument {

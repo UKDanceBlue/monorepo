@@ -11,20 +11,20 @@ import Animated, {
 
 import type { NotificationDeliveryFragment } from "@/common/fragments/NotificationScreenGQL";
 import { showMessage } from "@/common/util/alertUtils";
-import type { FragmentType } from "@/graphql/index";
+import type { FragmentOf } from "@/graphql/index";
 
 import { NotificationRowContent } from "./NotificationRowContent";
 
 export const AnimatedNotificationRow: SectionListRenderItem<
-  FragmentType<typeof NotificationDeliveryFragment> | undefined,
+  FragmentOf<typeof NotificationDeliveryFragment> | undefined,
   {
     title: string;
-    data: (FragmentType<typeof NotificationDeliveryFragment> | undefined)[];
+    data: (FragmentOf<typeof NotificationDeliveryFragment> | undefined)[];
   }
 > = ({
   item: notification,
 }: {
-  item: FragmentType<typeof NotificationDeliveryFragment> | undefined;
+  item: FragmentOf<typeof NotificationDeliveryFragment> | undefined;
 }) => {
   const { width: screenWidth } = useWindowDimensions();
   const { sizes } = useTheme();

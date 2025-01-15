@@ -11,20 +11,23 @@ import ImageView, {
 } from "@/common/components/ImageView/ImageView";
 import NativeBaseMarkdown from "@/common/components/NativeBaseMarkdown";
 import { TriviaCrack } from "@/common/marathonComponents/TriviaCrack";
-import type { FragmentType } from "@/graphql/index";
+import type { FragmentOf } from "@/graphql/index";
 import { graphql, readFragment } from "@/graphql/index";
 
-const HourScreenFragment = graphql(/* GraphQL */ `
-  fragment HourScreenFragment on MarathonHourNode {
-    id
-    title
-    details
-    durationInfo
-    mapImages {
-      ...ImageViewFragment
+export const HourScreenFragment = graphql(
+  /* GraphQL */ `
+    fragment HourScreenFragment on MarathonHourNode {
+      id
+      title
+      details
+      durationInfo
+      mapImages {
+        ...ImageViewFragment
+      }
     }
-  }
-`);
+  `,
+  [ImageViewFragment]
+);
 
 export const HourScreenComponent = ({
   hourScreenFragment,
@@ -32,7 +35,7 @@ export const HourScreenComponent = ({
   refresh,
   showSecretMenu,
 }: {
-  hourScreenFragment: FragmentType<typeof HourScreenFragment>;
+  hourScreenFragment: FragmentOf<typeof HourScreenFragment>;
   isLoading: boolean;
   refresh: () => void;
   showSecretMenu: () => void;

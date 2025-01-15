@@ -8,7 +8,7 @@ import { useQuery } from "urql";
 
 import { Logger } from "@/common/logger/Logger";
 import { showMessage } from "@/common/util/alertUtils";
-import type { FragmentType } from "@/graphql/index";
+import type { FragmentOf } from "@/graphql/index";
 import { graphql, readFragment } from "@/graphql/index";
 import { EventScreenFragment } from "@/navigation/root/EventScreen/EventScreenFragment";
 
@@ -93,15 +93,12 @@ export function dateDataToLuxonDateTime(
  * @returns An object keyed by month string, with the values being the events in that month
  */
 export const splitEvents = (
-  events: readonly FragmentType<typeof EventScreenFragment>[]
+  events: readonly FragmentOf<typeof EventScreenFragment>[]
 ) => {
   const newEvents: Partial<
     Record<
       string,
-      [
-        event: FragmentType<typeof EventScreenFragment>,
-        occurrenceUuid: string,
-      ][]
+      [event: FragmentOf<typeof EventScreenFragment>, occurrenceUuid: string][]
     >
   > = {};
 
@@ -164,7 +161,7 @@ const MULTI_DAY_EVENT_COLOR = "#3d3d80";
  * @returns A MarkedDates object for react-native-calendars
  */
 export const markEvents = (
-  events: readonly FragmentType<typeof EventScreenFragment>[]
+  events: readonly FragmentOf<typeof EventScreenFragment>[]
 ) => {
   const marked: Partial<MarkedDates> = {};
 
@@ -244,33 +241,36 @@ export const useEvents = ({
   }
 
   const [eventsQueryResult, refresh] = useQuery({
-    query: graphql(/* GraphQL */ `
-      query Events(
-        $earliestTimestamp: DateTimeISO!
-        $lastTimestamp: DateTimeISO!
-      ) {
-        events(
-          dateFilters: [
-            {
-              comparison: GREATER_THAN_OR_EQUAL_TO
-              field: occurrenceStart
-              value: $earliestTimestamp
-            }
-            {
-              comparison: LESS_THAN_OR_EQUAL_TO
-              field: occurrenceStart
-              value: $lastTimestamp
-            }
-          ]
-          sortDirection: asc
-          sortBy: "occurrence"
+    query: graphql(
+      /* GraphQL */ `
+        query Events(
+          $earliestTimestamp: DateTimeISO!
+          $lastTimestamp: DateTimeISO!
         ) {
-          data {
-            ...EventScreenFragment
+          events(
+            dateFilters: [
+              {
+                comparison: GREATER_THAN_OR_EQUAL_TO
+                field: occurrenceStart
+                value: $earliestTimestamp
+              }
+              {
+                comparison: LESS_THAN_OR_EQUAL_TO
+                field: occurrenceStart
+                value: $lastTimestamp
+              }
+            ]
+            sortDirection: asc
+            sortBy: "occurrence"
+          ) {
+            data {
+              ...EventScreenFragment
+            }
           }
         }
-      }
-    `),
+      `,
+      [EventScreenFragment]
+    ),
     variables: {
       earliestTimestamp: month.startOf("month").toISO(),
       lastTimestamp: month.endOf("month").toISO(),

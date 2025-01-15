@@ -82,6 +82,7 @@
     "expo-status-bar": "~2.0.0",
     "expo-updates": "~0.26.7",
     "expo-web-browser": "~14.0.1",
+    "gql.tada": "^1.8.10",
     "graphql": "^16.10.0",
     "graphql-scalars": "^1.24.0",
     "lodash": "^4.17.21",

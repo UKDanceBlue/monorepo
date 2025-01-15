@@ -2,12 +2,12 @@ import { Heading, View } from "native-base";
 import type { SectionListProps } from "react-native";
 
 import type { NotificationDeliveryFragment } from "@/common/fragments/NotificationScreenGQL";
-import type { FragmentType } from "@/graphql/index";
+import type { FragmentOf } from "@/graphql/index";
 
 type NotificationSectionHeaderType = NonNullable<
   SectionListProps<
-    FragmentType<typeof NotificationDeliveryFragment> | undefined,
-    { title: string; data: FragmentType<typeof NotificationDeliveryFragment>[] }
+    FragmentOf<typeof NotificationDeliveryFragment> | undefined,
+    { title: string; data: FragmentOf<typeof NotificationDeliveryFragment>[] }
   >["renderSectionHeader"]
 >;
 export const NotificationSectionHeader: NotificationSectionHeaderType = ({

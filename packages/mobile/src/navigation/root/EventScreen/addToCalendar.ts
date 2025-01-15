@@ -10,13 +10,13 @@ import {
 import { universalCatch } from "@/common/logging";
 import { showMessage, showPrompt } from "@/common/util/alertUtils";
 import { discoverDefaultCalendar } from "@/common/util/calendar";
-import type { FragmentType } from "@/graphql/index";
+import type { FragmentOf } from "@/graphql/index";
 import { readFragment } from "@/graphql/index";
 
 import { EventScreenFragment } from "./EventScreenFragment";
 
 export async function onAddToCalendar(
-  event: FragmentType<typeof EventScreenFragment>,
+  event: FragmentOf<typeof EventScreenFragment>,
   occurrenceId: string
 ) {
   const eventData = readFragment(EventScreenFragment, event);

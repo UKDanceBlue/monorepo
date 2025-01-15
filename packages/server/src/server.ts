@@ -74,8 +74,9 @@ export async function createServer() {
 
   const app = express();
   app.set("trust proxy", true);
-  app.use((req) => {
+  app.use((req, _, next) => {
     req.getService = Container.get.bind(Container);
+    next();
   });
 
   setupExpressErrorHandler(app, {

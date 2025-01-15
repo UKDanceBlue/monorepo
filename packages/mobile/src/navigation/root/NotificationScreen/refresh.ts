@@ -3,49 +3,52 @@ import { DateTime } from "luxon";
 import { useCallback, useEffect, useState } from "react";
 import { useClient } from "urql";
 
-import type { NotificationDeliveryFragment } from "@/common/fragments/NotificationScreenGQL";
+import { NotificationDeliveryFragment } from "@/common/fragments/NotificationScreenGQL";
 import { useAsyncStorage } from "@/common/hooks/useAsyncStorage";
 import { Logger } from "@/common/logger/Logger";
 import { showMessage } from "@/common/util/alertUtils";
 import { useDeviceData } from "@/context/device";
-import type { FragmentType } from "@/graphql/index";
+import type { FragmentOf } from "@/graphql/index";
 import { graphql } from "@/graphql/index";
 
 const NOTIFICATION_PAGE_SIZE = 8;
 const INCOMPLETE_PAGE_TIMEOUT = 10_000;
 
-export const deviceNotificationsQuery = graphql(/* GraphQL */ `
-  query DeviceNotifications(
-    $deviceUuid: String!
-    $page: Int
-    $pageSize: Int
-    $verifier: String!
-  ) {
-    device(uuid: $deviceUuid) {
-      data {
-        notificationDeliveries(
-          pageSize: $pageSize
-          page: $page
-          verifier: $verifier
-        ) {
-          ...NotificationDeliveryFragment
+export const deviceNotificationsQuery = graphql(
+  /* GraphQL */ `
+    query DeviceNotifications(
+      $deviceUuid: String!
+      $page: Int
+      $pageSize: Int
+      $verifier: String!
+    ) {
+      device(uuid: $deviceUuid) {
+        data {
+          notificationDeliveries(
+            pageSize: $pageSize
+            page: $page
+            verifier: $verifier
+          ) {
+            ...NotificationDeliveryFragment
+          }
         }
       }
     }
-  }
-`);
+  `,
+  [NotificationDeliveryFragment]
+);
 
 export function useLoadNotifications(): {
   refreshNotifications: (force?: boolean) => void;
   loadMoreNotifications: () => void;
   notifications:
-    | readonly FragmentType<typeof NotificationDeliveryFragment>[]
+    | readonly FragmentOf<typeof NotificationDeliveryFragment>[]
     | null;
   loading: boolean;
 } {
   // Null when loading, an array of notification pages when loaded (2D array)
   const [notificationPages, setNotificationPages] = useState<
-    (readonly FragmentType<typeof NotificationDeliveryFragment>[])[] | null
+    (readonly FragmentOf<typeof NotificationDeliveryFragment>[])[] | null
   >([]);
   const [, setHasWarnedAboutNoNotifications] = useState(false);
   const [loadingNotification, setLoadingNotification] = useState(false);
@@ -59,7 +62,7 @@ export function useLoadNotifications(): {
         Logger.debug("Loaded cached notifications");
         setNotificationPages((notificationPages) =>
           notificationPages?.length === 0
-            ? (JSON.parse(cached) as (readonly FragmentType<
+            ? (JSON.parse(cached) as (readonly FragmentOf<
                 typeof NotificationDeliveryFragment
               >[])[])
             : notificationPages

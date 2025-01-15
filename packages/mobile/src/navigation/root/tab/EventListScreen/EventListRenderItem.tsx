@@ -7,7 +7,7 @@ import { useCallback, useMemo } from "react";
 import type { ListRenderItem } from "react-native";
 import { TouchableOpacity } from "react-native-gesture-handler";
 
-import type { FragmentType } from "@/graphql/index";
+import type { FragmentOf } from "@/graphql/index";
 import { readFragment } from "@/graphql/index";
 import { EventScreenFragment } from "@/navigation/root/EventScreen/EventScreenFragment";
 
@@ -22,14 +22,14 @@ export const EventListRenderItem = ({
 }: Omit<
   Parameters<
     ListRenderItem<
-      [event: FragmentType<typeof EventScreenFragment>, occurrenceUuid: string]
+      [event: FragmentOf<typeof EventScreenFragment>, occurrenceUuid: string]
     >
   >[0],
   "separators"
 > & {
   dayIndexesRef: MutableRefObject<Partial<Record<string, number>>>;
   tryToNavigate: (
-    event: FragmentType<typeof EventScreenFragment>,
+    event: FragmentOf<typeof EventScreenFragment>,
     occurrenceUuid: string
   ) => void;
 }) => {

@@ -5,18 +5,21 @@ import { SimpleConfigFragment } from "@/common/fragments/Configuration";
 import { Logger } from "@/common/logger/Logger";
 import { graphql, readFragment } from "@/graphql/index";
 
-const useTabBarConfigQuery = graphql(/* GraphQL */ `
-  query useTabBarConfig {
-    activeConfiguration(key: "TAB_BAR_CONFIG") {
-      data {
-        ...SimpleConfig
+const useTabBarConfigQuery = graphql(
+  /* GraphQL */ `
+    query useTabBarConfig {
+      activeConfiguration(key: "TAB_BAR_CONFIG") {
+        data {
+          ...SimpleConfig
+        }
+      }
+      me {
+        linkblue
       }
     }
-    me {
-      linkblue
-    }
-  }
-`);
+  `,
+  [SimpleConfigFragment]
+);
 
 export function useTabBarConfig(): {
   tabConfigLoading: boolean;

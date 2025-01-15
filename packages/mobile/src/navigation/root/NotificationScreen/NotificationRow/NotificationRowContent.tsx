@@ -20,7 +20,7 @@ import {
   NotificationFragment,
 } from "@/common/fragments/NotificationScreenGQL";
 import { Logger } from "@/common/logger/Logger";
-import type { FragmentType } from "@/graphql/index";
+import type { FragmentOf } from "@/graphql/index";
 import { readFragment } from "@/graphql/index";
 
 import DanceBlueRibbon from "../../../../../assets/svgs/DBRibbon";
@@ -32,7 +32,7 @@ const NonMemoizedNotificationRowContent = ({
 }: {
   loading: boolean;
   notification?:
-    | FragmentType<typeof NotificationDeliveryFragment>
+    | FragmentOf<typeof NotificationDeliveryFragment>
     | undefined
     | null;
   unread: boolean;

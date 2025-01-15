@@ -1,6 +1,6 @@
 import { Image, type ImageProps } from "expo-image";
 
-import type { FragmentType } from "@/graphql/index";
+import type { FragmentOf } from "@/graphql/index";
 import { graphql, readFragment } from "@/graphql/index";
 
 export const ImageViewFragment = graphql(/* GraphQL */ `
@@ -16,7 +16,7 @@ export const ImageViewFragment = graphql(/* GraphQL */ `
 `);
 
 interface ImageViewProps extends ImageProps {
-  imageFragment?: FragmentType<typeof ImageViewFragment> | undefined | null;
+  imageFragment?: FragmentOf<typeof ImageViewFragment> | undefined | null;
   renderWidth?: number;
   renderHeight?: number;
   source?: never;

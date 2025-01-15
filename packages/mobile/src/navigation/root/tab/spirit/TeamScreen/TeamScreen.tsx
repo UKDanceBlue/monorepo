@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 import { useWindowDimensions } from "react-native";
 
 import type { StandingType } from "@/common-types/StandingType";
-import type { FragmentType } from "@/graphql/index";
+import type { FragmentOf } from "@/graphql/index";
 import { graphql, readFragment } from "@/graphql/index";
 
 import TeamInformation from "./TeamInformation";
@@ -54,7 +54,7 @@ const TeamScreen = ({
   loading: _loading,
   refresh: _refresh,
 }: {
-  myTeamFragment: FragmentType<typeof MyTeamFragment> | null;
+  myTeamFragment: FragmentOf<typeof MyTeamFragment> | null;
   userUuid: string;
   loading: boolean;
   refresh: () => void;

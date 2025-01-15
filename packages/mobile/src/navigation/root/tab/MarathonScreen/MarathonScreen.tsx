@@ -13,23 +13,26 @@ import { useNetworkStatus } from "@/common/customHooks";
 import { Logger } from "@/common/logger/Logger";
 import { graphql } from "@/graphql/index";
 
-import { HourScreenComponent } from "./HourScreenComponent";
+import { HourScreenComponent, HourScreenFragment } from "./HourScreenComponent";
 import { MarathonCountdownScreen } from "./MarathonCountdownScreen";
 
-const marathonScreenDocument = graphql(/* GraphQL */ `
-  query MarathonScreen {
-    currentMarathonHour {
-      ...HourScreenFragment
-    }
-    latestMarathon {
-      startDate
-      endDate
-      hours {
+const marathonScreenDocument = graphql(
+  /* GraphQL */ `
+    query MarathonScreen {
+      currentMarathonHour {
         ...HourScreenFragment
       }
+      latestMarathon {
+        startDate
+        endDate
+        hours {
+          ...HourScreenFragment
+        }
+      }
     }
-  }
-`);
+  `,
+  [HourScreenFragment]
+);
 
 export const MarathonScreen = () => {
   const { height: vpHeight, width: vpWidth } = useWindowDimensions();

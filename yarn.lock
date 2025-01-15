@@ -12317,6 +12317,7 @@ __metadata:
     expo-status-bar: "npm:~2.0.0"
     expo-updates: "npm:~0.26.7"
     expo-web-browser: "npm:~14.0.1"
+    gql.tada: "npm:^1.8.10"
     graphql: "npm:^16.10.0"
     graphql-scalars: "npm:^1.24.0"
     lodash: "npm:^4.17.21"

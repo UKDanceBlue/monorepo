@@ -35,24 +35,27 @@ const stationNumberToName = (stationNumber: number) => {
 
 export function TriviaCrack() {
   const [{ data }] = useQuery({
-    query: graphql(/* GraphQL */ `
-      query TriviaCrack {
-        activeConfiguration(key: "TRIVIA_CRACK") {
-          data {
-            ...SimpleConfig
+    query: graphql(
+      /* GraphQL */ `
+        query TriviaCrack {
+          activeConfiguration(key: "TRIVIA_CRACK") {
+            data {
+              ...SimpleConfig
+            }
           }
-        }
 
-        me {
-          teams {
-            team {
-              type
-              name
+          me {
+            teams {
+              team {
+                type
+                name
+              }
             }
           }
         }
-      }
-    `),
+      `,
+      [SimpleConfigFragment]
+    ),
   });
 
   const [spins, setSpins] = useState<number[] | null>(null);

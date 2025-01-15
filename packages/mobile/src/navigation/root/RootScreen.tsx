@@ -20,28 +20,33 @@ import EventScreen from "./EventScreen";
 import { EventScreenFragment } from "./EventScreen/EventScreenFragment";
 import SplashLogin from "./Modals/SplashLogin";
 import NotificationScreen from "./NotificationScreen";
-import ProfileScreen from "./ProfileScreen";
+import ProfileScreen, {
+  ProfileScreenAuthFragment,
+  ProfileScreenUserFragment,
+} from "./ProfileScreen";
 import TabBar from "./tab/TabBar";
 
 // import HourScreen from "./tab/HoursScreen/HourScreen";
-
-const rootScreenDocument = graphql(/* GraphQL */ `
-  query RootScreenDocument {
-    loginState {
-      ...ProfileScreenAuthFragment
-      ...RootScreenAuthFragment
-    }
-    me {
-      ...ProfileScreenUserFragment
-    }
-  }
-`);
 
 const RootScreenAuthFragment = graphql(/* GraphQL */ `
   fragment RootScreenAuthFragment on LoginState {
     dbRole
   }
 `);
+const rootScreenDocument = graphql(
+  /* GraphQL */ `
+    query RootScreenDocument {
+      loginState {
+        ...ProfileScreenAuthFragment
+        ...RootScreenAuthFragment
+      }
+      me {
+        ...ProfileScreenUserFragment
+      }
+    }
+  `,
+  [ProfileScreenAuthFragment, RootScreenAuthFragment, ProfileScreenUserFragment]
+);
 
 const RootStack = createNativeStackNavigator<RootStackParamList>();
 

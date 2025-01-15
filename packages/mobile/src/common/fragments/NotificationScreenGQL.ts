@@ -9,12 +9,15 @@ export const NotificationFragment = graphql(/* GraphQL */ `
   }
 `);
 
-export const NotificationDeliveryFragment = graphql(/* GraphQL */ `
-  fragment NotificationDeliveryFragment on NotificationDeliveryNode {
-    id
-    sentAt
-    notification {
-      ...NotificationFragment
+export const NotificationDeliveryFragment = graphql(
+  /* GraphQL */ `
+    fragment NotificationDeliveryFragment on NotificationDeliveryNode {
+      id
+      sentAt
+      notification {
+        ...NotificationFragment
+      }
     }
-  }
-`);
+  `,
+  [NotificationFragment]
+);

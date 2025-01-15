@@ -142,8 +142,13 @@ export function Main() {
 
   return (
     <>
-      <AntApp style={{ height: "100%" }}>{content}</AntApp>
-      <ConfigModal open={settingsOpen} onClose={() => setSettinsOpen(false)} />
+      <AntApp style={{ height: "100%" }}>
+        {content}
+        <ConfigModal
+          open={settingsOpen}
+          onClose={() => setSettinsOpen(false)}
+        />
+      </AntApp>
     </>
   );
 }

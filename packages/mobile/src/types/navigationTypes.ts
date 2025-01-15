@@ -5,7 +5,7 @@ import type {
 } from "@react-navigation/native";
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
 
-import type { FragmentType } from "@/graphql/index";
+import type { FragmentOf } from "@/graphql/index";
 
 import type { EventScreenFragment } from "../navigation/root/EventScreen/EventScreenFragment";
 
@@ -44,7 +44,7 @@ export type RootStackParamList = {
   "Notifications": Record<string, never>;
   "Profile": Record<string, never>;
   "Event": {
-    event: FragmentType<typeof EventScreenFragment>;
+    event: FragmentOf<typeof EventScreenFragment>;
     occurrenceId: string;
   };
   "Explorer": Record<string, never>;

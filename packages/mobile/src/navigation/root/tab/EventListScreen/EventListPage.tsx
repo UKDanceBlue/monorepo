@@ -6,7 +6,7 @@ import { FlatList } from "react-native";
 import { Calendar } from "react-native-calendars";
 import type { DateData, MarkedDates } from "react-native-calendars/src/types";
 
-import type { FragmentType } from "@/graphql/index";
+import type { FragmentOf } from "@/graphql/index";
 import type { EventScreenFragment } from "@/navigation/root/EventScreen/EventScreenFragment";
 
 import { EventListRenderItem } from "./EventListRenderItem";
@@ -30,17 +30,14 @@ export const EventListPage = ({
   eventsByMonth: Partial<
     Record<
       string,
-      [
-        event: FragmentType<typeof EventScreenFragment>,
-        occurrenceUuid: string,
-      ][]
+      [event: FragmentOf<typeof EventScreenFragment>, occurrenceUuid: string][]
     >
   >;
   marked: MarkedDates;
   refresh: () => void;
   refreshing: boolean;
   tryToNavigate: (
-    event: FragmentType<typeof EventScreenFragment>,
+    event: FragmentOf<typeof EventScreenFragment>,
     occurrenceUuid: string
   ) => void;
   disabled?: boolean;
@@ -51,7 +48,7 @@ export const EventListPage = ({
   const [selectedDay, setSelectedDay] = useState<DateData>();
   // Scroll-to-day functionality
   const eventsListRef = useRef<FlatList<
-    [FragmentType<typeof EventScreenFragment>, string]
+    [FragmentOf<typeof EventScreenFragment>, string]
   > | null>(null);
   const dayIndexes = useRef<Partial<Record<string, number>>>({});
   dayIndexes.current = {};

@@ -97,13 +97,15 @@ async function getEntryPoint(
 ): Promise<{ render: RenderFunction }> {
   if (!vite) {
     logger.debug("Importing pre-built SSR entry point");
-    return import("@ukdanceblue/portal/server/entry-server.js") as Promise<{
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    return import("@ukdanceblue/portal/server/ssr/entry-server.js") as Promise<{
       render: RenderFunction;
     }>;
   } else {
     logger.debug("Loading SSR entry point from Vite");
     const entry = await vite.ssrLoadModule(
-      "@ukdanceblue/portal/src/entry-server.tsx"
+      "@ukdanceblue/portal/src/ssr/entry-server.tsx"
     );
     return entry as { render: RenderFunction };
   }

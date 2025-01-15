@@ -10,7 +10,7 @@ import type * as express from "express";
 
 import { makeAntDesignTheme } from "#config/makeAntDesignTheme.ts";
 
-import { createRouter } from "./router";
+import { createRouter } from "../router";
 
 const cssLight = extractStyle((node) => (
   <ConfigProvider theme={makeAntDesignTheme({ dark: false })}>

@@ -13,7 +13,7 @@ import {
 import { useEffect, useMemo, useState } from "react";
 
 import Jumbotron from "@/common/components/Jumbotron";
-import type { FragmentType } from "@/graphql/index";
+import type { FragmentOf } from "@/graphql/index";
 import { graphql, readFragment } from "@/graphql/index";
 
 import type { SpiritStackScreenProps } from "../../../../../types/navigationTypes";
@@ -35,7 +35,7 @@ function addOrdinal(num: number) {
   return `${num}th`;
 }
 
-const ScoreBoardFragment = graphql(/* GraphQL */ `
+export const ScoreBoardFragment = graphql(/* GraphQL */ `
   fragment ScoreBoardFragment on TeamNode {
     id
     name
@@ -45,7 +45,7 @@ const ScoreBoardFragment = graphql(/* GraphQL */ `
   }
 `);
 
-const HighlightedTeamFragment = graphql(/* GraphQL */ `
+export const HighlightedTeamFragment = graphql(/* GraphQL */ `
   fragment HighlightedTeamFragment on TeamNode {
     id
     name
@@ -64,8 +64,8 @@ const ScoreBoardScreen = ({
   refresh,
   mode,
 }: {
-  highlightedTeamFragment: FragmentType<typeof HighlightedTeamFragment> | null;
-  scoreBoardFragment: readonly FragmentType<typeof ScoreBoardFragment>[] | null;
+  highlightedTeamFragment: FragmentOf<typeof HighlightedTeamFragment> | null;
+  scoreBoardFragment: readonly FragmentOf<typeof ScoreBoardFragment>[] | null;
   loading: boolean;
   refresh: () => void;
   mode?: "spirit" | "morale";
@@ -79,7 +79,7 @@ const ScoreBoardScreen = ({
   const { navigate } =
     useNavigation<SpiritStackScreenProps<"Scoreboard">["navigation"]>();
 
-  const teamsData = readFragment(ScoreBoardFragment, scoreBoardFragment);
+  const teamsData = readFragment(ScoreBoardFragment, scoreBoardFragment ?? []);
   const userTeamData = readFragment(
     HighlightedTeamFragment,
     highlightedTeamFragment
@@ -88,7 +88,7 @@ const ScoreBoardScreen = ({
   // Update filteredData based on the selected filter
   const filteredData = useMemo(
     () =>
-      teamsData?.filter((team) => {
+      teamsData.filter((team) => {
         const teamType: TeamType = team.type;
         const teamLegacyStatus: TeamLegacyStatus = team.legacyStatus;
         switch (filter) {
@@ -108,7 +108,7 @@ const ScoreBoardScreen = ({
             return true;
           } // Show all teams for "All" filter
         }
-      }) ?? [],
+      }),
     [teamsData, filter]
   );
 

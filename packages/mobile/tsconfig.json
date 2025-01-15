@@ -30,6 +30,15 @@
       "es2022.array",
       "es2022.object",
       "es2022.string"
+    ],
+    "plugins": [
+      {
+        "name": "gql.tada/ts-plugin",
+        "schema": "../../schema.graphql",
+        "tadaOutputLocation": "./src/graphql/graphql-env.d.ts",
+        "shouldCheckForColocatedFragments": false,
+        "trackFieldUsage": false
+      }
     ]
   },
   "extends": ["../../tsconfig.json", "./node_modules/expo/tsconfig.base.json"],

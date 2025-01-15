@@ -23,7 +23,7 @@ import { useLogin } from "@/common/auth";
 import JumbotronGeometric from "@/common/components/JumbotronGeometric";
 import { useThemeFonts } from "@/common/customHooks";
 import { universalCatch } from "@/common/logging";
-import type { FragmentType } from "@/graphql/index";
+import type { FragmentOf } from "@/graphql/index";
 import { graphql, readFragment } from "@/graphql/index";
 
 import { ProfileFooter } from "./ProfileFooter";
@@ -59,10 +59,10 @@ const ProfileScreen = ({
   profileScreenAuthFragment,
   profileScreenUserFragment,
 }: {
-  profileScreenAuthFragment: FragmentType<
+  profileScreenAuthFragment: FragmentOf<
     typeof ProfileScreenAuthFragment
   > | null;
-  profileScreenUserFragment: FragmentType<
+  profileScreenUserFragment: FragmentOf<
     typeof ProfileScreenUserFragment
   > | null;
 }) => {

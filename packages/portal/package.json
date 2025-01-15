@@ -14,17 +14,8 @@
   },
   "type": "module",
   "exports": {
-    "./server/*": {
-      "import": "./dist/server/*"
-    },
-    "./client/*": {
-      "import": "./dist/client/*"
-    },
-    "./src/*": {
-      "import": "./src/*"
-    },
-    "./index.html": {
-      "import": "./index.html"
+    "./*": {
+      "import": "./dist/*"
     }
   },
   "imports": {
