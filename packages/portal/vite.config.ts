@@ -16,6 +16,11 @@ export const literalConfig: UserConfig = {
       "type-graphql": "type-graphql/shim",
     },
   },
+  server: {
+    watch: {
+      usePolling: true,
+    },
+  },
   build: {
     chunkSizeWarningLimit: 1000,
     sourcemap: true,

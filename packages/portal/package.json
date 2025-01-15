@@ -42,9 +42,9 @@
   "scripts": {
     "refine": "refine",
     "refine-devtools": "refine devtools",
-    "build": "npm run build:client && npm run build:server",
-    "build:client": "exit 0; vite build --outDir dist/client",
-    "build:server": "vite build --ssr src/entry-server.tsx --outDir dist/server",
+    "dev": "vite --host",
+    "build": "vite build",
+    "build:ssr": "vite build --ssr src/entry-server.tsx --outDir dist/server",
     "check": "tsc --noEmit",
     "preview": "vite preview"
   },

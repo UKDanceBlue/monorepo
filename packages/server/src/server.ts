@@ -1,5 +1,6 @@
+import { readFile } from "node:fs/promises";
 import http from "node:http";
-import { dirname } from "node:path";
+import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
 import type {
@@ -232,39 +233,46 @@ export async function startServer(
     }
   );
 
-  // const portalIndex = await (
-  //   readFile(
-  //     resolve(
-  //       fileURLToPath(import.meta.resolve("@ukdanceblue/portal/index.html"))
-  //     )
-  //   ) as Promise<Awaited<ReturnType<typeof readFile>> | undefined>
-  // ).catch(() => undefined);
-
-  // if (portalIndex) {
-  //   app.use(
-  //     "/assets",
-  //     express.static(
-  //       resolve(
-  //         fileURLToPath(import.meta.resolve("@ukdanceblue/portal/assets"))
-  //       ),
-  //       {}
-  //     )
-  //   );
-
-  //   app.get("*", (_req, res) => {
-  //     res.type("html");
-  //     res.send(portalIndex);
-  //   });
-  // }
-
-  await mountPortal(
-    app,
-    !Container.get(isDevelopmentToken),
-    dirname(
+  if (process.env.SSR) {
+    logger.warning(
+      "Enabling SSR rendered portal, this functionality is not complete and may not work as expected"
+    );
+    await mountPortal(
+      app,
+      !Container.get(isDevelopmentToken),
       dirname(
-        fileURLToPath(import.meta.resolve("@ukdanceblue/portal/src/main.tsx"))
-      )
-    ),
-    3000
-  );
+        dirname(
+          fileURLToPath(import.meta.resolve("@ukdanceblue/portal/src/main.tsx"))
+        )
+      ),
+      3000
+    );
+  } else {
+    logger.debug("Mounting static portal");
+
+    const portalIndex = await (
+      readFile(
+        resolve(
+          fileURLToPath(import.meta.resolve("@ukdanceblue/portal/index.html"))
+        )
+      ) as Promise<Awaited<ReturnType<typeof readFile>> | undefined>
+    ).catch(() => undefined);
+
+    if (portalIndex) {
+      app.use(
+        "/assets",
+        express.static(
+          resolve(
+            fileURLToPath(import.meta.resolve("@ukdanceblue/portal/assets"))
+          ),
+          {}
+        )
+      );
+
+      app.get("*", (_req, res) => {
+        res.type("html");
+        res.send(portalIndex);
+      });
+    }
+  }
 }
