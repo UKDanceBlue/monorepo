@@ -200,7 +200,6 @@ export class TeamResolver implements CrudResolver<TeamNode, "team"> {
     });
   }
 
-  @AccessControlAuthorized("get", "TeamNode")
   @FieldResolver(() => Int)
   async totalPoints(@Root() { id: { id } }: TeamNode): Promise<number> {
     const result = await this.teamRepository.getTotalTeamPoints({
