@@ -75,7 +75,8 @@
             "./assets/fonts/opensans-condensed/OpenSans-Condensed-Light.ttf"
           ]
         }
-      ]
+      ],
+      "expo-build-properties"
     ],
     "updates": {
       "enabled": true,
