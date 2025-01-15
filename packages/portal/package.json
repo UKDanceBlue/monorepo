@@ -52,7 +52,6 @@
     "@refinedev/core": "^4.57.5",
     "@refinedev/devtools": "^1.2.12",
     "@refinedev/devtools-server": "^1.1.40",
-    "@refinedev/inferencer": "^5.0.3",
     "@sentry/react": "^8.48.0",
     "@sentry/vite-plugin": "^2.23.0",
     "@tanstack/react-form": "^0.41.1",
@@ -96,7 +95,6 @@
     "zod": "^3.24.1"
   },
   "devDependencies": {
-    "@0no-co/graphqlsp": "^1.12.16",
     "@refinedev/cli": "^2.16.42",
     "@tanstack/react-query-devtools": "^5.64.1",
     "@tanstack/router-devtools": "^1.95.6",
