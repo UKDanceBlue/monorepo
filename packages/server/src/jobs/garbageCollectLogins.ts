@@ -3,7 +3,7 @@ import { Cron } from "croner";
 
 import { logger } from "#logging/standardLogging.js";
 import { JobStateRepository } from "#repositories/JobState.js";
-import { LoginFlowSessionRepository } from "#repositories/LoginFlowSession.js";
+import { LoginFlowRepository } from "#repositories/LoginFlowSession.js";
 
 const jobStateRepository = Container.get(JobStateRepository);
 
@@ -23,9 +23,7 @@ export const garbageCollectLoginFlowSessions = new Cron(
   async () => {
     try {
       logger.info("Garbage collecting old login flows");
-      const loginFlowSessionRepository = Container.get(
-        LoginFlowSessionRepository
-      );
+      const loginFlowSessionRepository = Container.get(LoginFlowRepository);
       await loginFlowSessionRepository.gcOldLoginFlows();
 
       await jobStateRepository.logCompletedJob(garbageCollectLoginFlowSessions);

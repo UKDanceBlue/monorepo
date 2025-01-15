@@ -44,6 +44,7 @@ export const literalConfig: UserConfig = {
       "lexical",
       /^@lexical/,
       /^@mdxeditor/,
+      /@nivo/,
     ],
   },
 };

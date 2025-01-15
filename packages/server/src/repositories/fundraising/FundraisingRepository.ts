@@ -571,7 +571,7 @@ export class FundraisingEntryRepository extends buildDefaultRepository<
 
       const result = await this.prisma.membership.findFirst({
         where: {
-          person: assignment.person,
+          personId: assignment.person.id,
           teamId: {
             in: teams.map((t) => t.id),
           },

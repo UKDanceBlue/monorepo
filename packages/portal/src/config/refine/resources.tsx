@@ -12,7 +12,7 @@ import {
   UserOutlined,
 } from "@ant-design/icons";
 import type { Action, ResourceProps } from "@refinedev/core";
-import type { GlobalId } from "@ukdanceblue/common";
+import type { GlobalId, Subject } from "@ukdanceblue/common";
 import { parseGlobalId } from "@ukdanceblue/common";
 
 export const refineResources = [
@@ -182,7 +182,7 @@ export const refineResources = [
     meta: {
       icon: <ToolOutlined />,
       label: "Config",
-      modelName: "ConfigNode",
+      modelName: "ConfigurationNode",
     },
     create: "/config/create",
     edit: "/config/:id/edit",
@@ -215,7 +215,7 @@ export const refineResources = [
   },
 ] as const satisfies (ResourceProps & {
   meta: {
-    modelName: string;
+    modelName: Subject;
   };
 })[];
 

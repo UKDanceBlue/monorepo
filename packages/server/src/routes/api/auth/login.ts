@@ -11,7 +11,7 @@ import { AsyncResult } from "ts-results-es";
 
 import { makeUserJwt } from "#auth/index.js";
 import { getHostUrl } from "#lib/host.js";
-import { LoginFlowSessionRepository } from "#repositories/LoginFlowSession.js";
+import { LoginFlowRepository } from "#repositories/LoginFlowSession.js";
 import { personModelToResource } from "#repositories/person/personModelToResource.js";
 import { PersonRepository } from "#repositories/person/PersonRepository.js";
 
@@ -35,9 +35,7 @@ export const login = async (
   next: NextFunction
 ): Promise<void> => {
   try {
-    const loginFlowSessionRepository = Container.get(
-      LoginFlowSessionRepository
-    );
+    const loginFlowSessionRepository = Container.get(LoginFlowRepository);
 
     const queryRedirectTo = getStringQueryParameter(req, "redirectTo");
     if (!queryRedirectTo) {

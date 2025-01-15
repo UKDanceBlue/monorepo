@@ -23,9 +23,6 @@ export const accessControlProvider: AccessControlProvider = {
       enableAccessControl: true,
       hideIfUnauthorized: false,
     },
-    queryOptions: {
-      // ... default global query options
-    },
   },
 };
 

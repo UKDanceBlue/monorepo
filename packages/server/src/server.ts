@@ -11,6 +11,7 @@ import { expressMiddleware } from "@apollo/server/express4";
 import { ApolloServerPluginDrainHttpServer } from "@apollo/server/plugin/drainHttpServer";
 import { Container } from "@freshgum/typedi";
 import { setupExpressErrorHandler } from "@sentry/node";
+import { ConcreteError, ErrorCode } from "@ukdanceblue/common/error";
 import cookieParser from "cookie-parser";
 import cors from "cors";
 import type {
@@ -24,10 +25,12 @@ import express from "express";
 import type { GraphQLContext } from "#auth/context.js";
 import {
   applicationPortToken,
+  cookieSecretToken,
   isDevelopmentToken,
   loggingLevelToken,
 } from "#lib/typediTokens.js";
 import { logger } from "#logging/logger.js";
+import { SessionRepository } from "#repositories/Session.js";
 
 import { mountPortal } from "./portal.js";
 
@@ -70,8 +73,26 @@ export async function createServer() {
 
   const app = express();
   app.set("trust proxy", true);
+  app.use((req) => {
+    req.getService = Container.get.bind(Container);
+  });
 
-  setupExpressErrorHandler(app);
+  setupExpressErrorHandler(app, {
+    shouldHandleError(error) {
+      if (
+        error instanceof ConcreteError &&
+        [
+          ErrorCode.AccessControlError,
+          ErrorCode.AuthorizationRuleFailed,
+          ErrorCode.NotFound,
+          ErrorCode.Unauthenticated,
+        ].includes(error.tag)
+      ) {
+        return false;
+      }
+      return true;
+    },
+  });
 
   if (loggingLevel === "trace") {
     app.use((err: unknown, req: Request, _: unknown, next: NextFunction) => {
@@ -148,6 +169,8 @@ export async function startServer(
   apolloServer: ApolloServer<GraphQLContext>,
   app: ExpressApplication
 ) {
+  const cookieSecret = Container.get(cookieSecretToken);
+
   await apolloServer.start();
 
   if (loggingLevel === "trace") {
@@ -173,7 +196,9 @@ export async function startServer(
   );
   const { authenticate } = await import("./lib/auth/context.js");
 
-  app.use(cookieParser());
+  app.use(cookieParser(cookieSecret));
+
+  app.use(Container.get(SessionRepository).expressMiddleware);
 
   app.use(
     "/graphql",

@@ -8,7 +8,7 @@ type LoginFlowSessionUniqueParam = { id: number } | { uuid: string };
 import { prismaToken } from "#lib/typediTokens.js";
 
 @Service([prismaToken])
-export class LoginFlowSessionRepository {
+export class LoginFlowRepository {
   constructor(private prisma: PrismaClient) {}
 
   // Finders
@@ -17,7 +17,7 @@ export class LoginFlowSessionRepository {
    * Find a login flow session by its unique identifier
    */
   findLoginFlowSessionByUnique(param: LoginFlowSessionUniqueParam) {
-    return this.prisma.loginFlowSession.findUnique({ where: param });
+    return this.prisma.loginFlow.findUnique({ where: param });
   }
 
   // Mutators
@@ -34,7 +34,7 @@ export class LoginFlowSessionRepository {
     setCookie?: boolean;
     sendToken?: boolean;
   }) {
-    return this.prisma.loginFlowSession.create({
+    return this.prisma.loginFlow.create({
       data: {
         redirectToAfterLogin,
         setCookie,
@@ -48,7 +48,7 @@ export class LoginFlowSessionRepository {
    * Remove all login flows older than 24 hours
    */
   gcOldLoginFlows() {
-    return this.prisma.loginFlowSession.deleteMany({
+    return this.prisma.loginFlow.deleteMany({
       where: {
         createdAt: {
           lte: DateTime.now().minus({ days: 1 }).toJSDate(),
@@ -62,6 +62,6 @@ export class LoginFlowSessionRepository {
    */
   async completeLoginFlow(param: LoginFlowSessionUniqueParam) {
     // Using deleteMany instead of delete means we don't throw an error if the session was already deleted
-    return this.prisma.loginFlowSession.deleteMany({ where: param });
+    return this.prisma.loginFlow.deleteMany({ where: param });
   }
 }

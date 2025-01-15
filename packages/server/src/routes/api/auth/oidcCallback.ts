@@ -8,7 +8,7 @@ import { authorizationCodeGrant } from "openid-client";
 import { makeUserJwt } from "#auth/index.js";
 import { getHostUrl } from "#lib/host.js";
 import { logger } from "#lib/logging/standardLogging.js";
-import { LoginFlowSessionRepository } from "#repositories/LoginFlowSession.js";
+import { LoginFlowRepository } from "#repositories/LoginFlowSession.js";
 import { personModelToResource } from "#repositories/person/personModelToResource.js";
 import { PersonRepository } from "#repositories/person/PersonRepository.js";
 
@@ -22,7 +22,7 @@ export const oidcCallback = async (
   let sessionDeleted = true;
 
   const personRepository = Container.get(PersonRepository);
-  const loginFlowSessionRepository = Container.get(LoginFlowSessionRepository);
+  const loginFlowSessionRepository = Container.get(LoginFlowRepository);
 
   let flowSessionId;
   try {

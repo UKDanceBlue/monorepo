@@ -6,6 +6,7 @@ model Person {
   name                              String?                    @db.Citext
   email                             String                     @unique() @db.Citext
   linkblue                          String?                    @unique() @db.Citext
+  preferences                       Json                       @default("{}")
   hashedPassword                    Bytes?
   salt                              Bytes?
   edits                             AuditLog[]
@@ -18,6 +19,7 @@ model Person {
   memberships                       Membership[]
   pointEntries                      PointEntry[]
   createdFundraisingEntriesWithMeta FundraisingEntryWithMeta[]
+  sessions                          Session[]
 }
 
 model AuthIdPair {
@@ -44,7 +46,7 @@ model Membership {
   @@unique([personId, teamId])
 }
 
-model LoginFlowSession {
+model LoginFlow {
   id                   Int      @id @default(autoincrement())
   uuid                 String   @unique() @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   createdAt            DateTime @default(now()) @db.Timestamptz(6)
@@ -53,6 +55,21 @@ model LoginFlowSession {
   redirectToAfterLogin String
   setCookie            Boolean  @default(false)
   sendToken            Boolean  @default(false)
+
+  @@map("LoginFlowSession")
+}
+
+model Session {
+  id          Int        @id @default(autoincrement())
+  uuid        String     @unique() @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  preferences Json       @default("{}")
+  authSource  AuthSource
+  userAgent   String?
+  ip          String?
+  expiresAt   DateTime
+
+  personId Int
+  person   Person @relation(fields: [personId], references: [id], onDelete: Cascade)
 }
 
 enum AuthSource {
