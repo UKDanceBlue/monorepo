@@ -9,7 +9,7 @@ import {
   UnauthenticatedError,
 } from "@ukdanceblue/common/error";
 import { type CookieOptions, Handler } from "express";
-import { sign, verify } from "jsonwebtoken";
+import jsonwebtoken from "jsonwebtoken";
 import { DateTime, Duration } from "luxon";
 import { AsyncResult, Err, Ok } from "ts-results-es";
 
@@ -18,6 +18,8 @@ import {
   jwtSecretToken,
   prismaToken,
 } from "#lib/typediTokens.js";
+
+const { sign, verify } = jsonwebtoken;
 
 import { buildDefaultRepository } from "./Default.js";
 import {

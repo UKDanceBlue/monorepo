@@ -2,6 +2,8 @@ import type * as express from "express";
 import { extname } from "path";
 import type { ViteDevServer } from "vite";
 
+import { logger } from "#lib/logging/standardLogging.js";
+
 type RenderFunction = (options: {
   req: express.Request;
   res: express.Response;
@@ -14,13 +16,18 @@ export async function mountPortal(
   root: string,
   hmrPort: number
 ) {
+  logger.debug("Mounting Portal");
   let vite: ViteDevServer | undefined = undefined;
   if (!isProd) {
     vite = await initializeViteServer(root, hmrPort, app);
+    logger.info("Vite dev server initialized");
   }
 
-  app.use("*", async (req, res) => {
+  const entryPoint = await getEntryPoint(vite);
+
+  app.use("*", async (req, res, next) => {
     try {
+      logger.debug("Rendering Portal");
       const url = req.originalUrl;
 
       if (extname(url) !== "") {
@@ -38,11 +45,12 @@ export async function mountPortal(
         viteHead.indexOf("</head>")
       );
 
-      const entryPoint = await getEntryPoint(vite);
-
-      entryPoint
+      await entryPoint
         .render({ req, res, head: viteHead })
-        .catch((error) => console.error(error));
+        .then(() => {
+          logger.debug("Portal rendered");
+        })
+        .catch((error) => next(error));
     } catch (error) {
       const localError =
         error instanceof Error
@@ -53,6 +61,8 @@ export async function mountPortal(
       res.status(500).end(localError.stack);
     }
   });
+
+  logger.info("Mounted Portal");
 }
 async function initializeViteServer(
   root: string,
@@ -60,6 +70,7 @@ async function initializeViteServer(
   app: express.Application
 ) {
   const { createServer } = await import("vite");
+  logger.debug("Initializing Vite dev server");
   const vite = await createServer({
     root,
     server: {
@@ -85,10 +96,12 @@ async function getEntryPoint(
   vite: ViteDevServer | undefined
 ): Promise<{ render: RenderFunction }> {
   if (!vite) {
+    logger.debug("Importing pre-built SSR entry point");
     return import("@ukdanceblue/portal/server/entry-server.js") as Promise<{
       render: RenderFunction;
     }>;
   } else {
+    logger.debug("Loading SSR entry point from Vite");
     const entry = await vite.ssrLoadModule(
       "@ukdanceblue/portal/src/entry-server.tsx"
     );
