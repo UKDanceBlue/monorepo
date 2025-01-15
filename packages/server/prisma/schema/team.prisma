@@ -20,6 +20,30 @@ model Team {
   @@unique([marathonId, correspondingCommitteeId])
 }
 
+view TeamWithMeta {
+  id                       Int               @id @default(autoincrement())
+  uuid                     String            @unique() @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  createdAt                DateTime          @default(now()) @db.Timestamptz(6)
+  updatedAt                DateTime          @updatedAt @db.Timestamptz(6)
+  name                     String
+  type                     TeamType
+  legacyStatus             TeamLegacyStatus
+  persistentIdentifier     String?           @unique()
+  marathonId               Int
+  correspondingCommitteeId Int?
+  dbFundsTeamId            Int?
+  solicitationCodeId       Int?
+  memberships              Membership[]
+  pointEntries             PointEntry[]
+  correspondingCommittee   Committee?        @relation(fields: [correspondingCommitteeId], references: [id])
+  marathon                 Marathon          @relation(fields: [marathonId], references: [id], onDelete: Cascade)
+  solicitationCode         SolicitationCode? @relation(fields: [solicitationCodeId], references: [id])
+
+  totalPoints Int
+
+  @@unique([marathonId, correspondingCommitteeId])
+}
+
 model PointEntry {
   id                 Int               @id @default(autoincrement())
   uuid               String            @unique() @default(dbgenerated("gen_random_uuid()")) @db.Uuid
@@ -33,6 +57,7 @@ model PointEntry {
   person             Person?           @relation(fields: [personFromId], references: [id])
   pointOpportunity   PointOpportunity? @relation(fields: [pointOpportunityId], references: [id])
   team               Team              @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  teamWithMeta       TeamWithMeta?     @relation(fields: [teamId], references: [id], map: "teamWithMetaPointEntry")
 }
 
 model PointOpportunity {

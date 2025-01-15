@@ -8,11 +8,14 @@ export const SimpleConfigFragment = graphql(/* GraphQL */ `
   }
 `);
 
-export const FullConfigFragment = graphql(/* GraphQL */ `
-  fragment FullConfig on ConfigurationNode {
-    ...SimpleConfig
-    validAfter
-    validUntil
-    createdAt
-  }
-`);
+export const FullConfigFragment = graphql(
+  /* GraphQL */ `
+    fragment FullConfig on ConfigurationNode {
+      ...SimpleConfig
+      validAfter
+      validUntil
+      createdAt
+    }
+  `,
+  [SimpleConfigFragment]
+);

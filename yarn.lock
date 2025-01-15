@@ -17,7 +17,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@0no-co/graphqlsp@npm:^1.12.13":
+"@0no-co/graphqlsp@npm:^1.12.13, @0no-co/graphqlsp@npm:^1.12.16":
   version: 1.12.16
   resolution: "@0no-co/graphqlsp@npm:1.12.16"
   dependencies:
@@ -12243,6 +12243,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@ukdanceblue/mobile@workspace:packages/mobile"
   dependencies:
+    "@0no-co/graphqlsp": "npm:^1.12.16"
     "@apollo/client": "npm:3.12.5"
     "@babel/cli": "npm:^7.26.4"
     "@babel/core": "npm:^7.26.0"
@@ -12412,6 +12413,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@ukdanceblue/portal@workspace:packages/portal"
   dependencies:
+    "@0no-co/graphqlsp": "npm:^1.12.16"
     "@ant-design/icons": "npm:^5.5.2"
     "@ant-design/static-style-extract": "npm:^1.0.3"
     "@casl/ability": "npm:^6.7.3"

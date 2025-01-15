@@ -50,6 +50,7 @@ model SolicitationCode {
   FundraisingEntry          FundraisingEntry[]
   teams                     Team[]
   fundraisingEntriesWitMeta FundraisingEntryWithMeta[]
+  teamsWithMeta             TeamWithMeta[]
 
   @@unique([prefix, code])
 }

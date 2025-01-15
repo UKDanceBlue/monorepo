@@ -1972,6 +1972,7 @@ enum TeamResolverFilterFields {
   legacyStatus
   marathonYear
   name
+  totalPoints
   type
 }
 

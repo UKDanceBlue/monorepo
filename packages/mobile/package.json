@@ -119,6 +119,7 @@
     "validator": "^13.12.0"
   },
   "devDependencies": {
+    "@0no-co/graphqlsp": "^1.12.16",
     "@babel/cli": "^7.26.4",
     "@babel/core": "^7.26.0",
     "@babel/plugin-proposal-export-namespace-from": "^7.18.9",

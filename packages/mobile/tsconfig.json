@@ -38,6 +38,12 @@
         "tadaOutputLocation": "./src/graphql/graphql-env.d.ts",
         "shouldCheckForColocatedFragments": false,
         "trackFieldUsage": false
+      },
+      {
+        "name": "@0no-co/graphqlsp",
+        "schema": "../../schema.graphql",
+        "tadaOutputLocation": "./src/graphql/graphql-env.d.ts",
+        "shouldCheckForColocatedFragments": false
       }
     ]
   },

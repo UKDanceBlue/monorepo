@@ -29,7 +29,7 @@ type TeamUniqueParam = SimpleUniqueParam;
 
 @Service([prismaToken])
 export class TeamRepository extends buildDefaultRepository<
-  PrismaClient["team"],
+  PrismaClient["teamWithMeta"],
   TeamUniqueParam,
   FieldsOfListQueryArgs<ListTeamsArgs>
 >("Team", {
@@ -50,6 +50,10 @@ export class TeamRepository extends buildDefaultRepository<
     getWhere: (type) => Ok({ type }),
     getOrderBy: (type) => Ok({ type }),
   },
+  totalPoints: {
+    getOrderBy: (totalPoints) => Ok({ totalPoints }),
+    getWhere: (totalPoints) => Ok({ totalPoints }),
+  },
 }) {
   constructor(protected readonly prisma: PrismaClient) {
     super(prisma);
@@ -63,7 +67,7 @@ export class TeamRepository extends buildDefaultRepository<
    * Find a team by its unique identifier
    */
   findTeamByUnique(param: TeamUniqueParam) {
-    return this.prisma.team.findUnique({ where: param });
+    return this.prisma.teamWithMeta.findUnique({ where: param });
   }
 
   findMembersOfTeam(
@@ -94,11 +98,11 @@ export class TeamRepository extends buildDefaultRepository<
     onlyDemo?: boolean;
   }): AsyncRepositoryResult<
     FindAndCountResult<
-      Prisma.TeamDelegate<DefaultArgs, Prisma.PrismaClientOptions>,
+      Prisma.TeamWithMetaDelegate<DefaultArgs, Prisma.PrismaClientOptions>,
       { include: Record<string, never> }
     >
   > {
-    const where: Prisma.TeamWhereInput[] = [];
+    const where: Prisma.TeamWithMetaWhereInput[] = [];
 
     if (onlyDemo) {
       where.push({
@@ -111,13 +115,13 @@ export class TeamRepository extends buildDefaultRepository<
     return this.parseFindManyParams(params, where)
       .toAsyncResult()
       .andThen((params) =>
-        this.handleQueryError((tx ?? this.prisma).team.findMany(params)).map(
-          (rows) => ({ rows, params })
-        )
+        this.handleQueryError(
+          (tx ?? this.prisma).teamWithMeta.findMany(params)
+        ).map((rows) => ({ rows, params }))
       )
       .andThen(({ rows, params }) =>
         this.handleQueryError(
-          (tx ?? this.prisma).team.count({
+          (tx ?? this.prisma).teamWithMeta.count({
             where: params.where,
             orderBy: params.orderBy,
           })

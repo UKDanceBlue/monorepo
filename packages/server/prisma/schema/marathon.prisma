@@ -10,6 +10,7 @@ model Marathon {
   hours              MarathonHour[]
   pointOpportunities PointOpportunity[]
   teams              Team[]
+  teamsWithMeta      TeamWithMeta[]
 }
 
 model MarathonHour {

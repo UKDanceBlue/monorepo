@@ -9,7 +9,6 @@ const iGqlConfig: IGraphQLConfig = {
     mobile: {
       schema: "./schema.graphql",
       documents: "./packages/mobile/src/**/*.{graphql,js,ts,jsx,tsx}",
-      exclude: ["./packages/mobile/src/graphql/**/*"],
     },
   },
 };

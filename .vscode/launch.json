@@ -5,19 +5,6 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "GraphQL: Watch Mobile",
-      "request": "launch",
-      "runtimeArgs": ["run", "gql:watch:mobile"],
-      "runtimeExecutable": "yarn",
-      "skipFiles": ["<node_internals>/**"],
-      "type": "node",
-      "console": "integratedTerminal",
-      "presentation": {
-        "group": "2graphql"
-      },
-      "autoAttachChildProcesses": false
-    },
-    {
       "name": "Common: Watch",
       "request": "launch",
       "runtimeArgs": ["run", "common:watch"],
@@ -150,7 +137,7 @@
   "compounds": [
     {
       "name": "Dev Environment: Base",
-      "configurations": ["Common: Watch", "GraphQL: Watch Mobile"],
+      "configurations": ["Common: Watch"],
       "presentation": {
         "group": "0dev-enviroment",
         "order": 3
@@ -184,7 +171,6 @@
         "Server: Dev",
         "Mobile: Start",
         "Common: Watch",
-        "GraphQL: Watch Mobile",
         "Tunnel Server"
       ],
       "presentation": {
@@ -200,7 +186,6 @@
         "Portal: Refine Devtools",
         "Mobile: Start",
         "Common: Watch",
-        "GraphQL: Watch Mobile",
         "Tunnel Server"
       ],
       "preLaunchTask": "Server: Prisma Generate",

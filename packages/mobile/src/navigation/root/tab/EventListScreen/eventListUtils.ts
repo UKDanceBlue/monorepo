@@ -244,24 +244,34 @@ export const useEvents = ({
     query: graphql(
       /* GraphQL */ `
         query Events(
-          $earliestTimestamp: DateTimeISO!
-          $lastTimestamp: DateTimeISO!
+          $earliestTimestamp: LuxonDateTime!
+          $lastTimestamp: LuxonDateTime!
         ) {
           events(
-            dateFilters: [
-              {
-                comparison: GREATER_THAN_OR_EQUAL_TO
-                field: occurrenceStart
-                value: $earliestTimestamp
-              }
-              {
-                comparison: LESS_THAN_OR_EQUAL_TO
-                field: occurrenceStart
-                value: $lastTimestamp
-              }
-            ]
-            sortDirection: asc
-            sortBy: "occurrence"
+            filters: {
+              operator: AND
+              filters: [
+                {
+                  field: start
+                  filter: {
+                    singleDateFilter: {
+                      comparison: GREATER_THAN_OR_EQUAL_TO
+                      value: $earliestTimestamp
+                    }
+                  }
+                }
+                {
+                  field: start
+                  filter: {
+                    singleDateFilter: {
+                      comparison: LESS_THAN
+                      value: $lastTimestamp
+                    }
+                  }
+                }
+              ]
+            }
+            sortBy: [{ field: start, direction: asc }]
           ) {
             data {
               ...EventScreenFragment

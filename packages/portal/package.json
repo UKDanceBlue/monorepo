@@ -96,6 +96,7 @@
     "zod": "^3.24.1"
   },
   "devDependencies": {
+    "@0no-co/graphqlsp": "^1.12.16",
     "@refinedev/cli": "^2.16.42",
     "@tanstack/react-query-devtools": "^5.64.1",
     "@tanstack/router-devtools": "^1.95.6",

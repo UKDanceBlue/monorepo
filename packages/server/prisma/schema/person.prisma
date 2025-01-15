@@ -42,6 +42,7 @@ model Membership {
   committeeRole CommitteeRole?
   person        Person             @relation(fields: [personId], references: [id], onDelete: Cascade)
   team          Team               @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  teamWithMeta  TeamWithMeta?      @relation(fields: [teamId], references: [id], map: "teamWithMetaMembership")
 
   @@unique([personId, teamId])
 }

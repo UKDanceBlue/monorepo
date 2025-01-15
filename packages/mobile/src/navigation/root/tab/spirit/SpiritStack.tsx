@@ -21,7 +21,11 @@ import { MyTeamFragment } from "./TeamScreen/TeamScreen";
 
 const scoreBoardDocument = graphql(
   /* GraphQL */ `
-    query ScoreBoardDocument($type: TeamType!, $marathonId: GlobalId!) {
+    query ScoreBoardDocument(
+      $type: TeamType!
+      $typeStr: String!
+      $marathonYear: String!
+    ) {
       me {
         id
         primaryTeam(teamType: $type) {
@@ -34,10 +38,27 @@ const scoreBoardDocument = graphql(
       }
       teams(
         sendAll: true
-        sortBy: ["totalPoints", "name"]
-        sortDirection: [desc, asc]
-        type: [$type]
-        marathonId: [$marathonId]
+        sortBy: [
+          { field: totalPoints, direction: desc }
+          { field: name, direction: asc }
+        ]
+        filters: {
+          operator: AND
+          filters: [
+            {
+              field: type
+              filter: {
+                singleStringFilter: { comparison: EQUALS, value: $typeStr }
+              }
+            }
+            {
+              field: marathonYear
+              filter: {
+                singleStringFilter: { comparison: EQUALS, value: $marathonYear }
+              }
+            }
+          ]
+        }
       ) {
         data {
           ...ScoreBoardFragment
@@ -57,9 +78,11 @@ const currentMarathonDocument = graphql(/* GraphQL */ `
   query ActiveMarathonDocument {
     currentMarathon {
       id
+      year
     }
     latestMarathon {
       id
+      year
     }
   }
 `);
@@ -82,7 +105,8 @@ const SpiritScreen = () => {
         !spiritMode || spiritMode === "spirit"
           ? TeamType.Spirit
           : TeamType.Morale,
-      marathonId: marathonQuery.data?.latestMarathon?.id ?? "",
+      typeStr: !spiritMode || spiritMode === "spirit" ? "spirit" : "morale",
+      marathonYear: marathonQuery.data?.latestMarathon?.year ?? "N/A",
     },
   });
 

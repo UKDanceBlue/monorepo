@@ -64,6 +64,7 @@ export class ListTeamsArgs extends FilteredListQueryArgs("TeamResolver", [
   "type",
   "legacyStatus",
   "marathonYear",
+  "totalPoints",
 ]) {}
 
 @ObjectType("DbFundsTeamInfo")

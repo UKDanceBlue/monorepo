@@ -18,8 +18,8 @@ export const deviceNotificationsQuery = graphql(
   /* GraphQL */ `
     query DeviceNotifications(
       $deviceUuid: String!
-      $page: Int
-      $pageSize: Int
+      $page: PositiveInt
+      $pageSize: NonNegativeInt
       $verifier: String!
     ) {
       device(uuid: $deviceUuid) {
