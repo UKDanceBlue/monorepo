@@ -35,8 +35,8 @@
     "dev": "tsc --watch & node --enable-source-maps --watch-path=./dist --watch-path=../common/dist ./dist/src/index.js",
     "lint": "eslint .",
     "migrate-and-start": "yarn dlx prisma migrate deploy && yarn run start",
-    "start": "node  --enable-source-maps ./dist/src/index.js",
-    "repl": "node --enable-source-maps ./dist/src/repl.js",
+    "start": "node  --enable-source-maps ./dist/src/index.js start",
+    "repl": "node --enable-source-maps ./dist/src/index.js repl",
     "test": "jest"
   },
   "dependencies": {
@@ -113,6 +113,6 @@
     "node": ">=22.0.0"
   },
   "prisma": {
-    "seed": "node ./dist/src/seed.js"
+    "seed": "node ./dist/src/index.js seed"
   }
 }

@@ -63,8 +63,8 @@ const basicLoggingPlugin: ApolloServerPlugin = {
  * @return The Koa, HTTP, and Apollo servers
  */
 export async function createServer() {
-  const { default: graphqlSchema } = await import("./lib/graphqlSchema.js");
-  const { formatError } = await import("./lib/formatError.js");
+  const { default: graphqlSchema } = await import("../../lib/graphqlSchema.js");
+  const { formatError } = await import("../../lib/formatError.js");
 
   const app = express();
   app.set("trust proxy", true);
@@ -129,7 +129,7 @@ export async function startServer(
 
   await apolloServer.start();
 
-  const { authenticate } = await import("./lib/auth/context.js");
+  const { authenticate } = await import("../../lib/auth/context.js");
 
   // Middleware
   if (loggingLevel === "trace") {
@@ -236,16 +236,20 @@ async function handlePortal(app: ExpressApplication) {
 async function makeApiRouter() {
   const apiRouter = express.Router();
 
-  const { default: authApiRouter } = await import("./routes/api/auth/index.js");
+  const { default: authApiRouter } = await import(
+    "../../routes/api/auth/index.js"
+  );
   const { default: eventsApiRouter } = await import(
-    "./routes/api/events/index.js"
+    "../../routes/api/events/index.js"
   );
   const { default: healthCheckRouter } = await import(
-    "./routes/api/healthcheck/index.js"
+    "../../routes/api/healthcheck/index.js"
   );
-  const { default: fileRouter } = await import("./routes/api/file/index.js");
+  const { default: fileRouter } = await import(
+    "../../routes/api/file/index.js"
+  );
   const { default: uploadRouter } = await import(
-    "./routes/api/upload/index.js"
+    "../../routes/api/upload/index.js"
   );
   Container.get(authApiRouter).mount(apiRouter);
   Container.get(eventsApiRouter).mount(apiRouter);

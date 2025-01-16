@@ -1,6 +1,7 @@
 /* eslint-disable no-await-in-loop */
 import { faker } from "@faker-js/faker";
 import { Service } from "@freshgum/typedi";
+import type { PrismaClient } from "@prisma/client";
 import {
   CommitteeIdentifier,
   CommitteeRole,
@@ -8,6 +9,8 @@ import {
   TeamType,
 } from "@ukdanceblue/common";
 import { FormattedConcreteError } from "@ukdanceblue/common/error";
+
+import { prismaToken } from "#lib/typediTokens.js";
 
 import { EntryPoint } from "./EntryPoint.js";
 
@@ -39,6 +42,7 @@ const { TeamRepository } = await import("#repositories/team/TeamRepository.js");
   EventRepository,
   ImageRepository,
   TeamRepository,
+  prismaToken,
 ])
 export class Seed extends EntryPoint {
   constructor(
@@ -54,7 +58,8 @@ export class Seed extends EntryPoint {
     >,
     private readonly eventRepository: InstanceType<typeof EventRepository>,
     private readonly imageRepository: InstanceType<typeof ImageRepository>,
-    private readonly teamRepository: InstanceType<typeof TeamRepository>
+    private readonly teamRepository: InstanceType<typeof TeamRepository>,
+    private readonly prisma: PrismaClient
   ) {
     super();
   }
@@ -199,7 +204,7 @@ export class Seed extends EntryPoint {
         }).promise;
       }
     } finally {
-      await prisma.$disconnect();
+      await this.prisma.$disconnect();
     }
   }
 }
