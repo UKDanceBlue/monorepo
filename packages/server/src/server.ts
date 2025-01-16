@@ -15,12 +15,7 @@ import { setupExpressErrorHandler } from "@sentry/node";
 import { ConcreteError, ErrorCode } from "@ukdanceblue/common/error";
 import cookieParser from "cookie-parser";
 import cors from "cors";
-import type {
-  Application as ExpressApplication,
-  NextFunction,
-  Request,
-  Response,
-} from "express";
+import type { Application as ExpressApplication } from "express";
 import express from "express";
 
 import type { GraphQLContext } from "#auth/context.js";
@@ -31,7 +26,6 @@ import {
   loggingLevelToken,
 } from "#lib/typediTokens.js";
 import { logger } from "#logging/logger.js";
-import { SessionRepository } from "#repositories/Session.js";
 
 import { mountPortal } from "./portal.js";
 
@@ -78,33 +72,6 @@ export async function createServer() {
     req.getService = Container.get.bind(Container);
     next();
   });
-
-  setupExpressErrorHandler(app, {
-    shouldHandleError(error) {
-      if (
-        error instanceof ConcreteError &&
-        [
-          ErrorCode.AccessControlError,
-          ErrorCode.AuthorizationRuleFailed,
-          ErrorCode.NotFound,
-          ErrorCode.Unauthenticated,
-        ].includes(error.tag)
-      ) {
-        return false;
-      }
-      return true;
-    },
-  });
-
-  if (loggingLevel === "trace") {
-    app.use((err: unknown, req: Request, _: unknown, next: NextFunction) => {
-      logger.error("Koa app error", err, {
-        method: req.method,
-        url: req.url,
-      });
-      next(err);
-    });
-  }
 
   const httpServer = http.createServer(app);
 
@@ -171,7 +138,11 @@ export async function startServer(
   apolloServer: ApolloServer<GraphQLContext>,
   app: ExpressApplication
 ) {
+  const { formatError } = await import("#lib/formatError.js");
+  const { SessionRepository } = await import("#repositories/Session.js");
+
   const cookieSecret = Container.get(cookieSecretToken);
+  const isDev = Container.get(isDevelopmentToken);
 
   await apolloServer.start();
 
@@ -219,20 +190,7 @@ export async function startServer(
   Container.get(fileRouter).mount(apiRouter);
   Container.get(uploadRouter).mount(apiRouter);
 
-  app.use(
-    "/api",
-    apiRouter,
-    (err: unknown, _: Request, res: Response, next: NextFunction) => {
-      if (typeof err === "object" && err !== null && "message" in err) {
-        const { message, ...errorData } = err;
-        logger.error(String(message), { error: errorData });
-        res.status(500).send(String(message));
-      } else {
-        logger.error("Unknown Error in API", { error: err });
-        next(err);
-      }
-    }
-  );
+  app.use("/api", apiRouter);
 
   if (process.env.SSR) {
     logger.warning(
@@ -276,4 +234,50 @@ export async function startServer(
       });
     }
   }
+
+  setupExpressErrorHandler(app, {
+    shouldHandleError(error) {
+      if (
+        error instanceof ConcreteError &&
+        [
+          ErrorCode.AccessControlError,
+          ErrorCode.AuthorizationRuleFailed,
+          ErrorCode.NotFound,
+          ErrorCode.Unauthenticated,
+        ].includes(error.tag)
+      ) {
+        return false;
+      }
+      return true;
+    },
+  });
+
+  app.use(
+    (
+      err: unknown,
+      _r: express.Request,
+      res: express.Response,
+      _n: express.NextFunction
+    ) => {
+      const formatted = formatError(
+        err instanceof Error
+          ? err
+          : err instanceof ConcreteError
+            ? err.graphQlError
+            : new Error(String(err)),
+        err,
+        isDev
+      );
+      if (
+        formatted.extensions &&
+        "code" in formatted.extensions &&
+        formatted.extensions.code === ErrorCode.Unauthenticated.description
+      ) {
+        res.status(401).json(formatted);
+      } else {
+        logger.error("Unhandled error in Express", { error: formatted });
+        res.status(500).json(formatted);
+      }
+    }
+  );
 }

@@ -168,7 +168,7 @@ export class MarathonResolver
   async createMarathon(@Arg("input") input: CreateMarathonInput) {
     return new AsyncResult(
       this.marathonRepository.createMarathon({
-        ...input,
+        year: input.year,
         startDate: input.startDate?.toJSDate() ?? null,
         endDate: input.endDate?.toJSDate() ?? null,
       })
@@ -189,7 +189,7 @@ export class MarathonResolver
     const marathon = await this.marathonRepository.updateMarathon(
       { uuid: id },
       {
-        ...input,
+        year: input.year,
         startDate: input.startDate?.toJSDate() ?? null,
         endDate: input.endDate?.toJSDate() ?? null,
       }

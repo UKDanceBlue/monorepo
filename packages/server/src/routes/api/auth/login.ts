@@ -1,19 +1,17 @@
-import { Container } from "@freshgum/typedi";
 import { AuthSource } from "@ukdanceblue/common";
 import { ErrorCode } from "@ukdanceblue/common/error";
 import type { NextFunction, Request, Response } from "express";
-import { DateTime } from "luxon";
 import {
   buildAuthorizationUrl,
   calculatePKCECodeChallenge,
 } from "openid-client";
 import { AsyncResult } from "ts-results-es";
 
-import { makeUserJwt } from "#auth/index.js";
 import { getHostUrl } from "#lib/host.js";
 import { LoginFlowRepository } from "#repositories/LoginFlowSession.js";
 import { personModelToResource } from "#repositories/person/personModelToResource.js";
 import { PersonRepository } from "#repositories/person/PersonRepository.js";
+import { SessionRepository } from "#repositories/Session.js";
 
 import { oidcConfiguration } from "./oidcClient.js";
 
@@ -35,10 +33,10 @@ export const login = async (
   next: NextFunction
 ): Promise<void> => {
   try {
-    const loginFlowSessionRepository = Container.get(LoginFlowRepository);
+    const loginFlowSessionRepository = req.getService(LoginFlowRepository);
 
-    const queryRedirectTo = getStringQueryParameter(req, "redirectTo");
-    if (!queryRedirectTo) {
+    const redirectTo = getStringQueryParameter(req, "redirectTo");
+    if (!redirectTo) {
       return void res.status(400).send("Missing redirectTo query parameter");
     }
 
@@ -54,7 +52,8 @@ export const login = async (
         return void res.status(405).send("Method Not Allowed");
       }
 
-      const personRepository = Container.get(PersonRepository);
+      const personRepository = req.getService(PersonRepository);
+      const sessionRepository = req.getService(SessionRepository);
       const person = await new AsyncResult(
         personRepository.passwordLogin(email, password)
       ).andThen((person) => personModelToResource(person, personRepository))
@@ -66,28 +65,32 @@ export const login = async (
           ? void res.status(401).send("Invalid email or password")
           : void res.sendStatus(500);
       } else {
-        const jwt = makeUserJwt({
-          authSource: AuthSource.Password,
-          userId: person.value.id.id,
-        });
-        let redirectTo = queryRedirectTo;
-        if (returning.includes("token")) {
-          redirectTo = `${redirectTo}?token=${encodeURIComponent(jwt)}`;
+        const jwt = await sessionRepository
+          .newSession({
+            user: {
+              uuid: person.value.id.id,
+            },
+            authSource: AuthSource.Password,
+            ip: req.ip,
+            userAgent: req.headers["user-agent"],
+          })
+          .andThen((session) => sessionRepository.signSession(session)).promise;
+        if (jwt.isErr()) {
+          next(jwt.error);
+        } else {
+          return sessionRepository.doExpressRedirect(
+            req,
+            res,
+            jwt.value,
+            redirectTo,
+            returning
+          );
         }
-        if (returning.includes("cookie")) {
-          res.cookie("token", jwt, {
-            httpOnly: true,
-            sameSite: req.secure ? "none" : "lax",
-            secure: req.secure,
-            expires: DateTime.now().plus({ days: 7 }).toJSDate(),
-          });
-        }
-        return res.redirect(redirectTo);
       }
     } else {
       // OIDC login
       const session = await loginFlowSessionRepository.startLoginFlow({
-        redirectToAfterLogin: queryRedirectTo,
+        redirectToAfterLogin: redirectTo,
         setCookie: returning.includes("cookie"),
         sendToken: returning.includes("token"),
       });

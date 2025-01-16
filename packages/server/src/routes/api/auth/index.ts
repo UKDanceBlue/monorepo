@@ -1,6 +1,10 @@
 import { Service } from "@freshgum/typedi";
 import { RequestHandler, urlencoded } from "express";
 
+import {
+  SESSION_COOKIE_NAME,
+  SessionRepository,
+} from "#repositories/Session.js";
 import { RouterService } from "#routes/RouteService.js";
 
 import { anonymousLogin } from "./anonymous.js";
@@ -8,13 +12,12 @@ import { demoLogin } from "./demo.js";
 import { login } from "./login.js";
 import { oidcCallback } from "./oidcCallback.js";
 
-// TODO: Replace custom OAuth2 + middleware implementation with Passport.js and oauth2orize
-// https://www.passportjs.org
-// https://github.com/jaredhanson/oauth2orize
-
-const logout: RequestHandler = (req, res, next) => {
+const logout: RequestHandler = async (req, res, next) => {
+  if (req.session) {
+    await req.getService(SessionRepository).deleteSession(req.session).promise;
+  }
   try {
-    res.clearCookie("token");
+    res.clearCookie(SESSION_COOKIE_NAME);
 
     let redirectTo = "/";
     const queryRedirectTo = Array.isArray(req.query.redirectTo)

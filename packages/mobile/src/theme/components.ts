@@ -1,4 +1,6 @@
+/* eslint-disable */
 import type { ComponentTheme, Theme } from "native-base";
+// @ts-expect-error Broken module
 import originalComponentThemes from "native-base/components";
 
 const {

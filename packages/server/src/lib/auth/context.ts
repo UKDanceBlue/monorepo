@@ -1,7 +1,7 @@
 import type { ContextFunction } from "@apollo/server";
 import type { ExpressContextFunctionArgument } from "@apollo/server/express4";
 import { Container } from "@freshgum/typedi";
-import { CommitteeRole } from "@prisma/client";
+import { CommitteeRole, type Person, type Session } from "@prisma/client";
 import type {
   AppAbility,
   AuthorizationContext,
@@ -25,11 +25,10 @@ import { superAdminLinkbluesToken } from "#lib/typediTokens.js";
 import { personModelToResource } from "#repositories/person/personModelToResource.js";
 import { PersonRepository } from "#repositories/person/PersonRepository.js";
 
-import { parseUserJwt } from "./index.js";
-
 export interface GraphQLContext extends AuthorizationContext {
   serverUrl: URL;
   ability: AppAbility;
+  session: Session | null;
 }
 
 type UserContext = Partial<
@@ -39,28 +38,15 @@ type UserContext = Partial<
   >
 >;
 async function getUserInfo(
-  userId: string
+  person: Person
 ): Promise<ConcreteResult<UserContext>> {
   const outputContext: UserContext = {};
   const personRepository = Container.get(PersonRepository);
-  const person = await personRepository.findPersonAndTeamsByUnique({
-    uuid: userId,
-  });
-
-  if (person.isErr()) {
-    if (person.error.tag === ErrorCode.NotFound) {
-      // Short-circuit if the user is not found
-      return Ok(outputContext);
-    }
-    return person;
-  }
 
   // If we found a user, set the authenticated user
   // Convert the user to a resource and set it on the context
-  const personResource = await personModelToResource(
-    person.value,
-    personRepository
-  ).promise;
+  const personResource = await personModelToResource(person, personRepository)
+    .promise;
   if (personResource.isErr()) {
     return personResource;
   }
@@ -70,7 +56,7 @@ async function getUserInfo(
   // Set the teams the user is on
   let teamMemberships = await personRepository.findMembershipsOfPerson(
     {
-      id: person.value.id,
+      id: person.id,
     },
     {},
     undefined,
@@ -96,7 +82,7 @@ async function getUserInfo(
   // Set the effective committee roles the user has
   const effectiveCommitteeRoles =
     await personRepository.getEffectiveCommitteeRolesOfPerson({
-      id: person.value.id,
+      id: person.id,
     });
   if (effectiveCommitteeRoles.isErr()) {
     return effectiveCommitteeRoles;
@@ -128,15 +114,18 @@ export const authenticate: ContextFunction<
       token = authorizationHeader.substring("Bearer ".length);
     }
   }
-  let userId: string | undefined;
+  let person: Person | null = null;
   let authSource: AuthSource = AuthSource.None;
   if (token) {
-    ({ userId, authSource } = parseUserJwt(token));
+    ({ person, authSource } = req.session ?? {
+      authSource: AuthSource.None,
+      person: null,
+    });
   }
 
   let userContext: UserContext | undefined = undefined;
-  if (userId) {
-    const userInfo = await getUserInfo(userId);
+  if (person) {
+    const userInfo = await getUserInfo(person);
     if (userInfo.isErr()) {
       logger.error(`Failed to get user info: ${userInfo.error.toString()}`);
     } else {
@@ -163,34 +152,28 @@ export const authenticate: ContextFunction<
       logger.trace(
         `graphqlContextFunction Masquerading as ${parsedId.value.id}`
       );
-      // We need to reset the dbRole to the default one in case the masquerade user is not a committee member
-      const masqueradeUserInfo = await getUserInfo(parsedId.value.id);
-      if (masqueradeUserInfo.isErr()) {
+      const person = await req
+        .getService(PersonRepository)
+        .findPersonByUnique({ uuid: parsedId.value.id });
+      if (person.isErr()) {
         logger.error(
-          `Failed to get masquerade user info: ${masqueradeUserInfo.error.toString()}`
+          `Failed to get masquerade user: ${person.error.toString()}`
         );
+      } else if (person.value.isNone()) {
+        logger.error(`Failed to get masquerade user: not found`);
       } else {
-        userContext = masqueradeUserInfo.value;
+        const userInfo = await getUserInfo(person.value.value);
+        if (userInfo.isErr()) {
+          logger.error(
+            `Failed to get masquerade user info: ${userInfo.error.toString()}`
+          );
+        } else {
+          userContext = userInfo.value;
+        }
       }
 
       superAdmin = false;
     }
-  }
-
-  if (
-    superAdmin &&
-    (!userContext?.effectiveCommitteeRoles ||
-      userContext.effectiveCommitteeRoles.length === 0)
-  ) {
-    userContext = {
-      ...userContext,
-      effectiveCommitteeRoles: [
-        {
-          identifier: CommitteeIdentifier.techCommittee,
-          role: CommitteeRole.Chair,
-        },
-      ],
-    };
   }
 
   const authorizationContext: AuthorizationContext = {
@@ -215,6 +198,7 @@ export const authenticate: ContextFunction<
       teamMemberships: authorizationContext.teamMemberships,
       userId: userContext?.authenticatedUser?.id.id ?? null,
     }),
+    session: req.session,
   };
 };
 

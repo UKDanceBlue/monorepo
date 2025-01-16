@@ -97,7 +97,6 @@ export const Sider: React.FC<
         },
         label: (
           <>
-            {/* eslint-disable-next-line @typescript-eslint/no-base-to-string */}
             <Link to={String(list ?? "")}>{meta?.label}</Link>
             {!menuCollapsed && isSelected && (
               <div className="ant-menu-tree-arrow" />

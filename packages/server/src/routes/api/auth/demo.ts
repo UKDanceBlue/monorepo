@@ -1,9 +1,8 @@
 import { AuthSource } from "@ukdanceblue/common";
 import type { NextFunction, Request, Response } from "express";
-import { DateTime } from "luxon";
 
-import { makeUserJwt } from "#auth/index.js";
 import { getOrMakeDemoUser } from "#lib/demo.js";
+import { SessionRepository } from "#repositories/Session.js";
 
 export const demoLogin = async (
   req: Request,
@@ -21,17 +20,9 @@ export const demoLogin = async (
       res.status(400);
       return void res.send("Missing redirectTo query parameter");
     }
-    let setCookie = false;
-    let sendToken = false;
     const returning = Array.isArray(req.query.returning)
       ? req.query.returning
       : [req.query.returning];
-    if (returning.includes("cookie")) {
-      setCookie = true;
-    }
-    if (returning.includes("token")) {
-      sendToken = true;
-    }
 
     const person = await getOrMakeDemoUser();
     if (person.isErr()) {
@@ -41,21 +32,28 @@ export const demoLogin = async (
       );
     }
 
-    const jwt = makeUserJwt({
-      userId: person.value.uuid,
-      authSource: AuthSource.Demo,
-    });
-    if (setCookie) {
-      res.cookie("token", jwt, {
-        httpOnly: true,
-        sameSite: "lax",
-        expires: DateTime.utc().plus({ weeks: 2 }).toJSDate(),
-      });
+    const sessionRepository = req.getService(SessionRepository);
+    const jwt = await sessionRepository
+      .newSession({
+        user: {
+          id: person.value.id,
+        },
+        authSource: AuthSource.Demo,
+        ip: req.ip,
+        userAgent: req.headers["user-agent"],
+      })
+      .andThen((session) => sessionRepository.signSession(session)).promise;
+    if (jwt.isErr()) {
+      next(jwt.error);
+    } else {
+      return sessionRepository.doExpressRedirect(
+        req,
+        res,
+        jwt.value,
+        redirectTo,
+        returning
+      );
     }
-    if (sendToken) {
-      redirectTo = `${redirectTo}?token=${encodeURIComponent(jwt)}`;
-    }
-    return res.redirect(redirectTo);
   } catch (error) {
     res.clearCookie("token");
     next(error);

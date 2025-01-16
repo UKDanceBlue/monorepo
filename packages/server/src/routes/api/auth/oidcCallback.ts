@@ -1,16 +1,18 @@
-import { Container } from "@freshgum/typedi";
-import { AuthSource } from "@ukdanceblue/common";
+import { AuthSource, type PersonNode } from "@ukdanceblue/common";
+import {
+  type ConcreteError,
+  InvalidArgumentError,
+} from "@ukdanceblue/common/error";
 import type { NextFunction, Request, Response } from "express";
 import jsonwebtoken from "jsonwebtoken";
-import { DateTime } from "luxon";
-import { authorizationCodeGrant } from "openid-client";
+import { authorizationCodeGrant, type JsonValue } from "openid-client";
+import { Err, type Result } from "ts-results-es";
 
-import { makeUserJwt } from "#auth/index.js";
 import { getHostUrl } from "#lib/host.js";
-import { logger } from "#lib/logging/standardLogging.js";
 import { LoginFlowRepository } from "#repositories/LoginFlowSession.js";
 import { personModelToResource } from "#repositories/person/personModelToResource.js";
 import { PersonRepository } from "#repositories/person/PersonRepository.js";
+import { SessionRepository } from "#repositories/Session.js";
 
 import { oidcConfiguration } from "./oidcClient.js";
 
@@ -21,8 +23,9 @@ export const oidcCallback = async (
 ): Promise<void> => {
   let sessionDeleted = true;
 
-  const personRepository = Container.get(PersonRepository);
-  const loginFlowSessionRepository = Container.get(LoginFlowRepository);
+  const personRepository = req.getService(PersonRepository);
+  const loginFlowRepository = req.getService(LoginFlowRepository);
+  const sessionRepository = req.getService(SessionRepository);
 
   let flowSessionId;
   try {
@@ -30,22 +33,20 @@ export const oidcCallback = async (
       // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
       flowSessionId = req.body.state;
     } else {
-      throw new Error("Missing state parameter");
+      return void res.status(400).json({ message: "Missing state parameter" });
     }
-
     if (!flowSessionId) {
-      return void res.status(400).send("Missing state parameter");
+      return void res.status(400).json({ message: "Missing state parameter" });
     }
 
     sessionDeleted = false;
 
-    const session =
-      await loginFlowSessionRepository.findLoginFlowSessionByUnique({
-        uuid: flowSessionId,
-      });
-    if (!session?.codeVerifier) {
+    const loginFlow = await loginFlowRepository.findLoginFlowSessionByUnique({
+      uuid: flowSessionId,
+    });
+    if (!loginFlow?.codeVerifier) {
       throw new Error(
-        `No ${session == null ? "session" : "codeVerifier"} found`
+        `No ${loginFlow == null ? "session" : "codeVerifier"} found`
       );
     }
     const query = new URLSearchParams(
@@ -60,7 +61,7 @@ export const oidcCallback = async (
     let tokenSet;
     try {
       tokenSet = await authorizationCodeGrant(oidcConfiguration, currentUrl, {
-        pkceCodeVerifier: session.codeVerifier,
+        pkceCodeVerifier: loginFlow.codeVerifier,
         expectedState: flowSessionId,
         idTokenExpected: true,
       });
@@ -75,7 +76,7 @@ export const oidcCallback = async (
       throw error;
     }
     // Destroy the session
-    await loginFlowSessionRepository.completeLoginFlow({
+    await loginFlowRepository.completeLoginFlow({
       uuid: flowSessionId,
     });
     sessionDeleted = true;
@@ -93,123 +94,134 @@ export const oidcCallback = async (
     if (!decodedJwt) {
       throw new Error("Error decoding JWT");
     }
-    const {
-      given_name: firstName,
-      family_name: lastName,
-      upn: userPrincipalName,
-    } = decodedJwt;
-    let linkblue: null | string = null;
-    if (
-      typeof userPrincipalName === "string" &&
-      userPrincipalName.endsWith("@uky.edu")
-    ) {
-      linkblue = userPrincipalName.replace(/@uky\.edu$/, "").toLowerCase();
-    }
-    if (typeof objectId !== "string") {
-      return void res.status(500).send("Missing OID");
-    }
-    const findPersonForLoginResult = await personRepository.findPersonForLogin(
-      [[AuthSource.LinkBlue, objectId]],
-      { email: String(email), linkblue }
-    );
 
-    if (findPersonForLoginResult.isErr()) {
-      return void res
-        .status(500)
-        .send(
-          findPersonForLoginResult.error.expose
-            ? findPersonForLoginResult.error.message
-            : "Error finding person"
-        );
-    }
-    const { currentPerson } = findPersonForLoginResult.value;
-
-    if (
-      !currentPerson.authIdPairs.some(
-        ({ source, value }) =>
-          source === AuthSource.LinkBlue && value === objectId
-      )
-    ) {
-      currentPerson.authIdPairs = [
-        ...currentPerson.authIdPairs,
-        {
-          personId: currentPerson.id,
-          source: AuthSource.LinkBlue,
-          value: objectId,
-        },
-      ];
-    }
-    if (email && currentPerson.email !== email && typeof email === "string") {
-      currentPerson.email = email;
-    }
-    if (typeof firstName === "string" && typeof lastName === "string") {
-      const name = `${firstName} ${lastName}`;
-      if (currentPerson.name !== name) {
-        currentPerson.name = name;
-      }
-    }
-    if (linkblue && currentPerson.linkblue !== linkblue) {
-      currentPerson.linkblue = linkblue.toLowerCase();
-    }
-
-    const updatedPerson = await personRepository.updatePerson(
-      { id: currentPerson.id },
-      {
-        name: currentPerson.name,
-        email: currentPerson.email,
-        linkblue: currentPerson.linkblue?.toLowerCase(),
-        authIds: currentPerson.authIdPairs.map((a) => ({
-          source: a.source,
-          value: a.value,
-        })),
-      }
-    );
-
-    if (updatedPerson.isErr()) {
-      logger.error("Failed to update database entry", {
-        error: updatedPerson.error,
-      });
-      return void res.status(500).send("Failed to update database entry");
-    }
-
-    const personNode = await personModelToResource(
-      updatedPerson.value,
+    const personNodeResult = await getPersonFromAzureJwt(
+      decodedJwt,
+      objectId,
+      email,
       personRepository
-    ).promise;
-    if (personNode.isErr()) {
-      return void res
-        .status(500)
-        .send(
-          personNode.error.expose
-            ? personNode.error.message
-            : "Error creating person node"
+    );
+
+    if (personNodeResult.isErr()) {
+      next(personNodeResult.error);
+    } else {
+      const jwt = await sessionRepository
+        .newSession({
+          user: {
+            uuid: personNodeResult.value.id.id,
+          },
+          authSource: AuthSource.LinkBlue,
+          ip: req.ip,
+          userAgent: req.headers["user-agent"],
+        })
+        .andThen((session) => sessionRepository.signSession(session)).promise;
+
+      if (jwt.isErr()) {
+        next(jwt.error);
+      } else {
+        return sessionRepository.doExpressRedirect(
+          req,
+          res,
+          jwt.value,
+          loginFlow.redirectToAfterLogin,
+          [
+            loginFlow.sendToken ? "token" : undefined,
+            loginFlow.setCookie ? "cookie" : undefined,
+          ]
         );
+      }
     }
-    const jwt = makeUserJwt({
-      userId: personNode.value.id.id,
-      authSource: AuthSource.LinkBlue,
-    });
-    let redirectTo = session.redirectToAfterLogin;
-    if (session.sendToken) {
-      redirectTo = `${redirectTo}?token=${encodeURIComponent(jwt)}`;
-    }
-    if (session.setCookie) {
-      res.cookie("token", jwt, {
-        httpOnly: true,
-        sameSite: req.secure ? "none" : "lax",
-        secure: req.secure,
-        expires: DateTime.now().plus({ days: 7 }).toJSDate(),
-      });
-    }
-    return res.redirect(redirectTo);
   } catch (error) {
     res.clearCookie("token");
     next(error);
   } finally {
     if (!sessionDeleted) {
-      await loginFlowSessionRepository.completeLoginFlow({
+      await loginFlowRepository.completeLoginFlow({
         uuid: flowSessionId,
       });
     }
   }
 };
+
+async function getPersonFromAzureJwt(
+  decodedJwt: jsonwebtoken.JwtPayload,
+  objectId: JsonValue | undefined,
+  email: JsonValue | undefined,
+  personRepository: PersonRepository
+): Promise<Result<PersonNode, ConcreteError>> {
+  const {
+    given_name: firstName,
+    family_name: lastName,
+    upn: userPrincipalName,
+  } = decodedJwt;
+  let linkblue: null | string = null;
+  if (
+    typeof userPrincipalName === "string" &&
+    userPrincipalName.endsWith("@uky.edu")
+  ) {
+    linkblue = userPrincipalName.replace(/@uky\.edu$/, "").toLowerCase();
+  }
+  if (typeof objectId !== "string") {
+    return Err(new InvalidArgumentError("Missing OID in JWT"));
+  }
+  const findPersonForLoginResult = await personRepository.findPersonForLogin(
+    [[AuthSource.LinkBlue, objectId]],
+    { email: String(email), linkblue }
+  );
+
+  if (findPersonForLoginResult.isErr()) {
+    return findPersonForLoginResult;
+  }
+  const { currentPerson } = findPersonForLoginResult.value;
+
+  if (
+    !currentPerson.authIdPairs.some(
+      ({ source, value }) =>
+        source === AuthSource.LinkBlue && value === objectId
+    )
+  ) {
+    currentPerson.authIdPairs = [
+      ...currentPerson.authIdPairs,
+      {
+        personId: currentPerson.id,
+        source: AuthSource.LinkBlue,
+        value: objectId,
+      },
+    ];
+  }
+  if (email && currentPerson.email !== email && typeof email === "string") {
+    currentPerson.email = email;
+  }
+  if (typeof firstName === "string" && typeof lastName === "string") {
+    const name = `${firstName} ${lastName}`;
+    if (currentPerson.name !== name) {
+      currentPerson.name = name;
+    }
+  }
+  if (linkblue && currentPerson.linkblue !== linkblue) {
+    currentPerson.linkblue = linkblue.toLowerCase();
+  }
+
+  const updatedPerson = await personRepository.updatePerson(
+    { id: currentPerson.id },
+    {
+      name: currentPerson.name,
+      email: currentPerson.email,
+      linkblue: currentPerson.linkblue?.toLowerCase(),
+      authIds: currentPerson.authIdPairs.map((a) => ({
+        source: a.source,
+        value: a.value,
+      })),
+    }
+  );
+
+  if (updatedPerson.isErr()) {
+    return updatedPerson;
+  }
+
+  const personNode = await personModelToResource(
+    updatedPerson.value,
+    personRepository
+  ).promise;
+  return personNode;
+}

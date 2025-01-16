@@ -93,7 +93,9 @@ export class MarathonHourResolver
     @Arg("marathonUuid", () => GlobalIdScalar) marathonUuid: GlobalId
   ) {
     const marathonHour = await this.marathonHourRepository.createMarathonHour({
-      ...input,
+      durationInfo: input.durationInfo,
+      title: input.title,
+      details: input.details,
       marathon: { uuid: marathonUuid.id },
       shownStartingAt: input.shownStartingAt.toJSDate(),
     });
@@ -109,7 +111,9 @@ export class MarathonHourResolver
     const marathonHour = await this.marathonHourRepository.updateMarathonHour(
       { uuid: id },
       {
-        ...input,
+        details: input.details,
+        durationInfo: input.durationInfo,
+        title: input.title,
         shownStartingAt: input.shownStartingAt.toJSDate(),
       }
     );

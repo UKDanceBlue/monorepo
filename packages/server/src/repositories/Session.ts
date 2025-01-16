@@ -1,5 +1,5 @@
 import { type Container, Service } from "@freshgum/typedi";
-import { PrismaClient, Session } from "@prisma/client";
+import { type Person, PrismaClient, Session } from "@prisma/client";
 import { AuthSource } from "@ukdanceblue/common";
 import {
   ConcreteError,
@@ -9,6 +9,7 @@ import {
   UnauthenticatedError,
 } from "@ukdanceblue/common/error";
 import { type CookieOptions, Handler } from "express";
+import express from "express";
 import jsonwebtoken from "jsonwebtoken";
 import { DateTime, Duration } from "luxon";
 import { AsyncResult, Err, Ok } from "ts-results-es";
@@ -28,19 +29,21 @@ import {
 } from "./person/PersonRepository.js";
 import { type AsyncRepositoryResult, type RepositoryError } from "./shared.js";
 
+export const SESSION_LENGTH = Duration.fromObject({ day: 1 });
+const JWT_ISSUER = "https://danceblue.org";
+export const SESSION_COOKIE_NAME = "ukdanceblue_session";
+
+export type SessionValue = Session & { person: Person | null };
+
 declare global {
   // eslint-disable-next-line @typescript-eslint/no-namespace
   namespace Express {
     interface Request {
-      session: Session | null;
+      session: SessionValue | null;
       getService: typeof Container.get;
     }
   }
 }
-
-export const SESSION_LENGTH = Duration.fromObject({ day: 1 });
-const JWT_ISSUER = "https://danceblue.org";
-const SESSION_COOKIE_NAME = "ukdanceblue_session";
 
 @Service([prismaToken, jwtSecretToken, isDevelopmentToken, PersonRepository])
 export class SessionRepository extends buildDefaultRepository("Session", {}) {
@@ -72,11 +75,11 @@ export class SessionRepository extends buildDefaultRepository("Session", {}) {
     ip,
     userAgent,
   }: {
-    user: UniquePersonParam;
-    userAgent: string;
-    ip: string;
+    user: UniquePersonParam | null;
     authSource: AuthSource;
-  }): AsyncRepositoryResult<Session> {
+    ip?: string;
+    userAgent?: string;
+  }): AsyncRepositoryResult<SessionValue> {
     if (authSource === AuthSource.None) {
       return Err(
         new InvariantError(
@@ -90,9 +93,12 @@ export class SessionRepository extends buildDefaultRepository("Session", {}) {
           authSource,
           ip,
           userAgent,
-          person: { connect: this.personRepository.uniqueToWhere(user) },
+          person: user
+            ? { connect: this.personRepository.uniqueToWhere(user) }
+            : undefined,
           expiresAt: DateTime.now().plus(SESSION_LENGTH).toJSDate(),
         },
+        include: { person: true },
       })
     );
   }
@@ -100,7 +106,7 @@ export class SessionRepository extends buildDefaultRepository("Session", {}) {
   verifySession(
     token: string,
     { ip, userAgent }: { ip?: string; userAgent?: string }
-  ): AsyncRepositoryResult<Session | null, UnauthenticatedError> {
+  ): AsyncRepositoryResult<SessionValue, UnauthenticatedError> {
     return new AsyncResult<string, RepositoryError>(
       new Promise((resolve) => {
         verify(
@@ -125,6 +131,7 @@ export class SessionRepository extends buildDefaultRepository("Session", {}) {
         return this.handleQueryError(
           this.prisma.session.findUnique({
             where: { uuid: decoded },
+            include: { person: true },
           })
         );
       })
@@ -169,19 +176,38 @@ export class SessionRepository extends buildDefaultRepository("Session", {}) {
     );
   }
 
-  refreshSession(session: Session): AsyncRepositoryResult<Session> {
+  refreshSession(session: Session): AsyncRepositoryResult<SessionValue> {
     return this.handleQueryError(
       this.prisma.session.update({
         where: { uuid: session.uuid },
         data: {
           expiresAt: DateTime.now().plus(SESSION_LENGTH).toJSDate(),
         },
+        include: { person: true },
       })
     );
   }
 
+  deleteSession(session: Session): AsyncRepositoryResult<void> {
+    return this.handleQueryError(
+      this.prisma.session.delete({ where: { uuid: session.uuid } })
+    ).map(() => undefined);
+  }
+
+  gcOldSessions(): AsyncRepositoryResult<void> {
+    return this.handleQueryError(
+      this.prisma.session.deleteMany({
+        where: { expiresAt: { lte: new Date() } },
+      })
+    ).map(() => undefined);
+  }
+
   get expressMiddleware(): Handler {
-    return async (req, res, next) => {
+    return async (
+      req: express.Request,
+      res: express.Response,
+      next: express.NextFunction
+    ) => {
       let token = (req.cookies as Partial<Record<string, string>>)[
         SESSION_COOKIE_NAME
       ]
@@ -213,10 +239,9 @@ export class SessionRepository extends buildDefaultRepository("Session", {}) {
           userAgent: req.headers["user-agent"],
         })
           .andThen(
-            (session): AsyncRepositoryResult<Session, UnauthenticatedError> => {
-              if (!session) {
-                return Err(new UnauthenticatedError()).toAsyncResult();
-              }
+            (
+              session
+            ): AsyncRepositoryResult<SessionValue, UnauthenticatedError> => {
               req.session = session;
               return this.refreshSession(session);
             }
@@ -245,5 +270,26 @@ export class SessionRepository extends buildDefaultRepository("Session", {}) {
         await result.promise;
       }
     };
+  }
+
+  doExpressRedirect(
+    req: express.Request,
+    res: express.Response,
+    jwt: string,
+    redirectTo: string,
+    returning: (string | object | undefined)[]
+  ) {
+    if (returning.includes("token")) {
+      redirectTo = `${redirectTo}?token=${encodeURIComponent(jwt)}`;
+    }
+    if (returning.includes("cookie")) {
+      res.cookie(SESSION_COOKIE_NAME, jwt, {
+        httpOnly: true,
+        sameSite: req.secure ? "none" : "lax",
+        secure: req.secure,
+        expires: DateTime.now().plus(SESSION_LENGTH).toJSDate(),
+      });
+    }
+    return res.redirect(redirectTo);
   }
 }

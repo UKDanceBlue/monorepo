@@ -69,8 +69,8 @@ model Session {
   ip          String?
   expiresAt   DateTime
 
-  personId Int
-  person   Person @relation(fields: [personId], references: [id], onDelete: Cascade)
+  personId Int?
+  person   Person? @relation(fields: [personId], references: [id], onDelete: Cascade)
 }
 
 enum AuthSource {

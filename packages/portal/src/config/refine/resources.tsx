@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-base-to-string */
 import {
   BellOutlined,
   CalendarOutlined,

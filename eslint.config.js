@@ -249,6 +249,8 @@ export default eslintTs.config(
         "@typescript-eslint/no-misused-promises": "off",
         // Disabled for performance
         "@typescript-eslint/no-unsafe-assignment": "off",
+        // Disabled for performance
+        "@typescript-eslint/no-base-to-string": "off",
         "@typescript-eslint/require-await": "error",
         "@typescript-eslint/return-await": "error",
         "@typescript-eslint/consistent-type-imports": [

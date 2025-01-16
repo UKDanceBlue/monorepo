@@ -1,4 +1,3 @@
-/* eslint-disable react-refresh/only-export-components */
 import random from "lodash/random";
 import type { ImageSourcePropType } from "react-native";
 
