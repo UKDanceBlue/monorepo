@@ -5,7 +5,7 @@ import { prismaToken } from "#lib/typediTokens.js";
 import { sqlLogger } from "#logging/sqlLogging.js";
 import { logger } from "#logging/standardLogging.js";
 
-export const prisma = new PrismaClient({
+const prisma = new PrismaClient({
   log: [
     {
       emit: "event",

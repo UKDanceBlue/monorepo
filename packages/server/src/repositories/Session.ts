@@ -30,7 +30,7 @@ import {
 import { type AsyncRepositoryResult, type RepositoryError } from "./shared.js";
 
 export const SESSION_LENGTH = Duration.fromObject({ day: 1 });
-const JWT_ISSUER = "https://danceblue.org";
+const JWT_ISSUER = "https://app.danceblue.org";
 export const SESSION_COOKIE_NAME = "ukdanceblue_session";
 
 export type SessionValue = Session & { person: Person | null };

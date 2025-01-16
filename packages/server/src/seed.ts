@@ -35,7 +35,7 @@ const { PersonRepository } = await import(
 );
 const { TeamRepository } = await import("#repositories/team/TeamRepository.js");
 
-const { prisma } = await import("./prisma.js");
+const { prisma } = await import("./lib/prisma.js");
 
 try {
   // Base data setup

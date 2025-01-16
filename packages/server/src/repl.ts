@@ -26,7 +26,7 @@ logger.info(
   `Logger initialized with level "${loggingLevel}", writing log files to "${logDir}"`
 );
 
-await import("./prisma.js");
+await import("./lib/prisma.js");
 
 const { resolversList } = await import("#lib/resolversList.js");
 
