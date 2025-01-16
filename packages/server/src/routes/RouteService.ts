@@ -1,15 +1,5 @@
 import type { RequestHandler } from "express";
-import type { NextFunction, Request, Response } from "express";
 import { Router } from "express";
-
-function defaultErrorHandler(
-  err: Error,
-  _req: Request,
-  res: Response,
-  _next: NextFunction
-) {
-  res.status(500).send({ error: err.message });
-}
 
 export abstract class RouterService {
   private readonly localRouter: Router;
@@ -18,7 +8,7 @@ export abstract class RouterService {
   }
 
   public mount(parent: Router) {
-    parent.use(this.path, this.localRouter, defaultErrorHandler);
+    parent.use(this.path, this.localRouter);
   }
 
   protected addGetRoute(path: string, ...middleware: RequestHandler[]) {

@@ -68,10 +68,6 @@ export async function createServer() {
 
   const app = express();
   app.set("trust proxy", true);
-  app.use((req, _, next) => {
-    req.getService = Container.get.bind(Container);
-    next();
-  });
 
   const httpServer = http.createServer(app);
 
@@ -101,15 +97,6 @@ export async function createServer() {
     },
   });
 
-  app.use(
-    cors({
-      credentials: true,
-      origin: Container.get(isDevelopmentToken)
-        ? [/^https:\/\/(\w+\.)?danceblue\.org$/, /^http:\/\/localhost:\d+$/]
-        : /^https:\/\/(\w+\.)?danceblue\.org$/,
-    })
-  );
-
   return { app, httpServer, apolloServer: server };
 }
 
@@ -138,14 +125,13 @@ export async function startServer(
   apolloServer: ApolloServer<GraphQLContext>,
   app: ExpressApplication
 ) {
-  const { formatError } = await import("#lib/formatError.js");
   const { SessionRepository } = await import("#repositories/Session.js");
-
-  const cookieSecret = Container.get(cookieSecretToken);
-  const isDev = Container.get(isDevelopmentToken);
 
   await apolloServer.start();
 
+  const { authenticate } = await import("./lib/auth/context.js");
+
+  // Middleware
   if (loggingLevel === "trace") {
     app.use((req, _res, next) => {
       logger.trace("request received", {
@@ -155,22 +141,19 @@ export async function startServer(
       next();
     });
   }
-
-  const { default: authApiRouter } = await import("./routes/api/auth/index.js");
-  const { default: eventsApiRouter } = await import(
-    "./routes/api/events/index.js"
+  app.use((req, _, next) => {
+    req.getService = Container.get.bind(Container);
+    next();
+  });
+  app.use(
+    cors({
+      credentials: true,
+      origin: Container.get(isDevelopmentToken)
+        ? [/^https:\/\/(\w+\.)?danceblue\.org$/, /^http:\/\/localhost:\d+$/]
+        : /^https:\/\/(\w+\.)?danceblue\.org$/,
+    })
   );
-  const { default: healthCheckRouter } = await import(
-    "./routes/api/healthcheck/index.js"
-  );
-  const { default: fileRouter } = await import("./routes/api/file/index.js");
-  const { default: uploadRouter } = await import(
-    "./routes/api/upload/index.js"
-  );
-  const { authenticate } = await import("./lib/auth/context.js");
-
-  app.use(cookieParser(cookieSecret));
-
+  app.use(cookieParser(Container.get(cookieSecretToken)));
   app.use(Container.get(SessionRepository).expressMiddleware);
 
   app.use(
@@ -182,16 +165,30 @@ export async function startServer(
       context: authenticate,
     })
   );
-  const apiRouter = express.Router();
+  app.use("/api", await makeApiRouter());
 
-  Container.get(authApiRouter).mount(apiRouter);
-  Container.get(eventsApiRouter).mount(apiRouter);
-  Container.get(healthCheckRouter).mount(apiRouter);
-  Container.get(fileRouter).mount(apiRouter);
-  Container.get(uploadRouter).mount(apiRouter);
+  await handlePortal(app);
 
-  app.use("/api", apiRouter);
+  setupExpressErrorHandler(app, {
+    shouldHandleError(error) {
+      if (
+        error instanceof ConcreteError &&
+        [
+          ErrorCode.AccessControlError,
+          ErrorCode.AuthorizationRuleFailed,
+          ErrorCode.NotFound,
+          ErrorCode.Unauthenticated,
+        ].includes(error.tag)
+      ) {
+        return false;
+      }
+      return true;
+    },
+  });
+  app.use(await getExpressErrorHandler());
+}
 
+async function handlePortal(app: ExpressApplication) {
   if (process.env.SSR) {
     logger.warning(
       "Enabling SSR rendered portal, this functionality is not complete and may not work as expected"
@@ -234,50 +231,61 @@ export async function startServer(
       });
     }
   }
+}
 
-  setupExpressErrorHandler(app, {
-    shouldHandleError(error) {
-      if (
-        error instanceof ConcreteError &&
-        [
-          ErrorCode.AccessControlError,
-          ErrorCode.AuthorizationRuleFailed,
-          ErrorCode.NotFound,
-          ErrorCode.Unauthenticated,
-        ].includes(error.tag)
-      ) {
-        return false;
-      }
-      return true;
-    },
-  });
+async function makeApiRouter() {
+  const apiRouter = express.Router();
 
-  app.use(
-    (
-      err: unknown,
-      _r: express.Request,
-      res: express.Response,
-      _n: express.NextFunction
-    ) => {
-      const formatted = formatError(
-        err instanceof Error
-          ? err
-          : err instanceof ConcreteError
-            ? err.graphQlError
-            : new Error(String(err)),
-        err,
-        isDev
-      );
-      if (
-        formatted.extensions &&
-        "code" in formatted.extensions &&
-        formatted.extensions.code === ErrorCode.Unauthenticated.description
-      ) {
-        res.status(401).json(formatted);
-      } else {
-        logger.error("Unhandled error in Express", { error: formatted });
-        res.status(500).json(formatted);
-      }
-    }
+  const { default: authApiRouter } = await import("./routes/api/auth/index.js");
+  const { default: eventsApiRouter } = await import(
+    "./routes/api/events/index.js"
   );
+  const { default: healthCheckRouter } = await import(
+    "./routes/api/healthcheck/index.js"
+  );
+  const { default: fileRouter } = await import("./routes/api/file/index.js");
+  const { default: uploadRouter } = await import(
+    "./routes/api/upload/index.js"
+  );
+  Container.get(authApiRouter).mount(apiRouter);
+  Container.get(eventsApiRouter).mount(apiRouter);
+  Container.get(healthCheckRouter).mount(apiRouter);
+  Container.get(fileRouter).mount(apiRouter);
+  Container.get(uploadRouter).mount(apiRouter);
+  return apiRouter;
+}
+async function getExpressErrorHandler() {
+  const { formatError } = await import("#lib/formatError.js");
+  const isDev = Container.get(isDevelopmentToken);
+
+  return (
+    err: unknown,
+    _r: express.Request,
+    res: express.Response,
+    next: express.NextFunction
+  ) => {
+    if (res.headersSent) {
+      return next(err);
+    }
+
+    const formatted = formatError(
+      err instanceof Error
+        ? err
+        : err instanceof ConcreteError
+          ? err.graphQlError
+          : new Error(String(err)),
+      err,
+      isDev
+    );
+    if (
+      formatted.extensions &&
+      "code" in formatted.extensions &&
+      formatted.extensions.code === ErrorCode.Unauthenticated.description
+    ) {
+      res.status(401).json(formatted);
+    } else {
+      logger.error("Unhandled error in Express", { error: formatted });
+      res.status(500).json(formatted);
+    }
+  };
 }

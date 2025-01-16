@@ -60,10 +60,14 @@ export const login = async (
         .promise;
 
       if (person.isErr()) {
-        return person.error.tag === ErrorCode.Unauthenticated ||
+        if (
+          person.error.tag === ErrorCode.Unauthenticated ||
           person.error.tag === ErrorCode.NotFound
-          ? void res.status(401).send("Invalid email or password")
-          : void res.sendStatus(500);
+        ) {
+          return void res.status(401).send("Invalid email or password");
+        } else {
+          return next(person.error);
+        }
       } else {
         const jwt = await sessionRepository
           .newSession({

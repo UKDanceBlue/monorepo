@@ -26,10 +26,7 @@ export const demoLogin = async (
 
     const person = await getOrMakeDemoUser();
     if (person.isErr()) {
-      res.status(500);
-      return void res.send(
-        person.error.expose ? person.error.message : "Error creating demo user"
-      );
+      return next(person.error);
     }
 
     const sessionRepository = req.getService(SessionRepository);
