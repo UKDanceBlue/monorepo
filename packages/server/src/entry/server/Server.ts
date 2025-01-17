@@ -41,7 +41,7 @@ export class Server implements EntryPoint {
       `Logger initialized with level "${this.loggingLevel}", writing log files to "${this.logDir}"`
     );
 
-    await this.expressModule.init();
+    this.expressModule.init();
     await this.apolloModule.init();
 
     this.expressModule.startMiddlewares();

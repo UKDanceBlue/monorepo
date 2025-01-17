@@ -43,14 +43,11 @@ export class ExpressModule {
     private readonly cookieSecret: string
   ) {}
 
-  async init(): Promise<void> {
+  init() {
     this.#app = express();
     this.#app.set("trust proxy", true);
 
     this.#httpServer = http.createServer(this.app);
-
-    // eslint-disable-next-line unicorn/no-useless-promise-resolve-reject
-    return Promise.resolve();
   }
 
   public startMiddlewares() {
