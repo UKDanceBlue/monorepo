@@ -1,6 +1,8 @@
 import type { RequestHandler } from "express";
 import { Router } from "express";
 
+import { logger } from "#lib/logging/standardLogging.js";
+
 export abstract class RouterService {
   private readonly localRouter: Router;
   constructor(private path: string) {
@@ -8,7 +10,17 @@ export abstract class RouterService {
   }
 
   public mount(parent: Router) {
-    parent.use(this.path, this.localRouter);
+    parent.use(
+      this.path,
+      (req, _res, next) => {
+        logger.trace(`Handling request with API path ${this.path}`, {
+          method: req.method,
+          url: req.url,
+        });
+        next();
+      },
+      this.localRouter
+    );
   }
 
   protected addGetRoute(path: string, ...middleware: RequestHandler[]) {

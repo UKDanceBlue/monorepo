@@ -1,6 +1,8 @@
 import { Container } from "@freshgum/typedi";
+import * as Sentry from "@sentry/node";
 import { debugStringify } from "@ukdanceblue/common";
 import { ConcreteError } from "@ukdanceblue/common/error";
+import { DateTime } from "luxon";
 import type winston from "winston";
 import type { Logform } from "winston";
 import { createLogger, format, transports } from "winston";
@@ -87,6 +89,20 @@ export const logger = createLogger({
   transports: [combinedLogTransport, consoleTransport],
   exitOnError: false,
 }) as StandardLogger;
+
+export function breadCrumbTrace(
+  message: string,
+  data?: Record<string, unknown>
+) {
+  logger.trace(message, data);
+  Sentry.addBreadcrumb({
+    message,
+    data,
+    category: "trace",
+    timestamp: DateTime.now().toSeconds(),
+    level: "debug",
+  });
+}
 
 /**
  * Log a fatal message to the logger

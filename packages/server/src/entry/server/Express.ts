@@ -9,12 +9,10 @@ import express from "express";
 
 import { formatError } from "#lib/formatError.js";
 import { logger } from "#lib/logging/standardLogging.js";
-import type { SyslogLevels } from "#lib/logging/SyslogLevels.js";
 import {
   applicationPortToken,
   cookieSecretToken,
   isDevelopmentToken,
-  loggingLevelToken,
 } from "#lib/typediTokens.js";
 import { SessionRepository } from "#repositories/Session.js";
 
@@ -25,7 +23,6 @@ import { SessionRepository } from "#repositories/Session.js";
   [
     SessionRepository,
     applicationPortToken,
-    loggingLevelToken,
     isDevelopmentToken,
     cookieSecretToken,
   ]
@@ -38,7 +35,6 @@ export class ExpressModule {
   constructor(
     private readonly sessionRepository: SessionRepository,
     private readonly applicationPort: number,
-    private readonly loggingLevel: SyslogLevels,
     private readonly isDevelopment: boolean,
     private readonly cookieSecret: string
   ) {}
@@ -51,19 +47,15 @@ export class ExpressModule {
   }
 
   public startMiddlewares() {
-    if (this.loggingLevel === "trace") {
-      this.app.use((req, _res, next) => {
-        logger.trace("request received", {
-          method: req.method,
-          url: req.url,
-        });
-        next();
+    this.app.use((req, _res, next) => {
+      logger.trace("request received", {
+        method: req.method,
+        url: req.url,
       });
-    }
-    this.app.use((req, _, next) => {
       req.getService = Container.get.bind(Container);
       next();
     });
+
     this.app.use(
       cors({
         credentials: true,
@@ -133,6 +125,19 @@ export class ExpressModule {
       this.httpServer.on("error", reject);
       this.httpServer.listen(this.applicationPort, () => {
         this.httpServer.off("error", reject);
+        const httpServerAddress = this.httpServer.address();
+        let httpServerUrl = "";
+        if (typeof httpServerAddress === "string") {
+          httpServerUrl = httpServerAddress;
+        } else if (httpServerAddress) {
+          httpServerUrl =
+            httpServerAddress.address === "::" ||
+            httpServerAddress.address === ""
+              ? `http://localhost:${httpServerAddress.port}`
+              : `http://${httpServerAddress.address}:${httpServerAddress.port}`;
+        }
+
+        logger.info(`HTTP server started at ${httpServerUrl}`);
         resolve();
       });
     });

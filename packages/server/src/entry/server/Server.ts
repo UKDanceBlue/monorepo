@@ -42,13 +42,19 @@ export class Server implements EntryPoint {
     );
 
     this.expressModule.init();
+    logger.debug("Express initialized");
+
     await this.apolloModule.init();
+    logger.debug("Apollo initialized");
 
     this.expressModule.startMiddlewares();
+    logger.debug("Express middlewares started");
 
     await this.apolloModule.start();
+    logger.debug("Apollo started");
 
     await this.expressModule.startRoutes();
+    logger.debug("Express routes started");
 
     if (process.env.SSR === "enable_unstable_ssr") {
       if (!this.isDevelopment) {
@@ -65,24 +71,16 @@ export class Server implements EntryPoint {
     } else {
       await this.portalModule.startSpa();
     }
+    logger.debug("Portal started");
 
     this.expressModule.startErrorHandlers();
+    logger.debug("Express error handlers started");
 
     await this.expressModule.start();
-
-    const httpServerAddress = this.expressModule.httpServer.address();
-    let httpServerUrl = "";
-    if (typeof httpServerAddress === "string") {
-      httpServerUrl = httpServerAddress;
-    } else if (httpServerAddress) {
-      httpServerUrl =
-        httpServerAddress.address === "::" || httpServerAddress.address === ""
-          ? `http://localhost:${httpServerAddress.port}`
-          : `http://${httpServerAddress.address}:${httpServerAddress.port}`;
-    }
-    logger.info(`HTTP server started at ${httpServerUrl}`);
+    logger.debug("Express started");
 
     await import("#jobs/index.js");
+    logger.debug("Jobs started");
 
     logger.info("DanceBlue Server Started");
   }

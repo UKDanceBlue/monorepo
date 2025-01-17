@@ -24,6 +24,8 @@ const { sign, verify } = jsonwebtoken;
 
 import * as Sentry from "@sentry/node";
 
+import { breadCrumbTrace, logger } from "#lib/logging/standardLogging.js";
+
 import { buildDefaultRepository } from "./Default.js";
 import {
   PersonRepository,
@@ -219,6 +221,11 @@ export class SessionRepository extends buildDefaultRepository("Session", {}) {
       res: express.Response,
       next: express.NextFunction
     ) => {
+      logger.trace("Session middleware", {
+        method: req.method,
+        url: req.url,
+      });
+
       let token = (req.cookies as Partial<Record<string, string>>)[
         SESSION_COOKIE_NAME
       ]
@@ -255,6 +262,11 @@ export class SessionRepository extends buildDefaultRepository("Session", {}) {
             ): AsyncRepositoryResult<SessionValue, UnauthenticatedError> => {
               req.session = session;
 
+              breadCrumbTrace("Session verified", {
+                sessionUuid: session.uuid,
+                personEmail: session.person?.email,
+              });
+
               Sentry.setUser({
                 email: session.person?.email,
                 id: session.person?.uuid,
@@ -269,28 +281,26 @@ export class SessionRepository extends buildDefaultRepository("Session", {}) {
               return this.refreshSession(session);
             }
           )
-          .andThen((session) => this.signSession(session))
-          .andThen<undefined, undefined>((token) => {
-            if (tokenFromCookie) {
-              res.cookie(SESSION_COOKIE_NAME, token, this.sessionCookieOptions);
-            }
+          .andThen((session) => this.signSession(session));
+        const awaited = await result.promise;
+        if (awaited.isOk()) {
+          if (tokenFromCookie) {
+            res.cookie(SESSION_COOKIE_NAME, token, this.sessionCookieOptions);
+          }
+          next();
+        } else {
+          req.session = null;
+          if (
+            awaited.error instanceof ConcreteError &&
+            awaited.error.tag === ErrorCode.Unauthenticated &&
+            tokenFromCookie
+          ) {
+            res.clearCookie(SESSION_COOKIE_NAME);
             next();
-            return Ok(undefined);
-          })
-          .orElse<undefined>((error) => {
-            req.session = null;
-            if (
-              error instanceof ConcreteError &&
-              error.tag === ErrorCode.Unauthenticated &&
-              tokenFromCookie
-            ) {
-              res.clearCookie(SESSION_COOKIE_NAME);
-            } else {
-              next(error);
-            }
-            return Ok(undefined);
-          }) satisfies AsyncResult<undefined, undefined>;
-        await result.promise;
+          } else {
+            next(awaited.error);
+          }
+        }
       }
     };
   }
