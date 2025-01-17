@@ -15,7 +15,6 @@ const entryPointStr = process.argv[process.argv.length - 1];
 let entryPoint: EntryPoint;
 switch (entryPointStr) {
   case "start": {
-    await import("./entry/server/instrument.js");
     const { Server } = await import("./entry/server/Server.js");
     entryPoint = Container.get(Server);
     break;

@@ -1,4 +1,4 @@
-import { Container } from "@freshgum/typedi";
+import { Container, Service, type ServiceIdentifier } from "@freshgum/typedi";
 import type { AccessControlParam, Action } from "@ukdanceblue/common";
 import { AccessLevel, isGlobalId } from "@ukdanceblue/common";
 import {
@@ -11,88 +11,20 @@ import {
   GraphQLNonNull,
   GraphQLObjectType,
   type GraphQLResolveInfo,
+  type GraphQLSchema,
 } from "graphql";
 import type { Err } from "ts-results-es";
 import { AsyncResult, Option, Result } from "ts-results-es";
-import type { ArgsDictionary, MiddlewareFn } from "type-graphql";
+import type { ArgsDictionary, NextFn, ResolverData } from "type-graphql";
 import { buildSchema } from "type-graphql";
 import { fileURLToPath } from "url";
 
 import type { GraphQLContext } from "#lib/auth/context.js";
 import { logger } from "#logging/logger.js";
 
-import { resolversList } from "./resolversList.js";
-
 const schemaPath = fileURLToPath(
   import.meta.resolve("../../../../../schema.graphql")
 );
-
-/**
- * Logs errors, as well as allowing us to return results and options from resolvers
- *
- * NOTE: be careful working in this function as the types are mostly 'any', meaning you won't get much type checking
- */
-const errorHandlingMiddleware: MiddlewareFn = async ({ info }, next) => {
-  let result: // eslint-disable-next-line @typescript-eslint/no-empty-object-type
-  | {}
-    | AsyncResult<unknown, unknown>
-    | Result<unknown, unknown>
-    | Option<unknown>
-    | Result<Option<unknown>, unknown>
-    | AsyncResult<Option<unknown>, unknown>
-    | null;
-  try {
-    result = await next();
-  } catch (error) {
-    logger.error(
-      "An error occurred in a resolver",
-      typeof error !== "object" ? { error } : error
-    );
-    throw error;
-  }
-
-  if (result instanceof AsyncResult) {
-    result = await result.promise;
-  }
-
-  if (Result.isResult(result)) {
-    if (result.isErr()) {
-      let concreteError: Err<ConcreteError>;
-      let stack: string | undefined;
-      if (result.error instanceof ConcreteError) {
-        concreteError = result as Err<ConcreteError>;
-        stack = result.stack;
-      } else {
-        concreteError = result.mapErr(toBasicError);
-        stack = concreteError.stack;
-      }
-
-      const error = new FormattedConcreteError(concreteError, info);
-      logger.error(
-        `An error occurred in a resolver: ${concreteError.error.detailedMessage}\nStack: ${stack && stack.length > 0 ? `${stack.slice(0, 1000)}...` : stack}`
-      );
-      throw error;
-    } else {
-      result = result.value;
-    }
-  }
-
-  if (Option.isOption(result)) {
-    result = result.unwrapOr(null);
-  }
-
-  return result;
-};
-
-for (const service of resolversList) {
-  try {
-    // @ts-expect-error This is a valid operation
-    Container.get(service);
-  } catch (error) {
-    logger.crit(`Failed to get service: "${service.name}"`, error);
-    process.exit(1);
-  }
-}
 
 function pathToString(path: GraphQLResolveInfo["path"]): string {
   let current: GraphQLResolveInfo["path"] | undefined = path;
@@ -104,10 +36,103 @@ function pathToString(path: GraphQLResolveInfo["path"]): string {
   return result;
 }
 
-export default await buildSchema({
-  resolvers: resolversList,
-  emitSchemaFile: schemaPath,
-  authChecker(
+@Service(
+  {
+    scope: "singleton",
+  },
+  []
+)
+export class SchemaService {
+  #schema?: GraphQLSchema;
+
+  public async init(): Promise<void> {
+    const { resolversList } = await import("#lib/resolversList.js");
+
+    for (const service of resolversList) {
+      try {
+        Container.get(service as ServiceIdentifier);
+      } catch (error) {
+        logger.crit(`Failed to get service: "${service.name}"`, { error });
+        process.exit(1);
+      }
+    }
+
+    this.#schema = await buildSchema({
+      resolvers: resolversList,
+      emitSchemaFile: schemaPath,
+      authChecker: this.authChecker.bind(this),
+      globalMiddlewares: [this.errorHandler.bind(this)],
+      container: {
+        get(someClass) {
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-argument
+          return Container.get(someClass, false);
+        },
+      },
+      validate: true,
+    });
+  }
+
+  /**
+   * Logs errors, as well as allowing us to return results and options from resolvers
+   *
+   * NOTE: be careful working in this function as the types are mostly 'any', meaning you won't get much type checking
+   */
+  private async errorHandler(
+    { info }: ResolverData<GraphQLContext>,
+    next: NextFn
+  ) {
+    let result: // eslint-disable-next-line @typescript-eslint/no-empty-object-type
+    | {}
+      | AsyncResult<unknown, unknown>
+      | Result<unknown, unknown>
+      | Option<unknown>
+      | Result<Option<unknown>, unknown>
+      | AsyncResult<Option<unknown>, unknown>
+      | null;
+    try {
+      result = await next();
+    } catch (error) {
+      logger.error(
+        "An error occurred in a resolver",
+        typeof error !== "object" ? { error } : error
+      );
+      throw error;
+    }
+
+    if (result instanceof AsyncResult) {
+      result = await result.promise;
+    }
+
+    if (Result.isResult(result)) {
+      if (result.isErr()) {
+        let concreteError: Err<ConcreteError>;
+        let stack: string | undefined;
+        if (result.error instanceof ConcreteError) {
+          concreteError = result as Err<ConcreteError>;
+          stack = result.stack;
+        } else {
+          concreteError = result.mapErr(toBasicError);
+          stack = concreteError.stack;
+        }
+
+        const error = new FormattedConcreteError(concreteError, info);
+        logger.error(
+          `An error occurred in a resolver: ${concreteError.error.detailedMessage}\nStack: ${stack && stack.length > 0 ? `${stack.slice(0, 1000)}...` : stack}`
+        );
+        throw error;
+      } else {
+        result = result.value;
+      }
+    }
+
+    if (Option.isOption(result)) {
+      result = result.unwrapOr(null);
+    }
+
+    return result;
+  }
+
+  private authChecker(
     resolverData: {
       root: Record<string, unknown>;
       args: ArgsDictionary;
@@ -270,13 +295,13 @@ export default await buildSchema({
       logger.error("Invalid access control rule", { params });
       throw new Error("Invalid access control rule");
     }
-  },
-  globalMiddlewares: [errorHandlingMiddleware],
-  container: {
-    get(someClass) {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-argument
-      return Container.get(someClass, false);
-    },
-  },
-  validate: true,
-});
+  }
+
+  get schema(): GraphQLSchema {
+    if (!this.#schema) {
+      throw new Error("SchemaService not initialized");
+    } else {
+      return this.#schema;
+    }
+  }
+}

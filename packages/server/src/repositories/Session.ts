@@ -22,6 +22,8 @@ import {
 
 const { sign, verify } = jsonwebtoken;
 
+import * as Sentry from "@sentry/node";
+
 import { buildDefaultRepository } from "./Default.js";
 import {
   PersonRepository,
@@ -243,6 +245,18 @@ export class SessionRepository extends buildDefaultRepository("Session", {}) {
               session
             ): AsyncRepositoryResult<SessionValue, UnauthenticatedError> => {
               req.session = session;
+
+              Sentry.setUser({
+                email: session.person?.email,
+                id: session.person?.uuid,
+                ip_address: session.ip ?? undefined,
+              });
+
+              Sentry.setContext("session", {
+                uuid: session.uuid,
+                source: session.authSource,
+              });
+
               return this.refreshSession(session);
             }
           )
