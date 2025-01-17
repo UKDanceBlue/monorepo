@@ -100,28 +100,10 @@ export const authenticate: ContextFunction<
   [ExpressContextFunctionArgument],
   GraphQLContext
 > = async ({ req }): Promise<GraphQLContext> => {
-  // Get the token from the cookies or the Authorization header
-  let token = (req.cookies as Partial<Record<string, string>>).token
-    ? String((req.cookies as Partial<Record<string, string>>).token)
-    : undefined;
-  if (!token) {
-    let authorizationHeader =
-      req.headers.Authorization || req.headers.authorization;
-    if (Array.isArray(authorizationHeader)) {
-      authorizationHeader = authorizationHeader[0];
-    }
-    if (authorizationHeader?.startsWith("Bearer ")) {
-      token = authorizationHeader.substring("Bearer ".length);
-    }
-  }
-  let person: Person | null = null;
-  let authSource: AuthSource = AuthSource.None;
-  if (token) {
-    ({ person, authSource } = req.session ?? {
-      authSource: AuthSource.None,
-      person: null,
-    });
-  }
+  const { person, authSource } = req.session ?? {
+    authSource: AuthSource.None,
+    person: null,
+  };
 
   let userContext: UserContext | undefined = undefined;
   if (person) {

@@ -1,6 +1,10 @@
 import { unwrapResolverError } from "@apollo/server/errors";
 import type { GraphQLFormattedErrorWithExtensions } from "@ukdanceblue/common/error";
-import { ErrorCode, FormattedConcreteError } from "@ukdanceblue/common/error";
+import {
+  ConcreteError,
+  ErrorCode,
+  FormattedConcreteError,
+} from "@ukdanceblue/common/error";
 import type { GraphQLFormattedError } from "graphql";
 import { GraphQLError } from "graphql";
 import jwt from "jsonwebtoken";
@@ -25,16 +29,24 @@ export function formatError(
     return error.toJSON();
   }
 
+  let stacktrace: string[] | undefined;
+  if (error instanceof Error) {
+    stacktrace = error.stack?.split("\n") ?? [];
+  } else if (error instanceof ConcreteError) {
+    stacktrace = error.stack?.split("\n") ?? [];
+  }
+
   const formattedError: Writable<GraphQLFormattedErrorWithExtensions> = {
     ...originalFormattedError,
     extensions: {
       ...originalFormattedError.extensions,
       code: ErrorCode.Unknown.description,
-      stacktrace:
-        shouldIncludeSensitiveInfo &&
-        Array.isArray(originalFormattedError.extensions?.stacktrace)
-          ? originalFormattedError.extensions.stacktrace.map(String)
-          : [],
+      stacktrace: shouldIncludeSensitiveInfo
+        ? stacktrace ||
+          (Array.isArray(originalFormattedError.extensions?.stacktrace)
+            ? originalFormattedError.extensions.stacktrace.map(String)
+            : [])
+        : [],
     },
   };
 

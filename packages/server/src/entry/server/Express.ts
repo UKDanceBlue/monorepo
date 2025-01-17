@@ -176,6 +176,7 @@ export class ExpressModule {
       err,
       this.isDevelopment
     );
+
     if (
       formatted.extensions &&
       "code" in formatted.extensions &&

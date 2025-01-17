@@ -114,16 +114,21 @@ export class SessionRepository extends buildDefaultRepository("Session", {}) {
         verify(
           token,
           this.jwtSecret,
-          { complete: false, issuer: JWT_ISSUER },
+          {
+            complete: false,
+            issuer: JWT_ISSUER,
+          },
           (err, decoded) => {
             if (err) {
               resolve(Err(toBasicError(err)));
             } else if (!decoded) {
               resolve(Err(new InvariantError("No decoded token")));
-            } else if (typeof decoded !== "string") {
+            } else if (typeof decoded !== "object") {
               resolve(Err(new InvariantError("Decoded token is not a string")));
+            } else if (!decoded.sub) {
+              resolve(Err(new InvariantError("No sub in decoded token")));
             } else {
-              resolve(Ok(decoded));
+              resolve(Ok(decoded.sub));
             }
           }
         );
@@ -161,9 +166,13 @@ export class SessionRepository extends buildDefaultRepository("Session", {}) {
     return new AsyncResult<string, RepositoryError>(
       new Promise((resolve) => {
         sign(
-          session.uuid,
+          {
+            iss: JWT_ISSUER,
+            sub: session.uuid,
+            exp: Math.floor(session.expiresAt.getTime() / 1000),
+          },
           this.jwtSecret,
-          { issuer: JWT_ISSUER },
+          {},
           (err, token) => {
             if (err) {
               resolve(Err(toBasicError(err)));
@@ -237,7 +246,7 @@ export class SessionRepository extends buildDefaultRepository("Session", {}) {
         next();
       } else {
         const result = this.verifySession(token, {
-          ip: req.ip,
+          ip: req.ips[0] ?? req.ip,
           userAgent: req.headers["user-agent"],
         })
           .andThen(
