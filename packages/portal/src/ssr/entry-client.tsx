@@ -1,6 +1,3 @@
-import "normalize.css";
-import "./root.css";
-
 import { init, tanstackRouterBrowserTracingIntegration } from "@sentry/react";
 import { StartClient } from "@tanstack/start";
 import { hydrateRoot } from "react-dom/client";

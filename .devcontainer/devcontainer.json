@@ -7,7 +7,14 @@
   "workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}",
 
   // Features to add to the dev container. More info: https://containers.dev/features.
-  "features": {},
+  "features": {
+    // "ghcr.io/nordcominc/devcontainer-features/android-sdk:latest": {
+    //   "extra_packages": [
+    //     "emulator",
+    //     "system-images;android-34;google_apis;x86_64"
+    //   ]
+    // }
+  },
 
   // Use 'forwardPorts' to make a list of ports inside the container available locally.
   // This can be used to network with other containers or with the host.

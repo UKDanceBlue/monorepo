@@ -111,7 +111,6 @@ export function useTypedTable<
   TExtraVariables
 >): useTableReturnType<TData, HttpError, TSearchVariables> {
   return useTable({
-    syncWithLocation: true,
     onSearch(data) {
       const filters: CrudFilter[] = [];
       for (const [key, value] of Object.entries(data)) {
@@ -241,26 +240,42 @@ export function prefetchTypedSelect<
 }
 
 interface TypedFormParams<
-  Document,
+  Document extends DocumentNode,
   TQueryFnData extends ResultOf<Document> & BaseRecord = ResultOf<Document> &
     BaseRecord,
   TVariables extends VariablesOf<Document> = VariablesOf<Document>,
   TData extends BaseRecord = TQueryFnData,
 > {
-  fragment: Document;
-  props: PropsWithRequired<
-    UseFormProps<TQueryFnData, HttpError, TVariables, TData, TData, HttpError>
-  >;
+  mutation: Document;
+  props: UseFormProps<
+    TQueryFnData,
+    HttpError,
+    TVariables extends { input: infer T } ? T : never,
+    TData,
+    TData,
+    HttpError
+  > &
+    (
+      | {
+          resource: RefineResourceName;
+          action: "create";
+        }
+      | {
+          resource: RefineResourceName;
+          action: "edit";
+          id: string;
+        }
+    );
 }
 
 export function useTypedForm<
-  Document,
+  Document extends DocumentNode,
   TQueryFnData extends ResultOf<Document> & BaseRecord = ResultOf<Document> &
     BaseRecord,
   TVariables extends VariablesOf<Document> = VariablesOf<Document>,
   TData extends BaseRecord = TQueryFnData,
 >({
-  fragment,
+  mutation,
   props,
 }: TypedFormParams<
   Document,
@@ -270,7 +285,7 @@ export function useTypedForm<
 >): UseFormReturnType<
   TQueryFnData,
   HttpError,
-  TVariables,
+  TVariables extends { input: infer T } ? T : never,
   TData,
   TData,
   HttpError
@@ -279,24 +294,27 @@ export function useTypedForm<
     ...props,
     meta: {
       ...props.meta,
-      gqlFragment: fragment,
+      gqlMutation: mutation,
     },
   });
 }
 
 export function prefetchTypedForm<
-  Document,
+  Document extends DocumentNode,
   TQueryFnData extends ResultOf<Document> & BaseRecord = ResultOf<Document> &
     BaseRecord,
   TVariables extends VariablesOf<Document> = VariablesOf<Document>,
   TData extends BaseRecord = TQueryFnData,
 >(params: TypedFormParams<Document, TQueryFnData, TVariables, TData>) {
+  if (!params.props.id) {
+    return Promise.resolve(null);
+  }
   return dataProvider.getOne({
     resource: params.props.resource,
     id: params.props.id,
     meta: {
       ...params.props.meta,
-      gqlFragment: params.fragment,
+      gqlFragment: params.mutation,
     },
   });
 }

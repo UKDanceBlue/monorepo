@@ -6,6 +6,8 @@ echo "DO NOT CLOSE THIS TERMINAL WINDOW UNTIL THE SETUP IS COMPLETE"
 echo "!!! ATTENTION !!!"
 echo ""
 
+echo "Setting up Yarn"
+
 sleep 1
 
 corepack use yarn@*
@@ -24,9 +26,27 @@ popd
 
 yarn install
 
+echo "Yarn setup complete!"
+
+# echo ""
+
+# echo "Setting up Android Emulator"
+# sleep 1
+
+# avdmanager create avd --name android34 --package "system-images;android-34;google_apis;x86_64"
+
+# echo "Android Emulator setup complete!"
+
+echo ""
+
+echo "Initial DanceBlue Dev Container automatic setup complete!"
+
+echo ""
+
+echo "Setting up Zrok"
+
 zrok config set apiEndpoint https://tunnel.danceblue.org
 
-echo "DanceBlue Dev Container automatic setup complete!"
 echo "To enable Zrok, go to https://tunnel.danceblue.org and log in with your Zrok account."
 echo "Once logged in, open the 'Detail' tab and copy your Token, then paste it here"
 
@@ -35,7 +55,9 @@ read -p "Zrok Token: " zrokToken
 if [ -z "$zrokToken" ]; then
   echo "No Zrok Token provided, skipping Zrok setup"
 else
-  read -p "Name for this computer: " computerName
+  computerName=$RANDOM
+  # read -p "Name for this computer: " computerName
+  # Set random computerName
   # Set zrokName to computerName with all non-alphanumeric characters removed and converted to lowercase
   zrokName=$(echo $computerName | tr -dc 'a-zA-Z0-9' | tr '[:upper:]' '[:lower:]')
   if [ -z "$zrokName" ]; then
@@ -47,7 +69,6 @@ else
 
       echo "Just ignore the below error messages and logs"
       
-      zrok release "${zrokName}server"
       zrok reserve public 8000 --unique-name "${zrokName}server"
 
       sudo bash -c "echo 'export ZROK_NAME=\"${zrokName}\"' >> ~node/.bashrc"

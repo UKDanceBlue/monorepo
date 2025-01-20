@@ -169,7 +169,7 @@
       "name": "Dev Environment: Mobile",
       "configurations": [
         "Server: Dev",
-        "Mobile: Start",
+        "Mobile: Start (Tunnel)",
         "Common: Watch",
         "Tunnel Server"
       ],
@@ -184,7 +184,7 @@
         "Server: Dev",
         "Portal: Dev",
         "Portal: Refine Devtools",
-        "Mobile: Start",
+        "Mobile: Start (Tunnel)",
         "Common: Watch",
         "Tunnel Server"
       ],

@@ -86,19 +86,17 @@ export class PersonRepository extends buildDefaultRepository<
 >("Person", {
   name: {
     getOrderBy: (sort) => Ok({ name: sort }),
-    getWhere: (value) => Ok({ name: { contains: value, mode: "insensitive" } }),
+    getWhere: (value) => Ok({ name: value }),
     searchable: true,
   },
   email: {
     getOrderBy: (sort) => Ok({ email: sort }),
-    getWhere: (value) =>
-      Ok({ email: { contains: value, mode: "insensitive" } }),
+    getWhere: (value) => Ok({ email: value }),
     searchable: true,
   },
   linkblue: {
     getOrderBy: (sort) => Ok({ linkblue: sort }),
-    getWhere: (value) =>
-      Ok({ linkblue: { contains: value, mode: "insensitive" } }),
+    getWhere: (value) => Ok({ linkblue: value }),
     searchable: true,
   },
   committeeName: {

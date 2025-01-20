@@ -76,6 +76,15 @@ function RootWithRefine() {
           text: "DanceBlue Portal",
         },
         mutationMode: "optimistic",
+        disableTelemetry: true,
+        redirect: {
+          afterCreate: "show",
+          afterEdit: "show",
+        },
+        syncWithLocation: true,
+        warnWhenUnsavedChanges: true,
+        disableServerSideValidation: true,
+        liveMode: "off",
       }}
       accessControlProvider={accessControlProvider}
       resources={refineResources}

@@ -75,7 +75,7 @@ export async function onAddToCalendar(
             location: eventData.location ?? undefined,
             timeZone: interval.start.zoneName,
             endTimeZone: interval.end.zoneName,
-            organizer: "UK DanceBlue",
+            // organizer: "UK DanceBlue",
             organizerEmail: "community@danceblue.org",
             id: `${eventData.id}:${occurrence.id}`,
           };
