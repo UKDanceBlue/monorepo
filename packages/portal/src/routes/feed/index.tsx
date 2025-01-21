@@ -1,3 +1,4 @@
+import { List } from "@refinedev/antd";
 import { createFileRoute } from "@tanstack/react-router";
 import { dateTimeFromSomething } from "@ukdanceblue/common";
 import {
@@ -70,7 +71,7 @@ function FeedPage() {
   const { openPicker, renderMe } = useImagePicker();
 
   return (
-    <Flex vertical gap={16}>
+    <List title="Feed" canCreate={false}>
       <Typography.Title level={2}>Feed</Typography.Title>
       <p>
         Anything added here will be shown on the app's explore page. This is a
@@ -209,7 +210,7 @@ function FeedPage() {
         ))}
       </Row>
       {renderMe}
-    </Flex>
+    </List>
   );
 }
 

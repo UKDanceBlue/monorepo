@@ -53,7 +53,7 @@ function RootComponent() {
       <Main />
       {/* </StyleProvider> */}
       <Suspense>
-        <TanStackRouterDevtools position="top-right" />
+        <TanStackRouterDevtools position="bottom-right" />
         <ReactQueryDevtools initialIsOpen={false} position="right" />
         <DevtoolsPanel />
       </Suspense>

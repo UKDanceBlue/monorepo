@@ -1,3 +1,4 @@
+import { List } from "@refinedev/antd";
 import { createFileRoute } from "@tanstack/react-router";
 import { Button, Collapse, Divider, Flex, Form, Input, Space } from "antd";
 import { useState } from "react";
@@ -14,9 +15,7 @@ function ConfigPage() {
   const [newKey, setNewKey] = useState("");
 
   return (
-    <div style={{ maxWidth: "800px", margin: "0 auto" }}>
-      <h1>Config</h1>
-
+    <List title="Config" canCreate={false}>
       <p>
         These configuration values are used to modify the behavior of the
         DanceBlue mobile app. Each value can have an assigned start and end
@@ -118,7 +117,7 @@ function ConfigPage() {
           </Button>
         </Flex>
       </Form>
-    </div>
+    </List>
   );
 }
 

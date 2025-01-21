@@ -1,22 +1,24 @@
 import { PlusOutlined } from "@ant-design/icons";
+import { List } from "@refinedev/antd";
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { Button, Flex, Typography } from "antd";
+import { Button } from "antd";
 
 import { NotificationsTable } from "#elements/tables/notification/NotificationsTable.js";
 
 function ListNotificationsPage() {
   return (
-    <>
-      <Flex justify="space-between" align="center">
-        <Typography.Title>Notifications</Typography.Title>
+    <List
+      title="Notifications"
+      headerButtons={
         <Link from="/notifications" to="create">
           <Button icon={<PlusOutlined />} size="large">
             New Notification
           </Button>
         </Link>
-      </Flex>
+      }
+    >
       <NotificationsTable />
-    </>
+    </List>
   );
 }
 

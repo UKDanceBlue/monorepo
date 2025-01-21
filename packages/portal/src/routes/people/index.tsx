@@ -51,7 +51,6 @@ function ListPeoplePage() {
 
   return (
     <List
-      canCreate
       headerButtons={
         canCreate && (
           <>

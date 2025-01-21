@@ -1,6 +1,7 @@
 import { BarsOutlined, FileOutlined, UploadOutlined } from "@ant-design/icons";
+import { List } from "@refinedev/antd";
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { Button, Flex } from "antd";
+import { Button } from "antd";
 
 import { FundraisingEntriesTable } from "#elements/tables/fundraising/FundraisingEntriesTable";
 
@@ -10,10 +11,10 @@ export const Route = createFileRoute("/fundraising/")({
 
 function RouteComponent() {
   return (
-    <>
-      <Flex justify="space-between" align="center">
-        <h1>Fundraising Entries</h1>
-        <div style={{ display: "flex", gap: 16 }}>
+    <List
+      title="Fundraising Entries"
+      headerButtons={
+        <>
           <Link from="/fundraising" to="ddn">
             <Button icon={<BarsOutlined />} size="large">
               View Raw DDNs
@@ -29,9 +30,10 @@ function RouteComponent() {
               Upload a DDN
             </Button>
           </Link>
-        </div>
-      </Flex>
+        </>
+      }
+    >
       <FundraisingEntriesTable showSolicitationCode />
-    </>
+    </List>
   );
 }

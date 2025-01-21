@@ -1,6 +1,7 @@
 import { DownloadOutlined } from "@ant-design/icons";
+import { List } from "@refinedev/antd";
 import { createFileRoute } from "@tanstack/react-router";
-import { Button, Flex, Table, Typography } from "antd";
+import { Button, Table, Typography } from "antd";
 import { DateTime } from "luxon";
 import { useMemo, useState } from "react";
 import { useClient, useQuery } from "urql";
@@ -76,10 +77,10 @@ function DbFundsViewer() {
   }, [marathonYear, selectedId, teamData.data]);
 
   return (
-    <Flex vertical>
-      <Flex vertical gap="small">
-        <Typography.Title level={2}>Fundraising Teams</Typography.Title>
-        <Flex gap="small">
+    <List
+      title="DBFunds"
+      headerButtons={
+        <>
           <Button
             icon={<DownloadOutlined />}
             onClick={() => {
@@ -142,84 +143,85 @@ function DbFundsViewer() {
           >
             Download All Data
           </Button>
-        </Flex>
-        <Table
-          pagination={false}
-          rowKey={(record) => record.identifier}
-          columns={[
-            Table.EXPAND_COLUMN,
-            {
-              title: "Name",
-              dataIndex: "name",
-              key: "name",
-            },
-            {
-              title: "Total",
-              dataIndex: "total",
-              key: "total",
-            },
-          ]}
-          dataSource={parsedMainData ?? undefined}
-          expandable={{
-            rowExpandable: () => true,
-            expandedRowKeys: selectedId ? [selectedId] : [],
-            expandedRowRender: ({ name }) =>
-              teamData.fetching ? (
-                <Typography.Text>Loading...</Typography.Text>
-              ) : (
-                <table>
-                  <thead>
-                    <Button
-                      icon={<DownloadOutlined />}
-                      onClick={() => {
-                        const sheet = utils.json_to_sheet(parsedTeamData ?? []);
-                        const workbook = utils.book_new();
-                        utils.book_append_sheet(workbook, sheet, name);
+        </>
+      }
+    >
+      <Table
+        pagination={false}
+        rowKey={(record) => record.identifier}
+        columns={[
+          Table.EXPAND_COLUMN,
+          {
+            title: "Name",
+            dataIndex: "name",
+            key: "name",
+          },
+          {
+            title: "Total",
+            dataIndex: "total",
+            key: "total",
+          },
+        ]}
+        dataSource={parsedMainData ?? undefined}
+        expandable={{
+          rowExpandable: () => true,
+          expandedRowKeys: selectedId ? [selectedId] : [],
+          expandedRowRender: ({ name }) =>
+            teamData.fetching ? (
+              <Typography.Text>Loading...</Typography.Text>
+            ) : (
+              <table>
+                <thead>
+                  <Button
+                    icon={<DownloadOutlined />}
+                    onClick={() => {
+                      const sheet = utils.json_to_sheet(parsedTeamData ?? []);
+                      const workbook = utils.book_new();
+                      utils.book_append_sheet(workbook, sheet, name);
 
-                        const now = DateTime.now().toFormat(
-                          "yyyy-MM-dd_HH-mm-ss"
-                        );
-                        writeFile(
-                          workbook,
-                          `fundraising_entries_${selectedId}_${now}.csv`
-                        );
-                      }}
+                      const now = DateTime.now().toFormat(
+                        "yyyy-MM-dd_HH-mm-ss"
+                      );
+                      writeFile(
+                        workbook,
+                        `fundraising_entries_${selectedId}_${now}.csv`
+                      );
+                    }}
+                  >
+                    Download
+                  </Button>
+                  <tr>
+                    <th>Donated By</th>
+                    <th>Donated To</th>
+                    <th>Donated On</th>
+                    <th>Amount</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {parsedTeamData?.map((entry, i) => (
+                    <tr
+                      key={entry.donatedOn}
+                      style={{ background: i % 2 ? "#fff5" : "#0005" }}
                     >
-                      Download
-                    </Button>
-                    <tr>
-                      <th>Donated By</th>
-                      <th>Donated To</th>
-                      <th>Donated On</th>
-                      <th>Amount</th>
+                      <td>{entry.donatedBy}</td>
+                      <td>{entry.donatedTo}</td>
+                      <td>{entry.donatedOn}</td>
+                      <td>{entry.amount}</td>
                     </tr>
-                  </thead>
-                  <tbody>
-                    {parsedTeamData?.map((entry, i) => (
-                      <tr
-                        key={entry.donatedOn}
-                        style={{ background: i % 2 ? "#fff5" : "#0005" }}
-                      >
-                        <td>{entry.donatedBy}</td>
-                        <td>{entry.donatedTo}</td>
-                        <td>{entry.donatedOn}</td>
-                        <td>{entry.amount}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              ),
-            onExpand: (expanded, record) => {
-              if (expanded) {
-                setSelectedId(record.identifier);
-              } else {
-                setSelectedId(null);
-              }
-            },
-          }}
-        />
-      </Flex>
-    </Flex>
+                  ))}
+                </tbody>
+              </table>
+            ),
+          onExpand: (expanded, record) => {
+            if (expanded) {
+              setSelectedId(record.identifier);
+            } else {
+              setSelectedId(null);
+            }
+          },
+        }}
+      />
+    </List>
   );
 }
 
