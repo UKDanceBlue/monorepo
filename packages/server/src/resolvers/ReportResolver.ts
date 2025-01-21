@@ -14,6 +14,7 @@ import { DateTime } from "luxon";
 import { Err, Ok } from "ts-results-es";
 import { Args, Query, Resolver } from "type-graphql";
 
+import { WithAuditLogging } from "#lib/logging/auditLogging.js";
 import { prismaToken } from "#lib/typediTokens.js";
 
 /**
@@ -30,6 +31,7 @@ export class ReportResolver {
     description:
       "The output of this query is not stable. Do not rely on an exact format.",
   })
+  @WithAuditLogging()
   async fundraisingReport(
     @Args(() => ReportArgs) args: ReportArgs
   ): Promise<ConcreteResult<Report>> {

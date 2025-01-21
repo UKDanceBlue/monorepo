@@ -25,6 +25,7 @@ import {
   Root,
 } from "type-graphql";
 
+import { WithAuditLogging } from "#lib/logging/auditLogging.js";
 import { marathonHourModelToResource } from "#repositories/marathonHour/marathonHourModelToResource.js";
 import { MarathonHourRepository } from "#repositories/marathonHour/MarathonHourRepository.js";
 
@@ -88,6 +89,7 @@ export class MarathonHourResolver
 
   @AccessControlAuthorized("create")
   @Mutation(() => MarathonHourNode)
+  @WithAuditLogging()
   async createMarathonHour(
     @Arg("input") input: CreateMarathonHourInput,
     @Arg("marathonUuid", () => GlobalIdScalar) marathonUuid: GlobalId
@@ -104,6 +106,7 @@ export class MarathonHourResolver
 
   @AccessControlAuthorized("update")
   @Mutation(() => MarathonHourNode)
+  @WithAuditLogging()
   async setMarathonHour(
     @Arg("id", () => GlobalIdScalar) { id }: GlobalId,
     @Arg("input") input: SetMarathonHourInput
@@ -125,6 +128,7 @@ export class MarathonHourResolver
 
   @AccessControlAuthorized("delete")
   @Mutation(() => MarathonHourNode)
+  @WithAuditLogging()
   async deleteMarathonHour(@Arg("id", () => GlobalIdScalar) { id }: GlobalId) {
     const marathonHour = await this.marathonHourRepository.deleteMarathonHour({
       uuid: id,
@@ -137,6 +141,7 @@ export class MarathonHourResolver
 
   @AccessControlAuthorized("update")
   @Mutation(() => MarathonHourNode)
+  @WithAuditLogging()
   async addMap(
     @Arg("id", () => GlobalIdScalar) { id }: GlobalId,
     @Arg("imageUuid", () => GlobalIdScalar) imageUuid: GlobalId
@@ -153,6 +158,7 @@ export class MarathonHourResolver
 
   @AccessControlAuthorized("update")
   @Mutation(() => VoidResolver)
+  @WithAuditLogging()
   async removeMap(
     @Arg("id", () => GlobalIdScalar) { id }: GlobalId,
     @Arg("imageUuid", () => GlobalIdScalar) imageUuid: GlobalId

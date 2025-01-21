@@ -24,6 +24,7 @@ import {
   Root,
 } from "type-graphql";
 
+import { WithAuditLogging } from "#lib/logging/auditLogging.js";
 import {
   dailyDepartmentNotificationBatchModelToResource,
   dailyDepartmentNotificationModelToResource,
@@ -82,6 +83,7 @@ export class DailyDepartmentNotificationResolver
 
   @AccessControlAuthorized("create")
   @Mutation(() => DailyDepartmentNotificationNode)
+  @WithAuditLogging()
   async createDailyDepartmentNotification(
     @Ctx() { authenticatedUser }: GraphQLContext,
     @Arg("input") input: DailyDepartmentNotificationInput
@@ -95,24 +97,9 @@ export class DailyDepartmentNotificationResolver
     ).map(dailyDepartmentNotificationModelToResource).promise;
   }
 
-  @AccessControlAuthorized("update")
-  @Mutation(() => DailyDepartmentNotificationNode)
-  async setDailyDepartmentNotification(
-    @Arg("id", () => GlobalIdScalar) { id }: GlobalId,
-    @Arg("input") input: DailyDepartmentNotificationInput
-  ): Promise<ConcreteResult<DailyDepartmentNotificationNode>> {
-    const dailyDepartmentNotification =
-      await this.dailyDepartmentNotificationRepository.updateDDN(
-        { uuid: id },
-        input
-      );
-    return dailyDepartmentNotification.map(
-      dailyDepartmentNotificationModelToResource
-    );
-  }
-
   @AccessControlAuthorized("create")
   @Mutation(() => [DailyDepartmentNotificationNode])
+  @WithAuditLogging()
   async batchUploadDailyDepartmentNotifications(
     @Ctx() { authenticatedUser }: GraphQLContext,
     @Arg("input", () => [DailyDepartmentNotificationInput])
@@ -133,6 +120,7 @@ export class DailyDepartmentNotificationResolver
 
   @AccessControlAuthorized("delete")
   @Mutation(() => DailyDepartmentNotificationNode)
+  @WithAuditLogging()
   async deleteDailyDepartmentNotification(
     @Arg("id", () => GlobalIdScalar) { id }: GlobalId
   ) {

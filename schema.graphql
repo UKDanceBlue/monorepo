@@ -436,7 +436,9 @@ type DeviceNode implements Node {
 
 enum DeviceResolverFilterFields {
   createdAt
-  lastSeen
+  lastLoggedInUserEmail
+  lastLoggedInUserName
+  lastLogin
   updatedAt
 }
 
@@ -1043,7 +1045,6 @@ type Mutation {
 
   """Send a notification immediately."""
   sendNotification(id: GlobalId!): Void!
-  setDailyDepartmentNotification(id: GlobalId!, input: DailyDepartmentNotificationInput!): DailyDepartmentNotificationNode!
 
   """Update an event by UUID"""
   setEvent(id: GlobalId!, input: SetEventInput!): EventNode!

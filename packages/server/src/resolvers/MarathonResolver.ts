@@ -26,6 +26,7 @@ import {
   Root,
 } from "type-graphql";
 
+import { WithAuditLogging } from "#lib/logging/auditLogging.js";
 import { CommitteeRepository } from "#repositories/committee/CommitteeRepository.js";
 import { marathonModelToResource } from "#repositories/marathon/marathonModelToResource.js";
 import { MarathonRepository } from "#repositories/marathon/MarathonRepository.js";
@@ -165,6 +166,7 @@ export class MarathonResolver
 
   @AccessControlAuthorized("create")
   @Mutation(() => MarathonNode)
+  @WithAuditLogging()
   async createMarathon(@Arg("input") input: CreateMarathonInput) {
     return new AsyncResult(
       this.marathonRepository.createMarathon({
@@ -182,6 +184,7 @@ export class MarathonResolver
 
   @AccessControlAuthorized("update")
   @Mutation(() => MarathonNode)
+  @WithAuditLogging()
   async setMarathon(
     @Arg("id", () => GlobalIdScalar) { id }: GlobalId,
     @Arg("input") input: SetMarathonInput
@@ -199,6 +202,7 @@ export class MarathonResolver
 
   @AccessControlAuthorized("delete")
   @Mutation(() => MarathonNode)
+  @WithAuditLogging()
   async deleteMarathon(@Arg("id", () => GlobalIdScalar) { id }: GlobalId) {
     const marathon = await this.marathonRepository.deleteMarathon({ uuid: id });
     return marathon.map(marathonModelToResource);

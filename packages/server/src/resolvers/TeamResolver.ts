@@ -40,6 +40,7 @@ import {
 } from "type-graphql";
 
 import type { GraphQLContext } from "#auth/context.js";
+import { WithAuditLogging } from "#lib/logging/auditLogging.js";
 import {
   fundraisingEntryModelToNode,
   solicitationCodeModelToNode,
@@ -100,6 +101,7 @@ export class TeamResolver implements CrudResolver<TeamNode, "team"> {
 
   @AccessControlAuthorized("create")
   @Mutation(() => TeamNode, { name: "createTeam" })
+  @WithAuditLogging()
   async createTeam(
     @Arg("input") input: CreateTeamInput,
     @Arg("marathon", () => GlobalIdScalar) marathonUuid: GlobalId
@@ -118,6 +120,7 @@ export class TeamResolver implements CrudResolver<TeamNode, "team"> {
 
   @AccessControlAuthorized("update")
   @Mutation(() => TeamNode, { name: "setTeam" })
+  @WithAuditLogging()
   async setTeam(
     @Arg("id", () => GlobalIdScalar) { id }: GlobalId,
     @Arg("input") input: SetTeamInput
@@ -142,6 +145,7 @@ export class TeamResolver implements CrudResolver<TeamNode, "team"> {
 
   @AccessControlAuthorized("create")
   @Mutation(() => [TeamNode], { name: "createTeams" })
+  @WithAuditLogging()
   async createTeams(
     @Arg("teams", () => [BulkTeamInput]) teams: BulkTeamInput[],
     @Arg("marathonId", () => GlobalIdScalar) marathonId: GlobalId
@@ -155,6 +159,7 @@ export class TeamResolver implements CrudResolver<TeamNode, "team"> {
 
   @AccessControlAuthorized("delete")
   @Mutation(() => TeamNode, { name: "deleteTeam" })
+  @WithAuditLogging()
   async deleteTeam(
     @Arg("id", () => GlobalIdScalar) { id }: GlobalId
   ): Promise<TeamNode> {

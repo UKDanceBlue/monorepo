@@ -20,6 +20,7 @@ import { Result } from "ts-results-es";
 import { Arg, Args, Ctx, Mutation, Query, Resolver } from "type-graphql";
 
 import { FileManager } from "#files/FileManager.js";
+import { WithAuditLogging } from "#lib/logging/auditLogging.js";
 import { generateThumbHash } from "#lib/thumbHash.js";
 import { logger } from "#logging/standardLogging.js";
 import { imageModelToResource } from "#repositories/image/imageModelToResource.js";
@@ -90,6 +91,7 @@ export class ImageResolver implements CrudResolver<ImageNode, "image"> {
 
   @AccessControlAuthorized("create")
   @Mutation(() => ImageNode, { name: "createImage" })
+  @WithAuditLogging()
   async createImage(
     @Arg("input") input: CreateImageInput,
     @Ctx() { serverUrl }: GraphQLContext
@@ -138,6 +140,7 @@ export class ImageResolver implements CrudResolver<ImageNode, "image"> {
 
   @AccessControlAuthorized("update")
   @Mutation(() => ImageNode, { name: "setImageAltText" })
+  @WithAuditLogging()
   async setImageAltText(
     @Arg("id", () => GlobalIdScalar) { id }: GlobalId,
     @Arg("alt") alt: string,
@@ -166,6 +169,7 @@ export class ImageResolver implements CrudResolver<ImageNode, "image"> {
 
   @AccessControlAuthorized("update")
   @Mutation(() => ImageNode, { name: "setImageUrl" })
+  @WithAuditLogging()
   async setImageUrl(
     @Arg("id", () => GlobalIdScalar) { id }: GlobalId,
     @Arg("url", () => GraphQLURL) url: URL,
@@ -213,6 +217,7 @@ export class ImageResolver implements CrudResolver<ImageNode, "image"> {
 
   @AccessControlAuthorized("delete")
   @Mutation(() => ImageNode, { name: "deleteImage" })
+  @WithAuditLogging()
   async deleteImage(
     @Arg("id", () => GlobalIdScalar) { id }: GlobalId,
     @Ctx() { serverUrl }: GraphQLContext

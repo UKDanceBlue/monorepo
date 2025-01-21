@@ -27,6 +27,7 @@ import {
   Root,
 } from "type-graphql";
 
+import { WithAuditLogging } from "#lib/logging/auditLogging.js";
 import { personModelToResource } from "#repositories/person/personModelToResource.js";
 import { PersonRepository } from "#repositories/person/PersonRepository.js";
 import { pointEntryModelToResource } from "#repositories/pointEntry/pointEntryModelToResource.js";
@@ -84,6 +85,7 @@ export class PointEntryResolver
 
   @AccessControlAuthorized("create")
   @Mutation(() => PointEntryNode, { name: "createPointEntry" })
+  @WithAuditLogging()
   async createPointEntry(
     @Arg("input") input: CreatePointEntryInput
   ): Promise<PointEntryNode> {
@@ -104,6 +106,7 @@ export class PointEntryResolver
 
   @AccessControlAuthorized("delete")
   @Mutation(() => PointEntryNode, { name: "deletePointEntry" })
+  @WithAuditLogging()
   async deletePointEntry(
     @Arg("id", () => GlobalIdScalar) { id }: GlobalId
   ): Promise<ConcreteResult<PointEntryNode>> {

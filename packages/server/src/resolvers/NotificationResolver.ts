@@ -35,6 +35,7 @@ import {
 } from "type-graphql";
 
 import { NotificationScheduler } from "#jobs/NotificationScheduler.js";
+import { WithAuditLogging } from "#lib/logging/auditLogging.js";
 import { ExpoNotificationProvider } from "#notification/ExpoNotificationProvider.js";
 import * as NotificationProviderJs from "#notification/NotificationProvider.js";
 import { notificationModelToResource } from "#repositories/notification/notificationModelToResource.js";
@@ -126,6 +127,7 @@ export class NotificationResolver
 
   @AccessControlAuthorized("create")
   @Mutation(() => NotificationNode, { name: "stageNotification" })
+  @WithAuditLogging()
   async stage(
     @Args(() => StageNotificationArgs) args: StageNotificationArgs
   ): Promise<ConcreteResult<NotificationNode>> {
@@ -164,6 +166,7 @@ export class NotificationResolver
     name: "sendNotification",
     description: "Send a notification immediately.",
   })
+  @WithAuditLogging()
   async send(
     @Arg("id", () => GlobalIdScalar) { id }: GlobalId
   ): Promise<ConcreteResult<void>> {
@@ -189,6 +192,7 @@ export class NotificationResolver
   @Mutation(() => NotificationNode, {
     name: "scheduleNotification",
   })
+  @WithAuditLogging()
   async schedule(
     @Arg("id", () => GlobalIdScalar) { id }: GlobalId,
     @Arg("sendAt") sendAt: Date
@@ -215,6 +219,7 @@ export class NotificationResolver
   @Mutation(() => NotificationNode, {
     name: "acknowledgeDeliveryIssue",
   })
+  @WithAuditLogging()
   async acknowledgeDeliveryIssue(
     @Arg("id", () => GlobalIdScalar) { id }: GlobalId
   ): Promise<ConcreteResult<NotificationNode>> {
@@ -245,6 +250,7 @@ export class NotificationResolver
   @Mutation(() => NotificationNode, {
     name: "abortScheduledNotification",
   })
+  @WithAuditLogging()
   async abortScheduled(
     @Arg("id", () => GlobalIdScalar) { id }: GlobalId
   ): Promise<ConcreteResult<NotificationNode>> {
@@ -271,6 +277,7 @@ export class NotificationResolver
 
   @AccessControlAuthorized("delete", "NotificationNode")
   @Mutation(() => NotificationNode, { name: "deleteNotification" })
+  @WithAuditLogging()
   async deleteNotification(
     @Arg("id", () => GlobalIdScalar) { id }: GlobalId,
     @Arg("force", {

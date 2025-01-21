@@ -15,6 +15,7 @@ import { ConcreteResult, NotFoundError } from "@ukdanceblue/common/error";
 import { Err, Ok } from "ts-results-es";
 import { Arg, Mutation, Query, Resolver } from "type-graphql";
 
+import { WithAuditLogging } from "#lib/logging/auditLogging.js";
 import { configurationModelToResource } from "#repositories/configuration/configurationModelToResource.js";
 import { ConfigurationRepository } from "#repositories/configuration/ConfigurationRepository.js";
 import type { AsyncRepositoryResult } from "#repositories/shared.js";
@@ -101,6 +102,7 @@ export class ConfigurationResolver
     description:
       "Create a new configuration, superseding existing configurations with the same key (depending on the validAfter and validUntil fields)",
   })
+  @WithAuditLogging()
   async createConfiguration(
     @Arg("input") input: CreateConfigurationInput
   ): Promise<ConcreteResult<ConfigurationNode>> {
@@ -120,6 +122,7 @@ export class ConfigurationResolver
     description:
       "Create multiple configurations, superseding existing configurations with the same key (depending on the validAfter and validUntil fields)",
   })
+  @WithAuditLogging()
   async batchCreate(
     @Arg("input", () => [CreateConfigurationInput])
     input: CreateConfigurationInput[]
@@ -141,6 +144,7 @@ export class ConfigurationResolver
     name: "deleteConfiguration",
     description: "Delete a configuration by UUID",
   })
+  @WithAuditLogging()
   async deleteConfiguration(
     @Arg("id", () => GlobalIdScalar) { id }: GlobalId
   ): Promise<ConcreteResult<ConfigurationNode>> {

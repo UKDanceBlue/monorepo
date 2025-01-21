@@ -466,6 +466,9 @@ export function useTypedCustomQuery<
   });
 }
 
+/**
+ * @deprecated Replace with a more specific hook
+ */
 export function useQuery<Document extends DocumentNode>(props: {
   query: Document;
   pause?: boolean;

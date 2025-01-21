@@ -23,6 +23,7 @@ import {
   Root,
 } from "type-graphql";
 
+import { WithAuditLogging } from "#lib/logging/auditLogging.js";
 import { fundraisingAssignmentModelToNode } from "#repositories/fundraising/fundraisingAssignmentModelToNode.js";
 import { fundraisingEntryModelToNode } from "#repositories/fundraising/fundraisingEntryModelToNode.js";
 import { FundraisingEntryRepository } from "#repositories/fundraising/FundraisingRepository.js";
@@ -149,6 +150,7 @@ export class FundraisingAssignmentResolver
   //   }
   // )
   @Mutation(() => FundraisingAssignmentNode)
+  @WithAuditLogging()
   async assignEntryToPerson(
     @Arg("entryId", () => GlobalIdScalar) { id: entryId }: GlobalId,
     @Arg("personId", () => GlobalIdScalar) { id: personId }: GlobalId,
@@ -210,6 +212,7 @@ export class FundraisingAssignmentResolver
   //   }
   // )
   @Mutation(() => FundraisingAssignmentNode)
+  @WithAuditLogging()
   async updateFundraisingAssignment(
     @Arg("id", () => GlobalIdScalar) { id }: GlobalId,
     @Arg("input") { amount }: UpdateFundraisingAssignmentInput
@@ -268,6 +271,7 @@ export class FundraisingAssignmentResolver
   //   }
   // )
   @Mutation(() => FundraisingAssignmentNode)
+  @WithAuditLogging()
   async deleteFundraisingAssignment(
     @Arg("id", () => GlobalIdScalar) { id }: GlobalId
   ): Promise<ConcreteResult<FundraisingAssignmentNode>> {

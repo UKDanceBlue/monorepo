@@ -33,6 +33,7 @@ import {
 
 import { DBFundsFundraisingProvider } from "#lib/fundraising/DbFundsProvider.js";
 import type { FundraisingProvider } from "#lib/fundraising/FundraisingProvider.js";
+import { WithAuditLogging } from "#lib/logging/auditLogging.js";
 import { dailyDepartmentNotificationModelToResource } from "#repositories/dailyDepartmentNotification/ddnModelToResource.js";
 import { fundraisingAssignmentModelToNode } from "#repositories/fundraising/fundraisingAssignmentModelToNode.js";
 import { fundraisingEntryModelToNode } from "#repositories/fundraising/fundraisingEntryModelToNode.js";
@@ -172,6 +173,7 @@ export class FundraisingEntryResolver
   // @AccessControlAuthorized(globalFundraisingAccessParam, {
   //   accessLevel: AccessLevel.Admin,
   // })
+  @WithAuditLogging()
   @AccessControlAuthorized("modify")
   @Mutation(() => FundraisingEntryNode, { name: "setFundraisingEntry" })
   async setFundraisingEntry(

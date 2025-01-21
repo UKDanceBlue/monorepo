@@ -48,6 +48,7 @@ import {
 } from "type-graphql";
 
 import type { GraphQLContext } from "#auth/context.js";
+import { WithAuditLogging } from "#lib/logging/auditLogging.js";
 import { fundraisingAssignmentModelToNode } from "#repositories/fundraising/fundraisingAssignmentModelToNode.js";
 import { FundraisingEntryRepository } from "#repositories/fundraising/FundraisingRepository.js";
 import {
@@ -150,6 +151,7 @@ export class PersonResolver
 
   @AccessControlAuthorized("create")
   @Mutation(() => PersonNode, { name: "createPerson" })
+  @WithAuditLogging()
   async createPerson(
     @Arg("input") input: CreatePersonInput,
     @Ctx() { accessLevel }: GraphQLContext
@@ -200,6 +202,7 @@ export class PersonResolver
 
   @AccessControlAuthorized("modify")
   @Mutation(() => PersonNode, { name: "setPerson" })
+  @WithAuditLogging()
   async setPerson(
     @Arg("id", () => GlobalIdScalar) { id }: GlobalId,
     @Arg("input") input: SetPersonInput,
@@ -254,6 +257,7 @@ export class PersonResolver
 
   @AccessControlAuthorized("create")
   @Mutation(() => [PersonNode], { name: "bulkLoadPeople" })
+  @WithAuditLogging()
   async bulkLoad(
     @Arg("people", () => [BulkPersonInput]) people: BulkPersonInput[],
     @Arg("marathonId", () => GlobalIdScalar) marathonId: GlobalId
@@ -284,6 +288,7 @@ export class PersonResolver
 
   @AccessControlAuthorized("update", "TeamNode", ".members")
   @Mutation(() => MembershipNode, { name: "addPersonToTeam" })
+  @WithAuditLogging()
   async assignPersonToTeam(
     @Arg("personUuid", () => GlobalIdScalar) personUuid: GlobalId,
     @Arg("teamUuid", () => GlobalIdScalar) teamUuid: GlobalId,
@@ -307,6 +312,7 @@ export class PersonResolver
 
   @AccessControlAuthorized("update", "TeamNode", ".members")
   @Mutation(() => MembershipNode, { name: "removePersonFromTeam" })
+  @WithAuditLogging()
   async unassignPersonFromTeam(
     @Arg("personUuid", () => GlobalIdScalar) personUuid: GlobalId,
     @Arg("teamUuid", () => GlobalIdScalar) teamUuid: GlobalId
@@ -325,6 +331,7 @@ export class PersonResolver
 
   @AccessControlAuthorized("delete")
   @Mutation(() => PersonNode, { name: "deletePerson" })
+  @WithAuditLogging()
   async deletePerson(
     @Arg("id", () => GlobalIdScalar) { id }: GlobalId
   ): Promise<ConcreteResult<PersonNode>> {
@@ -454,6 +461,7 @@ export class PersonResolver
 
   @AccessControlAuthorized("update", "PersonNode", ".password")
   @Mutation(() => PersonNode, { name: "setPersonPassword" })
+  @WithAuditLogging()
   async setPassword(
     @Arg("id", () => GlobalIdScalar) { id }: GlobalId,
     @Arg("password", () => SetPasswordInput)

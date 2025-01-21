@@ -25,6 +25,7 @@ import {
   Root,
 } from "type-graphql";
 
+import { WithAuditLogging } from "#lib/logging/auditLogging.js";
 import { eventModelToResource } from "#repositories/event/eventModelToResource.js";
 import { pointOpportunityModelToResource } from "#repositories/pointOpportunity/pointOpportunityModelToResource.js";
 import { PointOpportunityRepository } from "#repositories/pointOpportunity/PointOpportunityRepository.js";
@@ -85,6 +86,7 @@ export class PointOpportunityResolver
   @Mutation(() => PointOpportunityNode, {
     name: "createPointOpportunity",
   })
+  @WithAuditLogging()
   async createPointOpportunity(
     @Arg("input") input: CreatePointOpportunityInput
   ): Promise<PointOpportunityNode> {
@@ -109,6 +111,7 @@ export class PointOpportunityResolver
   @Mutation(() => PointOpportunityNode, {
     name: "setPointOpportunity",
   })
+  @WithAuditLogging()
   async setPointOpportunity(
     @Arg("id", () => GlobalIdScalar) { id }: GlobalId,
     @Arg("input") input: SetPointOpportunityInput
@@ -143,6 +146,7 @@ export class PointOpportunityResolver
   @Mutation(() => PointOpportunityNode, {
     name: "deletePointOpportunity",
   })
+  @WithAuditLogging()
   async deletePointOpportunity(
     @Arg("id", () => GlobalIdScalar) { id }: GlobalId
   ): Promise<PointOpportunityNode> {

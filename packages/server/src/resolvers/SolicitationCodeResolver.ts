@@ -28,6 +28,7 @@ import {
   Root,
 } from "type-graphql";
 
+import { WithAuditLogging } from "#lib/logging/auditLogging.js";
 import type { AsyncRepositoryResult } from "#repositories/shared.js";
 import { SolicitationCodeRepository } from "#repositories/solicitationCode/SolicitationCodeRepository.js";
 import { teamModelToResource } from "#repositories/team/teamModelToResource.js";
@@ -87,6 +88,7 @@ export class SolicitationCodeResolver
 
   @AccessControlAuthorized("create")
   @Mutation(() => SolicitationCodeNode)
+  @WithAuditLogging()
   createSolicitationCode(
     @Arg("input") { prefix, code, name }: CreateSolicitationCodeInput
   ): Promise<ConcreteResult<SolicitationCodeNode>> {
@@ -108,6 +110,7 @@ export class SolicitationCodeResolver
 
   @AccessControlAuthorized("update")
   @Mutation(() => SolicitationCodeNode)
+  @WithAuditLogging()
   setSolicitationCode(
     @Arg("id", () => GlobalIdScalar) { id }: GlobalId,
     @Arg("input") { name }: SetSolicitationCodeInput
@@ -159,6 +162,7 @@ export class SolicitationCodeResolver
 
   @AccessControlAuthorized("update", "SolicitationCodeNode")
   @Mutation(() => VoidResolver, { name: "assignSolicitationCodeToTeam" })
+  @WithAuditLogging()
   async assignSolicitationCodeToTeam(
     @Arg("teamId", () => GlobalIdScalar) { id: teamId }: GlobalId,
     @Arg("solicitationCode", () => GlobalIdScalar)
@@ -177,6 +181,7 @@ export class SolicitationCodeResolver
 
   @AccessControlAuthorized("update", "SolicitationCodeNode")
   @Mutation(() => VoidResolver, { name: "removeSolicitationCodeFromTeam" })
+  @WithAuditLogging()
   async removeSolicitationCodeFromTeam(
     @Arg("teamId", () => GlobalIdScalar) { id: teamId }: GlobalId
   ): Promise<ConcreteResult<typeof VoidScalar>> {

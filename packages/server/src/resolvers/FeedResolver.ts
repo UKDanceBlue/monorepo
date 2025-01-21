@@ -26,6 +26,7 @@ import {
 
 import { FileManager } from "#files/FileManager.js";
 import { InsagramApi } from "#lib/external-apis/feed/instagramfeed.js";
+import { WithAuditLogging } from "#lib/logging/auditLogging.js";
 import { logger } from "#lib/logging/standardLogging.js";
 import { feedItemModelToResource } from "#repositories/feed/feedModelToResource.js";
 import { FeedRepository } from "#repositories/feed/FeedRepository.js";
@@ -88,6 +89,7 @@ export class FeedResolver {
 
   @AccessControlAuthorized("create")
   @Mutation(() => FeedNode, { description: "Add a new item to the feed" })
+  @WithAuditLogging()
   async createFeedItem(
     @Arg("input") input: CreateFeedInput
   ): Promise<FeedNode> {
