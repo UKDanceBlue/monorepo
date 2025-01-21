@@ -179,11 +179,7 @@ export class ExpressModule {
       this.isDevelopment
     );
 
-    if (
-      formatted.extensions &&
-      "code" in formatted.extensions &&
-      formatted.extensions.code === ErrorCode.Unauthenticated.description
-    ) {
+    if (err instanceof ConcreteError && err.tag === ErrorCode.Unauthenticated) {
       res.status(401).json(formatted);
     } else {
       logger.error("Unhandled error in Express", { error: formatted });

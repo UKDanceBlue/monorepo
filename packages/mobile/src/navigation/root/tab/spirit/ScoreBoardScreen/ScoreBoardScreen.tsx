@@ -10,7 +10,7 @@ import {
   Text,
   View,
 } from "native-base";
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 
 import Jumbotron from "@/common/components/Jumbotron";
 import type { FragmentOf } from "@/graphql/index";
@@ -71,11 +71,6 @@ const ScoreBoardScreen = ({
   mode?: "spirit" | "morale";
 }) => {
   const [filter, setFilter] = useState<string>("all");
-  const [userTeamRank, setUserTeamRank] = useState<number | undefined>(
-    undefined
-  );
-  // const moraleTeamName = useAppSelector((state) => state);
-  const [standingData, setStandingData] = useState<StandingType[]>([]);
   const { navigate } =
     useNavigation<SpiritStackScreenProps<"Scoreboard">["navigation"]>();
 
@@ -112,23 +107,20 @@ const ScoreBoardScreen = ({
     [teamsData, filter]
   );
 
-  useEffect(() => {
-    // Determine the standings based on filteredData
-    const newStandingData: StandingType[] = [];
-    for (const team of filteredData) {
-      newStandingData.push({
-        name: team.name,
-        id: team.id,
-        points: team.totalPoints,
-        highlighted: team.id === userTeamData?.id,
-      });
-      if (team.id === userTeamData?.id) {
-        setUserTeamRank(newStandingData.length);
-      }
+  // Determine the standings based on filteredData
+  const standingData: StandingType[] = [];
+  let userTeamRank: number | undefined = undefined;
+  for (const team of filteredData) {
+    standingData.push({
+      name: team.name,
+      id: team.id,
+      points: team.totalPoints,
+      highlighted: team.id === userTeamData?.id,
+    });
+    if (team.id === userTeamData?.id) {
+      userTeamRank = standingData.length;
     }
-
-    setStandingData(newStandingData);
-  }, [teamsData, userTeamData, filter, filteredData]);
+  }
 
   return (
     <View flex={1}>

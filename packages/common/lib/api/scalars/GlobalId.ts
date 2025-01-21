@@ -2,7 +2,11 @@ import { GraphQLScalarType, Kind } from "graphql";
 import type { Result } from "ts-results-es";
 import { Err, Ok } from "ts-results-es";
 
-import { InvalidArgumentError } from "../../error/index.js";
+import {
+  type BasicError,
+  InvalidArgumentError,
+  toBasicError,
+} from "../../error/index.js";
 import {
   arrayToBase64String,
   base64StringToArray,
@@ -17,20 +21,26 @@ export interface GlobalId {
 
 export function parseGlobalId(
   value: string
-): Result<GlobalId, InvalidArgumentError> {
-  const plain = UTF8ArrToStr(base64StringToArray(value));
-  const [typename, id, ...rest] = plain.split(":");
-  if (rest.length > 0) {
-    return Err(
-      new InvalidArgumentError("GlobalId can only parse strings with one colon")
-    );
+): Result<GlobalId, InvalidArgumentError | BasicError> {
+  try {
+    const plain = UTF8ArrToStr(base64StringToArray(value));
+    const [typename, id, ...rest] = plain.split(":");
+    if (rest.length > 0) {
+      return Err(
+        new InvalidArgumentError(
+          "GlobalId can only parse strings with one colon"
+        )
+      );
+    }
+    if (!typename || !id) {
+      return Err(
+        new InvalidArgumentError("GlobalId can only parse strings with a colon")
+      );
+    }
+    return Ok({ typename, id });
+  } catch (error) {
+    return Err(toBasicError(error));
   }
-  if (!typename || !id) {
-    return Err(
-      new InvalidArgumentError("GlobalId can only parse strings with a colon")
-    );
-  }
-  return Ok({ typename, id });
 }
 
 export function serializeGlobalId(value: GlobalId): string {

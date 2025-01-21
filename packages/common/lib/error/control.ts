@@ -17,9 +17,6 @@ export abstract class ControlError extends ConcreteError {
     return this.message;
   }
   readonly expose = true;
-  get stack(): string | undefined {
-    return undefined;
-  }
 }
 
 export class AuthorizationRuleFailedError extends ControlError {

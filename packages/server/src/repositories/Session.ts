@@ -109,9 +109,9 @@ export class SessionRepository extends buildDefaultRepository("Session", {}) {
 
   verifySession(
     token: string,
-    { ip, userAgent }: { ip?: string; userAgent?: string }
+    { ip }: { ip?: string }
   ): AsyncRepositoryResult<SessionValue, UnauthenticatedError> {
-    return new AsyncResult<string, RepositoryError>(
+    return new AsyncResult<string, RepositoryError | UnauthenticatedError>(
       new Promise((resolve) => {
         verify(
           token,
@@ -122,7 +122,11 @@ export class SessionRepository extends buildDefaultRepository("Session", {}) {
           },
           (err, decoded) => {
             if (err) {
-              resolve(Err(toBasicError(err)));
+              if (err.message === "invalid signature") {
+                resolve(Err(new UnauthenticatedError()));
+              } else {
+                resolve(Err(toBasicError(err)));
+              }
             } else if (!decoded) {
               resolve(Err(new InvariantError("No decoded token")));
             } else if (typeof decoded !== "object") {
@@ -148,16 +152,10 @@ export class SessionRepository extends buildDefaultRepository("Session", {}) {
         session ? Ok(session) : Err(new UnauthenticatedError())
       )
       .andThen((session) => {
-        if (
-          session.expiresAt < new Date() ||
-          session.ip !== ip ||
-          session.userAgent !== userAgent
-        ) {
-          return this.handleQueryError(
-            this.prisma.session.delete({
-              where: { uuid: session.uuid },
-            })
-          ).andThen(() => Err(new UnauthenticatedError()));
+        if (session.expiresAt < new Date() || session.ip !== ip) {
+          return this.deleteSession(session).andThen(() =>
+            Err(new UnauthenticatedError())
+          );
         } else {
           return Ok(session);
         }
@@ -192,7 +190,7 @@ export class SessionRepository extends buildDefaultRepository("Session", {}) {
   refreshSession(session: Session): AsyncRepositoryResult<SessionValue> {
     return this.handleQueryError(
       this.prisma.session.update({
-        where: { uuid: session.uuid },
+        where: { id: session.id },
         data: {
           expiresAt: DateTime.now().plus(SESSION_LENGTH).toJSDate(),
         },
@@ -203,7 +201,7 @@ export class SessionRepository extends buildDefaultRepository("Session", {}) {
 
   deleteSession(session: Session): AsyncRepositoryResult<void> {
     return this.handleQueryError(
-      this.prisma.session.delete({ where: { uuid: session.uuid } })
+      this.prisma.session.delete({ where: { id: session.id } })
     ).map(() => undefined);
   }
 
@@ -254,7 +252,6 @@ export class SessionRepository extends buildDefaultRepository("Session", {}) {
       } else {
         const result = this.verifySession(token, {
           ip: req.ips[0] ?? req.ip,
-          userAgent: req.headers["user-agent"],
         })
           .andThen(
             (

@@ -5,6 +5,7 @@ import { createContext, useContext, useMemo, useReducer } from "react";
 import { cacheExchange, Client, fetchExchange, Provider } from "urql";
 
 import { API_BASE_URL } from "@/common/apiUrl";
+import { Logger } from "@/common/logger/Logger";
 import { DANCEBLUE_TOKEN_KEY } from "@/common/storage-tokens";
 
 const invalidateCacheContext = createContext<() => void>(() => undefined);
@@ -39,20 +40,30 @@ export function UrqlContext({ children }: { children: ReactNode }) {
               await AsyncStorage.removeItem(DANCEBLUE_TOKEN_KEY);
               invalidateCache();
             },
-            didAuthError: ({ message }) => {
-              // for (const err of graphQLErrors) {
-              //   if (err.extensions.code === LegacyErrorCode.NotLoggedIn) {
-              //     return true;
-              //   }
-              // }
+            didAuthError: (args) => {
+              const { message, response } = args;
 
-              return (
+              if (
+                (response as { status?: unknown } | undefined)?.status ===
+                  401 ||
                 message ===
                   "Access denied! You don't have permission for this action!" ||
                 message === "Context creation failed: Invalid JWT payload" ||
                 message ===
                   "[GraphQL] Context creation failed: invalid signature"
-              );
+              ) {
+                Logger.error("Auth  error", {
+                  context: {
+                    message,
+                    response: {
+                      status: (response as { status?: unknown }).status,
+                    },
+                  },
+                });
+                return true;
+              }
+
+              return false;
             },
           };
         }),

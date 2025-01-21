@@ -11,9 +11,12 @@ import type { ErrorCodeType } from "./index.js";
 
 export abstract class ConcreteError {
   graphqlError: GraphQLError;
+  #stack: string | undefined;
 
   constructor() {
     this.graphqlError = new GraphQLError("");
+    // eslint-disable-next-line unicorn/error-message
+    this.#stack = new Error().stack;
   }
 
   get graphQlError() {
@@ -34,7 +37,7 @@ export abstract class ConcreteError {
   }
   abstract get expose(): boolean;
   get stack(): string | undefined {
-    return undefined;
+    return this.#stack;
   }
   abstract get tag(): ErrorCodeType;
 

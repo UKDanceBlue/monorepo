@@ -105,7 +105,10 @@ const SpiritScreen = () => {
         !spiritMode || spiritMode === "spirit"
           ? TeamType.Spirit
           : TeamType.Morale,
-      typeStr: !spiritMode || spiritMode === "spirit" ? "spirit" : "morale",
+      typeStr:
+        !spiritMode || spiritMode === "spirit"
+          ? TeamType.Spirit
+          : TeamType.Morale,
       marathonYear: marathonQuery.data?.latestMarathon?.year ?? "N/A",
     },
   });
