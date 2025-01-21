@@ -1,16 +1,58 @@
 import { PlusOutlined, UploadOutlined } from "@ant-design/icons";
+import { DollarOutlined, EditOutlined, EyeOutlined } from "@ant-design/icons";
+import { List } from "@refinedev/antd";
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { Button, Flex } from "antd";
+import {
+  TeamLegacyStatus,
+  TeamLegacyStatusValues,
+  TeamTypeValues,
+} from "@ukdanceblue/common";
+import { Button, Flex, Table } from "antd";
 
-import { TeamsTable } from "#elements/tables/TeamsTable.js";
+import { useMarathon } from "#config/marathonContext.ts";
+import { RefineSearchForm } from "#elements/components/RefineSearchForm.tsx";
+import { graphql } from "#gql/index.js";
 import { useAuthorizationRequirement } from "#hooks/useLoginState.js";
+import { useTypedTable } from "#hooks/useTypedRefine.ts";
+
+export const TeamsTableFragment = graphql(/* GraphQL */ `
+  fragment TeamsTableFragment on TeamNode {
+    id
+    type
+    name
+    legacyStatus
+    totalPoints
+  }
+`);
 
 export function ListTeamsPage() {
+  const { year: marathonYear } = useMarathon() ?? {};
+
+  const { tableProps, searchFormProps } = useTypedTable({
+    fragment: TeamsTableFragment,
+    props: {
+      resource: "team",
+      filters: {
+        permanent: [
+          {
+            field: "marathonYear",
+            value: marathonYear,
+            operator: "eq",
+          },
+        ],
+      },
+    },
+    fieldTypes: {
+      name: "string",
+      type: "string",
+      legacyStatus: "string",
+    },
+  });
+
   return (
-    <>
-      <Flex justify="space-between" align="center">
-        <h1>Teams</h1>
-        {useAuthorizationRequirement("create", "TeamNode") && (
+    <List
+      headerButtons={
+        useAuthorizationRequirement("create", "TeamNode") && (
           <div style={{ display: "flex", gap: 16 }}>
             <Link from="/teams" to="create">
               <Button icon={<PlusOutlined />} size="large">
@@ -23,10 +65,100 @@ export function ListTeamsPage() {
               </Button>
             </Link>
           </div>
-        )}
-      </Flex>
-      <TeamsTable />
-    </>
+        )
+      }
+    >
+      <RefineSearchForm searchFormProps={searchFormProps} />
+      <Table
+        {...tableProps}
+        rowKey="id"
+        columns={[
+          {
+            title: "Name",
+            dataIndex: "name",
+            sorter: true,
+          },
+          {
+            title: "Type",
+            dataIndex: "type",
+            sorter: true,
+            filters: TeamTypeValues.map((key) => ({
+              text: key,
+              value: key,
+            })),
+          },
+          {
+            title: "Legacy Status",
+            dataIndex: "legacyStatus",
+            sorter: true,
+            filters: TeamLegacyStatusValues.map((value) => {
+              let text: string;
+              switch (value) {
+                case TeamLegacyStatus.NewTeam: {
+                  text = "New Team";
+                  break;
+                }
+                case TeamLegacyStatus.ReturningTeam: {
+                  text = "Returning Team";
+                  break;
+                }
+                case TeamLegacyStatus.DemoTeam: {
+                  text = "Demo Team";
+                  break;
+                }
+                default: {
+                  value satisfies never;
+                  text = String(value);
+                  break;
+                }
+              }
+              return {
+                text,
+                value,
+              };
+            }),
+            render: (value) => {
+              switch (value) {
+                case "NewTeam": {
+                  return "New Team";
+                }
+                case "ReturningTeam": {
+                  return "Returning Team";
+                }
+                default: {
+                  return String(value);
+                }
+              }
+            },
+          },
+          {
+            title: "Total Points",
+            dataIndex: "totalPoints",
+            sorter: true,
+          },
+          {
+            title: "Actions",
+            key: "actions",
+            render: (_text, record) => (
+              <Flex gap="small" align="center">
+                <Link to="/teams/$teamId/points" params={{ teamId: record.id }}>
+                  <Button icon={<EyeOutlined />} />
+                </Link>
+                <Link
+                  to="/teams/$teamId/fundraising"
+                  params={{ teamId: record.id }}
+                >
+                  <Button icon={<DollarOutlined />} />
+                </Link>
+                <Link to="/teams/$teamId/edit" params={{ teamId: record.id }}>
+                  <Button icon={<EditOutlined />} />
+                </Link>
+              </Flex>
+            ),
+          },
+        ]}
+      />
+    </List>
   );
 }
 

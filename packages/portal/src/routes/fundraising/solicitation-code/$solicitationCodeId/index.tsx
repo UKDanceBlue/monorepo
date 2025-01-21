@@ -28,7 +28,6 @@ import {
   FundraisingEntriesTable,
   FundraisingEntryTableFragment,
 } from "#elements/tables/fundraising/FundraisingEntriesTable";
-import { TeamsTableFragment } from "#elements/tables/TeamsTable";
 import type { ResultOf, VariablesOf } from "#gql/index.js";
 import { graphql, readFragment } from "#gql/index.js";
 import { useAntFeedback, useAskConfirm } from "#hooks/useAntFeedback";
@@ -40,6 +39,16 @@ export const Route = createFileRoute(
 )({
   component: RouteComponent,
 });
+
+export const TeamsTableFragment = graphql(/* GraphQL */ `
+  fragment TeamsTableFragment on TeamNode {
+    id
+    type
+    name
+    legacyStatus
+    totalPoints
+  }
+`);
 
 const SolicitationCodePageFragment = graphql(
   /* GraphQL */ `
@@ -210,26 +219,6 @@ function RouteComponent() {
               }}
             />
           </Flex>
-          {/* <TeamsTable
-            additionalActions={[
-              {
-                key: "unassign",
-                icon: <MinusCircleOutlined />,
-                onClick: (record) => {
-                  openConfirmUnassignModal(record.id).catch(
-                    (error: unknown) => {
-                      console.error(error);
-                      showErrorMessage(
-                        `Failed to unassign team from solicitation code\n${String(
-                          error
-                        )}`
-                      );
-                    }
-                  );
-                },
-              },
-            ]}
-          /> */}
           <Table
             dataSource={readFragment(
               TeamsTableFragment,

@@ -53,7 +53,9 @@ export class RegisterDeviceInput {
 
 @ArgsType()
 export class ListDevicesArgs extends FilteredListQueryArgs("DeviceResolver", [
-  "lastSeen",
+  "lastLogin",
+  "lastLoggedInUserName",
+  "lastLoggedInUserEmail",
   "createdAt",
   "updatedAt",
 ]) {}

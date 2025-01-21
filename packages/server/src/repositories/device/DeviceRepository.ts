@@ -34,9 +34,19 @@ export class DeviceRepository extends buildDefaultRepository<
   DeviceFields,
   never
 >("Device", {
-  lastSeen: {
+  lastLogin: {
     getOrderBy: (sort) => Ok({ lastSeen: sort }),
     getWhere: (value) => Ok({ lastSeen: value }),
+  },
+  lastLoggedInUserName: {
+    getOrderBy: (sort) => Ok({ lastSeenPerson: { name: sort } }),
+    getWhere: (value) => Ok({ lastSeenPerson: { name: value } }),
+    searchable: true,
+  },
+  lastLoggedInUserEmail: {
+    getOrderBy: (sort) => Ok({ lastSeenPerson: { email: sort } }),
+    getWhere: (value) => Ok({ lastSeenPerson: { email: value } }),
+    searchable: true,
   },
   createdAt: {
     getOrderBy: (sort) => Ok({ createdAt: sort }),
@@ -85,9 +95,7 @@ export class DeviceRepository extends buildDefaultRepository<
   findAndCount({
     tx,
     ...params
-  }: FindAndCountParams<
-    "lastSeen" | "createdAt" | "updatedAt"
-  >): AsyncRepositoryResult<
+  }: FindAndCountParams<DeviceFields>): AsyncRepositoryResult<
     FindAndCountResult<
       Prisma.DeviceDelegate<DefaultArgs, Prisma.PrismaClientOptions>,
       { include: never }

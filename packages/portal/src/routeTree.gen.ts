@@ -22,6 +22,7 @@ import { Route as ImagesIndexImport } from "./routes/images/index";
 import { Route as FundraisingIndexImport } from "./routes/fundraising/index";
 import { Route as FeedIndexImport } from "./routes/feed/index";
 import { Route as EventsIndexImport } from "./routes/events/index";
+import { Route as DevicesIndexImport } from "./routes/devices/index";
 import { Route as ConfigIndexImport } from "./routes/config/index";
 import { Route as TeamsCreateImport } from "./routes/teams/create";
 import { Route as TeamsBulkImport } from "./routes/teams/bulk";
@@ -119,6 +120,12 @@ const FeedIndexRoute = FeedIndexImport.update({
 const EventsIndexRoute = EventsIndexImport.update({
   id: "/events/",
   path: "/events/",
+  getParentRoute: () => rootRoute,
+} as any);
+
+const DevicesIndexRoute = DevicesIndexImport.update({
+  id: "/devices/",
+  path: "/devices/",
   getParentRoute: () => rootRoute,
 } as any);
 
@@ -416,6 +423,13 @@ declare module "@tanstack/react-router" {
       preLoaderRoute: typeof ConfigIndexImport;
       parentRoute: typeof rootRoute;
     };
+    "/devices/": {
+      id: "/devices/";
+      path: "/devices";
+      fullPath: "/devices";
+      preLoaderRoute: typeof DevicesIndexImport;
+      parentRoute: typeof rootRoute;
+    };
     "/events/": {
       id: "/events/";
       path: "/events";
@@ -680,6 +694,7 @@ export interface FileRoutesByFullPath {
   "/teams/bulk": typeof TeamsBulkRoute;
   "/teams/create": typeof TeamsCreateRoute;
   "/config": typeof ConfigIndexRoute;
+  "/devices": typeof DevicesIndexRoute;
   "/events": typeof EventsIndexRoute;
   "/feed": typeof FeedIndexRoute;
   "/fundraising": typeof FundraisingIndexRoute;
@@ -725,6 +740,7 @@ export interface FileRoutesByTo {
   "/teams/bulk": typeof TeamsBulkRoute;
   "/teams/create": typeof TeamsCreateRoute;
   "/config": typeof ConfigIndexRoute;
+  "/devices": typeof DevicesIndexRoute;
   "/events": typeof EventsIndexRoute;
   "/feed": typeof FeedIndexRoute;
   "/fundraising": typeof FundraisingIndexRoute;
@@ -770,6 +786,7 @@ export interface FileRoutesById {
   "/teams/bulk": typeof TeamsBulkRoute;
   "/teams/create": typeof TeamsCreateRoute;
   "/config/": typeof ConfigIndexRoute;
+  "/devices/": typeof DevicesIndexRoute;
   "/events/": typeof EventsIndexRoute;
   "/feed/": typeof FeedIndexRoute;
   "/fundraising/": typeof FundraisingIndexRoute;
@@ -818,6 +835,7 @@ export interface FileRouteTypes {
     | "/teams/bulk"
     | "/teams/create"
     | "/config"
+    | "/devices"
     | "/events"
     | "/feed"
     | "/fundraising"
@@ -862,6 +880,7 @@ export interface FileRouteTypes {
     | "/teams/bulk"
     | "/teams/create"
     | "/config"
+    | "/devices"
     | "/events"
     | "/feed"
     | "/fundraising"
@@ -905,6 +924,7 @@ export interface FileRouteTypes {
     | "/teams/bulk"
     | "/teams/create"
     | "/config/"
+    | "/devices/"
     | "/events/"
     | "/feed/"
     | "/fundraising/"
@@ -952,6 +972,7 @@ export interface RootRouteChildren {
   TeamsBulkRoute: typeof TeamsBulkRoute;
   TeamsCreateRoute: typeof TeamsCreateRoute;
   ConfigIndexRoute: typeof ConfigIndexRoute;
+  DevicesIndexRoute: typeof DevicesIndexRoute;
   EventsIndexRoute: typeof EventsIndexRoute;
   FeedIndexRoute: typeof FeedIndexRoute;
   FundraisingIndexRoute: typeof FundraisingIndexRoute;
@@ -993,6 +1014,7 @@ const rootRouteChildren: RootRouteChildren = {
   TeamsBulkRoute: TeamsBulkRoute,
   TeamsCreateRoute: TeamsCreateRoute,
   ConfigIndexRoute: ConfigIndexRoute,
+  DevicesIndexRoute: DevicesIndexRoute,
   EventsIndexRoute: EventsIndexRoute,
   FeedIndexRoute: FeedIndexRoute,
   FundraisingIndexRoute: FundraisingIndexRoute,
@@ -1047,6 +1069,7 @@ export const routeTree = rootRoute
         "/teams/bulk",
         "/teams/create",
         "/config/",
+        "/devices/",
         "/events/",
         "/feed/",
         "/fundraising/",
@@ -1110,6 +1133,9 @@ export const routeTree = rootRoute
     },
     "/config/": {
       "filePath": "config/index.tsx"
+    },
+    "/devices/": {
+      "filePath": "devices/index.tsx"
     },
     "/events/": {
       "filePath": "events/index.tsx"
