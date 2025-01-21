@@ -1,65 +1,94 @@
-import { PlusOutlined } from "@ant-design/icons";
-import { createFileRoute, Link } from "@tanstack/react-router";
-import { Button, Empty, Flex } from "antd";
+import { EditOutlined, EyeOutlined } from "@ant-design/icons";
+import { List } from "@refinedev/antd";
+import { createFileRoute } from "@tanstack/react-router";
+import { Button, Table } from "antd";
 import { useQuery } from "urql";
 
-import {
-  MarathonsTable,
-  MarathonTableFragment,
-} from "#elements/tables/marathon/MarathonsTable.js";
-import {
-  MarathonViewer,
-  MarathonViewerFragment,
-} from "#elements/viewers/marathon/MarathonViewer.js";
 import { graphql } from "#gql/index.js";
+import { useQueryStatusWatcher } from "#hooks/useQueryStatusWatcher.ts";
+import { useTypedTable } from "#hooks/useTypedRefine.ts";
 
-const marathonOverviewPageDocument = graphql(
-  /* GraphQL */ `
-    query MarathonOverviewPage {
-      latestMarathon {
-        ...MarathonViewerFragment
-      }
-      marathons(sendAll: true) {
-        data {
-          ...MarathonTableFragment
-        }
-      }
+const marathonOverviewPageDocument = graphql(/* GraphQL */ `
+  query MarathonOverviewPage {
+    latestMarathon {
+      id
     }
-  `,
-  [MarathonViewerFragment, MarathonTableFragment]
-);
+  }
+`);
+
+export const MarathonTableFragment = graphql(/* GraphQL */ `
+  fragment MarathonTableFragment on MarathonNode {
+    id
+    year
+    startDate
+    endDate
+  }
+`);
 
 function MarathonOverviewPage() {
   const [result] = useQuery({
     query: marathonOverviewPageDocument,
   });
+  useQueryStatusWatcher(result);
+
+  const { tableProps } = useTypedTable({
+    fragment: MarathonTableFragment,
+    props: { resource: "marathon", pagination: { mode: "off" } },
+  });
 
   return (
-    <>
-      <Flex
-        align="center"
-        justify="space-between"
-        style={{ marginBottom: "1rem" }}
-        gap="1rem"
-      >
-        <h1>Marathon</h1>
-        <Link from="/marathon" to="create">
-          <Button icon={<PlusOutlined />} type="primary">
-            Create New Marathon
-          </Button>
-        </Link>
-      </Flex>
-      {result.data?.latestMarathon || result.data?.marathons.data.length ? (
-        <div>
-          <h2>Current Marathon</h2>
-          <MarathonViewer marathon={result.data.latestMarathon} />
-          <h2>All Marathons</h2>
-          <MarathonsTable marathons={result.data.marathons.data} />
-        </div>
-      ) : (
-        <Empty description="No marathons found" />
-      )}
-    </>
+    <List>
+      <Table
+        rowKey="id"
+        {...tableProps}
+        // onRow={(record) => ({
+        //   style: {
+        //     backgroundColor:
+        //       record.id === result.data?.latestMarathon?.id
+        //         ? "rgba(0, 0, 0, 0.05)"
+        //         : undefined,
+        //   },
+        // })}
+        columns={[
+          {
+            title: "Latest",
+            dataIndex: "id",
+            render: (id) => id === result.data?.latestMarathon?.id && "Yes",
+          },
+          {
+            title: "Year",
+            dataIndex: "year",
+            sorter: true,
+          },
+          {
+            title: "Start Date",
+            dataIndex: "startDate",
+            sorter: true,
+          },
+          {
+            title: "End Date",
+            dataIndex: "endDate",
+            sorter: true,
+          },
+          {
+            title: "Actions",
+            dataIndex: "actions",
+            render: (_, all) => (
+              <>
+                <Button
+                  icon={<EyeOutlined />}
+                  href={`/marathon/${String((all as { id?: string }).id)}`}
+                />{" "}
+                <Button
+                  icon={<EditOutlined />}
+                  href={`/marathon/${String((all as { id?: string }).id)}/edit`}
+                />
+              </>
+            ),
+          },
+        ]}
+      />
+    </List>
   );
 }
 

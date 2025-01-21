@@ -1,5 +1,6 @@
 import type CacheEntity from "@ant-design/cssinjs/es/Cache";
 import { Refine } from "@refinedev/core";
+import { DevtoolsPanel } from "@refinedev/devtools";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { createRootRouteWithContext } from "@tanstack/react-router";
 import { notification } from "antd";
@@ -54,6 +55,7 @@ function RootComponent() {
       <Suspense>
         <TanStackRouterDevtools position="top-right" />
         <ReactQueryDevtools initialIsOpen={false} position="right" />
+        <DevtoolsPanel />
       </Suspense>
       {/* <Scripts />
       </body>
