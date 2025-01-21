@@ -59,7 +59,8 @@
   },
   "resolutions": {
     "promise": "npm:promise@^8.3.0",
-    "urijs": "npm:uri-js-replace"
+    "urijs": "npm:uri-js-replace",
+    "@prisma/instrumentation": "^6.2.1"
   },
   "devDependencies": {
     "@eslint/compat": "^1.2.5",
