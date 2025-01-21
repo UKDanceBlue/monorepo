@@ -206,7 +206,7 @@ export const dataProvider: Required<DataProvider> = {
         search = search
           .split(" ")
           .filter(Boolean)
-          .map((s) => (s.startsWith('"') && s.endsWith('"') ? s : `*:${s}:*`))
+          .map((s) => (s.startsWith('"') && s.endsWith('"') ? s : `${s}:*`))
           .join(" & ");
       }
     }
