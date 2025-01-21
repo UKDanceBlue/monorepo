@@ -5,13 +5,6 @@
  - A unique constraint covering the columns `[marathonId,correspondingCommitteeId]` on the table `Team` will be added. If there are existing duplicate values, this will fail.
  
  */
--- DropForeignKey
-ALTER TABLE "PointEntry" DROP CONSTRAINT "PointEntry_pointOpportunityId_fkey";
-
--- AlterTable
-ALTER TABLE "PointEntry"
-ALTER COLUMN "pointOpportunityId" DROP NOT NULL;
-
 -- CreateIndex
 CREATE UNIQUE INDEX "DailyDepartmentNotification_idSorter_processDate_batchId_so_key" ON "DailyDepartmentNotification"(
   "idSorter",

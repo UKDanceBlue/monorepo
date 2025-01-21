@@ -251,9 +251,7 @@ SET DEFAULT gen_random_uuid();
 -- AlterTable
 ALTER TABLE "PointEntry"
 ALTER COLUMN "uuid"
-SET DEFAULT gen_random_uuid(),
-  ALTER COLUMN "pointOpportunityId"
-SET NOT NULL;
+SET DEFAULT gen_random_uuid();
 
 -- AlterTable
 ALTER TABLE "PointOpportunity"
@@ -285,10 +283,6 @@ SET NULL ON UPDATE CASCADE;
 ALTER TABLE "FundraisingEntry"
 ADD CONSTRAINT "FundraisingEntry_solicitationCodeOverrideId_fkey" FOREIGN KEY ("solicitationCodeOverrideId") REFERENCES "SolicitationCode"("id") ON DELETE
 SET NULL ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "PointEntry"
-ADD CONSTRAINT "PointEntry_pointOpportunityId_fkey" FOREIGN KEY ("pointOpportunityId") REFERENCES "PointOpportunity"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "PointOpportunity"
