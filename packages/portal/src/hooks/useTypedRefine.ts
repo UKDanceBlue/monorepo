@@ -40,6 +40,7 @@ import type {
 } from "@ukdanceblue/common";
 import type { ResultOf, TadaDocumentNode, VariablesOf } from "gql.tada";
 import type { DocumentNode } from "graphql";
+import type { AnyVariables, UseQueryResponse } from "urql";
 
 import { dataProvider, type FieldTypes } from "#config/refine/graphql/data.ts";
 import type { RefineResourceName } from "#config/refine/resources.tsx";
@@ -433,7 +434,11 @@ interface TypedCustomParams<
   TData extends BaseRecord = TQueryFnData,
 > {
   document: Document;
-  props: UseCustomProps<TQueryFnData, HttpError, never, never, TData>;
+  gqlVariables?: Partial<VariablesOf<Document>>;
+  props: Omit<
+    UseCustomProps<TQueryFnData, HttpError, never, never, TData>,
+    "method" | "url"
+  >;
 }
 
 export function useTypedCustomQuery<
@@ -441,14 +446,61 @@ export function useTypedCustomQuery<
   TQueryFnData extends BaseRecord & ResultOf<Document> = BaseRecord &
     ResultOf<Document>,
   TData extends BaseRecord = TQueryFnData,
->({ document, props }: TypedCustomParams<Document, TQueryFnData, TData>) {
+>({
+  document,
+  props,
+  gqlVariables,
+}: TypedCustomParams<Document, TQueryFnData, TData>) {
   return useCustom({
+    method: "get",
+    url: "",
     ...props,
     meta: {
       gqlQuery: document,
+      gqlVariables: {
+        ...props.meta?.gqlVariables,
+        ...gqlVariables,
+      },
       ...props.meta,
     },
   });
+}
+
+export function useQuery<Document extends DocumentNode>(props: {
+  query: Document;
+  pause?: boolean;
+  variables?: VariablesOf<Document> & AnyVariables;
+}): [
+  UseQueryResponse<ResultOf<Document>, VariablesOf<Document> & AnyVariables>[0],
+] {
+  const val = useTypedCustomQuery({
+    document: props.query,
+    gqlVariables: props.variables,
+    props: {
+      queryOptions: {
+        enabled: !props.pause,
+      },
+    },
+  });
+
+  return [
+    {
+      fetching: val.isLoading,
+      hasNext: false,
+      stale: false,
+      data: val.data?.data,
+      error: val.error
+        ? {
+            name: "RefineError",
+            message: val.error.message,
+            graphQLErrors: [],
+            toString() {
+              return this.message;
+            },
+          }
+        : undefined,
+    },
+  ];
 }
 
 export function prefetchTypedCustomQuery<
@@ -456,12 +508,21 @@ export function prefetchTypedCustomQuery<
   TQueryFnData extends BaseRecord & ResultOf<Document> = BaseRecord &
     ResultOf<Document>,
   TData extends BaseRecord = TQueryFnData,
->({ document, props }: TypedCustomParams<Document, TQueryFnData, TData>) {
+>({
+  document,
+  props,
+  gqlVariables,
+}: TypedCustomParams<Document, TQueryFnData, TData>) {
   return dataProvider.custom({
     method: "get",
     url: "",
+    ...props,
     meta: {
       gqlQuery: document,
+      gqlVariables: {
+        ...props.meta?.gqlVariables,
+        ...gqlVariables,
+      },
       ...props.meta,
     },
   });

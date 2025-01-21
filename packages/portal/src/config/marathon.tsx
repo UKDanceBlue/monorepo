@@ -1,46 +1,46 @@
 import { dateTimeFromSomething } from "@ukdanceblue/common";
 import { useMemo } from "react";
-import { useQuery } from "urql";
 
-import { graphql } from "#gql/index.js";
+import { graphql, readFragment } from "#gql/index.js";
 import { useAuthorizationRequirement } from "#hooks/useLoginState.js";
+import { useQuery, useTypedOne } from "#hooks/useTypedRefine.js";
 
 import type { MarathonContextData } from "./marathonContext.js";
 import { marathonContext } from "./marathonContext.js";
 import { StorageManager, useStorageValue } from "./storage.js";
 
-const latestMarathonDocument = graphql(/* GraphQL */ `
-  query ActiveMarathon {
-    latestMarathon {
-      id
-      year
-      startDate
-      endDate
-    }
+const MarathonFragment = graphql(/* GraphQL */ `
+  fragment MarathonSelection on MarathonNode {
+    id
+    year
+    startDate
+    endDate
   }
 `);
 
-const allMarathonsDocument = graphql(/* GraphQL */ `
-  query AllMarathons {
-    marathons(sendAll: true) {
-      data {
-        id
-        year
+const latestMarathonDocument = graphql(
+  /* GraphQL */ `
+    query ActiveMarathon {
+      latestMarathon {
+        ...MarathonSelection
       }
     }
-  }
-`);
+  `,
+  [MarathonFragment]
+);
 
-const selectedMarathonDocument = graphql(/* GraphQL */ `
-  query SelectedMarathon($marathonId: GlobalId!) {
-    marathon(id: $marathonId) {
-      id
-      year
-      startDate
-      endDate
+const allMarathonsDocument = graphql(
+  /* GraphQL */ `
+    query AllMarathons {
+      marathons(sendAll: true) {
+        data {
+          ...MarathonSelection
+        }
+      }
     }
-  }
-`);
+  `,
+  [MarathonFragment]
+);
 
 export const MarathonConfigProvider = ({
   children,
@@ -67,18 +67,26 @@ export const MarathonConfigProvider = ({
     query: allMarathonsDocument,
     pause: !canSeeMarathonList || valueOverride != null,
   });
-  const [selectedMarathonResult] = useQuery({
-    query: selectedMarathonDocument,
-    variables: { marathonId: marathonId ?? "" },
-    pause: marathonId == null || valueOverride != null,
+
+  const selectedMarathonResult = useTypedOne({
+    fragment: MarathonFragment,
+    props: {
+      id: marathonId ?? "",
+      resource: "marathon",
+      queryOptions: {
+        enabled: Boolean(marathonId),
+      },
+    },
   });
 
-  let marathon = null;
-  if (marathonId != null && selectedMarathonResult.data != null) {
-    marathon = selectedMarathonResult.data.marathon;
-  } else if (latestMarathonResult.data != null) {
-    marathon = latestMarathonResult.data.latestMarathon;
-  }
+  const marathon = readFragment(
+    MarathonFragment,
+    marathonId != null && selectedMarathonResult.data != null
+      ? selectedMarathonResult.data.data
+      : latestMarathonResult.data != null
+        ? latestMarathonResult.data.latestMarathon
+        : null
+  );
 
   const startDate = useMemo(() => {
     return dateTimeFromSomething(marathon?.startDate) ?? null;
@@ -114,13 +122,15 @@ export const MarathonConfigProvider = ({
               endDate,
             }
           : null,
-        marathons:
+        marathons: readFragment(
+          MarathonFragment,
           allMarathonsResult.data?.marathons.data ??
-          (latestMarathonResult.data?.latestMarathon
-            ? [latestMarathonResult.data.latestMarathon]
-            : []),
+            (latestMarathonResult.data?.latestMarathon
+              ? [latestMarathonResult.data.latestMarathon]
+              : [])
+        ),
         loading:
-          latestMarathonResult.fetching || selectedMarathonResult.fetching,
+          latestMarathonResult.fetching || selectedMarathonResult.isLoading,
       }}
     >
       {children}

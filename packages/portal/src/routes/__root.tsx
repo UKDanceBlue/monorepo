@@ -1,5 +1,4 @@
 import type CacheEntity from "@ant-design/cssinjs/es/Cache";
-import { Refine } from "@refinedev/core";
 import { DevtoolsPanel } from "@refinedev/devtools";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { createRootRouteWithContext } from "@tanstack/react-router";
@@ -8,13 +7,7 @@ import type { useAppProps } from "antd/es/app/context.js";
 import { lazy, Suspense } from "react";
 import type { Client as UrqlClient } from "urql";
 
-import watermark from "#assets/watermark.svg";
-import { authProvider } from "#config/refine/authentication.ts";
-import { accessControlProvider } from "#config/refine/authorization.ts";
-import { useNotificationProvider } from "#config/refine/feedback.tsx";
-import { dataProvider } from "#config/refine/graphql/data.ts";
-import { refineResources } from "#config/refine/resources.tsx";
-import { routerBindings } from "#config/refine/router.tsx";
+import { MarathonConfigProvider } from "#config/marathon.tsx";
 import { Main } from "#elements/Main.tsx";
 import { refreshLoginState } from "#hooks/useLoginState.js";
 
@@ -50,7 +43,9 @@ function RootComponent() {
       </head>
       <body> */}
       {/* <StyleProvider cache={cache}> */}
-      <Main />
+      <MarathonConfigProvider>
+        <Main />
+      </MarathonConfigProvider>
       {/* </StyleProvider> */}
       <Suspense>
         <TanStackRouterDevtools position="bottom-right" />
@@ -64,40 +59,8 @@ function RootComponent() {
   );
 }
 
-function RootWithRefine() {
-  return (
-    <Refine
-      dataProvider={dataProvider}
-      notificationProvider={useNotificationProvider}
-      routerProvider={routerBindings}
-      authProvider={authProvider}
-      options={{
-        projectId: "DqkUbD-wpgLRK-UO3SFV",
-        title: {
-          icon: <img src={watermark} alt="DanceBlue Logo" />,
-          text: "DanceBlue Portal",
-        },
-        mutationMode: "optimistic",
-        disableTelemetry: true,
-        redirect: {
-          afterCreate: "show",
-          afterEdit: "show",
-        },
-        syncWithLocation: true,
-        warnWhenUnsavedChanges: true,
-        disableServerSideValidation: true,
-        liveMode: "off",
-      }}
-      accessControlProvider={accessControlProvider}
-      resources={refineResources}
-    >
-      <RootComponent />
-    </Refine>
-  );
-}
-
 export const Route = createRootRouteWithContext<RouterContext>()({
-  component: RootWithRefine,
+  component: RootComponent,
   beforeLoad: async ({ context }) => {
     const loginState = await refreshLoginState(context.urqlClient);
     loginState.mapErr((error) =>
