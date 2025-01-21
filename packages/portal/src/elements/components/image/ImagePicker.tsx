@@ -1,10 +1,10 @@
 import { SingleTargetOperators } from "@ukdanceblue/common";
 import { Button, Flex, Image, Input } from "antd";
 import { useState } from "react";
-import { useQuery } from "urql";
 
 import { graphql } from "#gql/index.js";
 import { useQueryStatusWatcher } from "#hooks/useQueryStatusWatcher.js";
+import { useQuery } from "#hooks/useTypedRefine.ts";
 
 const imagePickerDocument = graphql(/* GraphQL */ `
   query ImagePicker($filters: ImageResolverFilterGroup) {

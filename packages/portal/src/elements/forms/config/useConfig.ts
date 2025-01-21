@@ -1,10 +1,10 @@
 import { dateTimeFromSomething } from "@ukdanceblue/common";
 import { DateTime, Interval } from "luxon";
 import { useMemo } from "react";
-import { useQuery } from "urql";
 
 import { graphql, readFragment } from "#gql/index.js";
 import { useQueryStatusWatcher } from "#hooks/useQueryStatusWatcher.js";
+import { useQuery } from "#hooks/useTypedRefine.ts";
 
 export const ConfigFragment = graphql(/* GraphQL */ `
   fragment ConfigFragment on ConfigurationNode {
@@ -33,9 +33,8 @@ export function useConfig(): {
   loading: boolean;
   configs: ConfigValueCollection[];
   activeValues: Record<string, ConfigValue>;
-  refetch: () => void;
 } {
-  const [{ data: response, fetching, error }, refetch] = useQuery({
+  const [{ data: response, fetching, error }] = useQuery({
     query: graphql(
       /* GraphQL */ `
         query ConfigQuery {
@@ -140,6 +139,5 @@ export function useConfig(): {
     loading: fetching,
     configs,
     activeValues,
-    refetch,
   };
 }

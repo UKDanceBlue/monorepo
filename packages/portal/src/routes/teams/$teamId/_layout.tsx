@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { Outlet } from "@tanstack/react-router";
 import { Flex } from "antd";
-import { useQuery } from "urql";
+import { useQuery } from "#hooks/useTypedRefine.ts";
 
 import { teamPageDocument } from "#documents/team.js";
 import { TeamViewer } from "#elements/viewers/team/TeamViewer.js";

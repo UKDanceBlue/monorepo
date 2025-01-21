@@ -1,10 +1,10 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useQuery } from "urql";
 
 import { TeamEditorFragment } from "#documents/team.ts";
 import { TeamEditor } from "#elements/forms/team/edit/TeamEditor.js";
 import { graphql } from "#gql/index.js";
 import { useQueryStatusWatcher } from "#hooks/useQueryStatusWatcher.js";
+import { useQuery } from "#hooks/useTypedRefine.ts";
 
 const viewTeamPageDocument = graphql(
   /* GraphQL */ `
@@ -20,7 +20,7 @@ const viewTeamPageDocument = graphql(
 function EditTeamPage() {
   const { teamId } = Route.useParams();
 
-  const [{ data, fetching, error }, refetchTeam] = useQuery({
+  const [{ data, fetching, error }] = useQuery({
     query: viewTeamPageDocument,
     variables: { id: teamId },
   });
@@ -34,7 +34,7 @@ function EditTeamPage() {
   return (
     <div>
       <h1>Edit Team</h1>
-      <TeamEditor teamFragment={data?.team} refetchTeam={refetchTeam} />
+      <TeamEditor teamFragment={data?.team} />
     </div>
   );
 }

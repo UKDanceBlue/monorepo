@@ -2,7 +2,7 @@ import { EditOutlined, EyeOutlined } from "@ant-design/icons";
 import { List } from "@refinedev/antd";
 import { createFileRoute } from "@tanstack/react-router";
 import { Button, Table } from "antd";
-import { useQuery } from "urql";
+import { useQuery } from "#hooks/useTypedRefine.ts";
 
 import { graphql } from "#gql/index.js";
 import { useQueryStatusWatcher } from "#hooks/useQueryStatusWatcher.ts";

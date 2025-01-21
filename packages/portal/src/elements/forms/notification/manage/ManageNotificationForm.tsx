@@ -1,8 +1,7 @@
 import type { ModalFuncProps } from "antd";
 import { Button, Empty, Flex, Form } from "antd";
 import { DateTime } from "luxon";
-import { useEffect, useState } from "react";
-import type { UseQueryExecute } from "urql";
+import { useState } from "react";
 
 import { SingleNotificationFragment } from "#documents/notification.js";
 import { LuxonDatePicker } from "#elements/components/antLuxonComponents.js";
@@ -26,13 +25,11 @@ const confirmationModalProps: ModalFuncProps = {
 
 export const ManageNotificationForm = ({
   notificationFragment,
-  refetchNotification,
 }: {
   notificationFragment?:
     | FragmentOf<typeof SingleNotificationFragment>
     | undefined
     | null;
-  refetchNotification: UseQueryExecute;
 }) => {
   const notification = readFragment(
     SingleNotificationFragment,
@@ -57,13 +54,6 @@ export const ManageNotificationForm = ({
     showConfirmModal,
   } = useAntFeedback();
 
-  useEffect(() => {
-    const interval = setInterval(() => {
-      refetchNotification({ requestPolicy: "network-only" });
-    }, 5000);
-    return () => clearInterval(interval);
-  }, [refetchNotification]);
-
   if (!notification || !actions) {
     return <Empty description="Notification not found" />;
   }
@@ -82,7 +72,6 @@ export const ManageNotificationForm = ({
   ) {
     promise
       .then(async (result) => {
-        refetchNotification({ requestPolicy: "network-only" });
         await (result.data?.[responseKey]
           ? showInfoMessage(`${operationText} successful`)
           : showErrorMessage(`${operationText} failed`));
@@ -96,10 +85,7 @@ export const ManageNotificationForm = ({
   return (
     <>
       <Flex justify="space-between" align="center" gap={16}>
-        <NotificationViewer
-          notificationFragment={notificationFragment}
-          refetch={() => undefined}
-        />
+        <NotificationViewer notificationFragment={notificationFragment} />
         <Form layout="vertical">
           <Form.Item label="Schedule the notification">
             <LuxonDatePicker

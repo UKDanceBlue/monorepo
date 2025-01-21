@@ -1,7 +1,7 @@
 import type { GetRef } from "antd";
 import { AutoComplete, type AutoCompleteProps } from "antd";
 import { useRef, useState } from "react";
-import { useQuery } from "urql";
+import { useQuery } from "#hooks/useTypedRefine.ts";
 
 import { graphql } from "#gql/index.js";
 import { useQueryStatusWatcher } from "#hooks/useQueryStatusWatcher.js";

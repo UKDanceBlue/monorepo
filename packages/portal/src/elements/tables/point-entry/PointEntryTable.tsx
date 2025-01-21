@@ -1,7 +1,6 @@
 import { DeleteOutlined } from "@ant-design/icons";
 import { dateTimeFromSomething } from "@ukdanceblue/common";
 import { Button, Table } from "antd";
-import type { UseQueryExecute } from "urql";
 
 import type { FragmentOf } from "#gql/index.js";
 import { graphql, readFragment } from "#gql/index.js";
@@ -27,18 +26,14 @@ export const PointEntryTableFragment = graphql(/* GraphQL */ `
 export function PointEntryTable({
   teamFragment,
   loading,
-  refetch,
 }: {
   teamFragment:
     | readonly FragmentOf<typeof PointEntryTableFragment>[]
     | undefined;
   loading: boolean;
-  refetch: UseQueryExecute;
 }) {
   const { PointEntryDeletePopup, showModal: openDeletePopup } =
-    usePointEntryDeletePopup({
-      onDelete: () => refetch({ requestPolicy: "network-only" }),
-    });
+    usePointEntryDeletePopup({});
 
   const teamData =
     teamFragment && readFragment(PointEntryTableFragment, teamFragment);

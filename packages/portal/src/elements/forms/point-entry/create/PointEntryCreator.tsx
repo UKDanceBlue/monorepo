@@ -22,10 +22,8 @@ import { usePointEntryCreatorForm } from "./usePointEntryCreatorForm.js";
 
 export function PointEntryCreator({
   team,
-  refetch,
 }: {
   team?: FragmentOf<typeof PointEntryCreatorFragment>;
-  refetch: () => void;
 }) {
   const { message } = App.useApp();
 
@@ -92,10 +90,6 @@ export function PointEntryCreator({
     teamUuid: teamData?.id ?? "",
     onReset: () => {
       resetLookup();
-      // Delay refetching a bit to allow the form to reset
-      setTimeout(() => {
-        refetch();
-      }, 75);
     },
   });
 

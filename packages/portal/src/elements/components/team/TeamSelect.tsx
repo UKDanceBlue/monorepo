@@ -2,7 +2,7 @@ import { LoadingOutlined } from "@ant-design/icons";
 import type { AutoCompleteProps } from "antd";
 import { AutoComplete } from "antd";
 import { useState } from "react";
-import { useQuery } from "urql";
+import { useQuery } from "#hooks/useTypedRefine.ts";
 
 import { TeamSelectFragment } from "#documents/team.ts";
 import { graphql } from "#gql/index.js";

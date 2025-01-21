@@ -1,13 +1,13 @@
 import { SendOutlined } from "@ant-design/icons";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Button, Flex, Typography } from "antd";
-import { useQuery } from "urql";
 
 import { SingleNotificationFragment } from "#documents/notification.ts";
 import { NotificationDeliveriesTable } from "#elements/tables/notification/NotificationDeliveriesTable.js";
 import { NotificationViewer } from "#elements/viewers/notification/NotificationViewer.js";
 import { graphql } from "#gql/index.js";
 import { useQueryStatusWatcher } from "#hooks/useQueryStatusWatcher.js";
+import { useQuery } from "#hooks/useTypedRefine.ts";
 
 const notificationViewerDocument = graphql(
   /* GraphQL */ `
@@ -23,7 +23,7 @@ const notificationViewerDocument = graphql(
 function ViewNotificationPage() {
   const { notificationId } = Route.useParams();
 
-  const [{ data, fetching, error }, refetch] = useQuery({
+  const [{ data, fetching, error }] = useQuery({
     query: notificationViewerDocument,
     variables: { id: notificationId },
   });
@@ -44,10 +44,7 @@ function ViewNotificationPage() {
           </Button>
         </Link>
       </Flex>
-      <NotificationViewer
-        notificationFragment={data?.notification}
-        refetch={refetch}
-      />
+      <NotificationViewer notificationFragment={data?.notification} />
       <NotificationDeliveriesTable notificationUuid={notificationId} />
     </Flex>
   );

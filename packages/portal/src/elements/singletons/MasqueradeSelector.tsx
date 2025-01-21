@@ -1,6 +1,6 @@
 import { Select } from "antd";
 import { useMemo, useRef, useState } from "react";
-import { useQuery } from "urql";
+import { useQuery } from "#hooks/useTypedRefine.ts";
 
 import { StorageManager, useStorageValue } from "#config/storage.ts";
 import { graphql } from "#gql/index.js";

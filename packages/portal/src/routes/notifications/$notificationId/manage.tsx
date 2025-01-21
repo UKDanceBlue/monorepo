@@ -1,10 +1,10 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useQuery } from "urql";
 
 import { SingleNotificationFragment } from "#documents/notification.ts";
 import { ManageNotificationForm } from "#elements/forms/notification/manage/ManageNotificationForm.js";
 import { graphql } from "#gql/index.js";
 import { useQueryStatusWatcher } from "#hooks/useQueryStatusWatcher.js";
+import { useQuery } from "#hooks/useTypedRefine.ts";
 
 const notificationManagerDocument = graphql(
   /* GraphQL */ `
@@ -20,7 +20,7 @@ const notificationManagerDocument = graphql(
 function ManageNotificationPage() {
   const { notificationId } = Route.useParams();
 
-  const [{ data, fetching, error }, refetchNotification] = useQuery({
+  const [{ data, fetching, error }] = useQuery({
     query: notificationManagerDocument,
     variables: { id: notificationId },
   });
@@ -86,10 +86,7 @@ function ManageNotificationPage() {
           Committee to make sure everything is working as expected.
         </p>
       </details>
-      <ManageNotificationForm
-        notificationFragment={data?.notification}
-        refetchNotification={refetchNotification}
-      />
+      <ManageNotificationForm notificationFragment={data?.notification} />
     </div>
   );
 }

@@ -1,7 +1,7 @@
 import { createFileRoute, useParams } from "@tanstack/react-router";
 import { stringifyDDNBatchType } from "@ukdanceblue/common";
 import { Descriptions } from "antd";
-import { useQuery } from "urql";
+import { useQuery } from "#hooks/useTypedRefine.ts";
 
 import { LoadingRibbon } from "#elements/components/design/RibbonSpinner";
 import { graphql, readFragment } from "#gql/index.js";

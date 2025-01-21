@@ -9,11 +9,9 @@ import { useQueryStatusWatcher } from "#hooks/useQueryStatusWatcher.js";
 
 export function useTeamEditorForm(
   teamFragment: FragmentOf<typeof TeamEditorFragment> | undefined,
-  afterSubmit:
-    | ((
-        ret: ResultOf<typeof teamEditorDocument>["setTeam"] | undefined
-      ) => void | Promise<void>)
-    | undefined
+  afterSubmit?: (
+    ret: ResultOf<typeof teamEditorDocument>["setTeam"] | undefined
+  ) => void | Promise<void>
 ) {
   const teamData = readFragment(TeamEditorFragment, teamFragment);
 

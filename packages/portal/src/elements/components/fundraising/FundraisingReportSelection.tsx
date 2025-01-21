@@ -1,12 +1,12 @@
 import { Form, Select } from "antd";
 import { DateTime, Interval } from "luxon";
 import { useEffect, useMemo } from "react";
-import { useQuery } from "urql";
 import type { ColInfo, WorkBook, WorkSheet } from "xlsx";
 import { utils } from "xlsx";
 
 import { graphql } from "#gql/index.js";
 import { useQueryStatusWatcher } from "#hooks/useQueryStatusWatcher.js";
+import { useQuery } from "#hooks/useTypedRefine.ts";
 
 import { LuxonDatePicker } from "../antLuxonComponents";
 
@@ -160,7 +160,6 @@ export function FundraisingReportSelection({
             ? range.end?.toISO()
             : undefined,
     },
-    requestPolicy: "network-only",
     pause: dateRange === "custom" && !customDate,
   });
 

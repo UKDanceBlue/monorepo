@@ -1,10 +1,10 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useQuery } from "urql";
 
 import { PersonEditorFragment, TeamNameFragment } from "#documents/person.ts";
 import { PersonEditor } from "#elements/forms/person/edit/PersonEditor.js";
 import { graphql } from "#gql/index.js";
 import { useQueryStatusWatcher } from "#hooks/useQueryStatusWatcher.js";
+import { useQuery } from "#hooks/useTypedRefine.ts";
 
 const viewPersonPageDocument = graphql(
   /* GraphQL */ `
@@ -25,7 +25,7 @@ const viewPersonPageDocument = graphql(
 export function EditPersonPage() {
   const { personId } = Route.useParams();
 
-  const [{ data, fetching, error }, refetchPerson] = useQuery({
+  const [{ data, fetching, error }] = useQuery({
     query: viewPersonPageDocument,
     variables: { id: personId },
   });
@@ -41,7 +41,6 @@ export function EditPersonPage() {
       <PersonEditor
         personFragment={data?.person}
         teamNamesFragment={data?.teams.data}
-        refetchPerson={refetchPerson}
       />
     </div>
   );

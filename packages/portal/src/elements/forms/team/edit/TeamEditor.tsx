@@ -1,6 +1,5 @@
 import { TeamLegacyStatus } from "@ukdanceblue/common";
 import { App, Button, Empty, Flex, Form, Input, Select } from "antd";
-import type { UseQueryExecute } from "urql";
 
 import { TeamEditorFragment } from "#documents/team.js";
 import type { FragmentOf } from "#gql/index.js";
@@ -10,18 +9,12 @@ import { useTeamEditorForm } from "./useTeamEditorForm.js";
 
 export function TeamEditor({
   teamFragment,
-  refetchTeam,
 }: {
   teamFragment?: FragmentOf<typeof TeamEditorFragment> | undefined;
-  refetchTeam?: UseQueryExecute | undefined;
 }) {
   const { message } = App.useApp();
 
-  const { formApi } = useTeamEditorForm(teamFragment, () => {
-    if (refetchTeam) {
-      refetchTeam({ requestPolicy: "network-only" });
-    }
-  });
+  const { formApi } = useTeamEditorForm(teamFragment);
 
   const teamData = readFragment(TeamEditorFragment, teamFragment);
 

@@ -10,7 +10,6 @@ export function useConfigForm() {
     configs: existingConfig,
     loading: existingConfigLoading,
     activeValues,
-    refetch,
   } = useConfig();
 
   const defaultValues = useMemo(() => {
@@ -50,13 +49,7 @@ export function useConfigForm() {
           newValues[key] = value;
         }
       });
-      try {
-        return await commitChanges(newValues, activeValues);
-      } finally {
-        setImmediate(() => {
-          refetch();
-        });
-      }
+      return commitChanges(newValues, activeValues);
     },
     defaultValues,
   });

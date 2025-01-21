@@ -1,7 +1,5 @@
 import { Descriptions, Empty } from "antd";
 import { DateTime } from "luxon";
-import { useEffect } from "react";
-import type { UseQueryExecute } from "urql";
 
 import { SingleNotificationFragment } from "#documents/notification.ts";
 import { NotificationPreview } from "#elements/components/notification/NotificationPreview.js";
@@ -11,24 +9,16 @@ import { renderDateTime } from "#tools/luxonTools.js";
 
 export const NotificationViewer = ({
   notificationFragment,
-  refetch,
 }: {
   notificationFragment?:
     | FragmentOf<typeof SingleNotificationFragment>
     | undefined
     | null;
-  refetch: UseQueryExecute;
 }) => {
   const notification = readFragment(
     SingleNotificationFragment,
     notificationFragment
   );
-
-  useEffect(() => {
-    setInterval(() => {
-      refetch({ requestPolicy: "network-only" });
-    }, 10_000);
-  }, [refetch]);
 
   if (!notification) {
     return <Empty description="Notification not found" />;

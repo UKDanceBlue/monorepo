@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { Typography } from "antd";
-import { useQuery } from "urql";
+import { useQuery } from "#hooks/useTypedRefine.ts";
 
 import {
   PersonViewer,
