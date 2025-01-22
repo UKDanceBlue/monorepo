@@ -113,31 +113,46 @@ export class SessionRepository extends buildDefaultRepository("Session", {}) {
   ): AsyncRepositoryResult<SessionValue, UnauthenticatedError> {
     return new AsyncResult<string, RepositoryError | UnauthenticatedError>(
       new Promise((resolve) => {
-        verify(
-          token,
-          this.jwtSecret,
-          {
-            complete: false,
-            issuer: JWT_ISSUER,
-          },
-          (err, decoded) => {
-            if (err) {
-              if (err.message === "invalid signature") {
-                resolve(Err(new UnauthenticatedError()));
+        try {
+          verify(
+            token,
+            this.jwtSecret,
+            {
+              complete: false,
+              issuer: JWT_ISSUER,
+            },
+            (err, decoded) => {
+              if (err) {
+                if (
+                  err.message === "invalid signature" ||
+                  err.message === "jwt expired"
+                ) {
+                  resolve(Err(new UnauthenticatedError()));
+                } else {
+                  resolve(Err(toBasicError(err)));
+                }
+              } else if (!decoded) {
+                resolve(Err(new InvariantError("No decoded token")));
+              } else if (typeof decoded !== "object") {
+                resolve(
+                  Err(new InvariantError("Decoded token is not a string"))
+                );
+              } else if (!decoded.sub) {
+                resolve(Err(new InvariantError("No sub in decoded token")));
               } else {
-                resolve(Err(toBasicError(err)));
+                resolve(Ok(decoded.sub));
               }
-            } else if (!decoded) {
-              resolve(Err(new InvariantError("No decoded token")));
-            } else if (typeof decoded !== "object") {
-              resolve(Err(new InvariantError("Decoded token is not a string")));
-            } else if (!decoded.sub) {
-              resolve(Err(new InvariantError("No sub in decoded token")));
-            } else {
-              resolve(Ok(decoded.sub));
             }
-          }
-        );
+          );
+        } catch (error) {
+          resolve(
+            Err(
+              String(error) === "jwt expired"
+                ? new UnauthenticatedError()
+                : toBasicError(error)
+            )
+          );
+        }
       })
     )
       .andThen((decoded) => {

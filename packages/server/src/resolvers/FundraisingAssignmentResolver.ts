@@ -1,4 +1,4 @@
-import { Service } from "@freshgum/typedi";
+import { Container, Service } from "@freshgum/typedi";
 import type { GlobalId } from "@ukdanceblue/common";
 import {
   AccessControlAuthorized,
@@ -6,14 +6,18 @@ import {
   FundraisingAssignmentNode,
   FundraisingEntryNode,
   GlobalIdScalar,
+  isGlobalId,
   PersonNode,
 } from "@ukdanceblue/common";
 import {
   AssignEntryToPersonInput,
   UpdateFundraisingAssignmentInput,
 } from "@ukdanceblue/common";
-import { ConcreteResult } from "@ukdanceblue/common/error";
-import { AsyncResult } from "ts-results-es";
+import {
+  ConcreteResult,
+  InvalidArgumentError,
+} from "@ukdanceblue/common/error";
+import { AsyncResult, Err } from "ts-results-es";
 import {
   Arg,
   FieldResolver,
@@ -41,54 +45,26 @@ export class FundraisingAssignmentResolver
     private readonly personRepository: PersonRepository
   ) {}
 
-  // @CustomQueryAccessControl<never, FundraisingAssignmentNode>(
-  //   async (
-  //     root: never,
-  //     context: AccessControlContext,
-  //     result: Option<FundraisingAssignmentNode>
-  //   ): Promise<boolean | null> => {
-  //     const globalFundraisingAccess = checkParam(
-  //       globalFundraisingAccessParam,
-  //       context.authorization,
-  //       root,
-  //       {},
-  //       context
-  //     );
-  //     if (globalFundraisingAccess.isErr()) {
-  //       return false;
-  //     }
-  //     if (globalFundraisingAccess.value) {
-  //       return true;
-  //     }
-  //     const { teamMemberships } = context;
-
-  //     return result.mapOr<Promise<boolean | null>>(
-  //       Promise.resolve(false),
-  //       async ({ id: { id: fundraisingAssignmentId } }) => {
-  //         const fundraisingEntryRepository: FundraisingEntryRepository =
-  //           Container.get(FundraisingEntryRepository);
-  //         const membership =
-  //           await fundraisingEntryRepository.getMembershipForAssignment({
-  //             uuid: fundraisingAssignmentId,
-  //           });
-  //         if (membership.isErr()) {
-  //           return false;
-  //         }
-
-  //         for (const userCaptaincy of teamMemberships) {
-  //           if (
-  //             userCaptaincy.teamId === membership.value.team.uuid &&
-  //             userCaptaincy.position === MembershipPositionType.Captain
-  //           ) {
-  //             return true;
-  //           }
-  //         }
-  //         return false;
-  //       }
-  //     );
-  //   }
-  // )
-  @AccessControlAuthorized("get")
+  @AccessControlAuthorized<"TeamNode">(
+    "get",
+    (_, { entryId }) => {
+      if (!isGlobalId(entryId)) {
+        return Err(new InvalidArgumentError("Invalid entryId"));
+      }
+      return new AsyncResult(
+        Container.get(FundraisingEntryRepository).getMembershipForAssignment({
+          uuid: entryId.id,
+        })
+      ).map(
+        ({ team: { uuid } }) =>
+          ({
+            id: uuid,
+            kind: "TeamNode",
+          }) as const
+      );
+    },
+    ".fundraisingAssignments"
+  )
   @Query(() => FundraisingAssignmentNode)
   async fundraisingAssignment(
     @Arg("id", () => GlobalIdScalar) { id }: GlobalId
@@ -102,53 +78,26 @@ export class FundraisingAssignmentResolver
       .promise;
   }
 
-  // @CustomMutationAccessControl(
-  //   async (context, args): Promise<boolean | null> => {
-  //     const globalFundraisingAccess = checkParam(
-  //       globalFundraisingAccessParam,
-  //       context.authorization,
-  //       {},
-  //       args,
-  //       context
-  //     );
-  //     if (globalFundraisingAccess.isErr()) {
-  //       return false;
-  //     }
-  //     if (globalFundraisingAccess.value) {
-  //       return true;
-  //     }
-  //     const { teamMemberships } = context;
-
-  //     const {
-  //       personId: { id: personId },
-  //     } = args as { personId: GlobalId };
-
-  //     const personRepository: PersonRepository =
-  //       Container.get(PersonRepository);
-  //     const membership = await personRepository.findMembershipsOfPerson(
-  //       { uuid: personId },
-  //       undefined,
-  //       [TeamType.Spirit],
-  //       true
-  //     );
-  //     if (membership.isErr()) {
-  //       return false;
-  //     }
-
-  //     for (const userCaptaincy of teamMemberships) {
-  //       if (
-  //         membership.value.some(
-  //           (personMembership) =>
-  //             personMembership.team.uuid === userCaptaincy.teamId
-  //         ) &&
-  //         userCaptaincy.position === MembershipPositionType.Captain
-  //       ) {
-  //         return true;
-  //       }
-  //     }
-  //     return false;
-  //   }
-  // )
+  @AccessControlAuthorized<"TeamNode">(
+    "create",
+    (_, { entryId }) => {
+      if (!isGlobalId(entryId)) {
+        return Err(new InvalidArgumentError("Invalid entryId"));
+      }
+      return new AsyncResult(
+        Container.get(FundraisingEntryRepository).getMembershipForAssignment({
+          uuid: entryId.id,
+        })
+      ).map(
+        ({ team: { uuid } }) =>
+          ({
+            id: uuid,
+            kind: "TeamNode",
+          }) as const
+      );
+    },
+    ".fundraisingAssignments"
+  )
   @Mutation(() => FundraisingAssignmentNode)
   @WithAuditLogging()
   async assignEntryToPerson(
@@ -166,51 +115,26 @@ export class FundraisingAssignmentResolver
     return assignment.map(fundraisingAssignmentModelToNode);
   }
 
-  // @CustomMutationAccessControl(
-  //   async (
-  //     context,
-  //     { id: fundraisingAssignmentId }
-  //   ): Promise<boolean | null> => {
-  //     const globalFundraisingAccess = checkParam(
-  //       globalFundraisingAccessParam,
-  //       context.authorization,
-  //       {},
-  //       {},
-  //       context
-  //     );
-  //     if (globalFundraisingAccess.isErr()) {
-  //       return false;
-  //     }
-  //     if (globalFundraisingAccess.value) {
-  //       return true;
-  //     }
-  //     const { teamMemberships } = context;
-
-  //     if (!isGlobalId(fundraisingAssignmentId)) {
-  //       return false;
-  //     }
-
-  //     const fundraisingEntryRepository: FundraisingEntryRepository =
-  //       Container.get(FundraisingEntryRepository);
-  //     const membership =
-  //       await fundraisingEntryRepository.getMembershipForAssignment({
-  //         uuid: fundraisingAssignmentId.id,
-  //       });
-  //     if (membership.isErr()) {
-  //       return false;
-  //     }
-
-  //     for (const userCaptaincy of teamMemberships) {
-  //       if (
-  //         userCaptaincy.teamId === membership.value.team.uuid &&
-  //         userCaptaincy.position === MembershipPositionType.Captain
-  //       ) {
-  //         return true;
-  //       }
-  //     }
-  //     return false;
-  //   }
-  // )
+  @AccessControlAuthorized<"TeamNode">(
+    "update",
+    (_, { entryId }) => {
+      if (!isGlobalId(entryId)) {
+        return Err(new InvalidArgumentError("Invalid entryId"));
+      }
+      return new AsyncResult(
+        Container.get(FundraisingEntryRepository).getMembershipForAssignment({
+          uuid: entryId.id,
+        })
+      ).map(
+        ({ team: { uuid } }) =>
+          ({
+            id: uuid,
+            kind: "TeamNode",
+          }) as const
+      );
+    },
+    ".fundraisingAssignments"
+  )
   @Mutation(() => FundraisingAssignmentNode)
   @WithAuditLogging()
   async updateFundraisingAssignment(
@@ -225,51 +149,26 @@ export class FundraisingAssignmentResolver
     return assignment.map(fundraisingAssignmentModelToNode);
   }
 
-  // @CustomMutationAccessControl(
-  //   async (
-  //     context,
-  //     { id: fundraisingAssignmentId }
-  //   ): Promise<boolean | null> => {
-  //     const globalFundraisingAccess = checkParam(
-  //       globalFundraisingAccessParam,
-  //       context.authorization,
-  //       {},
-  //       {},
-  //       context
-  //     );
-  //     if (globalFundraisingAccess.isErr()) {
-  //       return false;
-  //     }
-  //     if (globalFundraisingAccess.value) {
-  //       return true;
-  //     }
-  //     const { teamMemberships } = context;
-
-  //     if (!isGlobalId(fundraisingAssignmentId)) {
-  //       return false;
-  //     }
-
-  //     const fundraisingEntryRepository: FundraisingEntryRepository =
-  //       Container.get(FundraisingEntryRepository);
-  //     const membership =
-  //       await fundraisingEntryRepository.getMembershipForAssignment({
-  //         uuid: fundraisingAssignmentId.id,
-  //       });
-  //     if (membership.isErr()) {
-  //       return false;
-  //     }
-
-  //     for (const userCaptaincy of teamMemberships) {
-  //       if (
-  //         userCaptaincy.teamId === membership.value.team.uuid &&
-  //         userCaptaincy.position === MembershipPositionType.Captain
-  //       ) {
-  //         return true;
-  //       }
-  //     }
-  //     return false;
-  //   }
-  // )
+  @AccessControlAuthorized<"TeamNode">(
+    "delete",
+    (_, { entryId }) => {
+      if (!isGlobalId(entryId)) {
+        return Err(new InvalidArgumentError("Invalid entryId"));
+      }
+      return new AsyncResult(
+        Container.get(FundraisingEntryRepository).getMembershipForAssignment({
+          uuid: entryId.id,
+        })
+      ).map(
+        ({ team: { uuid } }) =>
+          ({
+            id: uuid,
+            kind: "TeamNode",
+          }) as const
+      );
+    },
+    ".fundraisingAssignments"
+  )
   @Mutation(() => FundraisingAssignmentNode)
   @WithAuditLogging()
   async deleteFundraisingAssignment(
@@ -284,58 +183,8 @@ export class FundraisingAssignmentResolver
     return assignment.map(fundraisingAssignmentModelToNode).promise;
   }
 
-  // @CustomQueryAccessControl<never, PersonNode>(
-  //   async (root, context, result): Promise<boolean | null> => {
-  //     // We can't grant blanket access as otherwise people would see who else was assigned to an entry
-
-  //     const globalFundraisingAccess = checkParam(
-  //       globalFundraisingAccessParam,
-  //       context.authorization,
-  //       root,
-  //       {},
-  //       context
-  //     );
-  //     if (globalFundraisingAccess.isErr()) {
-  //       return false;
-  //     }
-  //     if (globalFundraisingAccess.value) {
-  //       return true;
-  //     }
-  //     const { teamMemberships } = context;
-
-  //     return result.mapOr<Promise<boolean | null>>(
-  //       Promise.resolve(false),
-  //       async ({ id: { id } }) => {
-  //         const personRepository = Container.get(PersonRepository);
-  //         const memberships = await personRepository.findMembershipsOfPerson(
-  //           { uuid: id },
-  //           undefined,
-  //           undefined,
-  //           true
-  //         );
-  //         const userCaptaincies = teamMemberships.filter(
-  //           (membership) =>
-  //             membership.position === MembershipPositionType.Captain
-  //         );
-  //         for (const targetPersonMembership of memberships) {
-  //           if (
-  //             userCaptaincies.some(
-  //               (userCaptaincy) =>
-  //                 userCaptaincy.teamId === targetPersonMembership.team.uuid
-  //             )
-  //           ) {
-  //             return true;
-  //           }
-  //         }
-  //         return null;
-  //       }
-  //     );
-  //   }
-  // )
   @FieldResolver(() => PersonNode, {
     nullable: true,
-    description:
-      "The person assigned to this assignment, only null when access is denied",
   })
   async person(
     @Root() { id: { id } }: FundraisingAssignmentNode
@@ -348,55 +197,6 @@ export class FundraisingAssignmentResolver
       .andThen((person) => personModelToResource(person, this.personRepository))
       .promise;
   }
-
-  // @CustomQueryAccessControl<never, PersonNode>(
-  //   async (root, context, result): Promise<boolean | null> => {
-  //     // We can't grant blanket access as otherwise people would see who else was assigned to an entry
-
-  //     const globalFundraisingAccess = checkParam(
-  //       globalFundraisingAccessParam,
-  //       context.authorization,
-  //       root,
-  //       {},
-  //       context
-  //     );
-  //     if (globalFundraisingAccess.isErr()) {
-  //       return false;
-  //     }
-  //     if (globalFundraisingAccess.value) {
-  //       return true;
-  //     }
-  //     const { teamMemberships } = context;
-
-  //     return result.mapOr<Promise<boolean | null>>(
-  //       Promise.resolve(false),
-  //       async ({ id: { id } }) => {
-  //         const personRepository = Container.get(PersonRepository);
-  //         const memberships = await personRepository.findMembershipsOfPerson(
-  //           { uuid: id },
-  //           undefined,
-  //           undefined,
-  //           true
-  //         );
-  //         const userCaptaincies = teamMemberships.filter(
-  //           (membership) =>
-  //             membership.position === MembershipPositionType.Captain
-  //         );
-  //         for (const targetPersonMembership of memberships) {
-  //           if (
-  //             userCaptaincies.some(
-  //               (userCaptaincy) =>
-  //                 userCaptaincy.teamId === targetPersonMembership.team.uuid
-  //             )
-  //           ) {
-  //             return true;
-  //           }
-  //         }
-  //         return null;
-  //       }
-  //     );
-  //   }
-  // )
 
   @FieldResolver(() => FundraisingEntryNode)
   async entry(

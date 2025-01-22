@@ -47,7 +47,7 @@ export class EventResolver implements CrudResolver<EventNode, "event"> {
     private readonly fileManager: FileManager
   ) {}
 
-  @AccessControlAuthorized("get")
+  @AccessControlAuthorized("get", ["getId", "EventNode", "id"])
   @Query(() => EventNode, {
     name: "event",
     description: "Get an event by UUID",
@@ -65,7 +65,7 @@ export class EventResolver implements CrudResolver<EventNode, "event"> {
       );
   }
 
-  @AccessControlAuthorized("list", "EventNode")
+  @AccessControlAuthorized("list", ["every", "EventNode"])
   @Query(() => ListEventsResponse, {
     name: "events",
     description: "List events",
@@ -93,7 +93,7 @@ export class EventResolver implements CrudResolver<EventNode, "event"> {
   }
 
   @WithAuditLogging()
-  @AccessControlAuthorized("create")
+  @AccessControlAuthorized("create", ["every", "EventNode"])
   @Mutation(() => EventNode, {
     name: "createEvent",
     description: "Create a new event",
@@ -123,7 +123,7 @@ export class EventResolver implements CrudResolver<EventNode, "event"> {
   }
 
   @WithAuditLogging()
-  @AccessControlAuthorized("delete")
+  @AccessControlAuthorized("delete", ["getId", "EventNode", "id"])
   @Mutation(() => EventNode, {
     name: "deleteEvent",
     description: "Delete an event by UUID",
@@ -142,7 +142,7 @@ export class EventResolver implements CrudResolver<EventNode, "event"> {
   }
 
   @WithAuditLogging()
-  @AccessControlAuthorized("update")
+  @AccessControlAuthorized("update", ["getId", "EventNode", "id"])
   @Mutation(() => EventNode, {
     name: "setEvent",
     description: "Update an event by UUID",
@@ -174,7 +174,7 @@ export class EventResolver implements CrudResolver<EventNode, "event"> {
   }
 
   @WithAuditLogging()
-  @AccessControlAuthorized("update", "EventNode")
+  @AccessControlAuthorized("update", ["getId", "EventNode", "eventId"])
   @Mutation(() => VoidResolver, {
     name: "removeImageFromEvent",
     description: "Remove an image from an event",
@@ -194,7 +194,7 @@ export class EventResolver implements CrudResolver<EventNode, "event"> {
   }
 
   @WithAuditLogging()
-  @AccessControlAuthorized("update", "EventNode")
+  @AccessControlAuthorized("update", ["getId", "EventNode", "eventId"])
   @Mutation(() => ImageNode, {
     name: "addExistingImageToEvent",
     description: "Add an existing image to an event",

@@ -1,18 +1,12 @@
 import { Container, Service, type ServiceIdentifier } from "@freshgum/typedi";
-import type { AccessControlParam, Action } from "@ukdanceblue/common";
-import { AccessLevel, isGlobalId } from "@ukdanceblue/common";
+import type { AccessControlParam, Action, Subject } from "@ukdanceblue/common";
+import { AccessLevel } from "@ukdanceblue/common";
 import {
   ConcreteError,
   FormattedConcreteError,
   toBasicError,
 } from "@ukdanceblue/common/error";
-import {
-  GraphQLList,
-  GraphQLNonNull,
-  GraphQLObjectType,
-  type GraphQLResolveInfo,
-  type GraphQLSchema,
-} from "graphql";
+import { type GraphQLResolveInfo, type GraphQLSchema } from "graphql";
 import type { Err } from "ts-results-es";
 import { AsyncResult, Option, Result } from "ts-results-es";
 import type { ArgsDictionary, NextFn, ResolverData } from "type-graphql";
@@ -25,16 +19,6 @@ import { logger } from "#logging/logger.js";
 const schemaPath = fileURLToPath(
   import.meta.resolve("../../../../../schema.graphql")
 );
-
-function pathToString(path: GraphQLResolveInfo["path"]): string {
-  let current: GraphQLResolveInfo["path"] | undefined = path;
-  let result = "";
-  while (current) {
-    result = `${current.key}.${result}`;
-    current = current.prev;
-  }
-  return result;
-}
 
 @Service(
   {
@@ -108,7 +92,9 @@ export class SchemaService {
         let concreteError: Err<ConcreteError>;
         let stack: string | undefined;
         if (result.error instanceof ConcreteError) {
-          concreteError = result as Err<ConcreteError>;
+          concreteError = result.mapErr((error) =>
+            error instanceof ConcreteError ? error : toBasicError(error)
+          );
           stack = result.stack;
         } else {
           concreteError = result.mapErr(toBasicError);
@@ -132,20 +118,16 @@ export class SchemaService {
     return result;
   }
 
-  private authChecker(
+  private async authChecker<S extends Exclude<Extract<Subject, string>, "all">>(
     resolverData: {
       root: Record<string, unknown>;
       args: ArgsDictionary;
       context: GraphQLContext;
       info: GraphQLResolveInfo;
     },
-    params: AccessControlParam[]
-  ): boolean {
-    const {
-      context,
-      root,
-      info: { parentType, returnType, variableValues, path },
-    } = resolverData;
+    params: AccessControlParam<S>[]
+  ): Promise<boolean> {
+    const { context, args, info, root } = resolverData;
     const { accessLevel, ability } = context;
 
     if (accessLevel === AccessLevel.SuperAdmin) {
@@ -154,142 +136,60 @@ export class SchemaService {
 
     if (params.length === 0) {
       return true;
-    } else if (params.length === 1) {
-      const [rule] = params as [AccessControlParam];
+    } else if (params.length === 1 && params[0]) {
+      const [rule] = params;
 
-      if (rule.length !== 1 && typeof rule[1] !== "string") {
-        const ok = ability.can(...rule);
-        logger.trace("Checking access control", {
-          rule: ability.relevantRuleFor(...rule),
-          authorized: ok,
-          canParameters: rule,
-        });
-      }
-
-      let action: Action;
-      let subject: string | undefined = undefined;
-      let field: string | undefined = undefined;
-
-      if (rule.length === 1) {
-        [action] = rule;
+      const action: Action = rule[0];
+      let subject: Subject;
+      if (rule[1] === "all") {
+        subject = rule[1];
       } else {
-        [action, , field] = rule;
-        subject = rule[1] as string;
-      }
+        const subjectOrCallback = rule[1];
 
-      if (!field) {
-        field = ".";
-      }
+        const subjectWrapper =
+          typeof subjectOrCallback === "function"
+            ? subjectOrCallback(info, args, root)
+            : subjectOrCallback;
 
-      let id: string | undefined = undefined;
-      let idTypename: string | undefined = undefined;
-      if (
-        parentType.name === "Query" ||
-        parentType.name === "Mutation" ||
-        parentType.name === "Subscription"
-      ) {
-        if ("id" in variableValues) {
-          if (typeof variableValues.id === "string") {
-            id = variableValues.id;
-          } else if (isGlobalId(variableValues.id)) {
-            id = variableValues.id.id;
-            idTypename = variableValues.id.typename;
+        let result;
+        if (subjectWrapper instanceof AsyncResult) {
+          result = await subjectWrapper.promise;
+        } else if (typeof subjectWrapper === "string") {
+          result = {
+            kind: subjectWrapper,
+          };
+        } else {
+          result = subjectWrapper;
+        }
+
+        let value;
+        if (Result.isResult(result)) {
+          if (result.isErr()) {
+            return false;
           } else {
-            throw new Error("Cannot determine ID for query");
+            value = result.value;
           }
         } else {
-          const possibleIds = Object.values(variableValues).filter((value) =>
-            isGlobalId(value)
-          );
-          if (possibleIds.length === 1) {
-            id = possibleIds[0]!.id;
-          } else {
-            const idx = possibleIds.findIndex(
-              (value) => value.typename === "PersonNode"
-            );
-            if (idx !== -1) {
-              possibleIds.splice(idx, 1);
-            }
-            if (possibleIds.length > 1) {
-              throw new Error("Cannot determine ID for query");
-            }
-          }
+          value = result;
         }
-      } else if ("id" in root) {
-        if (typeof root.id === "string") {
-          id = root.id;
-        } else if (isGlobalId(root.id)) {
-          id = root.id.id;
-          idTypename = root.id.typename;
-        } else {
-          throw new Error("Cannot determine ID for query");
-        }
+
+        subject =
+          typeof value === "object"
+            ? {
+                kind: value.kind,
+                id: value.id,
+              }
+            : { kind: value };
       }
 
-      if (subject === "all") {
-        return ability.can(action, "all", field);
-      }
+      const ok = ability.can(action, subject, rule[2]);
 
-      if (!subject) {
-        let rt = returnType;
-        if (rt instanceof GraphQLNonNull) {
-          rt = rt.ofType;
-        }
-        if (rt instanceof GraphQLObjectType) {
-          if (
-            rt
-              .getInterfaces()
-              .some(({ name }) => name === "AbstractGraphQLPaginatedResponse")
-          ) {
-            const { data } = rt.getFields();
-            if (data) {
-              rt = data.type;
-            }
-          }
-        }
-        if (rt instanceof GraphQLNonNull) {
-          rt = rt.ofType;
-        }
-        if (rt instanceof GraphQLList) {
-          rt = rt.ofType;
-        }
-        if (rt instanceof GraphQLNonNull) {
-          rt = rt.ofType;
-        }
-        if (rt instanceof GraphQLObjectType) {
-          subject = rt.name;
-        }
-      }
-
-      if (subject === "Node") {
-        if (!idTypename) {
-          throw new Error("Cannot determine ID type for node-returning query");
-        }
-        subject = idTypename;
-      }
-
-      if (!subject) {
-        throw new Error(
-          `Cannot determine subject type for query ${pathToString(path)}`
-        );
-      }
-
-      const ok = ability.can(
-        action,
-        {
-          kind: subject as never,
-          id,
-        },
-        field
-      );
       logger.trace("Checking access control", {
-        rule: ability.relevantRuleFor(action, subject as never, field),
+        rule: ability.relevantRuleFor(rule[0], subject, rule[2]),
         authorized: ok,
-        id,
-        action,
-        subject,
-        field,
+        canParameters: rule,
       });
+
       return ok;
     } else {
       logger.error("Invalid access control rule", { params });

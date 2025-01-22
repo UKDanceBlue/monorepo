@@ -87,15 +87,14 @@ type ResourceSubject = {
 };
 
 type SubjectValue = ResourceSubject[keyof ResourceSubject];
-export type Subject = InferSubjects<SubjectValue | "all" | "Node", true>;
+export type Subject = InferSubjects<SubjectValue | "all", true>;
 
 export const SubjectStrings = [
   ...(Object.keys(
     extraFieldsByResource
   ) as (keyof typeof extraFieldsByResource)[]),
   "all",
-  "Node",
-] as const;
+] as const satisfies Subject[];
 
 export type Action =
   | "create"

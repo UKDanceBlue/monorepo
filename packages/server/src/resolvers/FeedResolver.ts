@@ -1,6 +1,7 @@
 import { Service } from "@freshgum/typedi";
 import {
   AccessControlAuthorized,
+  assertGlobalId,
   FeedItem,
   FeedNode,
   type GlobalId,
@@ -44,7 +45,7 @@ export class FeedResolver {
   ) {}
 
   @Query(() => FeedNode, { description: "Get a feed item by its UUID" })
-  @AccessControlAuthorized("get")
+  @AccessControlAuthorized("get", ["getId", "FeedNode", "feedItemId"])
   async feedItem(
     @Arg("feedItemId", () => GlobalIdScalar) { id }: GlobalId
   ): Promise<ConcreteResult<FeedNode>> {
@@ -58,7 +59,7 @@ export class FeedResolver {
   }
 
   @Query(() => [FeedItem], { description: "Get the active feed" })
-  @AccessControlAuthorized("readActive", "FeedNode")
+  @AccessControlAuthorized("readActive", ["every", "FeedNode"])
   async feed(
     @Arg("limit", () => Int, { defaultValue: 10, nullable: true })
     limit: number
@@ -87,7 +88,7 @@ export class FeedResolver {
     return Ok(mostRecentNItems);
   }
 
-  @AccessControlAuthorized("create")
+  @AccessControlAuthorized("create", ["every", "FeedNode"])
   @Mutation(() => FeedNode, { description: "Add a new item to the feed" })
   @WithAuditLogging()
   async createFeedItem(
@@ -101,7 +102,7 @@ export class FeedResolver {
     return feedItemModelToResource(feedItem);
   }
 
-  @AccessControlAuthorized("update", "ImageNode")
+  @AccessControlAuthorized("update", ["getId", "FeedNode", "feedItemUuid"])
   @Mutation(() => FeedNode, { description: "Attach an image to a feed item" })
   async attachImageToFeedItem(
     @Arg("feedItemUuid", () => GlobalIdScalar) feedItemUuid: GlobalId,
@@ -121,7 +122,7 @@ export class FeedResolver {
     return feedItemModelToResource(feedItem);
   }
 
-  @AccessControlAuthorized("update", "ImageNode")
+  @AccessControlAuthorized("update", ["getId", "FeedNode", "feedItemUuid"])
   @Mutation(() => FeedNode, { description: "Remove an image from a feed item" })
   async removeImageFromFeedItem(
     @Arg("feedItemUuid", () => GlobalIdScalar) feedItemUuid: GlobalId
@@ -135,7 +136,7 @@ export class FeedResolver {
     return feedItemModelToResource(feedItem);
   }
 
-  @AccessControlAuthorized("update")
+  @AccessControlAuthorized("update", ["getId", "FeedNode", "feedItemUuid"])
   @Mutation(() => FeedNode, { description: "Set the content of a feed item" })
   async setFeedItem(
     @Arg("feedItemUuid", () => GlobalIdScalar) feedItemUuid: GlobalId,
@@ -154,7 +155,12 @@ export class FeedResolver {
     return feedItemModelToResource(feedItem);
   }
 
-  @AccessControlAuthorized("delete")
+  @AccessControlAuthorized(
+    "delete",
+    (_, { feedItemUuid }) =>
+      assertGlobalId(feedItemUuid).map(({ id }) => ({ kind: "FeedNode", id })),
+    "."
+  )
   @Mutation(() => Boolean, { description: "Delete a feed item" })
   async deleteFeedItem(
     @Arg("feedItemUuid", () => GlobalIdScalar) feedItemUuid: GlobalId

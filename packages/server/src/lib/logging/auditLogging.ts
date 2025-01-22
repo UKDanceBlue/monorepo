@@ -5,9 +5,11 @@ import type {
   AccessControlParam,
   GlobalId,
   PrimitiveObject,
+  Subject,
 } from "@ukdanceblue/common";
 import { isGlobalId, serializeGlobalId } from "@ukdanceblue/common";
 import type { GraphQLResolveInfo } from "graphql";
+import { AsyncResult, Result } from "ts-results-es";
 import type { ArgsDictionary } from "type-graphql";
 import {
   createMethodMiddlewareDecorator,
@@ -106,7 +108,7 @@ export function WithAuditLogging() {
       const { authorizedFields } = getMetadataStorage();
       const auth = authorizedFields.find(
         ({ fieldName }) => fieldName === info.fieldName
-      )?.roles[0] as AccessControlParam | undefined;
+      )?.roles[0] as AccessControlParam<"PersonNode"> | undefined;
 
       const result = await next();
 
@@ -118,8 +120,18 @@ export function WithAuditLogging() {
   );
 }
 
+function pathToString(path: GraphQLResolveInfo["path"]): string {
+  let current: GraphQLResolveInfo["path"] | undefined = path;
+  let result = "";
+  while (current) {
+    result = `${current.key}.${result}`;
+    current = current.prev;
+  }
+  return result;
+}
+
 export async function logAuditEvent(
-  auth: AccessControlParam | undefined,
+  auth: AccessControlParam<"PersonNode"> | undefined,
   info: GraphQLResolveInfo,
   args: ArgsDictionary,
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -127,19 +139,47 @@ export async function logAuditEvent(
   context: GraphQLContext
 ) {
   let message: string;
+
+  const path = pathToString(info.path);
+
   if (auth) {
     const [action, subject, field] = auth;
-    if (typeof subject === "object") {
-      message = subject.id
-        ? `$${action} ${subject.kind}[id=${subject.id}]${field}`
-        : `${action} ${subject.kind}${field}`;
-    } else if (subject) {
-      message = `${action} ${subject}${field} at ${info.fieldName}`;
+    let loadedSubject: Subject | undefined;
+    let result;
+    if (typeof subject === "function") {
+      result = subject(
+        info,
+        args,
+        info.rootValue as Record<string, unknown> | undefined
+      );
+      if (result instanceof AsyncResult) {
+        result = await result.promise;
+      }
     } else {
-      message = `${action} ${info.fieldName}`;
+      result = subject;
+    }
+
+    if (Result.isResult(result)) {
+      if (result.isErr()) {
+        logger.error("Error resolving subject", { error: result });
+        loadedSubject = undefined;
+      } else {
+        loadedSubject = result.value;
+      }
+    }
+
+    if (typeof loadedSubject === "string") {
+      message = `${action} ${loadedSubject}${field} at ${path}`;
+    } else if (typeof loadedSubject === "object") {
+      message = loadedSubject.id
+        ? `${action} ${loadedSubject.kind}[id=${loadedSubject.id}]${field}  at ${path}`
+        : `${action} ${loadedSubject.kind}${field}  at ${path}`;
+    } else {
+      loadedSubject satisfies undefined;
+      message = `${action} ${path}`;
     }
   } else {
-    message = `accessed ${info.fieldName}`;
+    message = `accessed ${path}`;
   }
 
   let id = undefined;

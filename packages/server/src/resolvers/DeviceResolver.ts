@@ -16,7 +16,13 @@ import {
   RegisterDeviceInput,
   RegisterDeviceResponse,
 } from "@ukdanceblue/common";
-import { ConcreteResult } from "@ukdanceblue/common/error";
+import {
+  type ConcreteError,
+  ConcreteResult,
+  NotFoundError,
+  UnauthenticatedError,
+} from "@ukdanceblue/common/error";
+import { Err, Ok, type Result } from "ts-results-es";
 import {
   Arg,
   Args,
@@ -45,6 +51,7 @@ export class DeviceResolver
     private readonly personRepository: PersonRepository
   ) {}
 
+  // There is no authentication check here, because nothing on the device model is sensitive. The UUID is security enough.
   @Query(() => GetDeviceByUuidResponse, {
     name: "device",
     description: "Get a device by it's UUID",
@@ -69,7 +76,7 @@ export class DeviceResolver
     return resp;
   }
 
-  @AccessControlAuthorized("list", "DeviceNode")
+  @AccessControlAuthorized("list", ["every", "DeviceNode"])
   @Query(() => ListDevicesResponse, {
     name: "devices",
     description: "List all devices",
@@ -127,7 +134,7 @@ export class DeviceResolver
     });
   }
 
-  @AccessControlAuthorized("delete")
+  @AccessControlAuthorized("delete", ["getId", "DeviceNode", "id"])
   @Mutation(() => DeviceNode, {
     name: "deleteDevice",
     description: "Delete a device by it's UUID",
@@ -158,21 +165,18 @@ export class DeviceResolver
   async notificationDeliveries(
     @Root() { id: { id } }: DeviceNode,
     @Args(() => NotificationDeliveriesArgs) query: NotificationDeliveriesArgs
-  ): Promise<NotificationDeliveryNode[]> {
+  ): Promise<Result<NotificationDeliveryNode[], ConcreteError>> {
     const row = await this.deviceRepository.getDeviceByUuid(id);
 
     if (row == null) {
-      throw new LegacyError(LegacyErrorCode.NotFound, "Device not found");
+      return Err(new NotFoundError({ what: "Device" }));
     }
 
     if (
       row.verifier != null &&
       (query.verifier == null || row.verifier !== query.verifier)
     ) {
-      throw new LegacyError(
-        LegacyErrorCode.Unauthorized,
-        "Incorrect device verifier"
-      );
+      return Err(new UnauthenticatedError());
     }
 
     const rows =
@@ -186,6 +190,6 @@ export class DeviceResolver
           : {}
       );
 
-    return rows.map(notificationDeliveryModelToResource);
+    return Ok(rows.map(notificationDeliveryModelToResource));
   }
 }

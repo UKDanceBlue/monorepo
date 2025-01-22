@@ -563,10 +563,6 @@ type FundraisingAssignmentNode implements Node {
   createdAt: LuxonDateTime
   entry: FundraisingEntryNode!
   id: GlobalId!
-
-  """
-  The person assigned to this assignment, only null when access is denied
-  """
   person: PersonNode
   updatedAt: LuxonDateTime
 }
@@ -968,7 +964,7 @@ type Mutation {
   addMap(id: GlobalId!, imageUuid: GlobalId!): MarathonHourNode!
   addPersonToTeam(personUuid: GlobalId!, position: MembershipPositionType! = Member, teamUuid: GlobalId!): MembershipNode!
   assignEntryToPerson(entryId: GlobalId!, input: AssignEntryToPersonInput!, personId: GlobalId!): FundraisingAssignmentNode!
-  assignSolicitationCodeToTeam(solicitationCode: GlobalId!, teamId: GlobalId!): Void!
+  assignSolicitationCodeToTeam(id: GlobalId!, teamId: GlobalId!): Void!
 
   """Attach an image to a feed item"""
   attachImageToFeedItem(feedItemUuid: GlobalId!, imageUuid: GlobalId!): FeedNode!

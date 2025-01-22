@@ -2,6 +2,7 @@ import { Service } from "@freshgum/typedi";
 import type { CrudResolver, GlobalId } from "@ukdanceblue/common";
 import {
   AccessControlAuthorized,
+  assertGlobalId,
   ConfigurationNode,
   dateTimeFromSomething,
   GlobalIdScalar,
@@ -29,7 +30,7 @@ export class ConfigurationResolver
     private readonly configurationRepository: ConfigurationRepository
   ) {}
 
-  @AccessControlAuthorized("readActive", "ConfigurationNode")
+  @AccessControlAuthorized("readActive", ["every", "ConfigurationNode"])
   @Query(() => GetConfigurationResponse, {
     name: "activeConfiguration",
     description:
@@ -57,7 +58,11 @@ export class ConfigurationResolver
     return Ok(resp);
   }
 
-  @AccessControlAuthorized("get", "ConfigurationNode")
+  @AccessControlAuthorized("get", (_, { id }) =>
+    assertGlobalId(id).map(
+      ({ id }) => ({ id, kind: "ConfigurationNode" }) as const
+    )
+  )
   @Query(() => ConfigurationNode, {
     name: "configuration",
     description: "Get a particular configuration entry by UUID",
@@ -81,7 +86,7 @@ export class ConfigurationResolver
     return Ok(configurationModelToResource(row));
   }
 
-  @AccessControlAuthorized("list", "ConfigurationNode")
+  @AccessControlAuthorized("list", ["every", "ConfigurationNode"])
   @Query(() => [ConfigurationNode], {
     name: "allConfigurations",
     description: "Get all configurations, irrespective of time",
@@ -96,7 +101,7 @@ export class ConfigurationResolver
       );
   }
 
-  @AccessControlAuthorized("create")
+  @AccessControlAuthorized("create", ["every", "ConfigurationNode"])
   @Mutation(() => ConfigurationNode, {
     name: "createConfiguration",
     description:
@@ -116,7 +121,7 @@ export class ConfigurationResolver
     return Ok(configurationModelToResource(row));
   }
 
-  @AccessControlAuthorized("create")
+  @AccessControlAuthorized("create", ["every", "ConfigurationNode"])
   @Mutation(() => [ConfigurationNode], {
     name: "createConfigurations",
     description:
@@ -139,7 +144,7 @@ export class ConfigurationResolver
     return Ok(rows.map(configurationModelToResource));
   }
 
-  @AccessControlAuthorized("delete")
+  @AccessControlAuthorized("delete", ["every", "ConfigurationNode"])
   @Mutation(() => ConfigurationNode, {
     name: "deleteConfiguration",
     description: "Delete a configuration by UUID",

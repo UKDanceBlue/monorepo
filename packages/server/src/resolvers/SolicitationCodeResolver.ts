@@ -86,7 +86,7 @@ export class SolicitationCodeResolver
     ).promise;
   }
 
-  @AccessControlAuthorized("create")
+  @AccessControlAuthorized("create", "SolicitationCodeNode")
   @Mutation(() => SolicitationCodeNode)
   @WithAuditLogging()
   createSolicitationCode(
@@ -160,12 +160,16 @@ export class SolicitationCodeResolver
       .promise;
   }
 
-  @AccessControlAuthorized("update", "SolicitationCodeNode")
+  @AccessControlAuthorized(
+    "update",
+    (info, args) => ({ kind: "SolicitationCodeNode" }) as const,
+    "."
+  )
   @Mutation(() => VoidResolver, { name: "assignSolicitationCodeToTeam" })
   @WithAuditLogging()
   async assignSolicitationCodeToTeam(
     @Arg("teamId", () => GlobalIdScalar) { id: teamId }: GlobalId,
-    @Arg("solicitationCode", () => GlobalIdScalar)
+    @Arg("id", () => GlobalIdScalar)
     { id: solicitationCodeId }: GlobalId
   ): Promise<ConcreteResult<typeof VoidScalar>> {
     const result =

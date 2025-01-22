@@ -55,7 +55,7 @@ export class AuditLogResolver {
     private readonly nodeResolver: NodeResolver
   ) {}
 
-  @AccessControlAuthorized("read", "AuditLogNode")
+  @AccessControlAuthorized("read", ["every", "AuditLogNode"])
   @Query(() => ListAuditLogsResponse, {
     name: "auditLogs",
     description: "Get a list of audit logs",
@@ -164,7 +164,7 @@ export class AuditLogResolver {
     return personModelToResource(user, this.personRepository).promise;
   }
 
-  @AccessControlAuthorized("read", "Node")
+  @AccessControlAuthorized("read", "all")
   @FieldResolver(() => Node, { nullable: true })
   async subject(
     @Root() log: AuditLogNode,
@@ -187,7 +187,7 @@ export class AuditLogResolver {
     }
   }
 
-  @AccessControlAuthorized("read", "Node")
+  @AccessControlAuthorized("read", "all")
   @FieldResolver(() => JSONObjectResolver, { nullable: true })
   async subjectJson(
     @Root() log: AuditLogNode,

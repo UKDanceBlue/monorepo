@@ -43,7 +43,11 @@ export class DailyDepartmentNotificationResolver
     private readonly dailyDepartmentNotificationRepository: DailyDepartmentNotificationRepository
   ) {}
 
-  @AccessControlAuthorized("get")
+  @AccessControlAuthorized("get", [
+    "getId",
+    "DailyDepartmentNotificationNode",
+    "id",
+  ])
   @Query(() => DailyDepartmentNotificationNode)
   async dailyDepartmentNotification(
     @Arg("id", () => GlobalIdScalar) { id }: GlobalId
@@ -59,7 +63,7 @@ export class DailyDepartmentNotificationResolver
     );
   }
 
-  @AccessControlAuthorized("list", "DailyDepartmentNotificationNode")
+  @AccessControlAuthorized("list", ["every", "DailyDepartmentNotificationNode"])
   @Query(() => ListDailyDepartmentNotificationsResponse)
   dailyDepartmentNotifications(
     @Args() query: ListDailyDepartmentNotificationsArgs
@@ -81,7 +85,10 @@ export class DailyDepartmentNotificationResolver
       });
   }
 
-  @AccessControlAuthorized("create")
+  @AccessControlAuthorized("create", [
+    "every",
+    "DailyDepartmentNotificationNode",
+  ])
   @Mutation(() => DailyDepartmentNotificationNode)
   @WithAuditLogging()
   async createDailyDepartmentNotification(
@@ -97,7 +104,10 @@ export class DailyDepartmentNotificationResolver
     ).map(dailyDepartmentNotificationModelToResource).promise;
   }
 
-  @AccessControlAuthorized("create")
+  @AccessControlAuthorized("create", [
+    "every",
+    "DailyDepartmentNotificationNode",
+  ])
   @Mutation(() => [DailyDepartmentNotificationNode])
   @WithAuditLogging()
   async batchUploadDailyDepartmentNotifications(
@@ -118,7 +128,11 @@ export class DailyDepartmentNotificationResolver
     ).promise;
   }
 
-  @AccessControlAuthorized("delete")
+  @AccessControlAuthorized("delete", [
+    "getId",
+    "DailyDepartmentNotificationNode",
+    "id",
+  ])
   @Mutation(() => DailyDepartmentNotificationNode)
   @WithAuditLogging()
   async deleteDailyDepartmentNotification(
@@ -152,7 +166,11 @@ export class DailyDepartmentNotificationBatchResolver {
     private readonly dailyDepartmentNotificationRepository: DailyDepartmentNotificationRepository
   ) {}
 
-  @AccessControlAuthorized("get")
+  @AccessControlAuthorized("get", [
+    "getId",
+    "DailyDepartmentNotificationBatchNode",
+    "id",
+  ])
   @Query(() => DailyDepartmentNotificationBatchNode)
   async dailyDepartmentNotificationBatch(
     @Arg("id", () => GlobalIdScalar) { id }: GlobalId
@@ -166,7 +184,10 @@ export class DailyDepartmentNotificationBatchResolver {
     );
   }
 
-  @AccessControlAuthorized("list", "DailyDepartmentNotificationBatchNode")
+  @AccessControlAuthorized("list", [
+    "every",
+    "DailyDepartmentNotificationBatchNode",
+  ])
   @Mutation(() => DailyDepartmentNotificationBatchNode)
   async deleteDailyDepartmentNotificationBatch(
     @Arg("id", () => GlobalIdScalar) { id }: GlobalId

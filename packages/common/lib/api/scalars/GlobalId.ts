@@ -7,6 +7,7 @@ import {
   InvalidArgumentError,
   toBasicError,
 } from "../../error/index.js";
+import { debugStringify } from "../../utility/errors/debugStringify.js";
 import {
   arrayToBase64String,
   base64StringToArray,
@@ -41,6 +42,16 @@ export function parseGlobalId(
   } catch (error) {
     return Err(toBasicError(error));
   }
+}
+
+export function assertGlobalId(
+  value: unknown
+): Result<GlobalId, InvalidArgumentError> {
+  return !isGlobalId(value)
+    ? Err(
+        new InvalidArgumentError(`${debugStringify(value)} is not a global ID`)
+      )
+    : Ok(value);
 }
 
 export function serializeGlobalId(value: GlobalId): string {

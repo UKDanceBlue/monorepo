@@ -43,28 +43,25 @@ const TeamFundraisingEntriesDocument = graphql(
   [FundraisingEntryTableFragment, PaginationFragment]
 );
 
-const TeamFundraisingFragment = graphql(
-  /* GraphQL */ `
-    fragment TeamFundraisingFragment on TeamNode {
-      fundraisingTotalAmount
-      solicitationCode {
+const TeamFundraisingFragment = graphql(/* GraphQL */ `
+  fragment TeamFundraisingFragment on TeamNode {
+    fundraisingTotalAmount
+    solicitationCode {
+      id
+      name
+      prefix
+      code
+    }
+    members {
+      id
+      person {
         id
         name
-        prefix
-        code
-      }
-      members {
-        id
-        person {
-          id
-          name
-          linkblue
-        }
+        linkblue
       }
     }
-  `,
-  [FundraisingEntryTableFragment, PaginationFragment]
-);
+  }
+`);
 
 const SolicitationCodesDocument = graphql(/* GraphQL */ `
   query SolicitationCodes {
@@ -84,10 +81,7 @@ const SetTeamSolicitationCodeDocument = graphql(/* GraphQL */ `
     $teamUuid: GlobalId!
     $solCodeId: GlobalId!
   ) {
-    assignSolicitationCodeToTeam(
-      teamId: $teamUuid
-      solicitationCode: $solCodeId
-    )
+    assignSolicitationCodeToTeam(teamId: $teamUuid, id: $solCodeId)
   }
 `);
 
@@ -141,7 +135,7 @@ function ViewTeamFundraising() {
   const { data } = useTypedOne({
     fragment: TeamFundraisingFragment,
     props: {
-      resource: "fundraisingEntry",
+      resource: "team",
       id: useParams({ from: "/teams/$teamId/_layout/fundraising" }).teamId,
     },
   });

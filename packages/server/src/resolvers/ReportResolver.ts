@@ -25,7 +25,7 @@ import { prismaToken } from "#lib/typediTokens.js";
 export class ReportResolver {
   constructor(private readonly prisma: PrismaClient) {}
 
-  @AccessControlAuthorized("list", "FundraisingEntryNode")
+  @AccessControlAuthorized("list", ["every", "FundraisingEntryNode"], ".")
   @Query(() => Report, {
     name: "report",
     description:
