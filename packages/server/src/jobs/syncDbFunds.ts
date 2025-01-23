@@ -1,12 +1,8 @@
+import { Container, Service } from "@freshgum/typedi";
+import type { Marathon, PrismaClient } from "@prisma/client";
 import type { MarathonYearString } from "@ukdanceblue/common";
 import { type ConcreteError, NotFoundError } from "@ukdanceblue/common/error";
-
-const jobStateRepository = Container.get(JobStateRepository);
-
-import { Container } from "@freshgum/typedi";
-import type { Marathon } from "@prisma/client";
 import { CompositeError } from "@ukdanceblue/common/error";
-import { Cron } from "croner";
 import { AsyncResult, Err, None, Ok, type Result } from "ts-results-es";
 
 import {
@@ -20,62 +16,14 @@ import { JobStateRepository } from "#repositories/JobState.js";
 import { MarathonRepository } from "#repositories/marathon/MarathonRepository.js";
 import type { RepositoryError } from "#repositories/shared.js";
 
-async function doSyncForActive(): Promise<Result<None, ConcreteError>> {
-  const marathonRepository = Container.get(MarathonRepository);
-
-  const activeMarathon = await new AsyncResult(
-    marathonRepository.findActiveMarathon()
-  ).andThen((activeMarathon) =>
-    activeMarathon.toResult(new NotFoundError({ what: "active marathon" }))
-  ).promise;
-  if (activeMarathon.isErr()) {
-    return activeMarathon;
-  }
-  logger.trace("Found current marathon for DBFunds sync", activeMarathon);
-
-  return doSyncForMarathon(activeMarathon.value);
-}
-
-async function doSyncForPastMarathons(): Promise<Result<None, ConcreteError>> {
-  const marathonRepository = Container.get(MarathonRepository);
-
-  const activeMarathon = await new AsyncResult(
-    marathonRepository.findActiveMarathon()
-  ).andThen((activeMarathon) =>
-    activeMarathon.toResult(new NotFoundError({ what: "active marathon" }))
-  ).promise;
-  if (activeMarathon.isErr()) {
-    return activeMarathon;
-  }
-
-  const allMarathons = await marathonRepository.findAndCount({}).promise;
-
-  if (allMarathons.isErr()) {
-    return allMarathons;
-  }
-
-  const pastMarathons = allMarathons.value.selectedRows.filter(
-    (marathon) => marathon.id !== activeMarathon.value.id
-  );
-
-  for (const marathon of pastMarathons) {
-    // eslint-disable-next-line no-await-in-loop
-    const result = await doSyncForMarathon(marathon);
-    if (result.isErr()) {
-      return result;
-    }
-  }
-
-  return Ok(None);
-}
+import { Job } from "./Job.js";
 
 async function doSyncForMarathon(
-  marathon: Marathon
+  marathon: Marathon,
+  fundraisingProvider: DBFundsFundraisingProvider,
+  fundraisingRepository: DBFundsRepository,
+  prisma: PrismaClient
 ): Promise<Result<None, ConcreteError>> {
-  const fundraisingRepository = Container.get(DBFundsRepository);
-  const fundraisingProvider = Container.get(DBFundsFundraisingProvider);
-  const prisma = Container.get(prismaToken);
-
   const teams = await fundraisingProvider.getTeams(
     marathon.year as MarathonYearString
   );
@@ -167,50 +115,113 @@ async function doSyncForMarathon(
   return errors.length > 0 ? Err(new CompositeError(errors)) : Ok(None);
 }
 
-export const syncDbFunds = new Cron(
-  "0 */30 * * * *",
-  {
-    name: "sync-db-funds",
-    paused: true,
-    catch: (error) => {
-      logger.error("Failed to sync DBFunds", { error });
-    },
-  },
-  async () => {
+@Service([
+  JobStateRepository,
+  MarathonRepository,
+  DBFundsRepository,
+  DBFundsFundraisingProvider,
+  prismaToken,
+])
+export class SyncDbFundsJob extends Job {
+  constructor(
+    protected readonly jobStateRepository: JobStateRepository,
+    protected readonly marathonRepository: MarathonRepository,
+    protected readonly fundraisingRepository: DBFundsRepository,
+    protected readonly fundraisingProvider: DBFundsFundraisingProvider,
+    protected readonly prisma: PrismaClient
+  ) {
+    super("0 */30 * * * *", "sync-db-funds");
+  }
+
+  protected async run(): Promise<void> {
     logger.info("Syncing DBFunds");
-    const result = await doSyncForActive();
+    const result = await this.doSyncForActive();
 
-    if (result.isErr()) {
-      logger.error("Failed to sync DBFunds", result.error);
-    } else {
-      logger.info("DBFunds sync complete");
-      await jobStateRepository.logCompletedJob(syncDbFunds);
-    }
+    result.unwrap();
   }
-);
 
-export const syncDbFundsPast = new Cron(
-  "0 0 */2 * * *",
-  {
-    name: "sync-db-funds-past",
-    paused: true,
-    catch: (error) => {
-      logger.error("Failed to sync DBFunds for past marathons", { error });
-    },
-  },
-  async () => {
+  async doSyncForActive(): Promise<Result<None, ConcreteError>> {
+    const marathonRepository = Container.get(MarathonRepository);
+
+    const activeMarathon = await new AsyncResult(
+      marathonRepository.findActiveMarathon()
+    ).andThen((activeMarathon) =>
+      activeMarathon.toResult(new NotFoundError({ what: "active marathon" }))
+    ).promise;
+    if (activeMarathon.isErr()) {
+      return activeMarathon;
+    }
+    logger.trace("Found current marathon for DBFunds sync", activeMarathon);
+
+    return doSyncForMarathon(
+      activeMarathon.value,
+      this.fundraisingProvider,
+      this.fundraisingRepository,
+      this.prisma
+    );
+  }
+}
+
+@Service([
+  JobStateRepository,
+  MarathonRepository,
+  DBFundsRepository,
+  DBFundsFundraisingProvider,
+  prismaToken,
+])
+export class SyncDbFundsPastJob extends Job {
+  constructor(
+    protected readonly jobStateRepository: JobStateRepository,
+    protected readonly marathonRepository: MarathonRepository,
+    protected readonly fundraisingRepository: DBFundsRepository,
+    protected readonly fundraisingProvider: DBFundsFundraisingProvider,
+    protected readonly prisma: PrismaClient
+  ) {
+    super("0 0 */2 * * *", "sync-db-funds-past");
+  }
+
+  protected async run(): Promise<void> {
     logger.info("Syncing DBFunds for past marathons");
-    const result = await doSyncForPastMarathons();
+    const result = await this.doSyncForPastMarathons();
 
-    if (result.isErr()) {
-      logger.error("Failed to sync DBFunds for past marathons", result.error);
-    } else {
-      logger.info("DBFunds past marathons sync complete");
-      await jobStateRepository.logCompletedJob(syncDbFundsPast);
-    }
+    result.unwrap();
   }
-);
 
-syncDbFunds.options.startAt =
-  await jobStateRepository.getNextJobDate(syncDbFunds);
-syncDbFunds.resume();
+  async doSyncForPastMarathons(): Promise<Result<None, ConcreteError>> {
+    const marathonRepository = Container.get(MarathonRepository);
+
+    const activeMarathon = await new AsyncResult(
+      marathonRepository.findActiveMarathon()
+    ).andThen((activeMarathon) =>
+      activeMarathon.toResult(new NotFoundError({ what: "active marathon" }))
+    ).promise;
+    if (activeMarathon.isErr()) {
+      return activeMarathon;
+    }
+
+    const allMarathons = await marathonRepository.findAndCount({}).promise;
+
+    if (allMarathons.isErr()) {
+      return allMarathons;
+    }
+
+    const pastMarathons = allMarathons.value.selectedRows.filter(
+      (marathon) => marathon.id !== activeMarathon.value.id
+    );
+
+    for (const marathon of pastMarathons) {
+      // eslint-disable-next-line no-await-in-loop
+      const result = await doSyncForMarathon(
+        marathon,
+        this.fundraisingProvider,
+        this.fundraisingRepository,
+        this.prisma
+      );
+      if (result.isErr()) {
+        return result;
+      }
+    }
+
+    return Ok(None);
+  }
+}

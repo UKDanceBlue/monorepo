@@ -1,10 +1,10 @@
-import { Container } from "@freshgum/typedi";
-import { Cron } from "croner";
+import { Service } from "@freshgum/typedi";
 
 import { logger } from "#logging/standardLogging.js";
 import { ExpoPushReceiptHandler } from "#notification/ExpoPushReceiptHandler.js";
 import { JobStateRepository } from "#repositories/JobState.js";
-const jobStateRepository = Container.get(JobStateRepository);
+
+import { Job } from "./Job.js";
 
 /**
  * The purpose of this job is to periodically fetch push receipts from Expo which
@@ -12,28 +12,17 @@ const jobStateRepository = Container.get(JobStateRepository);
  * whether each notification was successfully delivered to the target device, if
  * an error occurred, or if the device needs to be unsubscribed.
  */
-export const fetchPushReceipts = new Cron(
-  "0 */8 * * * *",
-  {
-    name: "fetch-push-receipts",
-    paused: true,
-    catch: (error) => {
-      logger.error("Failed to fetch push receipts", { error });
-    },
-  },
-  async () => {
-    try {
-      logger.info("Fetching push receipts");
-      const expoPushReceiptHandler = Container.get(ExpoPushReceiptHandler);
-      await expoPushReceiptHandler.handlePushReceipts();
-
-      await jobStateRepository.logCompletedJob(fetchPushReceipts);
-    } catch (error) {
-      logger.error("Failed to fetch push receipts", { error });
-    }
+@Service([ExpoPushReceiptHandler, JobStateRepository])
+export class FetchPushReceiptsJob extends Job {
+  constructor(
+    protected readonly expoPushReceiptHandler: ExpoPushReceiptHandler,
+    protected readonly jobStateRepository: JobStateRepository
+  ) {
+    super("0 */8 * * * *", "fetch-push-receipts");
   }
-);
 
-fetchPushReceipts.options.startAt =
-  await jobStateRepository.getNextJobDate(fetchPushReceipts);
-fetchPushReceipts.resume();
+  protected async run(): Promise<void> {
+    logger.info("Fetching push receipts");
+    await this.expoPushReceiptHandler.handlePushReceipts();
+  }
+}

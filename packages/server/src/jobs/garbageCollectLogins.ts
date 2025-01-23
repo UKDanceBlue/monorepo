@@ -1,43 +1,31 @@
-import { Container } from "@freshgum/typedi";
-import { Cron } from "croner";
+import { Service } from "@freshgum/typedi";
 
 import { logger } from "#logging/standardLogging.js";
 import { JobStateRepository } from "#repositories/JobState.js";
 import { LoginFlowRepository } from "#repositories/LoginFlowSession.js";
 import { SessionRepository } from "#repositories/Session.js";
 
-const jobStateRepository = Container.get(JobStateRepository);
+import { Job } from "./Job.js";
 
 /**
  * This job simply deletes old login flow sessions that were not automatically deleted
  * as part of the login process.
  */
-export const garbageCollectLoginFlowSessions = new Cron(
-  "0 0 */6 * * *",
-  {
-    name: "garbage-collect-login-flow-sessions",
-    paused: true,
-    catch: (error) => {
-      logger.error("Failed to garbage collect old login flows", { error });
-    },
-  },
-  async () => {
-    try {
-      logger.info("Garbage collecting old login flows");
-      const loginFlowSessionRepository = Container.get(LoginFlowRepository);
-      await loginFlowSessionRepository.gcOldLoginFlows();
-      const sessionRepository = Container.get(SessionRepository);
-      await sessionRepository
-        .gcOldSessions()
-        .promise.then((res) => res.unwrap());
-
-      await jobStateRepository.logCompletedJob(garbageCollectLoginFlowSessions);
-    } catch (error) {
-      logger.error("Failed to garbage collect old login flows", { error });
-    }
+@Service([JobStateRepository, LoginFlowRepository, SessionRepository])
+export class GarbageCollectLoginFlowSessionsJob extends Job {
+  constructor(
+    protected readonly jobStateRepository: JobStateRepository,
+    protected readonly loginFlowRepository: LoginFlowRepository,
+    protected readonly sessionRepository: SessionRepository
+  ) {
+    super("0 0 */6 * * *", "garbage-collect-login-flow-sessions");
   }
-);
 
-garbageCollectLoginFlowSessions.options.startAt =
-  await jobStateRepository.getNextJobDate(garbageCollectLoginFlowSessions);
-garbageCollectLoginFlowSessions.resume();
+  protected async run(): Promise<void> {
+    logger.info("Garbage collecting old login flows");
+    await this.loginFlowRepository.gcOldLoginFlows();
+    await this.sessionRepository
+      .gcOldSessions()
+      .promise.then((res) => res.unwrap());
+  }
+}

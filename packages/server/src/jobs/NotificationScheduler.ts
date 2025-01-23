@@ -7,9 +7,14 @@ import { isReplToken } from "#lib/typediTokens.js";
 import { logger } from "#logging/standardLogging.js";
 import { ExpoNotificationProvider } from "#notification/ExpoNotificationProvider.js";
 import * as NotificationProviderJs from "#notification/NotificationProvider.js";
+import { JobStateRepository } from "#repositories/JobState.js";
 import { NotificationRepository } from "#repositories/notification/NotificationRepository.js";
 
-function scheduleId(notificationUuid: string) {
+import { Job } from "./Job.js";
+
+function scheduleId<T extends string>(
+  notificationUuid: T
+): `scheduled-notification:${T}` {
   return `scheduled-notification:${notificationUuid}`;
 }
 
@@ -20,52 +25,31 @@ function makeScheduledJobsMap() {
 /**
  * This class acts as a service wrapper for a cron job that schedules notifications
  */
-@Service([NotificationRepository, ExpoNotificationProvider, isReplToken])
-export class NotificationScheduler {
+@Service([
+  NotificationRepository,
+  ExpoNotificationProvider,
+  isReplToken,
+  JobStateRepository,
+])
+export class NotificationScheduler extends Job {
   constructor(
-    private readonly notificationRepository: NotificationRepository,
-    private readonly notificationProvider: NotificationProviderJs.NotificationProvider,
-    private readonly isRepl: boolean
+    protected readonly notificationRepository: NotificationRepository,
+    protected readonly notificationProvider: NotificationProviderJs.NotificationProvider,
+    protected readonly isRepl: boolean,
+    protected readonly jobStateRepository: never
   ) {
+    super("0 */3 * * * *", "check-scheduled-notifications");
     this.ensureNotificationScheduler();
   }
 
   /**
-   * This method will check for an existing notification scheduler job, and if one
-   * is not loaded, it will create one
+   * This method will check for an existing notification scheduler job, and throw if it does not exist
    */
   public ensureNotificationScheduler() {
-    if (this.isRepl) {
-      return;
-    }
-
     if (
       !scheduledJobs.some((job) => job.name === "check-scheduled-notifications")
     ) {
-      // Every three minutes, check for scheduled notifications that need to be sent
-      const checkScheduledNotificationsJob = new Cron(
-        "0 */3 * * * *",
-        {
-          name: "check-scheduled-notifications",
-          catch: (error: unknown) => {
-            logger.error("Failed to check for scheduled notifications", error);
-          },
-        },
-        async () => {
-          try {
-            await this.checkScheduledNotifications();
-          } catch (error) {
-            logger.error("Failed to check for scheduled notifications", error);
-          }
-        }
-      );
-
-      // On startup, check for any scheduled notifications that need to be sent
-      checkScheduledNotificationsJob
-        .trigger()
-        .catch((error: unknown) =>
-          logger.error("Failed to check for scheduled notifications", error)
-        );
+      throw new Error("Notification scheduler job not loaded");
     }
   }
 
@@ -82,7 +66,7 @@ export class NotificationScheduler {
    * ---
    * 6. Log the results of any notifications sent by step 4
    */
-  private async checkScheduledNotifications() {
+  protected async run() {
     logger.debug("Checking for scheduled notifications");
 
     const scheduledNotifications =
