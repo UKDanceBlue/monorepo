@@ -34,12 +34,13 @@ export class Server implements EntryPoint {
   ) {}
 
   async start(): Promise<void> {
-    this.sentryInstrumentation.init();
-
     const { logger } = await import("#logging/logger.js");
     logger.info(
       `Logger initialized with level "${this.loggingLevel}", writing log files to "${this.logDir}"`
     );
+
+    await this.sentryInstrumentation.init();
+    logger.info("Sentry initialized");
 
     this.expressModule.init();
     logger.debug("Express initialized");

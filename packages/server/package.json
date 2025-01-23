@@ -32,10 +32,10 @@
     "bs": "yarn run build && yarn run start",
     "build": "tsc",
     "check": "tsc --noEmit",
-    "dev": "tsc --watch & node --enable-source-maps --watch-path=./dist --watch-path=../common/dist ./dist/src/index.js start",
+    "dev": "tsc --watch & node --import ./dist/src/entry/server/initSentry.js --enable-source-maps --watch-path=./dist --watch-path=../common/dist ./dist/src/index.js start",
     "lint": "eslint .",
     "migrate-and-start": "yarn dlx prisma migrate deploy && yarn run start",
-    "start": "node --enable-source-maps ./dist/src/index.js start",
+    "start": "node --import ./dist/src/entry/server/initSentry.js --enable-source-maps ./dist/src/index.js start",
     "repl": "node --enable-source-maps ./dist/src/index.js repl",
     "test": "jest"
   },
