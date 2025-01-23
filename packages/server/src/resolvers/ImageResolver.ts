@@ -37,6 +37,7 @@ export class ImageResolver implements CrudResolver<ImageNode, "image"> {
     private readonly fileManager: FileManager
   ) {}
 
+  @AccessControlAuthorized("get", ["getId", "ImageNode", "id"])
   @Query(() => ImageNode, { name: "image" })
   async image(
     @Arg("id", () => GlobalIdScalar) { id }: GlobalId,
@@ -56,7 +57,7 @@ export class ImageResolver implements CrudResolver<ImageNode, "image"> {
     ).promise.then((r) => r.unwrap());
   }
 
-  @AccessControlAuthorized("list", "ImageNode")
+  @AccessControlAuthorized("list", ["every", "ImageNode"])
   @Query(() => ListImagesResponse, { name: "images" })
   images(
     @Args(() => ListImagesArgs) query: ListImagesArgs,
@@ -89,14 +90,16 @@ export class ImageResolver implements CrudResolver<ImageNode, "image"> {
       });
   }
 
-  @AccessControlAuthorized("create")
+  @AccessControlAuthorized("create", ["every", "ImageNode"])
   @Mutation(() => ImageNode, { name: "createImage" })
   @WithAuditLogging()
   async createImage(
     @Arg("input") input: CreateImageInput,
     @Ctx() { serverUrl }: GraphQLContext
   ): Promise<ImageNode> {
-    const { mime, thumbHash, width, height } = await handleImageUrl(input.url);
+    const { mime, thumbHash, width, height } = await this.handleImageUrl(
+      input.url
+    );
     const result = await this.imageRepository.createImage({
       width,
       height,
@@ -138,7 +141,7 @@ export class ImageResolver implements CrudResolver<ImageNode, "image"> {
     ).promise.then((r) => r.unwrap());
   }
 
-  @AccessControlAuthorized("update")
+  @AccessControlAuthorized("update", ["getId", "ImageNode", "id"])
   @Mutation(() => ImageNode, { name: "setImageAltText" })
   @WithAuditLogging()
   async setImageAltText(
@@ -167,7 +170,7 @@ export class ImageResolver implements CrudResolver<ImageNode, "image"> {
     ).promise.then((r) => r.unwrap());
   }
 
-  @AccessControlAuthorized("update")
+  @AccessControlAuthorized("update", ["getId", "ImageNode", "id"])
   @Mutation(() => ImageNode, { name: "setImageUrl" })
   @WithAuditLogging()
   async setImageUrl(
@@ -175,7 +178,7 @@ export class ImageResolver implements CrudResolver<ImageNode, "image"> {
     @Arg("url", () => GraphQLURL) url: URL,
     @Ctx() { serverUrl }: GraphQLContext
   ): Promise<ImageNode> {
-    const { mime, thumbHash, width, height } = await handleImageUrl(url);
+    const { mime, thumbHash, width, height } = await this.handleImageUrl(url);
     const result = await this.imageRepository.updateImage(
       {
         uuid: id,
@@ -215,7 +218,7 @@ export class ImageResolver implements CrudResolver<ImageNode, "image"> {
     ).promise.then((r) => r.unwrap());
   }
 
-  @AccessControlAuthorized("delete")
+  @AccessControlAuthorized("delete", ["getId", "ImageNode", "id"])
   @Mutation(() => ImageNode, { name: "deleteImage" })
   @WithAuditLogging()
   async deleteImage(
@@ -235,65 +238,65 @@ export class ImageResolver implements CrudResolver<ImageNode, "image"> {
       serverUrl
     ).promise.then((r) => r.unwrap());
   }
-}
 
-async function handleImageUrl(url: URL | null | undefined): Promise<{
-  mime: MIMEType;
-  thumbHash: Uint8Array | null;
-  width: number;
-  height: number;
-}> {
-  if (url != null) {
-    if (url.protocol !== "https:") {
-      throw new LegacyError(
-        LegacyErrorCode.InvalidRequest,
-        "An Image URL must be a valid HTTPS URL"
-      );
-    } else {
-      let image: Buffer;
-      try {
-        const download = await fetch(url);
-        const buffer = await download.arrayBuffer();
-        image = Buffer.from(buffer);
-
-        const contentType = download.headers.get("content-type");
-        if (contentType == null) {
-          throw new LegacyError(
-            LegacyErrorCode.InvalidRequest,
-            "The requested image does not have a content type"
-          );
-        }
-        let mime;
+  private async handleImageUrl(url: URL | null | undefined): Promise<{
+    mime: MIMEType;
+    thumbHash: Uint8Array | null;
+    width: number;
+    height: number;
+  }> {
+    if (url != null) {
+      if (url.protocol !== "https:") {
+        throw new LegacyError(
+          LegacyErrorCode.InvalidRequest,
+          "An Image URL must be a valid HTTPS URL"
+        );
+      } else {
+        let image: Buffer;
         try {
-          mime = new MIMEType(contentType);
+          const download = await fetch(url);
+          const buffer = await download.arrayBuffer();
+          image = Buffer.from(buffer);
+
+          const contentType = download.headers.get("content-type");
+          if (contentType == null) {
+            throw new LegacyError(
+              LegacyErrorCode.InvalidRequest,
+              "The requested image does not have a content type"
+            );
+          }
+          let mime;
+          try {
+            mime = new MIMEType(contentType);
+          } catch (error) {
+            logger.error("Failed to parse MIME type in createImage", {
+              error,
+            });
+            throw new LegacyError(
+              LegacyErrorCode.InvalidRequest,
+              "Could not determine the MIME type of the requested image"
+            );
+          }
+          const { thumbHash, width, height } = await generateThumbHash({
+            data: image,
+          });
+          return { mime, thumbHash, width, height };
         } catch (error) {
-          logger.error("Failed to parse MIME type in createImage", {
+          logger.error("Failed to fetch an image from url in createImage", {
             error,
           });
           throw new LegacyError(
             LegacyErrorCode.InvalidRequest,
-            "Could not determine the MIME type of the requested image"
+            "Could not access the requested image"
           );
         }
-        const { thumbHash, width, height } = await generateThumbHash({
-          data: image,
-        });
-        return { mime, thumbHash, width, height };
-      } catch (error) {
-        logger.error("Failed to fetch an image from url in createImage", {
-          error,
-        });
-        throw new LegacyError(
-          LegacyErrorCode.InvalidRequest,
-          "Could not access the requested image"
-        );
       }
     }
+    return {
+      mime: new MIMEType("application/octet-stream"),
+      thumbHash: null,
+      width: 0,
+      height: 0,
+    };
   }
-  return {
-    mime: new MIMEType("application/octet-stream"),
-    thumbHash: null,
-    width: 0,
-    height: 0,
-  };
 }

@@ -1,4 +1,4 @@
-import { Service } from "@freshgum/typedi";
+import { Container, Service } from "@freshgum/typedi";
 import type { CrudResolver, GlobalId } from "@ukdanceblue/common";
 import {
   AccessControlAuthorized,
@@ -24,6 +24,7 @@ import {
   ConcreteError,
   ConcreteResult,
   extractNotFound,
+  InvalidArgumentError,
   NotFoundError,
 } from "@ukdanceblue/common/error";
 import {
@@ -71,7 +72,7 @@ export class PersonResolver
     private readonly fundraisingEntryRepository: FundraisingEntryRepository
   ) {}
 
-  @AccessControlAuthorized("get")
+  @AccessControlAuthorized("get", ["getId", "PersonNode", "id"])
   @Query(() => PersonNode, { name: "person" })
   async person(
     @Arg("id", () => GlobalIdScalar) { id }: GlobalId
@@ -84,7 +85,20 @@ export class PersonResolver
       .promise;
   }
 
-  @AccessControlAuthorized("get")
+  @AccessControlAuthorized<"PersonNode">("get", (_info, { linkBlueId }) => {
+    const personRepository = Container.get(PersonRepository);
+
+    if (typeof linkBlueId !== "string") {
+      return Err(new InvalidArgumentError("linkBlueId must be a string"));
+    }
+    return new AsyncResult(
+      personRepository.findPersonByUnique({
+        linkblue: linkBlueId.toLowerCase(),
+      })
+    )
+      .andThen((row) => row.toResult(new NotFoundError({ what: "Person" })))
+      .map(({ uuid }) => ({ kind: "PersonNode", id: uuid }));
+  })
   @Query(() => PersonNode, { name: "personByLinkBlue", nullable: true })
   async getByLinkBlueId(
     @Arg("linkBlueId") linkBlueId: string
@@ -104,7 +118,7 @@ export class PersonResolver
     ).promise;
   }
 
-  @AccessControlAuthorized("list")
+  @AccessControlAuthorized("list", ["every", "PersonNode"])
   @Query(() => ListPeopleResponse, { name: "people" })
   people(
     @Args(() => ListPeopleArgs) query: ListPeopleArgs
@@ -132,7 +146,7 @@ export class PersonResolver
     return ctx.authenticatedUser;
   }
 
-  @AccessControlAuthorized("list")
+  @AccessControlAuthorized("list", ["every", "PersonNode"])
   @Query(() => [PersonNode], { name: "searchPeopleByName" })
   async searchByName(
     @Arg("name") name: string
@@ -149,7 +163,7 @@ export class PersonResolver
     ).promise;
   }
 
-  @AccessControlAuthorized("create")
+  @AccessControlAuthorized("create", ["every", "PersonNode"])
   @Mutation(() => PersonNode, { name: "createPerson" })
   @WithAuditLogging()
   async createPerson(
@@ -200,7 +214,7 @@ export class PersonResolver
       .promise;
   }
 
-  @AccessControlAuthorized("modify")
+  @AccessControlAuthorized("update", ["getId", "PersonNode", "id"])
   @Mutation(() => PersonNode, { name: "setPerson" })
   @WithAuditLogging()
   async setPerson(
@@ -255,7 +269,7 @@ export class PersonResolver
       .promise;
   }
 
-  @AccessControlAuthorized("create")
+  @AccessControlAuthorized("create", ["every", "PersonNode"])
   @Mutation(() => [PersonNode], { name: "bulkLoadPeople" })
   @WithAuditLogging()
   async bulkLoad(
@@ -286,7 +300,11 @@ export class PersonResolver
     ).promise;
   }
 
-  @AccessControlAuthorized("update", "TeamNode", ".members")
+  @AccessControlAuthorized(
+    "update",
+    ["getId", "TeamNode", "teamUuid"],
+    ".members"
+  )
   @Mutation(() => MembershipNode, { name: "addPersonToTeam" })
   @WithAuditLogging()
   async assignPersonToTeam(
@@ -310,7 +328,11 @@ export class PersonResolver
     ).map(membershipModelToResource).promise;
   }
 
-  @AccessControlAuthorized("update", "TeamNode", ".members")
+  @AccessControlAuthorized(
+    "update",
+    ["getId", "TeamNode", "teamUuid"],
+    ".members"
+  )
   @Mutation(() => MembershipNode, { name: "removePersonFromTeam" })
   @WithAuditLogging()
   async unassignPersonFromTeam(
@@ -329,7 +351,7 @@ export class PersonResolver
     ).map(membershipModelToResource).promise;
   }
 
-  @AccessControlAuthorized("delete")
+  @AccessControlAuthorized("delete", ["getId", "PersonNode", "id"])
   @Mutation(() => PersonNode, { name: "deletePerson" })
   @WithAuditLogging()
   async deletePerson(
@@ -341,7 +363,11 @@ export class PersonResolver
       .promise;
   }
 
-  @AccessControlAuthorized("get", "PersonNode", ".memberships")
+  @AccessControlAuthorized(
+    "get",
+    ["getIdFromRoot", "PersonNode", "id"],
+    ".memberships"
+  )
   @FieldResolver(() => [CommitteeMembershipNode])
   async committees(
     @Root() { id: { id } }: PersonNode
@@ -360,7 +386,11 @@ export class PersonResolver
     ).promise;
   }
 
-  @AccessControlAuthorized("get", "PersonNode", ".memberships")
+  @AccessControlAuthorized(
+    "get",
+    ["getIdFromRoot", "PersonNode", "id"],
+    ".memberships"
+  )
   @FieldResolver(() => [MembershipNode])
   async teams(
     @Root() { id: { id } }: PersonNode
@@ -372,7 +402,11 @@ export class PersonResolver
     ).map((models) => models.map(membershipModelToResource)).promise;
   }
 
-  @AccessControlAuthorized("get", "PersonNode", ".memberships")
+  @AccessControlAuthorized(
+    "get",
+    ["getIdFromRoot", "PersonNode", "id"],
+    ".memberships"
+  )
   @FieldResolver(() => [MembershipNode])
   async moraleTeams(
     @Root() { id: { id } }: PersonNode
@@ -388,7 +422,11 @@ export class PersonResolver
     ).map((models) => models.map(membershipModelToResource)).promise;
   }
 
-  @AccessControlAuthorized("get", "PersonNode", ".memberships")
+  @AccessControlAuthorized(
+    "get",
+    ["getIdFromRoot", "PersonNode", "id"],
+    ".memberships"
+  )
   @FieldResolver(() => CommitteeMembershipNode, { nullable: true })
   async primaryCommittee(
     @Root() { id: { id } }: PersonNode
@@ -404,7 +442,11 @@ export class PersonResolver
     );
   }
 
-  @AccessControlAuthorized("get", "PersonNode", ".memberships")
+  @AccessControlAuthorized(
+    "get",
+    ["getIdFromRoot", "PersonNode", "id"],
+    ".memberships"
+  )
   @FieldResolver(() => MembershipNode, { nullable: true })
   async primaryTeam(
     @Arg("teamType", () => TeamType) teamType: TeamType,
@@ -420,7 +462,11 @@ export class PersonResolver
     return model.map((option) => option.map(membershipModelToResource));
   }
 
-  @AccessControlAuthorized("list", "PersonNode", ".fundraisingAssignments")
+  @AccessControlAuthorized(
+    "get",
+    ["getIdFromRoot", "PersonNode", "id"],
+    ".fundraisingAssignments"
+  )
   @FieldResolver(() => Float, { nullable: true })
   async fundraisingTotalAmount(
     @Root() { id: { id } }: PersonNode
@@ -433,7 +479,11 @@ export class PersonResolver
   // This is the only way normal dancers or committee members can access fundraising info
   // as it will only grant them the individual assignment they are associated with plus
   // shallow access to the entry itself
-  @AccessControlAuthorized("list", "PersonNode", ".fundraisingAssignments")
+  @AccessControlAuthorized(
+    "list",
+    ["getIdFromRoot", "PersonNode", "id"],
+    ".fundraisingAssignments"
+  )
   @FieldResolver(() => [FundraisingAssignmentNode])
   async fundraisingAssignments(
     @Root() { id: { id } }: PersonNode
@@ -447,7 +497,11 @@ export class PersonResolver
     ).promise;
   }
 
-  @AccessControlAuthorized("get", "PersonNode", ".password")
+  @AccessControlAuthorized(
+    "get",
+    ["getIdFromRoot", "PersonNode", "id"],
+    ".password"
+  )
   @FieldResolver(() => Boolean, { name: "hasPassword" })
   async hasPassword(
     @Root() { id: { id } }: PersonNode
@@ -459,7 +513,7 @@ export class PersonResolver
       .map((row) => row.hashedPassword != null).promise;
   }
 
-  @AccessControlAuthorized("update", "PersonNode", ".password")
+  @AccessControlAuthorized("update", ["getId", "PersonNode", "id"], ".password")
   @Mutation(() => PersonNode, { name: "setPersonPassword" })
   @WithAuditLogging()
   async setPassword(

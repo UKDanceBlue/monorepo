@@ -64,7 +64,7 @@ export class NotificationResolver
     private readonly notificationScheduler: NotificationScheduler
   ) {}
 
-  @AccessControlAuthorized("get")
+  @AccessControlAuthorized("get", ["getId", "NotificationNode", "id"])
   @Query(() => NotificationNode, { name: "notification" })
   async notification(
     @Arg("id", () => GlobalIdScalar) { id }: GlobalId
@@ -76,7 +76,7 @@ export class NotificationResolver
       .map((row) => notificationModelToResource(row)).promise;
   }
 
-  @AccessControlAuthorized("list", "NotificationNode")
+  @AccessControlAuthorized("list", ["every", "NotificationNode"])
   @Query(() => ListNotificationsResponse, { name: "notifications" })
   notifications(
     @Args(() => ListNotificationsArgs) query: ListNotificationsArgs
@@ -97,7 +97,7 @@ export class NotificationResolver
       });
   }
 
-  @AccessControlAuthorized("list", "NotificationDeliveryNode")
+  @AccessControlAuthorized("list", ["every", "NotificationDeliveryNode"])
   @Query(() => ListNotificationDeliveriesResponse, {
     name: "notificationDeliveries",
   })
@@ -125,7 +125,7 @@ export class NotificationResolver
       });
   }
 
-  @AccessControlAuthorized("create")
+  @AccessControlAuthorized("create", ["every", "NotificationNode"])
   @Mutation(() => NotificationNode, { name: "stageNotification" })
   @WithAuditLogging()
   async stage(
@@ -161,7 +161,7 @@ export class NotificationResolver
     return result.map((result) => notificationModelToResource(result));
   }
 
-  @AccessControlAuthorized("deploy", "NotificationNode")
+  @AccessControlAuthorized("deploy", ["getId", "NotificationNode", "id"])
   @Mutation(() => VoidResolver, {
     name: "sendNotification",
     description: "Send a notification immediately.",
@@ -188,7 +188,7 @@ export class NotificationResolver
       }).promise;
   }
 
-  @AccessControlAuthorized("deploy", "NotificationNode")
+  @AccessControlAuthorized("deploy", ["getId", "NotificationNode", "id"])
   @Mutation(() => NotificationNode, {
     name: "scheduleNotification",
   })
@@ -215,7 +215,7 @@ export class NotificationResolver
       .map(notificationModelToResource).promise;
   }
 
-  @AccessControlAuthorized("update", "NotificationNode")
+  @AccessControlAuthorized("deploy", ["getId", "NotificationNode", "id"])
   @Mutation(() => NotificationNode, {
     name: "acknowledgeDeliveryIssue",
   })
@@ -246,7 +246,7 @@ export class NotificationResolver
       .map(notificationModelToResource).promise;
   }
 
-  @AccessControlAuthorized("deploy", "NotificationNode")
+  @AccessControlAuthorized("deploy", ["getId", "NotificationNode", "id"])
   @Mutation(() => NotificationNode, {
     name: "abortScheduledNotification",
   })
@@ -275,7 +275,7 @@ export class NotificationResolver
       .map((notification) => notificationModelToResource(notification)).promise;
   }
 
-  @AccessControlAuthorized("delete", "NotificationNode")
+  @AccessControlAuthorized("delete", ["getId", "NotificationNode", "id"])
   @Mutation(() => NotificationNode, { name: "deleteNotification" })
   @WithAuditLogging()
   async deleteNotification(
@@ -317,7 +317,7 @@ export class NotificationResolver
       .map(notificationModelToResource).promise;
   }
 
-  @AccessControlAuthorized("get")
+  @AccessControlAuthorized("deploy", ["getId", "NotificationNode", "id"])
   @FieldResolver(() => Int, { name: "deliveryCount" })
   async deliveryCount(
     @Root() { id: { id } }: NotificationNode
@@ -327,7 +327,7 @@ export class NotificationResolver
     });
   }
 
-  @AccessControlAuthorized("get")
+  @AccessControlAuthorized("deploy", ["getId", "NotificationNode", "id"])
   @FieldResolver(() => NotificationDeliveryIssueCount, {
     name: "deliveryIssueCount",
   })

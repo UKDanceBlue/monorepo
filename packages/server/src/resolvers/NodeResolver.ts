@@ -2,6 +2,7 @@ import { Service } from "@freshgum/typedi";
 import type { GlobalId } from "@ukdanceblue/common";
 import {
   AccessControlAuthorized,
+  assertGlobalId,
   ConfigurationNode,
   DailyDepartmentNotificationBatchNode,
   DailyDepartmentNotificationNode,
@@ -19,10 +20,14 @@ import {
   PointEntryNode,
   PointOpportunityNode,
   SolicitationCodeNode,
+  SubjectStrings,
   TeamNode,
 } from "@ukdanceblue/common";
-import { ConcreteResult } from "@ukdanceblue/common/error";
-import { Ok, Option } from "ts-results-es";
+import {
+  ConcreteResult,
+  InvalidArgumentError,
+} from "@ukdanceblue/common/error";
+import { Err, Ok, Option } from "ts-results-es";
 import { Arg, Ctx, Query, Resolver } from "type-graphql";
 
 import { ConfigurationResolver } from "#resolvers/ConfigurationResolver.js";
@@ -47,6 +52,12 @@ import {
 } from "./DailyDepartmentNotification.js";
 import { FeedResolver } from "./FeedResolver.js";
 import { SolicitationCodeResolver } from "./SolicitationCodeResolver.js";
+
+function isSubjectString(
+  typename: string
+): typename is (typeof SubjectStrings)[number] {
+  return SubjectStrings.includes(typename as (typeof SubjectStrings)[number]);
+}
 
 @Resolver(() => Node)
 @Service([
@@ -99,7 +110,20 @@ export class NodeResolver {
     // private readonly reportResolver: ReportResolver
   ) {}
 
-  @AccessControlAuthorized("get")
+  @AccessControlAuthorized("get", (_info, { id }) => {
+    return assertGlobalId(id).andThen((globalId) => {
+      const { id, typename } = globalId;
+      if (!isSubjectString(typename)) {
+        return Err(
+          new InvalidArgumentError("Could not determine the type of node")
+        );
+      }
+      if (typename === "all") {
+        return Err(new InvalidArgumentError("Unknown typename: all"));
+      }
+      return Ok({ id, kind: typename } as const);
+    });
+  })
   @Query(() => Node)
   async node(
     @Arg("id", () => GlobalIdScalar) id: GlobalId,

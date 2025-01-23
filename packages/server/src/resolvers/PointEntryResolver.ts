@@ -46,7 +46,7 @@ export class PointEntryResolver
     private readonly personRepository: PersonRepository
   ) {}
 
-  @AccessControlAuthorized("get")
+  @AccessControlAuthorized("get", ["getId", "PointEntryNode", "id"])
   @Query(() => PointEntryNode, { name: "pointEntry" })
   async pointEntry(
     @Arg("id", () => GlobalIdScalar) { id }: GlobalId
@@ -62,7 +62,7 @@ export class PointEntryResolver
     return pointEntryModelToResource(model);
   }
 
-  @AccessControlAuthorized("list", "PointEntryNode")
+  @AccessControlAuthorized("list", ["every", "PointEntryNode"])
   @Query(() => ListPointEntriesResponse, { name: "pointEntries" })
   pointEntries(
     @Args(() => ListPointEntriesArgs) query: ListPointEntriesArgs
@@ -83,7 +83,7 @@ export class PointEntryResolver
       });
   }
 
-  @AccessControlAuthorized("create")
+  @AccessControlAuthorized("create", ["every", "PointEntryNode"])
   @Mutation(() => PointEntryNode, { name: "createPointEntry" })
   @WithAuditLogging()
   async createPointEntry(
@@ -104,7 +104,7 @@ export class PointEntryResolver
     return pointEntryModelToResource(model);
   }
 
-  @AccessControlAuthorized("delete")
+  @AccessControlAuthorized("delete", ["getId", "PointEntryNode", "id"])
   @Mutation(() => PointEntryNode, { name: "deletePointEntry" })
   @WithAuditLogging()
   async deletePointEntry(

@@ -1,5 +1,6 @@
-import { Service } from "@freshgum/typedi";
+import { Container, Service } from "@freshgum/typedi";
 import {
+  assertGlobalId,
   CrudResolver,
   type GlobalId,
   type MarathonYearString,
@@ -17,9 +18,13 @@ import {
   ListFundraisingEntriesArgs,
   ListFundraisingEntriesResponse,
 } from "@ukdanceblue/common";
-import { ConcreteResult } from "@ukdanceblue/common/error";
+import {
+  ConcreteResult,
+  InvariantError,
+  NotFoundError,
+} from "@ukdanceblue/common/error";
 import { DateTime } from "luxon";
-import { AsyncResult, Ok, Option } from "ts-results-es";
+import { AsyncResult, Err, Ok, Option } from "ts-results-es";
 import {
   Arg,
   Args,
@@ -38,6 +43,7 @@ import { dailyDepartmentNotificationModelToResource } from "#repositories/dailyD
 import { fundraisingAssignmentModelToNode } from "#repositories/fundraising/fundraisingAssignmentModelToNode.js";
 import { fundraisingEntryModelToNode } from "#repositories/fundraising/fundraisingEntryModelToNode.js";
 import { FundraisingEntryRepository } from "#repositories/fundraising/FundraisingRepository.js";
+import { MarathonRepository } from "#repositories/marathon/MarathonRepository.js";
 import type { AsyncRepositoryResult } from "#repositories/shared.js";
 import { SolicitationCodeRepository } from "#repositories/solicitationCode/SolicitationCodeRepository.js";
 
@@ -57,7 +63,7 @@ export class FundraisingEntryResolver
     private readonly solicitationCodeRepository: SolicitationCodeRepository
   ) {}
 
-  @AccessControlAuthorized("get")
+  @AccessControlAuthorized("get", ["getId", "FundraisingEntryNode", "id"])
   @Query(() => FundraisingEntryNode)
   async fundraisingEntry(
     @Arg("id", () => GlobalIdScalar) { id }: GlobalId
@@ -68,7 +74,7 @@ export class FundraisingEntryResolver
     return entry.toAsyncResult().map(fundraisingEntryModelToNode).promise;
   }
 
-  @AccessControlAuthorized("list", "FundraisingEntryNode")
+  @AccessControlAuthorized("list", ["every", "FundraisingEntryNode"])
   @Query(() => ListFundraisingEntriesResponse)
   fundraisingEntries(
     @Args(() => ListFundraisingEntriesArgs) args: ListFundraisingEntriesArgs,
@@ -94,62 +100,55 @@ export class FundraisingEntryResolver
       }));
   }
 
-  // @CustomQueryAccessControl<FundraisingEntryNode>(
-  //   async (root, context): Promise<boolean> => {
-  //     // We can't grant blanket access as otherwise people would see who else was assigned to an entry
-  //     // You can view all assignments for an entry if you are:
-  //     // 1. A fundraising coordinator or chair
-  //     const globalFundraisingAccess = checkParam(
-  //       globalFundraisingAccessParam,
-  //       context.authorization,
-  //       root,
-  //       {},
-  //       context
-  //     );
-  //     if (globalFundraisingAccess.isErr()) {
-  //       return false;
-  //     }
-  //     if (globalFundraisingAccess.value) {
-  //       return true;
-  //     }
-  //     const {
-  //       userData: { userId },
-  //       teamMemberships,
-  //     } = context;
-  //     const {
-  //       id: { id },
-  //     } = root;
-
-  //     // 2. The captain of the team the entry is associated with
-  //     if (userId == null) {
-  //       return false;
-  //     }
-  //     const captainOf = teamMemberships.filter(
-  //       (membership) => membership.position === MembershipPositionType.Captain
-  //     );
-  //     if (captainOf.length === 0) {
-  //       return false;
-  //     }
-
-  //     const solicitationCodeRepository = Container.get(
-  //       SolicitationCodeRepository
-  //     );
-  //     const solicitationCode =
-  //       await solicitationCodeRepository.getSolicitationCodeForEntry(
-  //         {
-  //           uuid: id,
-  //         },
-  //         true
-  //       );
-  //     if (solicitationCode.isErr()) {
-  //       return false;
-  //     }
-
-  //     return captainOf.some(({ teamId }) =>
-  //       solicitationCode.value.teams.some((team) => team.uuid === teamId)
-  //     );
-  //   }
-  // )
+  @AccessControlAuthorized<"TeamNode">(
+    "list",
+    (_info, _args, root) => {
+      if (!root) {
+        return Err(new InvariantError("Root is required"));
+      }
+      const { id: fundraisingEntryId } = root;
+      const solicitationCodeRepository = Container.get(
+        SolicitationCodeRepository
+      );
+      const marathonRepository = Container.get(MarathonRepository);
+      return assertGlobalId(fundraisingEntryId)
+        .toAsyncResult()
+        .andThen(
+          ({ id }) =>
+            new AsyncResult(
+              solicitationCodeRepository.getSolicitationCodeForEntry({
+                uuid: id,
+              })
+            )
+        )
+        .andThen((solicitationCode) => {
+          return new AsyncResult(marathonRepository.findActiveMarathon())
+            .andThen((marathon) =>
+              marathon.toResult(new NotFoundError({ what: "Active Marathon" }))
+            )
+            .map((marathon) => ({
+              marathonId: marathon.id,
+              solicitationCodeId: solicitationCode.id,
+            }));
+        })
+        .andThen(
+          ({ marathonId, solicitationCodeId }) =>
+            new AsyncResult(
+              solicitationCodeRepository.getTeamsForSolitationCode(
+                { id: solicitationCodeId },
+                {
+                  marathonParam: { id: marathonId },
+                }
+              )
+            )
+        )
+        .map((teams) => ({
+          kind: "TeamNode",
+          id: teams.map(({ uuid }) => uuid),
+        }));
+    },
+    ".fundraisingAssignments"
+  )
   @FieldResolver(() => [FundraisingAssignmentNode])
   async assignments(
     @Root() { id: { id } }: FundraisingEntryNode
@@ -170,11 +169,8 @@ export class FundraisingEntryResolver
       ).promise;
   }
 
-  // @AccessControlAuthorized(globalFundraisingAccessParam, {
-  //   accessLevel: AccessLevel.Admin,
-  // })
   @WithAuditLogging()
-  @AccessControlAuthorized("modify")
+  @AccessControlAuthorized("modify", ["getId", "FundraisingEntryNode", "id"])
   @Mutation(() => FundraisingEntryNode, { name: "setFundraisingEntry" })
   async setFundraisingEntry(
     @Arg("id", () => GlobalIdScalar) { id }: GlobalId,
@@ -200,7 +196,7 @@ export class FundraisingEntryResolver
     return entry.toAsyncResult().map(fundraisingEntryModelToNode).promise;
   }
 
-  @AccessControlAuthorized("list", "FundraisingEntryNode")
+  @AccessControlAuthorized("list", ["every", "FundraisingEntryNode"])
   @Query(() => String)
   async rawFundraisingTotals(
     @Arg("marathonYear", () => String) marathonYear: MarathonYearString
@@ -209,7 +205,7 @@ export class FundraisingEntryResolver
     return result.map((data) => JSON.stringify(data));
   }
 
-  @AccessControlAuthorized("list", "FundraisingEntryNode")
+  @AccessControlAuthorized("list", ["every", "FundraisingEntryNode"])
   @Query(() => String)
   async rawFundraisingEntries(
     @Arg("marathonYear", () => String) marathonYear: MarathonYearString,

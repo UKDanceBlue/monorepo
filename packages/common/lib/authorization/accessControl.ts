@@ -78,7 +78,7 @@ const extraFieldsByResource = {
 type ResourceSubject = {
   [resource in keyof typeof ResourceClasses]: {
     kind: resource;
-    id?: string;
+    id?: string | string[];
 
     // When allowing access to a resource, passing in no fields will allow access to all fields,
     // so by passing in this $ field, we can change that behavior to default to no fields.
@@ -95,6 +95,16 @@ export const SubjectStrings = [
   ) as (keyof typeof extraFieldsByResource)[]),
   "all",
 ] as const satisfies Subject[];
+
+export type SubjectObject<S extends Exclude<Extract<Subject, string>, "all">> =
+  Readonly<
+    Extract<
+      Subject,
+      {
+        kind: S;
+      }
+    >
+  >;
 
 export type Action =
   | "create"

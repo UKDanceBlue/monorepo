@@ -7,7 +7,7 @@ import * as TypeGraphql from "type-graphql";
 import { assertGlobalId } from "../api/scalars/GlobalId.js";
 import { InvalidArgumentError } from "../error/direct.js";
 import type { ConcreteError } from "../error/error.js";
-import type { Action, Subject } from "./accessControl.js";
+import type { Action, Subject, SubjectObject } from "./accessControl.js";
 
 type MaybeCallback<T> =
   | MaybeResult<T>
@@ -21,21 +21,11 @@ type MaybeResult<T> =
   | Result<T, ConcreteError>
   | AsyncResult<T, ConcreteError>;
 
-type SubjectObject<S extends Exclude<Extract<Subject, string>, "all">> =
-  Readonly<
-    Extract<
-      Subject,
-      {
-        kind: S;
-      }
-    >
-  >;
-
 export type AccessControlParam<
   S extends Exclude<Extract<Subject, string>, "all">,
 > = [
   action: Action,
-  subject: MaybeCallback<{ id?: string; kind: S }> | "all",
+  subject: MaybeCallback<{ id?: string | string[]; kind: S }> | "all",
   field:
     | keyof Pick<SubjectObject<S>, `.${string}` & keyof SubjectObject<S>>
     | ".",

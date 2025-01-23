@@ -45,7 +45,7 @@ export class SolicitationCodeResolver
     private readonly solicitationCodeRepository: SolicitationCodeRepository
   ) {}
 
-  @AccessControlAuthorized("get")
+  @AccessControlAuthorized("get", ["getId", "SolicitationCodeNode", "id"])
   @Query(() => SolicitationCodeNode)
   async solicitationCode(
     @Arg("id", () => GlobalIdScalar) { id }: GlobalId
@@ -64,7 +64,7 @@ export class SolicitationCodeResolver
     ).promise;
   }
 
-  @AccessControlAuthorized("get")
+  @AccessControlAuthorized("list", ["every", "SolicitationCodeNode"])
   @Query(() => ListSolicitationCodesResponse)
   async solicitationCodes(
     @Args(() => ListSolicitationCodesArgs) _query: ListSolicitationCodesArgs
@@ -86,7 +86,7 @@ export class SolicitationCodeResolver
     ).promise;
   }
 
-  @AccessControlAuthorized("create", "SolicitationCodeNode")
+  @AccessControlAuthorized("create", ["every", "SolicitationCodeNode"])
   @Mutation(() => SolicitationCodeNode)
   @WithAuditLogging()
   createSolicitationCode(
@@ -108,7 +108,7 @@ export class SolicitationCodeResolver
     ).promise;
   }
 
-  @AccessControlAuthorized("update")
+  @AccessControlAuthorized("update", ["getId", "SolicitationCodeNode", "id"])
   @Mutation(() => SolicitationCodeNode)
   @WithAuditLogging()
   setSolicitationCode(
@@ -130,7 +130,7 @@ export class SolicitationCodeResolver
     ).promise;
   }
 
-  @AccessControlAuthorized("list", "FundraisingEntryNode")
+  @AccessControlAuthorized("list", ["every", "FundraisingEntryNode"])
   @FieldResolver(() => ListFundraisingEntriesResponse)
   entries(
     @Root() { id }: SolicitationCodeNode,
@@ -139,7 +139,7 @@ export class SolicitationCodeResolver
     return this.fundraisingEntryResolver.fundraisingEntries(args, id);
   }
 
-  @AccessControlAuthorized("list", "TeamNode")
+  @AccessControlAuthorized("list", ["every", "TeamNode"])
   @FieldResolver(() => [TeamNode])
   async teams(
     @Root() { id: { id } }: SolicitationCodeNode,
@@ -160,11 +160,7 @@ export class SolicitationCodeResolver
       .promise;
   }
 
-  @AccessControlAuthorized(
-    "update",
-    (info, args) => ({ kind: "SolicitationCodeNode" }) as const,
-    "."
-  )
+  @AccessControlAuthorized("update", ["getId", "SolicitationCodeNode", "id"])
   @Mutation(() => VoidResolver, { name: "assignSolicitationCodeToTeam" })
   @WithAuditLogging()
   async assignSolicitationCodeToTeam(
@@ -183,7 +179,7 @@ export class SolicitationCodeResolver
     return result.map(() => VoidScalar);
   }
 
-  @AccessControlAuthorized("update", "SolicitationCodeNode")
+  @AccessControlAuthorized("update", ["getId", "SolicitationCodeNode", "id"])
   @Mutation(() => VoidResolver, { name: "removeSolicitationCodeFromTeam" })
   @WithAuditLogging()
   async removeSolicitationCodeFromTeam(

@@ -28,10 +28,7 @@ export const AssignTeamToSolicitationCodeDocument = graphql(/* GraphQL */ `
     $teamId: GlobalId!
     $solicitationCodeId: GlobalId!
   ) {
-    assignSolicitationCodeToTeam(
-      teamId: $teamId
-      solicitationCode: $solicitationCodeId
-    )
+    assignSolicitationCodeToTeam(teamId: $teamId, id: $solicitationCodeId)
   }
 `);
 

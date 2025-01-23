@@ -61,7 +61,7 @@ export class TeamResolver implements CrudResolver<TeamNode, "team"> {
     private fundraisingEntryRepository: FundraisingEntryRepository
   ) {}
 
-  @AccessControlAuthorized("get")
+  @AccessControlAuthorized("get", ["getId", "TeamNode", "id"])
   @Query(() => TeamNode, { name: "team" })
   async team(
     @Arg("id", () => GlobalIdScalar) { id }: GlobalId
@@ -75,7 +75,7 @@ export class TeamResolver implements CrudResolver<TeamNode, "team"> {
     return Ok(Some(teamModelToResource(row)));
   }
 
-  @AccessControlAuthorized("list", "TeamNode")
+  @AccessControlAuthorized("list", ["every", "TeamNode"])
   @Query(() => ListTeamsResponse, { name: "teams" })
   teams(
     @Args(() => ListTeamsArgs) query: ListTeamsArgs,
@@ -99,7 +99,7 @@ export class TeamResolver implements CrudResolver<TeamNode, "team"> {
       });
   }
 
-  @AccessControlAuthorized("create")
+  @AccessControlAuthorized("create", ["every", "TeamNode"])
   @Mutation(() => TeamNode, { name: "createTeam" })
   @WithAuditLogging()
   async createTeam(
@@ -118,7 +118,7 @@ export class TeamResolver implements CrudResolver<TeamNode, "team"> {
     return teamModelToResource(row);
   }
 
-  @AccessControlAuthorized("update")
+  @AccessControlAuthorized("update", ["getId", "TeamNode", "id"])
   @Mutation(() => TeamNode, { name: "setTeam" })
   @WithAuditLogging()
   async setTeam(
@@ -143,7 +143,7 @@ export class TeamResolver implements CrudResolver<TeamNode, "team"> {
     return teamModelToResource(row);
   }
 
-  @AccessControlAuthorized("create")
+  @AccessControlAuthorized("create", ["every", "TeamNode"])
   @Mutation(() => [TeamNode], { name: "createTeams" })
   @WithAuditLogging()
   async createTeams(
@@ -157,7 +157,7 @@ export class TeamResolver implements CrudResolver<TeamNode, "team"> {
     return rows.map((rows) => rows.map((row) => teamModelToResource(row)));
   }
 
-  @AccessControlAuthorized("delete")
+  @AccessControlAuthorized("delete", ["getId", "TeamNode", "id"])
   @Mutation(() => TeamNode, { name: "deleteTeam" })
   @WithAuditLogging()
   async deleteTeam(
@@ -172,7 +172,7 @@ export class TeamResolver implements CrudResolver<TeamNode, "team"> {
     return teamModelToResource(row);
   }
 
-  @AccessControlAuthorized("list", "TeamNode", ".members")
+  @AccessControlAuthorized("list", ["every", "MembershipNode"])
   @FieldResolver(() => [MembershipNode])
   async members(@Root() { id: { id } }: TeamNode): Promise<MembershipNode[]> {
     const memberships = await this.teamRepository.findMembersOfTeam({
@@ -182,8 +182,8 @@ export class TeamResolver implements CrudResolver<TeamNode, "team"> {
     return memberships.map((row) => membershipModelToResource(row));
   }
 
-  // TODO: Restrict access to this field to vice, for now the mobile app relies on it
-  @AccessControlAuthorized("get", "TeamNode")
+  // TODO: Replace with a field on membership, for now the mobile app relies on it
+  @AccessControlAuthorized("get", ["every", "TeamNode"])
   @FieldResolver(() => [PointEntryNode])
   async pointEntries(
     @Root() { id: { id } }: TeamNode
@@ -195,7 +195,11 @@ export class TeamResolver implements CrudResolver<TeamNode, "team"> {
     return rows.map((row) => pointEntryModelToResource(row));
   }
 
-  @AccessControlAuthorized("get", "TeamNode", ".fundraisingTotal")
+  @AccessControlAuthorized(
+    "get",
+    ["getIdFromRoot", "TeamNode", "id"],
+    ".fundraisingTotal"
+  )
   @FieldResolver(() => Float, { nullable: true })
   async fundraisingTotalAmount(
     @Root() { id: { id } }: TeamNode
@@ -214,13 +218,12 @@ export class TeamResolver implements CrudResolver<TeamNode, "team"> {
     return result._sum.points ?? 0;
   }
 
-  @AccessControlAuthorized("get", "TeamNode")
   @FieldResolver(() => MarathonNode)
   async marathon(@Root() { id: { id } }: TeamNode): Promise<MarathonNode> {
     const result = await this.teamRepository.getMarathon({ uuid: id });
 
     if (result == null) {
-      throw new LegacyError(LegacyErrorCode.NotFound, "Team not found");
+      throw new LegacyError(LegacyErrorCode.NotFound, "Marathon not found");
     }
 
     return marathonModelToResource(result);
@@ -237,7 +240,11 @@ export class TeamResolver implements CrudResolver<TeamNode, "team"> {
     return result ?? null;
   }
 
-  @AccessControlAuthorized("get", "TeamNode", ".fundraisingEntries")
+  @AccessControlAuthorized(
+    "get",
+    ["getId", "TeamNode", "id"],
+    ".fundraisingAssignments"
+  )
   @FieldResolver(() => ListFundraisingEntriesResponse)
   fundraisingEntries(
     @Root() { id: { id } }: TeamNode,
@@ -260,7 +267,11 @@ export class TeamResolver implements CrudResolver<TeamNode, "team"> {
       }));
   }
 
-  @AccessControlAuthorized("get", "TeamNode", ".solicitationCode")
+  @AccessControlAuthorized(
+    "get",
+    ["getId", "TeamNode", "id"],
+    ".solicitationCode"
+  )
   @FieldResolver(() => SolicitationCodeNode, { nullable: true })
   async solicitationCode(
     @Root() { id: { id } }: TeamNode

@@ -41,7 +41,7 @@ export class PointOpportunityResolver
     private readonly pointOpportunityRepository: PointOpportunityRepository
   ) {}
 
-  @AccessControlAuthorized("get")
+  @AccessControlAuthorized("get", ["getId", "PointOpportunityNode", "id"])
   @Query(() => PointOpportunityNode, { name: "pointOpportunity" })
   async pointOpportunity(
     @Arg("id", () => GlobalIdScalar) { id }: GlobalId
@@ -61,7 +61,7 @@ export class PointOpportunityResolver
     return pointOpportunityModelToResource(row);
   }
 
-  @AccessControlAuthorized("list", "PointOpportunityNode")
+  @AccessControlAuthorized("list", ["every", "PointOpportunityNode"])
   @Query(() => ListPointOpportunitiesResponse, { name: "pointOpportunities" })
   pointOpportunities(
     @Args(() => ListPointOpportunitiesArgs) query: ListPointOpportunitiesArgs
@@ -82,7 +82,7 @@ export class PointOpportunityResolver
       });
   }
 
-  @AccessControlAuthorized("create")
+  @AccessControlAuthorized("create", ["every", "PointOpportunityNode"])
   @Mutation(() => PointOpportunityNode, {
     name: "createPointOpportunity",
   })
@@ -107,7 +107,7 @@ export class PointOpportunityResolver
     return pointOpportunityModelToResource(row);
   }
 
-  @AccessControlAuthorized("update")
+  @AccessControlAuthorized("update", ["getId", "PointOpportunityNode", "id"])
   @Mutation(() => PointOpportunityNode, {
     name: "setPointOpportunity",
   })
@@ -142,7 +142,7 @@ export class PointOpportunityResolver
     return pointOpportunityModelToResource(row);
   }
 
-  @AccessControlAuthorized("delete")
+  @AccessControlAuthorized("delete", ["getId", "PointOpportunityNode", "id"])
   @Mutation(() => PointOpportunityNode, {
     name: "deletePointOpportunity",
   })

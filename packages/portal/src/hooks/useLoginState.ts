@@ -2,9 +2,11 @@ import { createMongoAbility } from "@casl/ability";
 import type { PackRule } from "@casl/ability/extra";
 import { unpackRules } from "@casl/ability/extra";
 import type {
-  AccessControlParam,
+  Action,
   AppAbility,
   Authorization,
+  Subject,
+  SubjectObject,
 } from "@ukdanceblue/common";
 import { AccessLevel, caslOptions } from "@ukdanceblue/common";
 import {
@@ -16,10 +18,10 @@ import { useMemo } from "react";
 import type { Result } from "ts-results-es";
 import { Err, Ok } from "ts-results-es";
 import type { Client, CombinedError, OperationResult } from "urql";
-import { useQuery } from "#hooks/useTypedRefine.ts";
 
 import type { ResultOf, VariablesOf } from "#gql/index.js";
 import { graphql } from "#gql/index.js";
+import { useQuery } from "#hooks/useTypedRefine.ts";
 
 const loginStateDocument = graphql(/* GraphQL */ `
   query LoginState {
@@ -156,10 +158,16 @@ export function useLoginState(): PortalAuthData {
   return useMemo(() => parseLoginState(result), [result]);
 }
 
-export function useAuthorizationRequirement(
-  ...rule: AccessControlParam<false>
+export function useAuthorizationRequirement<
+  S extends Exclude<Extract<Subject, string>, "all">,
+>(
+  action: Action,
+  subject: S | "all",
+  field:
+    | keyof Pick<SubjectObject<S>, `.${string}` & keyof SubjectObject<S>>
+    | "." = "."
 ): boolean {
   const { ability } = useLoginState();
 
-  return ability.can(...rule);
+  return ability.can(action, subject, field);
 }
