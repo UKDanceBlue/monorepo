@@ -3,6 +3,8 @@ import { fileURLToPath } from "node:url";
 import eslintJs from "@eslint/js";
 import graphqlPlugin from "@graphql-eslint/eslint-plugin";
 import eslintPluginVitest from "@vitest/eslint-plugin";
+// TODO: Set up config for this plugin
+// import eslintPluginProjectStructure from "eslint-plugin-project-structure";
 import eslintConfigPrettier from "eslint-config-prettier";
 import eslintPluginNode from "eslint-plugin-n";
 import eslintPluginReact from "eslint-plugin-react";
