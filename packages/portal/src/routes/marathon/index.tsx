@@ -2,10 +2,10 @@ import { EditOutlined, EyeOutlined } from "@ant-design/icons";
 import { List } from "@refinedev/antd";
 import { createFileRoute } from "@tanstack/react-router";
 import { Button, Table } from "antd";
-import { useQuery } from "#hooks/useTypedRefine.ts";
 
 import { graphql } from "#gql/index.js";
 import { useQueryStatusWatcher } from "#hooks/useQueryStatusWatcher.ts";
+import { useQuery } from "#hooks/useTypedRefine.ts";
 import { useTypedTable } from "#hooks/useTypedRefine.ts";
 
 const marathonOverviewPageDocument = graphql(/* GraphQL */ `

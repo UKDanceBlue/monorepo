@@ -1,11 +1,11 @@
 import { createFileRoute, useParams } from "@tanstack/react-router";
 import { stringifyDDNBatchType } from "@ukdanceblue/common";
 import { Descriptions } from "antd";
-import { useQuery } from "#hooks/useTypedRefine.ts";
 
 import { LoadingRibbon } from "#elements/components/design/RibbonSpinner";
 import { graphql, readFragment } from "#gql/index.js";
 import { useQueryStatusWatcher } from "#hooks/useQueryStatusWatcher";
+import { useQuery } from "#hooks/useTypedRefine.ts";
 
 export const Route = createFileRoute("/fundraising/ddn/$ddnId/")({
   component: RouteComponent,

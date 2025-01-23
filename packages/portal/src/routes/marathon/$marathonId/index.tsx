@@ -1,11 +1,11 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useQuery } from "#hooks/useTypedRefine.ts";
 
 import {
   MarathonViewer,
   MarathonViewerFragment,
 } from "#elements/viewers/marathon/MarathonViewer.js";
 import { graphql } from "#gql/index.js";
+import { useQuery } from "#hooks/useTypedRefine.ts";
 
 const marathonPageDocument = graphql(
   /* GraphQL */ `

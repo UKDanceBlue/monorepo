@@ -1,6 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useParams } from "@tanstack/react-router";
-import { useQuery } from "#hooks/useTypedRefine.ts";
 
 import {
   PersonViewer,
@@ -9,6 +8,7 @@ import {
 import { graphql } from "#gql/index.js";
 import { useLoginState } from "#hooks/useLoginState.js";
 import { useQueryStatusWatcher } from "#hooks/useQueryStatusWatcher.js";
+import { useQuery } from "#hooks/useTypedRefine.ts";
 
 const viewPersonPageDocument = graphql(
   /* GraphQL */ `

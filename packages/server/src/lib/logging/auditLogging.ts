@@ -172,7 +172,7 @@ export async function logAuditEvent(
       message = `${action} ${loadedSubject}${field} at ${path}`;
     } else if (typeof loadedSubject === "object") {
       message = loadedSubject.id
-        ? `${action} ${loadedSubject.kind}[id=${loadedSubject.id}]${field}  at ${path}`
+        ? `${action} ${loadedSubject.kind}[id=${Array.isArray(loadedSubject.id) ? JSON.stringify(loadedSubject.id) : loadedSubject.id}]${field}  at ${path}`
         : `${action} ${loadedSubject.kind}${field}  at ${path}`;
     } else {
       loadedSubject satisfies undefined;

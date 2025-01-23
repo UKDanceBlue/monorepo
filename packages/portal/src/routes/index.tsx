@@ -1,6 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { Typography } from "antd";
-import { useQuery } from "#hooks/useTypedRefine.ts";
 
 import {
   PersonViewer,
@@ -9,6 +8,7 @@ import {
 import { graphql } from "#gql/index.js";
 import { useLoginState } from "#hooks/useLoginState.js";
 import { useQueryStatusWatcher } from "#hooks/useQueryStatusWatcher.js";
+import { useQuery } from "#hooks/useTypedRefine.ts";
 
 const ViewMePageDocument = graphql(
   /* GraphQL */ `

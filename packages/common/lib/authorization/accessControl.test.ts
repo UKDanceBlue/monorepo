@@ -336,7 +336,7 @@ function canMessage(
   subject: Subject,
   field: string
 ) {
-  return `expected ${not ? "not " : ""}to be able to ${action} ${typeof subject === "string" ? subject : `${subject.kind}[id=${subject.id}]`}${field}`;
+  return `expected ${not ? "not " : ""}to be able to ${action} ${typeof subject === "string" ? subject : `${subject.kind}[id=${Array.isArray(subject.id) ? JSON.stringify(subject.id) : subject.id}]`}${field}`;
 }
 
 expect.extend({
