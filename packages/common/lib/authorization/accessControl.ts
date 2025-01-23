@@ -40,6 +40,7 @@ const extraFieldsByResource = {
     [".password"]: NEVER,
   },
   TeamNode: {
+    [".fundraisingEntries"]: NEVER,
     [".fundraisingAssignments"]: NEVER,
     [".members"]: NEVER,
     [".solicitationCode"]: NEVER,

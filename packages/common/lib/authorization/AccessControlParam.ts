@@ -99,7 +99,7 @@ export function AccessControlAuthorized<
             target.constructor.name,
             String(propertyKey),
             action,
-            kind,
+            `${kind}${field}`,
             ` with an id of _args.${idField}_`
           );
           break;
@@ -122,7 +122,7 @@ export function AccessControlAuthorized<
             target.constructor.name,
             String(propertyKey),
             action,
-            kind,
+            `${kind}${field}`,
             ` with an id of _root.${idField}_`
           );
           break;
@@ -134,7 +134,7 @@ export function AccessControlAuthorized<
             target.constructor.name,
             String(propertyKey),
             action,
-            `every ${kind}`
+            `every ${kind}${field}`
           );
           break;
         }
@@ -160,7 +160,7 @@ export function AccessControlAuthorized<
         String(propertyKey),
         action,
         typeof subjectOrMacro === "function"
-          ? `custom function: \n\`\`\`js\n${String(subjectOrMacro)}\n\`\`\``
+          ? `custom function (${field}):\n\`\`\`js\n${String(subjectOrMacro)}\n\`\`\``
           : String(subjectOrMacro)
       );
     }

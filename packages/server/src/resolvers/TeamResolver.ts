@@ -241,9 +241,9 @@ export class TeamResolver implements CrudResolver<TeamNode, "team"> {
   }
 
   @AccessControlAuthorized(
-    "get",
+    "list",
     ["getId", "TeamNode", "id"],
-    ".fundraisingAssignments"
+    ".fundraisingEntries"
   )
   @FieldResolver(() => ListFundraisingEntriesResponse)
   fundraisingEntries(
