@@ -317,7 +317,7 @@ export class NotificationResolver
       .map(notificationModelToResource).promise;
   }
 
-  @AccessControlAuthorized("deploy", ["getId", "NotificationNode", "id"])
+  @AccessControlAuthorized("get", ["getIdFromRoot", "NotificationNode", "id"])
   @FieldResolver(() => Int, { name: "deliveryCount" })
   async deliveryCount(
     @Root() { id: { id } }: NotificationNode
@@ -327,7 +327,7 @@ export class NotificationResolver
     });
   }
 
-  @AccessControlAuthorized("deploy", ["getId", "NotificationNode", "id"])
+  @AccessControlAuthorized("get", ["getIdFromRoot", "NotificationNode", "id"])
   @FieldResolver(() => NotificationDeliveryIssueCount, {
     name: "deliveryIssueCount",
   })

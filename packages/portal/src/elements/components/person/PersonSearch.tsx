@@ -1,9 +1,9 @@
 import type { GetRef } from "antd";
+import { Spin } from "antd";
 import { AutoComplete, type AutoCompleteProps } from "antd";
 import { useRef, useState } from "react";
 
 import { graphql } from "#gql/index.js";
-import { useQueryStatusWatcher } from "#hooks/useQueryStatusWatcher.js";
 import { useQuery } from "#hooks/useTypedRefine.ts";
 
 const personSearchDocument = graphql(/* GraphQL */ `
@@ -36,7 +36,7 @@ export function PersonSearch({
   ) => void;
 } & Omit<AutoCompleteProps, "options" | "onSelect" | "onSearch">) {
   const [search, setSearch] = useState("");
-  const [{ data, fetching, error }] = useQuery({
+  const [{ data, fetching }] = useQuery({
     query: personSearchDocument,
     variables: {
       search,
@@ -45,12 +45,6 @@ export function PersonSearch({
   });
 
   const autocompleteRef = useRef<GetRef<typeof AutoComplete>>(null);
-
-  const { resetWatcher } = useQueryStatusWatcher({
-    error,
-    fetching,
-    loadingMessage: "Searching for people...",
-  });
 
   const options =
     data?.searchPeopleByName.map((person) => ({
@@ -78,8 +72,8 @@ export function PersonSearch({
       onSearch={(value) => {
         setSelectedName(undefined);
         setSearch(value);
-        resetWatcher();
       }}
+      suffixIcon={fetching ? <Spin size="small" /> : undefined}
       ref={autocompleteRef}
       value={selectedName}
       onSelect={(value) => {

@@ -488,7 +488,7 @@ export function useQuery<Document extends DocumentNode>(props: {
 
   return [
     {
-      fetching: val.isLoading,
+      fetching: val.isLoading && !props.pause,
       hasNext: false,
       stale: false,
       data: val.data?.data,

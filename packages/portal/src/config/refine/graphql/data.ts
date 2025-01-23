@@ -54,15 +54,10 @@ function combinedToHttpError(error: CombinedError): HttpError {
   } else {
     const { code } =
       error.graphQLErrors.find((e) => e.extensions.code)?.extensions ?? {};
+    console.log(code);
     return {
       statusCode:
-        typeof code === "number"
-          ? code
-          : code === "BAD_USER_INPUT"
-            ? 400
-            : code === "UNAUTHORIZED"
-              ? 401
-              : 500,
+        code === "BAD_USER_INPUT" ? 400 : code === "UNAUTHORIZED" ? 401 : 500,
       message: error.message,
       cause: error,
     };

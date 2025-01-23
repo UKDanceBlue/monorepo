@@ -139,22 +139,9 @@ export function ListTeamsPage() {
           {
             title: "Actions",
             key: "actions",
-            render: (_text, record) => (
-              <Flex gap="small" align="center">
-                <Link to="/teams/$teamId/points" params={{ teamId: record.id }}>
-                  <Button icon={<EyeOutlined />} />
-                </Link>
-                <Link
-                  to="/teams/$teamId/fundraising"
-                  params={{ teamId: record.id }}
-                >
-                  <Button icon={<DollarOutlined />} />
-                </Link>
-                <Link to="/teams/$teamId/edit" params={{ teamId: record.id }}>
-                  <Button icon={<EditOutlined />} />
-                </Link>
-              </Flex>
-            ),
+            render(_, { id }) {
+              return <TeamActions id={id} />;
+            },
           },
         ]}
       />
@@ -165,3 +152,29 @@ export function ListTeamsPage() {
 export const Route = createFileRoute("/teams/")({
   component: ListTeamsPage,
 });
+
+function TeamActions({ id }: { id: string }) {
+  return (
+    <Flex gap="small" align="center">
+      {useAuthorizationRequirement("get", { id, kind: "TeamNode" }) && (
+        <Link to="/teams/$teamId/points" params={{ teamId: id }}>
+          <Button icon={<EyeOutlined />} />
+        </Link>
+      )}
+      {useAuthorizationRequirement(
+        "get",
+        { id, kind: "TeamNode" },
+        ".fundraisingEntries"
+      ) && (
+        <Link to="/teams/$teamId/fundraising" params={{ teamId: id }}>
+          <Button icon={<DollarOutlined />} />
+        </Link>
+      )}
+      {useAuthorizationRequirement("update", { id, kind: "TeamNode" }) && (
+        <Link to="/teams/$teamId/edit" params={{ teamId: id }}>
+          <Button icon={<EditOutlined />} />
+        </Link>
+      )}
+    </Flex>
+  );
+}

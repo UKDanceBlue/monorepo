@@ -55,7 +55,18 @@ export function InnerContext({ children }: { children: React.ReactNode }) {
 }
 
 export function OuterContext({ children }: { children: React.ReactNode }) {
-  const [queryClient] = useState(new QueryClient({}));
+  const [queryClient] = useState(
+    new QueryClient({
+      defaultOptions: {
+        queries: {
+          retry: false,
+        },
+        mutations: {
+          retry: false,
+        },
+      },
+    })
+  );
 
   return (
     <StrictMode>

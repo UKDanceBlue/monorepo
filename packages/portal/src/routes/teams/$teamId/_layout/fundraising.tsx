@@ -1,6 +1,6 @@
 import { useInvalidate } from "@refinedev/core";
 import { createFileRoute, useParams } from "@tanstack/react-router";
-import { AutoComplete, Button, Card, Flex, Form, Space } from "antd";
+import { AutoComplete, Button, Card, Flex, Form, Result, Space } from "antd";
 import { useState } from "react";
 import { useMutation, useQuery } from "urql";
 
@@ -139,6 +139,16 @@ function ViewTeamFundraising() {
       id: useParams({ from: "/teams/$teamId/_layout/fundraising" }).teamId,
     },
   });
+
+  const canSeeFundraising = useAuthorizationRequirement(
+    "list",
+    { kind: "TeamNode", id: teamUuid },
+    ".fundraisingEntries"
+  );
+
+  if (!canSeeFundraising) {
+    return <Result status={"403"} title="Access Denied" />;
+  }
 
   if (!canSetSolicitationCode && !data?.data.solicitationCode) {
     return (

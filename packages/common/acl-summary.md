@@ -218,9 +218,9 @@ Generated automatically on 1/23/2025. This document lists the required permissio
 ### deleteNotification
 **delete** NotificationNode. with an id of _args.id_
 ### deliveryCount
-**deploy** NotificationNode. with an id of _args.id_
+**get** NotificationNode. with an id of _root.id_
 ### deliveryIssueCount
-**deploy** NotificationNode. with an id of _args.id_
+**get** NotificationNode. with an id of _root.id_
 ## PersonResolver
 ### person
 **get** PersonNode. with an id of _args.id_

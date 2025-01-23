@@ -158,13 +158,15 @@ export function useLoginState(): PortalAuthData {
   return useMemo(() => parseLoginState(result), [result]);
 }
 
-export function useAuthorizationRequirement<
-  S extends Exclude<Extract<Subject, string>, "all">,
->(
+export function useAuthorizationRequirement<S extends Exclude<Subject, "all">>(
   action: Action,
   subject: S | "all",
   field:
-    | keyof Pick<SubjectObject<S>, `.${string}` & keyof SubjectObject<S>>
+    | keyof Pick<
+        SubjectObject<S extends string ? S : Exclude<S, string>["kind"]>,
+        `.${string}` &
+          keyof SubjectObject<S extends string ? S : Exclude<S, string>["kind"]>
+      >
     | "." = "."
 ): boolean {
   const { ability } = useLoginState();

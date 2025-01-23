@@ -130,6 +130,10 @@ export class SchemaService {
     const { context, args, info, root } = resolverData;
     const { accessLevel, ability } = context;
 
+    logger.trace("Checking access control", {
+      info: { field: info.fieldName },
+    });
+
     if (accessLevel === AccessLevel.SuperAdmin) {
       return true;
     }
@@ -140,6 +144,7 @@ export class SchemaService {
       const [rule] = params;
 
       const action: Action = rule[0];
+      const field = rule[2];
       let subject: Subject;
       if (rule[1] === "all") {
         subject = rule[1];
@@ -165,6 +170,7 @@ export class SchemaService {
         let value;
         if (Result.isResult(result)) {
           if (result.isErr()) {
+            logger.error("Failed to get subject", { error: result.error });
             return false;
           } else {
             value = result.value;
@@ -182,13 +188,16 @@ export class SchemaService {
             : { kind: value };
       }
 
-      const ok = ability.can(action, subject, rule[2]);
+      const canParameters = [action, subject, field] as const;
 
-      logger.trace("Checking access control", {
-        rule: ability.relevantRuleFor(rule[0], subject, rule[2]),
-        authorized: ok,
-        canParameters: rule,
-      });
+      const ok = ability.can(...canParameters);
+
+      if (!ok) {
+        logger.trace("Failed access control", {
+          authorized: ok,
+          canParameters,
+        });
+      }
 
       return ok;
     } else {
