@@ -8,6 +8,7 @@ services:
     attach: false
     volumes:
       - database:/var/lib/postgresql/data
+      - backup:/backup:ro
     networks:
       database:
         aliases:
@@ -65,6 +66,9 @@ volumes:
     driver: local
   database:
     driver: local
+  backup:
+    external: true
+    name: danceblue-app-database-backup-dir
 
 # Secrets from environment variables (i.e. var: environment: VAR)
 # secrets:
