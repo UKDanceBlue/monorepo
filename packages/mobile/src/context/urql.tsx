@@ -2,7 +2,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { authExchange } from "@urql/exchange-auth";
 import type { ReactNode } from "react";
 import { createContext, useContext, useMemo, useReducer } from "react";
-import { cacheExchange, Client, fetchExchange, Provider } from "urql";
+import { Client, fetchExchange, Provider } from "urql";
 
 import { API_BASE_URL } from "@/common/apiUrl";
 import { Logger } from "@/common/logger/Logger";
@@ -22,7 +22,6 @@ export function UrqlContext({ children }: { children: ReactNode }) {
     return new Client({
       url: `${API_BASE_URL}/graphql`,
       exchanges: [
-        cacheExchange,
         // eslint-disable-next-line @typescript-eslint/unbound-method
         authExchange(async ({ appendHeaders }) => {
           const token = await AsyncStorage.getItem(DANCEBLUE_TOKEN_KEY);
@@ -41,7 +40,7 @@ export function UrqlContext({ children }: { children: ReactNode }) {
               invalidateCache();
             },
             didAuthError: (args) => {
-              const { message, response } = args;
+              const { message, response, graphQLErrors } = args;
 
               if (
                 (response as { status?: unknown } | undefined)?.status ===
@@ -50,7 +49,12 @@ export function UrqlContext({ children }: { children: ReactNode }) {
                   "Access denied! You don't have permission for this action!" ||
                 message === "Context creation failed: Invalid JWT payload" ||
                 message ===
-                  "[GraphQL] Context creation failed: invalid signature"
+                  "[GraphQL] Context creation failed: invalid signature" ||
+                graphQLErrors.some(
+                  (error) =>
+                    error.extensions.code === "UNAUTHENTICATED" ||
+                    error.extensions.code === "UNAUTHORIZED"
+                )
               ) {
                 Logger.error("Auth  error", {
                   context: {
@@ -60,6 +64,10 @@ export function UrqlContext({ children }: { children: ReactNode }) {
                     },
                   },
                 });
+                AsyncStorage.removeItem(DANCEBLUE_TOKEN_KEY).then(
+                  () => invalidateCache(),
+                  console.error
+                );
                 return true;
               }
 
