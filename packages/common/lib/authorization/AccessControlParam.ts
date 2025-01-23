@@ -40,6 +40,28 @@ export function getArrayFromOverloadedRest<T>(
   return items;
 }
 
+const aclSummary = new Map<string, string[]>();
+function addAclSummary(
+  constructorName: string,
+  propertyKey: string,
+  action: string,
+  kindStr: string,
+  kindSpecifier = ""
+) {
+  if (
+    "process" in globalThis &&
+    "versions" in globalThis.process &&
+    "node" in globalThis.process.versions
+  ) {
+    if (!aclSummary.has(constructorName)) {
+      aclSummary.set(constructorName, []);
+    }
+    aclSummary
+      .get(constructorName)!
+      .push(`### ${propertyKey}\n**${action}** ${kindStr}${kindSpecifier}`);
+  }
+}
+
 export function AccessControlAuthorized<
   S extends Exclude<Extract<Subject, string>, "all">,
 >(
@@ -73,6 +95,13 @@ export function AccessControlAuthorized<
             const id = assertGlobalId(args[idField]);
             return id.map(({ id }) => ({ id, kind }));
           };
+          addAclSummary(
+            target.constructor.name,
+            String(propertyKey),
+            action,
+            kind,
+            ` with an id of _args.${idField}_`
+          );
           break;
         }
         case "getIdFromRoot": {
@@ -89,15 +118,34 @@ export function AccessControlAuthorized<
             const id = assertGlobalId(root[idField]);
             return id.map(({ id }) => ({ id, kind }));
           };
+          addAclSummary(
+            target.constructor.name,
+            String(propertyKey),
+            action,
+            kind,
+            ` with an id of _root.${idField}_`
+          );
           break;
         }
         case "every": {
           const kind = subjectOrMacro[1];
           subject = { kind };
+          addAclSummary(
+            target.constructor.name,
+            String(propertyKey),
+            action,
+            `every ${kind}`
+          );
           break;
         }
         case "all": {
           subject = "all";
+          addAclSummary(
+            target.constructor.name,
+            String(propertyKey),
+            action,
+            "all subjects"
+          );
           break;
         }
         default: {
@@ -107,6 +155,14 @@ export function AccessControlAuthorized<
       }
     } else {
       subject = subjectOrMacro === "all" ? "all" : subjectOrMacro;
+      addAclSummary(
+        target.constructor.name,
+        String(propertyKey),
+        action,
+        typeof subjectOrMacro === "function"
+          ? `custom function: \n\`\`\`js\n${String(subjectOrMacro)}\n\`\`\``
+          : String(subjectOrMacro)
+      );
     }
 
     const role: AccessControlParam<S> = [action, subject, field];
@@ -129,3 +185,29 @@ export function AccessControlAuthorized<
     });
   };
 }
+
+setTimeout(() => {
+  if (
+    "process" in globalThis &&
+    "versions" in globalThis.process &&
+    "node" in globalThis.process.versions
+  ) {
+    if (process.env.NODE_ENV === "development") {
+      import("node:fs/promises").then(async ({ writeFile }) => {
+        const { fileURLToPath } = await import("node:url");
+        // const summary = aclSummary
+        //   .map((val) => `- ${val}`)
+        //   .sort()
+        //   .join("\n");
+        const summary = Array.from(aclSummary.entries())
+          .map(([key, val]) => `## ${key}\n${val.join("\n")}`)
+          .join("\n");
+        await writeFile(
+          fileURLToPath(import.meta.resolve("../../acl-summary.md")),
+          `# ACL Summary\nGenerated automatically on ${new Date().toLocaleDateString()}. This document lists the required permissions for each GraphQL endpoint in the DanceBlue Server\n${summary}`
+        );
+      }, console.error);
+    }
+  }
+  // We add a delay to ensure that all the decorators have been executed, speed is not important here as this file only needs to get updated every once in a while
+}, 10_000);

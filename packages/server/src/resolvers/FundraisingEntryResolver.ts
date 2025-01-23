@@ -170,7 +170,7 @@ export class FundraisingEntryResolver
   }
 
   @WithAuditLogging()
-  @AccessControlAuthorized("modify", ["getId", "FundraisingEntryNode", "id"])
+  @AccessControlAuthorized("update", ["getId", "FundraisingEntryNode", "id"])
   @Mutation(() => FundraisingEntryNode, { name: "setFundraisingEntry" })
   async setFundraisingEntry(
     @Arg("id", () => GlobalIdScalar) { id }: GlobalId,

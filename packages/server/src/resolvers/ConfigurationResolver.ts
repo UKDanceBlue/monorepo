@@ -2,7 +2,6 @@ import { Service } from "@freshgum/typedi";
 import type { CrudResolver, GlobalId } from "@ukdanceblue/common";
 import {
   AccessControlAuthorized,
-  assertGlobalId,
   ConfigurationNode,
   dateTimeFromSomething,
   GlobalIdScalar,
@@ -58,11 +57,7 @@ export class ConfigurationResolver
     return Ok(resp);
   }
 
-  @AccessControlAuthorized("get", (_, { id }) =>
-    assertGlobalId(id).map(
-      ({ id }) => ({ id, kind: "ConfigurationNode" }) as const
-    )
-  )
+  @AccessControlAuthorized("get", ["getId", "ConfigurationNode", "id"])
   @Query(() => ConfigurationNode, {
     name: "configuration",
     description: "Get a particular configuration entry by UUID",

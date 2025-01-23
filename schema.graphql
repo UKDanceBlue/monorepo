@@ -878,24 +878,12 @@ input MarathonHourResolverSort {
 }
 
 type MarathonNode implements Node {
-  communityDevelopmentCommitteeTeam: TeamNode!
-  corporateCommitteeTeam: TeamNode!
   createdAt: LuxonDateTime
-  dancerRelationsCommitteeTeam: TeamNode!
   endDate: DateTimeISO
-  familyRelationsCommitteeTeam: TeamNode!
-  fundraisingCommitteeTeam: TeamNode!
   hours: [MarathonHourNode!]!
   id: GlobalId!
-  marketingCommitteeTeam: TeamNode!
-  miniMarathonsCommitteeTeam: TeamNode!
-  operationsCommitteeTeam: TeamNode!
-  overallCommitteeTeam: TeamNode!
-  programmingCommitteeTeam: TeamNode!
   startDate: DateTimeISO
-  techCommitteeTeam: TeamNode!
   updatedAt: LuxonDateTime
-  viceCommitteeTeam: TeamNode!
   year: MarathonYear!
 }
 
