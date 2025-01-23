@@ -1,5 +1,6 @@
 import { Service } from "@freshgum/typedi";
 
+import { JobScheduler } from "#jobs/index.js";
 import type { SyslogLevels } from "#lib/logging/SyslogLevels.js";
 import {
   isDevelopmentToken,
@@ -18,6 +19,7 @@ import { SentryInstrumentation } from "./SentryInstrumentation.js";
   ExpressModule,
   PortalModule,
   SentryInstrumentation,
+  JobScheduler,
   logDirToken,
   loggingLevelToken,
   isDevelopmentToken,
@@ -28,6 +30,7 @@ export class Server implements EntryPoint {
     private readonly expressModule: ExpressModule,
     private readonly portalModule: PortalModule,
     private readonly sentryInstrumentation: SentryInstrumentation,
+    private readonly jobScheduler: JobScheduler,
     private readonly logDir: string,
     private readonly loggingLevel: SyslogLevels,
     private readonly isDevelopment: boolean
@@ -80,7 +83,7 @@ export class Server implements EntryPoint {
     await this.expressModule.start();
     logger.debug("Express started");
 
-    await import("#jobs/index.js");
+    await this.jobScheduler.start();
     logger.debug("Jobs started");
 
     logger.info("DanceBlue Server Started");

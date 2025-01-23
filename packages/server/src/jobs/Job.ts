@@ -50,5 +50,6 @@ export abstract class Job {
     const startAt = await this.jobStateRepository.getNextJobDate(this.cron);
     this.cron.options.startAt = startAt;
     this.cron.resume();
+    logger.debug(`Job ${this.name} started`);
   }
 }

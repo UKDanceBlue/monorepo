@@ -1,4 +1,3 @@
-import { IsDivisibleBy } from "class-validator";
 import { GraphQLLocalDate, GraphQLNonEmptyString } from "graphql-scalars";
 import { ArgsType, Field, Float, InputType, ObjectType } from "type-graphql";
 
@@ -41,7 +40,6 @@ export class SetFundraisingEntryInput {
   @Field(() => GlobalIdScalar, { nullable: true })
   solicitationCodeOverrideId?: GlobalId;
 
-  @IsDivisibleBy(0.01)
   @Field(() => Float, { nullable: true })
   amountOverride?: number;
 

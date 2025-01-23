@@ -35,6 +35,7 @@ export function FundraisingEntryEditor({ id }: { id: string }) {
     },
     ResultOf<typeof setFundraisingEntryDocument>["setFundraisingEntry"]
   >({
+    redirect: "edit",
     id,
     resource: "fundraisingEntry",
     meta: {
