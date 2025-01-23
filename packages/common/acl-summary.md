@@ -307,15 +307,15 @@ Generated automatically on 1/23/2025. This document lists the required permissio
 ### deleteTeam
 **delete** TeamNode. with an id of _args.id_
 ### members
-**list** every MembershipNode.
+**get** TeamNode. with an id of _root.id_
 ### pointEntries
 **get** every TeamNode.
 ### fundraisingTotalAmount
 **get** TeamNode.fundraisingTotal with an id of _root.id_
 ### fundraisingEntries
-**list** TeamNode.fundraisingEntries with an id of _args.id_
+**list** TeamNode.fundraisingEntries with an id of _root.id_
 ### solicitationCode
-**get** TeamNode.solicitationCode with an id of _args.id_
+**get** TeamNode.solicitationCode with an id of _root.id_
 ## DailyDepartmentNotificationResolver
 ### dailyDepartmentNotification
 **get** DailyDepartmentNotificationNode. with an id of _args.id_

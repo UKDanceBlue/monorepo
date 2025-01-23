@@ -1,6 +1,6 @@
 import { useInvalidate } from "@refinedev/core";
 import { createFileRoute, useParams } from "@tanstack/react-router";
-import { AutoComplete, Button, Card, Flex, Form, Result, Space } from "antd";
+import { AutoComplete, Button, Card, Flex, Form, Space } from "antd";
 import { useState } from "react";
 import { useMutation, useQuery } from "urql";
 
@@ -140,15 +140,15 @@ function ViewTeamFundraising() {
     },
   });
 
-  const canSeeFundraising = useAuthorizationRequirement(
-    "list",
-    { kind: "TeamNode", id: teamUuid },
-    ".fundraisingEntries"
-  );
+  // const canSeeFundraising = useAuthorizationRequirement(
+  //   "list",
+  //   { kind: "TeamNode", id: teamUuid },
+  //   ".fundraisingAssignments"
+  // );
 
-  if (!canSeeFundraising) {
-    return <Result status={"403"} title="Access Denied" />;
-  }
+  // if (!canSeeFundraising) {
+  //   return <Result status={"403"} title="Access Denied" />;
+  // }
 
   if (!canSetSolicitationCode && !data?.data.solicitationCode) {
     return (
