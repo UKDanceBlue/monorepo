@@ -50,24 +50,15 @@ function HomePage() {
       <Typography.Title level={2}>What's New?</Typography.Title>
       <Typography.Paragraph>
         <ul>
-          <li>This list!</li>
           <li>
-            The portal has had few big changes to the user interface, namely the
-            menu moving to the left; but you will notice some changes to to
-            other pages as well. For now this mostly means the events pages, but
-            others will come soon.
+            More of the portal has switched to our new forms, you may see some
+            nicer layouts around the place
           </li>
           <li>
-            The entire authorization system has been replaced, please contact
-            Tech Committee if you have any issues with "Access Denied" errors!
-            This change will make it a lot easier to fix these issues in the
-            future, but there may be some growing pains.
+            Did some more work on permissions (sorry to those team captains and
+            committee members who have had issues)
           </li>
-          <li>
-            Any public events published to BBNvolved are now automatically
-            pulled into the app's database.
-          </li>
-          <li>More coming soon!</li>
+          <li></li>
         </ul>
       </Typography.Paragraph>
       {data?.me && (
