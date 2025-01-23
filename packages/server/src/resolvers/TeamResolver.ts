@@ -172,7 +172,11 @@ export class TeamResolver implements CrudResolver<TeamNode, "team"> {
     return teamModelToResource(row);
   }
 
-  @AccessControlAuthorized("list", ["every", "MembershipNode"])
+  @AccessControlAuthorized(
+    "get",
+    ["getIdFromRoot", "TeamNode", "id"],
+    ".members"
+  )
   @FieldResolver(() => [MembershipNode])
   async members(@Root() { id: { id } }: TeamNode): Promise<MembershipNode[]> {
     const memberships = await this.teamRepository.findMembersOfTeam({
