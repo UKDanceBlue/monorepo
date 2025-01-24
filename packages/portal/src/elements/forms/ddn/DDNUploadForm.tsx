@@ -53,16 +53,8 @@ const inputTypeSchema = z.object({
   "Pledged Amount": defaultFloatValidator,
   "Account Number": z.string().trim(),
   "Account Name": z.string().trim(),
-  "Holding Destination": z
-    .string()
-    .trim()
-    .optional()
-    .transform((v) => v || undefined),
-  "Comment": z
-    .string()
-    .trim()
-    .optional()
-    .transform((v) => v || undefined),
+  "Holding Destination": defaultStringValidator,
+  "Comment": defaultStringValidator,
   "SECShares": defaultStringValidator,
   "SECType": defaultStringValidator,
   "GIKType": defaultStringValidator,
@@ -100,12 +92,12 @@ const inputTypeSchema = z.object({
   "Donor1 Constituency": defaultStringValidator,
   "Donor1 PM": defaultStringValidator,
   "Donor2 PM": defaultStringValidator,
-  "PLine1": z.string().trim(),
+  "PLine1": defaultStringValidator,
   "PLine2": defaultStringValidator,
   "PLine3": defaultStringValidator,
-  "PCity": z.string().trim(),
-  "PState": z.string().trim(),
-  "PZip": z.string().trim(),
+  "PCity": defaultStringValidator,
+  "PState": defaultStringValidator,
+  "PZip": defaultStringValidator,
   "Home Phone": defaultStringValidator,
   "Home Phone Restriction": defaultStringValidator,
   "Business Phone": defaultStringValidator,
