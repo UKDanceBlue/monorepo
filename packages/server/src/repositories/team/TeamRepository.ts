@@ -7,8 +7,13 @@ import type {
   ListTeamsArgs,
   TeamType,
 } from "@ukdanceblue/common";
-import { MembershipPositionType, TeamLegacyStatus } from "@ukdanceblue/common";
+import {
+  getFiscalYear,
+  MembershipPositionType,
+  TeamLegacyStatus,
+} from "@ukdanceblue/common";
 import { ConcreteResult, optionOf } from "@ukdanceblue/common/error";
+import { DateTime } from "luxon";
 import { None, Ok, Option, Result, Some } from "ts-results-es";
 
 import { prismaToken } from "#lib/typediTokens.js";
@@ -164,6 +169,15 @@ export class TeamRepository extends buildDefaultRepository<
     param: TeamUniqueParam
   ): Promise<ConcreteResult<Option<number>, RepositoryError>> {
     try {
+      const marathon = await this.getMarathon(param);
+      if (!marathon) {
+        return Ok(None);
+      }
+      const fy = getFiscalYear(
+        DateTime.fromObject({
+          year: Number.parseInt(`20${marathon.year.substring(2)}`, 10),
+        })
+      );
       const {
         _sum: { amount },
       } = await this.prisma.fundraisingEntryWithMeta.aggregate({
@@ -171,6 +185,10 @@ export class TeamRepository extends buildDefaultRepository<
           amount: true,
         },
         where: {
+          donatedOn: {
+            lte: fy.end!.toJSDate(),
+            gte: fy.start!.toJSDate(),
+          },
           OR: [
             {
               AND: [
