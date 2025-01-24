@@ -16,6 +16,7 @@ export interface MarathonContextData {
       }[]
     | null;
   loading: boolean;
+  source?: "latest" | "selected";
 }
 
 // TODO replace marathon and setMarathon with Router context and move marathons to a simple hook

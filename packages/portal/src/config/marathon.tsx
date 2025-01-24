@@ -130,7 +130,14 @@ export const MarathonConfigProvider = ({
               : [])
         ),
         loading:
-          latestMarathonResult.fetching || selectedMarathonResult.isLoading,
+          latestMarathonResult.fetching ||
+          (marathonId != null && selectedMarathonResult.isLoading),
+        source:
+          marathonId != null && selectedMarathonResult.data != null
+            ? "selected"
+            : latestMarathonResult.data != null
+              ? "latest"
+              : undefined,
       }}
     >
       {children}

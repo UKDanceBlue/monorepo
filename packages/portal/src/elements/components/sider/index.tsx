@@ -16,10 +16,19 @@ import {
   useTranslate,
   useWarnAboutChange,
 } from "@refinedev/core";
-import { Button, ConfigProvider, Drawer, Grid, Layout, Menu } from "antd";
+import {
+  Button,
+  ConfigProvider,
+  Drawer,
+  Grid,
+  Layout,
+  Menu,
+  Typography,
+} from "antd";
 import type { ItemType } from "antd/es/menu/interface";
-import React, { useMemo, useState } from "react";
+import React, { useContext, useMemo, useState } from "react";
 
+import { marathonContext } from "#config/marathonContext.ts";
 import { canSync } from "#config/refine/authorization.ts";
 import { StorageManager, useStorageValue } from "#config/storage.ts";
 import { useLoginState } from "#hooks/useLoginState.ts";
@@ -192,6 +201,8 @@ export const Sider: React.FC<
     );
   };
 
+  const { marathon, source } = useContext(marathonContext);
+
   return (
     <ConfigProvider
       theme={{
@@ -231,6 +242,18 @@ export const Sider: React.FC<
                 }}
               >
                 <RenderToTitle collapsed={false} />
+                {source === "selected" && (
+                  <Typography.Text
+                    style={{
+                      color: "#ddd",
+                      textAlign: "center",
+                      width: "100%",
+                      display: "inline-block",
+                    }}
+                  >
+                    Viewing {marathon?.year}
+                  </Typography.Text>
+                )}
                 {renderMenu()}
               </Layout.Sider>
             </Layout>
@@ -259,6 +282,18 @@ export const Sider: React.FC<
           breakpoint="lg"
         >
           <RenderToTitle collapsed={menuCollapsed === "true"} />
+          {source === "selected" && (
+            <Typography.Text
+              style={{
+                color: "#ddd",
+                textAlign: "center",
+                width: "100%",
+                display: "inline-block",
+              }}
+            >
+              Viewing {marathon?.year}
+            </Typography.Text>
+          )}
           {renderMenu()}
         </Layout.Sider>
       )}

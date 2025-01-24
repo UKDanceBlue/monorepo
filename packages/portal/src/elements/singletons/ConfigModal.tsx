@@ -38,6 +38,8 @@ export const ConfigModal = ({
             loading={loading}
             value={marathon?.id}
             title="Set Marathon"
+            allowClear
+            onClear={() => setMarathon(null)}
           >
             {marathons ? (
               marathons.map((marathon) => (
