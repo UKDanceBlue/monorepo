@@ -1,16 +1,27 @@
 import { Service } from "@freshgum/typedi";
 import type {
   FundraisingEntry,
+  Prisma,
   PrismaClient,
   SolicitationCode,
   Team,
 } from "@prisma/client";
+import type { DefaultArgs } from "@prisma/client/runtime/library";
+import type {
+  FieldsOfListQueryArgs,
+  ListSolicitationCodesArgs,
+} from "@ukdanceblue/common";
 import type { InvariantError } from "@ukdanceblue/common/error";
 import { ActionDeniedError, NotFoundError } from "@ukdanceblue/common/error";
 import type { Result } from "ts-results-es";
 import { Err, None, Ok } from "ts-results-es";
 
 import { prismaToken } from "#lib/typediTokens.js";
+import {
+  buildDefaultRepository,
+  type FindAndCountParams,
+  type FindAndCountResult,
+} from "#repositories/Default.js";
 import type {
   FundraisingEntryUniqueParam,
   WideFundraisingEntryWithMeta,
@@ -18,6 +29,7 @@ import type {
 import { wideFundraisingEntryInclude } from "#repositories/fundraising/FundraisingRepository.js";
 import type { UniqueMarathonParam } from "#repositories/marathon/MarathonRepository.js";
 import type {
+  AsyncRepositoryResult,
   RepositoryError,
   SimpleUniqueParam,
 } from "#repositories/shared.js";
@@ -31,8 +43,79 @@ export type SolicitationCodeUniqueParam =
     };
 
 @Service([prismaToken])
-export class SolicitationCodeRepository {
-  constructor(private readonly prisma: PrismaClient) {}
+export class SolicitationCodeRepository extends buildDefaultRepository<
+  PrismaClient["solicitationCode"],
+  SolicitationCodeUniqueParam,
+  FieldsOfListQueryArgs<ListSolicitationCodesArgs>
+>("SolicitationCode", {
+  code: {
+    getOrderBy: (code) => Ok({ code }),
+    getWhere: (code) => Ok({ code }),
+  },
+  name: {
+    getOrderBy: (name) => Ok({ name }),
+    getWhere: (name) => Ok({ name }),
+  },
+  prefix: {
+    getOrderBy: (prefix) => Ok({ prefix }),
+    getWhere: (prefix) => Ok({ prefix }),
+  },
+  text: {
+    getOrderBy: (text) => Ok({ name: text }),
+    getWhere: (text) => Ok({ name: text }),
+    searchable: true,
+  },
+  createdAt: {
+    getOrderBy: (createdAt) => Ok({ createdAt }),
+    getWhere: (createdAt) => Ok({ createdAt }),
+  },
+  updatedAt: {
+    getOrderBy: (updatedAt) => Ok({ updatedAt }),
+    getWhere: (updatedAt) => Ok({ updatedAt }),
+  },
+}) {
+  constructor(protected readonly prisma: PrismaClient) {
+    super(prisma);
+  }
+
+  public uniqueToWhere(by: SolicitationCodeUniqueParam) {
+    if ("code" in by) {
+      return { prefix_code: by };
+    }
+    return SolicitationCodeRepository.simpleUniqueToWhere(by);
+  }
+
+  findAndCount({
+    tx,
+    ...params
+  }: FindAndCountParams<
+    "name" | "prefix" | "code" | "text" | "createdAt" | "updatedAt"
+  >): AsyncRepositoryResult<
+    FindAndCountResult<
+      Prisma.SolicitationCodeDelegate<DefaultArgs, Prisma.PrismaClientOptions>,
+      { include: Record<string, never> }
+    >
+  > {
+    return this.parseFindManyParams(params)
+      .toAsyncResult()
+      .andThen((params) =>
+        this.handleQueryError(
+          (tx ?? this.prisma).solicitationCode.findMany(params)
+        ).map((rows) => ({ rows, params }))
+      )
+      .andThen(({ rows, params }) =>
+        this.handleQueryError(
+          (tx ?? this.prisma).solicitationCode.count({
+            where: params.where,
+            orderBy: params.orderBy,
+          })
+        ).map((total) => ({
+          selectedRows: rows,
+          total,
+        }))
+      );
+  }
+
   async createSolicitationCode({
     prefix,
     code,

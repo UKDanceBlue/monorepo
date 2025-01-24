@@ -29,6 +29,7 @@ import {
 } from "type-graphql";
 
 import { WithAuditLogging } from "#lib/logging/auditLogging.js";
+import { solicitationCodeModelToNode } from "#repositories/fundraising/fundraisingEntryModelToNode.js";
 import type { AsyncRepositoryResult } from "#repositories/shared.js";
 import { SolicitationCodeRepository } from "#repositories/solicitationCode/SolicitationCodeRepository.js";
 import { teamModelToResource } from "#repositories/team/teamModelToResource.js";
@@ -67,23 +68,20 @@ export class SolicitationCodeResolver
   @AccessControlAuthorized("list", ["every", "SolicitationCodeNode"])
   @Query(() => ListSolicitationCodesResponse)
   async solicitationCodes(
-    @Args(() => ListSolicitationCodesArgs) _query: ListSolicitationCodesArgs
+    @Args(() => ListSolicitationCodesArgs) args: ListSolicitationCodesArgs
   ): Promise<ConcreteResult<ListSolicitationCodesResponse>> {
-    const codes =
-      await this.solicitationCodeRepository.findAllSolicitationCodes();
-    return codes.toAsyncResult().map((codes) =>
-      ListSolicitationCodesResponse.newPaginated({
-        data: codes.map(({ uuid, id, ...code }) =>
-          SolicitationCodeNode.init({
-            ...code,
-            id: uuid,
-            createdAt: DateTime.fromJSDate(code.createdAt),
-            updatedAt: DateTime.fromJSDate(code.updatedAt),
-          })
-        ),
-        total: codes.length,
+    return this.solicitationCodeRepository
+      .findAndCount({
+        filters: args.filters,
+        limit: args.limit,
+        offset: args.offset,
+        search: args.search,
+        sortBy: args.sortBy,
       })
-    ).promise;
+      .map(({ selectedRows, total }) => ({
+        data: selectedRows.map(solicitationCodeModelToNode),
+        total,
+      })).promise;
   }
 
   @AccessControlAuthorized("create", ["every", "SolicitationCodeNode"])

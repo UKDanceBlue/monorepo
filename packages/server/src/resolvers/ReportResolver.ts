@@ -44,6 +44,11 @@ export class ReportResolver {
               gte: args.from?.toISO() ?? undefined,
               lte: args.to?.toISO() ?? undefined,
             },
+            ...(args.solicitationCodeIds
+              ? buildSolicitationCodeQuery(
+                  args.solicitationCodeIds.map(({ id }) => id)
+                )
+              : {}),
           },
           select: {
             createdAt: true,
@@ -103,6 +108,11 @@ export class ReportResolver {
               gte: args.from?.toISO() ?? undefined,
               lte: args.to?.toISO() ?? undefined,
             },
+            ...(args.solicitationCodeIds
+              ? buildSolicitationCodeQuery(
+                  args.solicitationCodeIds.map(({ id }) => id)
+                )
+              : {}),
           },
           orderBy: { donatedOn: "asc" },
         });
@@ -150,7 +160,40 @@ export class ReportResolver {
           )
         );
       }
-
+      case "totals-by-donated-to": {
+        const data = await this.prisma.fundraisingEntryWithMeta.groupBy({
+          by: ["donatedTo", "solicitationCodeText"],
+          _sum: {
+            amount: true,
+          },
+          where: {
+            donatedOn: {
+              gte: args.from?.toISO() ?? undefined,
+              lte: args.to?.toISO() ?? undefined,
+            },
+            ...(args.solicitationCodeIds
+              ? buildSolicitationCodeQuery(
+                  args.solicitationCodeIds.map(({ id }) => id)
+                )
+              : {}),
+          },
+        });
+        return Ok(
+          Report.fromJson(
+            ["Donated To", "Total", "Solicitation Code"],
+            [
+              {
+                title: "Totals By Donated To",
+                data: data.map((entry) => ({
+                  "Donated To": entry.donatedTo,
+                  "Total": entry._sum.amount?.toNumber() ?? 0,
+                  "Solicitation Code": entry.solicitationCodeText,
+                })),
+              },
+            ]
+          )
+        );
+      }
       case "type-by-team-per-day": {
         const data = await this.prisma.fundraisingEntryWithMeta.groupBy({
           by: ["donatedOn", "batchType", "solicitationCodeText"],
@@ -276,4 +319,42 @@ export class ReportResolver {
       }
     }
   }
+}
+function buildSolicitationCodeQuery(solicitationCodeUuids: string[]) {
+  return {
+    OR: [
+      {
+        solicitationCodeOverrideId: null,
+        OR: [
+          {
+            ddn: {
+              solicitationCode: {
+                uuid: {
+                  in: solicitationCodeUuids,
+                },
+              },
+            },
+          },
+          {
+            dbFundsEntry: {
+              dbFundsTeam: {
+                solicitationCode: {
+                  uuid: {
+                    in: solicitationCodeUuids,
+                  },
+                },
+              },
+            },
+          },
+        ],
+      },
+      {
+        solicitationCodeOverride: {
+          uuid: {
+            in: solicitationCodeUuids,
+          },
+        },
+      },
+    ],
+  };
 }
