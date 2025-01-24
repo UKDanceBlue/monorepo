@@ -21,7 +21,7 @@ const TeamFundraisingEntriesDocument = graphql(
       $page: PositiveInt
       $pageSize: NonNegativeInt
       $sortBy: [FundraisingEntryResolverSort!]
-      $filter: FundraisingEntryResolverFilterGroup
+      $filters: FundraisingEntryResolverFilterGroup
       $search: FundraisingEntryResolverSearchFilter
     ) {
       team(id: $teamUuid) {
@@ -29,7 +29,7 @@ const TeamFundraisingEntriesDocument = graphql(
           page: $page
           pageSize: $pageSize
           sortBy: $sortBy
-          filters: $filter
+          filters: $filters
           search: $search
         ) {
           data {
@@ -45,6 +45,10 @@ const TeamFundraisingEntriesDocument = graphql(
 
 const TeamFundraisingFragment = graphql(/* GraphQL */ `
   fragment TeamFundraisingFragment on TeamNode {
+    marathon {
+      id
+      year
+    }
     fundraisingTotalAmount
     solicitationCode {
       id
@@ -260,6 +264,7 @@ function ViewTeamFundraising() {
               label: name ?? linkblue ?? id,
             })) ?? []
           }
+          year={data?.data.marathon.year}
           extraMeta={{
             gqlQuery: TeamFundraisingEntriesDocument,
             gqlVariables: {

@@ -84,7 +84,7 @@ export class PointOpportunityRepository extends buildDefaultRepository<
     | "name"
     | "opportunityDate"
     | "type"
-    | "marathonUuid"
+    | "marathonYear"
   >): AsyncRepositoryResult<
     FindAndCountResult<
       Prisma.PointOpportunityDelegate<DefaultArgs, Prisma.PrismaClientOptions>,

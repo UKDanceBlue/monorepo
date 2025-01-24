@@ -9,7 +9,6 @@ import {
 import { Table } from "antd";
 import { DateTime } from "luxon";
 
-import { useMarathon } from "#config/marathonContext.ts";
 import { RefineSearchForm } from "#elements/components/RefineSearchForm.tsx";
 import { graphql } from "#gql/index.js";
 import { useAuthorizationRequirement } from "#hooks/useLoginState.ts";
@@ -47,17 +46,18 @@ export function FundraisingEntriesTable<T extends Record<string, unknown>>({
   potentialAssignees,
   showSolicitationCode = false,
   extraMeta,
+  year,
 }: {
   potentialAssignees?: { value: string; label: string }[];
   showSolicitationCode?: boolean;
   extraMeta?: UseTypedTableMeta<T, never>;
+  year?: string;
 }) {
   const canEditFundraising = useAuthorizationRequirement(
     "update",
     "FundraisingEntryNode"
   );
 
-  const { year } = useMarathon() ?? {};
   const fiscalYear =
     year != null
       ? getFiscalYear(
@@ -66,6 +66,20 @@ export function FundraisingEntriesTable<T extends Record<string, unknown>>({
           })
         )
       : undefined;
+
+  console.log(
+    fiscalYear,
+    fiscalYear?.isValid,
+    fiscalYear?.isValid
+      ? [
+          {
+            field: "donatedOn",
+            operator: "between",
+            value: [fiscalYear.start!.toISO(), fiscalYear.end!.toISO()],
+          },
+        ]
+      : undefined
+  );
 
   const {
     tableProps,
@@ -108,6 +122,11 @@ export function FundraisingEntriesTable<T extends Record<string, unknown>>({
   return (
     <>
       <RefineSearchForm searchFormProps={searchFormProps} />
+      {fiscalYear && (
+        <p>
+          Showing entries for {fiscalYear.end!.toFormat("yyyy")} fiscal year
+        </p>
+      )}
       <Table
         {...tableProps}
         style={{ width: "100%" }}
