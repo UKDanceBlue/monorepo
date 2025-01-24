@@ -74,6 +74,8 @@ export function PointEntryOpportunityLookup({
     error: createStatus.error,
   });
 
+  console.log("marathon", marathon);
+
   const [searchByNameQuery] = useQuery({
     query: pointEntryOpportunityLookup,
     pause: !marathon || !searchOpportunitiesField,

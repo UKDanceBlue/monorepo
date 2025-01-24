@@ -1,9 +1,9 @@
-import { DateTimeISOResolver } from "graphql-scalars";
 import type { DateTime } from "luxon";
 import { Field, ObjectType } from "type-graphql";
 
 import type { MarathonYearString } from "../../utility/primitive/SimpleTypes.js";
 import { createNodeClasses, Node } from "../relay.js";
+import { DateTimeScalar } from "../scalars/DateTimeISO.js";
 import type { GlobalId } from "../scalars/GlobalId.js";
 import { GlobalIdScalar } from "../scalars/GlobalId.js";
 import { MarathonYearScalar } from "../scalars/MarathonYear.js";
@@ -17,9 +17,9 @@ export class MarathonNode extends TimestampedResource implements Node {
   id!: GlobalId;
   @Field(() => MarathonYearScalar)
   year!: MarathonYearString;
-  @Field(() => DateTimeISOResolver, { nullable: true })
+  @Field(() => DateTimeScalar, { nullable: true })
   startDate?: DateTime | undefined | null;
-  @Field(() => DateTimeISOResolver, { nullable: true })
+  @Field(() => DateTimeScalar, { nullable: true })
   endDate?: DateTime | undefined | null;
 
   static init({
