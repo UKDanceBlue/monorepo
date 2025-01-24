@@ -1,12 +1,14 @@
 import { Link } from "@tanstack/react-router";
 import {
   BatchType,
+  getFiscalYear,
   SortDirection,
   stringifyDDNBatchType,
 } from "@ukdanceblue/common";
 import { Table } from "antd";
 import { DateTime } from "luxon";
 
+import { useMarathon } from "#config/marathonContext.ts";
 import { RefineSearchForm } from "#elements/components/RefineSearchForm.tsx";
 import { graphql } from "#gql/index.js";
 import { useAuthorizationRequirement } from "#hooks/useLoginState.ts";
@@ -54,6 +56,16 @@ export function FundraisingEntriesTable<T extends Record<string, unknown>>({
     "FundraisingEntryNode"
   );
 
+  const { year } = useMarathon() ?? {};
+  const fiscalYear =
+    year != null
+      ? getFiscalYear(
+          DateTime.fromObject({
+            year: Number.parseInt(`20${year.substring(2)}`, 10),
+          })
+        )
+      : undefined;
+
   const {
     tableProps,
     searchFormProps,
@@ -69,6 +81,17 @@ export function FundraisingEntriesTable<T extends Record<string, unknown>>({
             order: SortDirection.desc,
           },
         ],
+      },
+      filters: {
+        permanent: fiscalYear?.isValid
+          ? [
+              {
+                field: "donatedOn",
+                operator: "between",
+                value: [fiscalYear.start!.toISO(), fiscalYear.end!.toISO()],
+              },
+            ]
+          : undefined,
       },
     },
     fieldTypes: {

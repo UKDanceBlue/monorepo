@@ -1,3 +1,4 @@
+import { getFiscalYear } from "@ukdanceblue/common";
 import { Form, Select } from "antd";
 import { DateTime, Interval } from "luxon";
 import { useEffect, useMemo } from "react";
@@ -73,14 +74,6 @@ interface ReportConfig {
 }
 
 // KY Fiscal year is July 1 - June 30
-
-function getFiscalYear(date: DateTime): Interval {
-  const year = date.month >= 7 ? date.year : date.year - 1;
-  return Interval.fromDateTimes(
-    DateTime.fromObject({ month: 7, day: 1, year }).startOf("day"),
-    DateTime.fromObject({ month: 6, day: 30, year: year + 1 }).endOf("day")
-  );
-}
 
 function getDates(
   now: DateTime

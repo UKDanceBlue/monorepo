@@ -1,4 +1,4 @@
-import { DateTime } from "luxon";
+import { DateTime, Interval } from "luxon";
 import type { Result } from "ts-results-es";
 
 import { LuxonError } from "../../error/index.js";
@@ -38,5 +38,14 @@ export function localDateToLuxon(
     DateTime.fromFormat(date, "yyyy-MM-dd", {
       zone: "America/New_York",
     })
+  );
+}
+
+// TODO: move
+export function getFiscalYear(date: DateTime): Interval {
+  const year = date.month >= 7 ? date.year : date.year - 1;
+  return Interval.fromDateTimes(
+    DateTime.fromObject({ month: 7, day: 1, year }).startOf("day"),
+    DateTime.fromObject({ month: 6, day: 30, year: year + 1 }).endOf("day")
   );
 }
