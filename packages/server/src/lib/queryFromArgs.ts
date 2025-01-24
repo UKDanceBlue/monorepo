@@ -589,7 +589,6 @@ export function parseFindManyParams<T, Field extends string>(
 }> {
   let where;
   let order;
-
   if (params.search) {
     for (const field of params.search.fields ?? []) {
       if (!fieldLookup[field].searchable) {
@@ -611,9 +610,25 @@ export function parseFindManyParams<T, Field extends string>(
           search: params.search!.query,
         })
       )
-    ).map((fields) => ({
-      OR: fields,
-    }));
+    ).andThen((val): Prisma.Args<T, "findMany">["where"] => {
+      const result = params.filters
+        ? buildWhereFromGroup(params.filters, fieldLookup)
+        : Ok(undefined).toAsyncResult();
+      return result.map((filters) =>
+        filters
+          ? {
+              AND: [
+                filters,
+                {
+                  OR: val,
+                },
+              ],
+            }
+          : {
+              OR: val,
+            }
+      );
+    });
 
     order = Ok({
       _relevance: {
