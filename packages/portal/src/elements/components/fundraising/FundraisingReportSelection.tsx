@@ -7,7 +7,7 @@ import { utils } from "xlsx";
 
 import { graphql } from "#gql/index.js";
 import { useQueryStatusWatcher } from "#hooks/useQueryStatusWatcher.js";
-import { useQuery } from "#hooks/useTypedRefine.ts";
+import { useQuery, useTypedSelect } from "#hooks/useTypedRefine.ts";
 
 import { LuxonDatePicker } from "../antLuxonComponents";
 
@@ -43,7 +43,13 @@ export type ReportType =
    * Each row is a solicitation code
    * Columns are totals by type and then a full total
    */
-  | "totals-by-solicitation";
+  | "totals-by-solicitation"
+  /**
+   * One sheet
+   * Each row is a person/donated-to
+   * Columns are donated to and total
+   */
+  | "totals-by-donated-to";
 
 function autoFitColumns(worksheet: WorkSheet): void {
   const objectMaxLength: ColInfo[] = [];
@@ -69,6 +75,7 @@ export type ReportConfigFormat = "csv" | "xlsx" | "numbers" | "html";
 interface ReportConfig {
   format: ReportConfigFormat;
   dateRange: DateRangeType;
+  solicitationCodes?: string[];
   customDateRange?: [DateTime, DateTime];
   reportType: ReportType;
 }
@@ -97,14 +104,27 @@ const fundraisingReportDialogDocument = graphql(/* GraphQL */ `
     $report: NonEmptyString!
     $from: LuxonDateTime
     $to: LuxonDateTime
+    $solicitationCodeIds: [GlobalId!]
   ) {
-    report(report: $report, from: $from, to: $to) {
+    report(
+      report: $report
+      from: $from
+      to: $to
+      solicitationCodeIds: $solicitationCodeIds
+    ) {
       pages {
         title
         header
         rows
       }
     }
+  }
+`);
+
+const SolicitationCodeSelectFragment = graphql(/* GraphQL */ `
+  fragment SolicitationCodeSelectFragment on SolicitationCodeNode {
+    id
+    text
   }
 `);
 
@@ -122,6 +142,7 @@ export function FundraisingReportSelection({
   const reportType = Form.useWatch("reportType", form);
   const dateRange = Form.useWatch("dateRange", form);
   const customDate = Form.useWatch("customDateRange", form);
+  const solicitationCodes = Form.useWatch("solicitationCodes", form);
 
   const [range, now, dates] = useMemo(() => {
     const now = DateTime.now();
@@ -152,8 +173,31 @@ export function FundraisingReportSelection({
           : Interval.isInterval(range)
             ? range.end?.toISO()
             : undefined,
+      solicitationCodeIds: solicitationCodes?.length ? solicitationCodes : null,
     },
     pause: dateRange === "custom" && !customDate,
+  });
+
+  const { selectProps } = useTypedSelect({
+    fragment: SolicitationCodeSelectFragment,
+    props: {
+      resource: "solicitationCode",
+      optionLabel(item) {
+        return item.text;
+      },
+      optionValue(item) {
+        return item.id;
+      },
+      onSearch(value) {
+        return [
+          {
+            field: "text",
+            operator: "contains",
+            value,
+          },
+        ];
+      },
+    },
   });
 
   useQueryStatusWatcher(result);
@@ -261,7 +305,21 @@ export function FundraisingReportSelection({
           <Select.Option value="totals-by-solicitation">
             Totals by Solicitation
           </Select.Option>
+          <Select.Option value="totals-by-donated-to">
+            Totals by Donated To
+          </Select.Option>
         </Select>
+      </Form.Item>
+      <Form.Item label="Solicitation Codes" name="solicitationCodes">
+        <Select
+          mode="multiple"
+          {...selectProps}
+          disabled={
+            !["summary", "totals-by-day", "totals-by-donated-to"].includes(
+              reportType
+            )
+          }
+        />
       </Form.Item>
     </Form>
   );

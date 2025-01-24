@@ -128,7 +128,7 @@ Generated automatically on 1/24/2025. This document lists the required permissio
         })))
             .andThen((solicitationCode) => {
             return new AsyncResult(marathonRepository.findActiveMarathon())
-                .andThen((marathon) => marathon.toResult(new NotFoundError({ what: "Active Marathon" })))
+                .andThen((marathon) => marathon.toResult(new NotFoundError("Active Marathon")))
                 .map((marathon) => ({
                 marathonId: marathon.id,
                 solicitationCodeId: solicitationCode.id,
@@ -235,7 +235,7 @@ Generated automatically on 1/24/2025. This document lists the required permissio
         return new AsyncResult(personRepository.findPersonByUnique({
             linkblue: linkBlueId.toLowerCase(),
         }))
-            .andThen((row) => row.toResult(new NotFoundError({ what: "Person" })))
+            .andThen((row) => row.toResult(new NotFoundError("Person")))
             .map(({ uuid }) => ({ kind: "PersonNode", id: uuid }));
     }
 ```

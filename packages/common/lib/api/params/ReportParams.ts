@@ -4,6 +4,7 @@ import { ArgsType, Field, ObjectType } from "type-graphql";
 
 import { Primitive } from "../../utility/primitive/TypeUtils.js";
 import { DateTimeScalar } from "../scalars/DateTimeISO.js";
+import { type GlobalId, GlobalIdScalar } from "../scalars/GlobalId.js";
 import {
   IsAfterDateTime,
   IsBeforeDateTime,
@@ -74,6 +75,9 @@ export class ReportArgs {
   @IsAfterDateTime("from")
   @Field(() => DateTimeScalar, { nullable: true })
   to?: DateTime | null | undefined;
+
+  @Field(() => [GlobalIdScalar], { nullable: true })
+  solicitationCodeIds?: GlobalId[] | null;
 
   @Field(() => GraphQLNonEmptyString)
   report!: string;

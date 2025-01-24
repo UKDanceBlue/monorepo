@@ -8,8 +8,8 @@ import { AbstractGraphQLPaginatedResponse } from "./ApiResponse.js";
 
 @ArgsType()
 export class ListSolicitationCodesArgs extends FilteredListQueryArgs(
-  "SolicitationCode",
-  ["name", "prefix", "code", "createdAt", "updatedAt"]
+  "SolicitationCodeResolver",
+  ["name", "prefix", "code", "text", "createdAt", "updatedAt"]
 ) {}
 
 @ObjectType("ListSolicitationCodesResponse", {
