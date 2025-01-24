@@ -56,6 +56,6 @@ COPY --from=build /builddir/yarn.lock /app/yarn.lock
 WORKDIR /app/packages/server
 
 ENTRYPOINT ["/app/packages/server/docker-entrypoint.sh"]
-CMD [ "node", "--import ./dist/src/entry/server/initSentry.js", "--enable-source-maps", "./dist/src/index.js", "start" ]
+CMD [ "node", "--import", "./dist/src/entry/server/initSentry.js", "--enable-source-maps", "./dist/src/index.js", "start" ]
 
 HEALTHCHECK --interval=30s --timeout=30s --start-period=5s --retries=3 CMD bash -c '[[ "$(curl -fs http://localhost:8000/api/healthcheck)" == "OK" ]] || exit 1'
