@@ -170,11 +170,7 @@ export class ExpressModule {
     }
 
     const formatted = formatError(
-      err instanceof Error
-        ? err
-        : err instanceof ExtendedError
-          ? err.graphQlError
-          : new Error(String(err)),
+      err instanceof Error ? err : new Error(String(err)),
       err,
       this.isDevelopment
     );

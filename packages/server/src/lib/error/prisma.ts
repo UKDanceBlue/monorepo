@@ -23,19 +23,11 @@ type RawPrismaError =
   | PrismaClientValidationError;
 
 export abstract class PrismaError extends ExtendedError {
-  readonly error: RawPrismaError;
-
-  constructor(error: RawPrismaError) {
-    super();
-    this.error = error;
-  }
-
-  get message(): string {
-    return this.error.message;
-  }
-
-  get stack(): string | undefined {
-    return this.error.stack;
+  declare cause: RawPrismaError;
+  constructor(prismaError: RawPrismaError) {
+    super(prismaError.message, ErrorCode.PrismaError.description);
+    this.stack = prismaError.stack;
+    this.cause = prismaError;
   }
 
   readonly expose = false;
@@ -105,7 +97,7 @@ export function toPrismaError(error: unknown): Option<RepositoryError> {
   }
   if (error instanceof PrismaClientKnownRequestError) {
     if (error.code === "P2025") {
-      return Some(new NotFoundError({}));
+      return Some(new NotFoundError());
     }
     return Some(new PrismaKnownRequestError(error));
   }

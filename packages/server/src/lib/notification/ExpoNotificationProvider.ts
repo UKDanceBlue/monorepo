@@ -395,10 +395,7 @@ export class ExpoNotificationProvider implements NotificationProvider {
     }
 
     return Err(
-      new ExpoPushFailureError(
-        "Some notifications failed to send",
-        failedTickets.map(([ticket]) => ticket)
-      )
+      new ExpoPushFailureError(failedTickets.map(([ticket]) => ticket))
     );
   }
 }
