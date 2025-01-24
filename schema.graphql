@@ -1628,18 +1628,18 @@ type Query {
   """
   The output of this query is not stable. Do not rely on an exact format.
   """
-  report(from: LuxonDateTime, report: NonEmptyString!, to: LuxonDateTime): Report!
+  report(from: LuxonDateTime, report: NonEmptyString!, solicitationCodeIds: [GlobalId!], to: LuxonDateTime): Report!
   searchPeopleByName(name: String!): [PersonNode!]!
   solicitationCode(id: GlobalId!): SolicitationCodeNode!
   solicitationCodes(
-    filters: SolicitationCodeFilterGroup
+    filters: SolicitationCodeResolverFilterGroup
 
     """The page number to return, defaults to 1"""
     page: PositiveInt! = 1
 
     """The number of items to return per page, defaults to 10"""
     pageSize: NonNegativeInt! = 10
-    search: SolicitationCodeSearchFilter
+    search: SolicitationCodeResolverSearchFilter
 
     """
     Whether to send all results in a single page, defaults to false (should generally be avoided)
@@ -1649,7 +1649,7 @@ type Query {
     """
     The fields to sort by, in order of priority. If unspecified, the sort order is undefined
     """
-    sortBy: [SolicitationCodeSort!]
+    sortBy: [SolicitationCodeResolverSort!]
   ): ListSolicitationCodesResponse!
   team(id: GlobalId!): TeamNode!
   teams(
@@ -1823,25 +1823,6 @@ enum SingleTargetOperators {
   STARTS_WITH
 }
 
-enum SolicitationCodeFilterFields {
-  code
-  createdAt
-  name
-  prefix
-  updatedAt
-}
-
-input SolicitationCodeFilterGroup {
-  children: [SolicitationCodeFilterGroup!]! = []
-  filters: [SolicitationCodeFilterItem!]! = []
-  operator: FilterGroupOperator!
-}
-
-input SolicitationCodeFilterItem {
-  field: SolicitationCodeFilterFields!
-  filter: SomeFilter!
-}
-
 type SolicitationCodeNode implements Node {
   code: NonNegativeInt!
   createdAt: LuxonDateTime
@@ -1873,17 +1854,37 @@ type SolicitationCodeNode implements Node {
   updatedAt: LuxonDateTime
 }
 
-input SolicitationCodeSearchFilter {
+enum SolicitationCodeResolverFilterFields {
+  code
+  createdAt
+  name
+  prefix
+  text
+  updatedAt
+}
+
+input SolicitationCodeResolverFilterGroup {
+  children: [SolicitationCodeResolverFilterGroup!]! = []
+  filters: [SolicitationCodeResolverFilterItem!]! = []
+  operator: FilterGroupOperator!
+}
+
+input SolicitationCodeResolverFilterItem {
+  field: SolicitationCodeResolverFilterFields!
+  filter: SomeFilter!
+}
+
+input SolicitationCodeResolverSearchFilter {
   """
   The fields to search in. If unspecified, searches all searchable fields. Note that searching by a field that does not support it will cause a runtime error
   """
-  fields: [SolicitationCodeFilterFields!]
+  fields: [SolicitationCodeResolverFilterFields!]
   query: NonEmptyString!
 }
 
-input SolicitationCodeSort {
+input SolicitationCodeResolverSort {
   direction: SortDirection! = asc
-  field: SolicitationCodeFilterFields!
+  field: SolicitationCodeResolverFilterFields!
 }
 
 input SomeFilter {
