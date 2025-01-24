@@ -1,6 +1,6 @@
-import { ConcreteError, ErrorCode } from "@ukdanceblue/common/error";
+import { ErrorCode,ExtendedError } from "@ukdanceblue/common/error";
 import type { ZodError as RawZodError } from "zod";
-export class ZodError extends ConcreteError {
+export class ZodError extends ExtendedError {
   readonly error: RawZodError;
   constructor(error: RawZodError) {
     super();

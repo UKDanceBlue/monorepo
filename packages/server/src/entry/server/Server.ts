@@ -1,4 +1,5 @@
 import { Service } from "@freshgum/typedi";
+import * as Sentry from "@sentry/node";
 
 import { JobScheduler } from "#jobs/index.js";
 import type { SyslogLevels } from "#lib/logging/SyslogLevels.js";
@@ -42,6 +43,8 @@ export class Server implements EntryPoint {
       `Logger initialized with level "${this.loggingLevel}", writing log files to "${this.logDir}"`
     );
 
+    Sentry.setTag("state", "Initialization");
+
     await this.sentryInstrumentation.init();
     logger.info("Sentry initialized");
 
@@ -50,6 +53,8 @@ export class Server implements EntryPoint {
 
     await this.apolloModule.init();
     logger.debug("Apollo initialized");
+
+    Sentry.setTag("state", "Startup");
 
     this.expressModule.startMiddlewares();
     logger.debug("Express middlewares started");
@@ -80,8 +85,12 @@ export class Server implements EntryPoint {
     this.expressModule.startErrorHandlers();
     logger.debug("Express error handlers started");
 
+    Sentry.setTag("state", "Pre-Running");
+
     await this.expressModule.start();
     logger.debug("Express started");
+
+    Sentry.setTag("state", "Running");
 
     await this.jobScheduler.start();
     logger.debug("Jobs started");

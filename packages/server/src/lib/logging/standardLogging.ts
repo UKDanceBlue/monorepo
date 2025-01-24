@@ -1,7 +1,7 @@
 import { Container } from "@freshgum/typedi";
 import * as Sentry from "@sentry/node";
 import { debugStringify } from "@ukdanceblue/common";
-import { ConcreteError } from "@ukdanceblue/common/error";
+import { ExtendedError } from "@ukdanceblue/common/error";
 import { DateTime } from "luxon";
 import type winston from "winston";
 import type { Logform } from "winston";
@@ -54,7 +54,7 @@ const consoleTransport = new transports.Console({
     }),
     format.printf(
       ({ level, message, error, ...rest }: Logform.TransformableInfo) => {
-        if (error instanceof ConcreteError) {
+        if (error instanceof ExtendedError) {
           rest.error = `${error.tag.description} - ${error.detailedMessage} - ${error.stack}`;
         } else if (error instanceof Error) {
           rest.error = `${error.name} - ${error.message} - ${error.stack}`;

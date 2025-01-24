@@ -1,18 +1,14 @@
 import type { StatusCodes } from "http-status-codes";
 import { getReasonPhrase } from "http-status-codes";
 
-import { ConcreteError } from "./error.js";
+import { ExtendedError } from "./error.js";
 import * as ErrorCode from "./errorCode.js";
 
 export class HttpError<
   Code extends StatusCodes = StatusCodes,
-> extends ConcreteError {
-  constructor(readonly code: Code) {
-    super();
-  }
-
-  get message(): string {
-    return getReasonPhrase(this.code);
+> extends ExtendedError {
+  constructor(public readonly code: Code) {
+    super(getReasonPhrase(code));
   }
 
   readonly expose = true;

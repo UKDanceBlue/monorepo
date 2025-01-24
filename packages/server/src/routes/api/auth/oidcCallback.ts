@@ -1,6 +1,6 @@
 import { AuthSource, type PersonNode } from "@ukdanceblue/common";
 import {
-  type ConcreteError,
+  type ExtendedError,
   InvalidArgumentError,
 } from "@ukdanceblue/common/error";
 import type { NextFunction, Request, Response } from "express";
@@ -148,7 +148,7 @@ async function getPersonFromAzureJwt(
   objectId: JsonValue | undefined,
   email: JsonValue | undefined,
   personRepository: PersonRepository
-): Promise<Result<PersonNode, ConcreteError>> {
+): Promise<Result<PersonNode, ExtendedError>> {
   const {
     given_name: firstName,
     family_name: lastName,

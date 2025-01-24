@@ -70,14 +70,14 @@ export class CommitteeRepository {
         where: personParam,
       });
       if (!person) {
-        return Err(new NotFoundError({ what: "Person" }));
+        return Err(new NotFoundError("Person"));
       }
 
       if (!marathonParam) {
         const latestMarathon = await new AsyncResult(
           this.marathonRepository.findActiveMarathon()
         ).andThen((option) =>
-          option.toResult(new NotFoundError({ what: "active marathon" }))
+          option.toResult(new NotFoundError("active marathon"))
         ).promise;
         if (latestMarathon.isErr()) {
           return Err(latestMarathon.error);
@@ -150,7 +150,7 @@ export class CommitteeRepository {
         error instanceof Prisma.PrismaClientKnownRequestError &&
         error.code === "P2025"
       ) {
-        return Err(new NotFoundError({ what: "Committee" }));
+        return Err(new NotFoundError("Committee"));
       } else {
         return handleRepositoryError(error);
       }
@@ -198,7 +198,7 @@ export class CommitteeRepository {
       });
 
       if (!committee) {
-        return Err(new NotFoundError({ what: "Committee" }));
+        return Err(new NotFoundError("Committee"));
       }
 
       return Ok(committee);
@@ -304,10 +304,10 @@ export class CommitteeRepository {
         return Ok(result[0]!);
       } else if (result?.length === 0) {
         return Err(
-          new NotFoundError({
-            what: "Team",
-            where: `Committee: ${committee}, Marathon: ${JSON.stringify(marathon)}`,
-          })
+          new NotFoundError(
+            "Team",
+            `Committee: ${committee}, Marathon: ${JSON.stringify(marathon)}`
+          )
         );
       } else {
         return Err(
@@ -331,7 +331,7 @@ export class CommitteeRepository {
         })
         .childCommittees();
       if (!childCommittees) {
-        return Err(new NotFoundError({ what: "Committee" }));
+        return Err(new NotFoundError("Committee"));
       }
 
       return Ok(childCommittees);

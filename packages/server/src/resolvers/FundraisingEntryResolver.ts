@@ -124,7 +124,7 @@ export class FundraisingEntryResolver
         .andThen((solicitationCode) => {
           return new AsyncResult(marathonRepository.findActiveMarathon())
             .andThen((marathon) =>
-              marathon.toResult(new NotFoundError({ what: "Active Marathon" }))
+              marathon.toResult(new NotFoundError("Active Marathon"))
             )
             .map((marathon) => ({
               marathonId: marathon.id,

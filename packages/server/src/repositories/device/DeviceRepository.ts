@@ -79,7 +79,7 @@ export class DeviceRepository extends buildDefaultRepository<
   ): Promise<Result<Person, RepositoryError>> {
     const device = await this.getDeviceByUuid(deviceUuid);
     if (device?.lastSeenPersonId == null) {
-      return Err(new NotFoundError({ what: "Person" }));
+      return Err(new NotFoundError("Person"));
     }
     return this.personRepository
       .findPersonByUnique({
@@ -87,7 +87,7 @@ export class DeviceRepository extends buildDefaultRepository<
       })
       .then((result) =>
         result.andThen((person) =>
-          person.toResult(new NotFoundError({ what: "last logged in user" }))
+          person.toResult(new NotFoundError("last logged in user"))
         )
       );
   }
@@ -152,7 +152,7 @@ export class DeviceRepository extends buildDefaultRepository<
         })
         .then((result) =>
           result.andThen((person) =>
-            person.toResult(new NotFoundError({ what: "Person" }))
+            person.toResult(new NotFoundError("Person"))
           )
         );
       if (userResult.isErr()) {

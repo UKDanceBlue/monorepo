@@ -79,9 +79,7 @@ export class NotificationRepository extends buildDefaultRepository<
         .findUnique({ where: param })
         .then(
           (result): Result<Notification, RepositoryError> =>
-            result
-              ? Ok(result)
-              : Err(new NotFoundError({ what: "Notification" }))
+            result ? Ok(result) : Err(new NotFoundError("Notification"))
         )
         .catch(handleRepositoryError)
     );

@@ -53,7 +53,7 @@ export class FeedResolver {
       uuid: id,
     });
     if (feedItem == null) {
-      return Err(new NotFoundError({ what: "Feed item not found" }));
+      return Err(new NotFoundError("Feed item not found"));
     }
     return Ok(feedItemModelToResource(feedItem));
   }

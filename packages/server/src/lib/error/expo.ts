@@ -1,11 +1,11 @@
 import {
   CompositeError,
-  ConcreteError,
   ErrorCode,
+  ExtendedError,
 } from "@ukdanceblue/common/error";
 import type { ExpoPushErrorTicket } from "expo-server-sdk";
 
-export abstract class ExpoError extends ConcreteError {
+export abstract class ExpoError extends ExtendedError {
   readonly expose = false;
 }
 

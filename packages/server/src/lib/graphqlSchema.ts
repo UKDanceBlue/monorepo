@@ -1,13 +1,11 @@
 import { Container, Service, type ServiceIdentifier } from "@freshgum/typedi";
+import * as Sentry from "@sentry/node";
 import type { AccessControlParam, Action, Subject } from "@ukdanceblue/common";
 import { AccessLevel } from "@ukdanceblue/common";
-import {
-  ConcreteError,
-  FormattedConcreteError,
-  toBasicError,
-} from "@ukdanceblue/common/error";
+import { ExtendedError, toBasicError } from "@ukdanceblue/common/error";
 import { type GraphQLResolveInfo, type GraphQLSchema } from "graphql";
-import type { Err } from "ts-results-es";
+import type { Path } from "graphql/jsutils/Path.js";
+import { Err } from "ts-results-es";
 import { AsyncResult, Option, Result } from "ts-results-es";
 import type { ArgsDictionary, NextFn, ResolverData } from "type-graphql";
 import { buildSchema } from "type-graphql";
@@ -45,7 +43,10 @@ export class SchemaService {
       resolvers: resolversList,
       emitSchemaFile: schemaPath,
       authChecker: this.authChecker.bind(this),
-      globalMiddlewares: [this.errorHandler.bind(this)],
+      globalMiddlewares: [
+        this.withSentryScope.bind(this),
+        this.errorHandler.bind(this),
+      ],
       container: {
         get(someClass) {
           // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-argument
@@ -56,15 +57,28 @@ export class SchemaService {
     });
   }
 
+  private pathToString(path: Path): string {
+    return path.prev
+      ? `${this.pathToString(path.prev)}.${path.key}`
+      : path.key.toString();
+  }
+
+  private withSentryScope(
+    { info }: ResolverData<GraphQLContext>,
+    next: NextFn
+  ) {
+    return Sentry.withScope((scope) => {
+      scope.setExtra("path", this.pathToString(info.path));
+      return next();
+    });
+  }
+
   /**
    * Logs errors, as well as allowing us to return results and options from resolvers
    *
    * NOTE: be careful working in this function as the types are mostly 'any', meaning you won't get much type checking
    */
-  private async errorHandler(
-    { info }: ResolverData<GraphQLContext>,
-    next: NextFn
-  ) {
+  private async errorHandler(_: ResolverData<GraphQLContext>, next: NextFn) {
     let result: // eslint-disable-next-line @typescript-eslint/no-empty-object-type
     | {}
       | AsyncResult<unknown, unknown>
@@ -80,7 +94,7 @@ export class SchemaService {
         "An error occurred in a resolver",
         typeof error !== "object" ? { error } : error
       );
-      throw error;
+      result = new Err(error);
     }
 
     if (result instanceof AsyncResult) {
@@ -89,11 +103,11 @@ export class SchemaService {
 
     if (Result.isResult(result)) {
       if (result.isErr()) {
-        let concreteError: Err<ConcreteError>;
+        let concreteError: Err<ExtendedError>;
         let stack: string | undefined;
-        if (result.error instanceof ConcreteError) {
+        if (result.error instanceof ExtendedError) {
           concreteError = result.mapErr((error) =>
-            error instanceof ConcreteError ? error : toBasicError(error)
+            error instanceof ExtendedError ? error : toBasicError(error)
           );
           stack = result.stack;
         } else {
@@ -101,11 +115,24 @@ export class SchemaService {
           stack = concreteError.stack;
         }
 
-        const error = new FormattedConcreteError(concreteError, info);
+        Sentry.captureEvent({
+          exception: {
+            values: [
+              {
+                type: concreteError.error.tag.description,
+                value: concreteError.error.toString(),
+                stacktrace: concreteError.stack
+                  ? { frames: Sentry.defaultStackParser(concreteError.stack) }
+                  : undefined,
+              },
+            ],
+          },
+        });
+
         logger.error(
           `An error occurred in a resolver: ${concreteError.error.detailedMessage}\nStack: ${stack && stack.length > 0 ? `${stack.slice(0, 1000)}...` : stack}`
         );
-        throw error;
+        throw concreteError.error;
       } else {
         result = result.value;
       }

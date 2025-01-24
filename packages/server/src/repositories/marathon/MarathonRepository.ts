@@ -68,7 +68,7 @@ export class MarathonRepository extends buildDefaultRepository<
     try {
       const row = await this.prisma.marathon.findUnique({ where: param });
       if (!row) {
-        return Err(new NotFoundError({ what: "Marathon" }));
+        return Err(new NotFoundError("Marathon"));
       }
       return Ok(row);
     } catch (error) {
@@ -208,7 +208,7 @@ export class MarathonRepository extends buildDefaultRepository<
         error instanceof Prisma.PrismaClientKnownRequestError &&
         error.code === "P2025"
       ) {
-        return Err(new NotFoundError({ what: "Marathon" }));
+        return Err(new NotFoundError("Marathon"));
       } else {
         return handleRepositoryError(error);
       }
@@ -226,7 +226,7 @@ export class MarathonRepository extends buildDefaultRepository<
         error instanceof Prisma.PrismaClientKnownRequestError &&
         error.code === "P2025"
       ) {
-        return Err(new NotFoundError({ what: "Marathon" }));
+        return Err(new NotFoundError("Marathon"));
       } else {
         return handleRepositoryError(error);
       }

@@ -2,7 +2,7 @@ import http from "node:http";
 
 import { Container, Service } from "@freshgum/typedi";
 import { setupExpressErrorHandler } from "@sentry/node";
-import { ConcreteError, ErrorCode } from "@ukdanceblue/common/error";
+import { ErrorCode, ExtendedError } from "@ukdanceblue/common/error";
 import cookieParser from "cookie-parser";
 import cors from "cors";
 import express from "express";
@@ -104,12 +104,12 @@ export class ExpressModule {
     setupExpressErrorHandler(this.app, {
       shouldHandleError(error) {
         if (
-          error instanceof ConcreteError &&
+          error instanceof ExtendedError &&
           [
-            ErrorCode.AccessControlError,
-            ErrorCode.AuthorizationRuleFailed,
             ErrorCode.NotFound,
             ErrorCode.Unauthenticated,
+            ErrorCode.Unauthorized,
+            ErrorCode.ActionDenied,
           ].includes(error.tag)
         ) {
           return false;
@@ -172,14 +172,14 @@ export class ExpressModule {
     const formatted = formatError(
       err instanceof Error
         ? err
-        : err instanceof ConcreteError
+        : err instanceof ExtendedError
           ? err.graphQlError
           : new Error(String(err)),
       err,
       this.isDevelopment
     );
 
-    if (err instanceof ConcreteError && err.tag === ErrorCode.Unauthenticated) {
+    if (err instanceof ExtendedError && err.tag === ErrorCode.Unauthenticated) {
       res.status(401).json(formatted);
     } else {
       logger.error("Unhandled error in Express", { error: formatted });

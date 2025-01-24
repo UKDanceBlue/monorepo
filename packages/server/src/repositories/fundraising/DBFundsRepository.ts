@@ -206,7 +206,7 @@ export class DBFundsRepository {
           },
         });
         if (!solicitationCode) {
-          return Err(new NotFoundError({ what: "Solicitation Code" }));
+          return Err(new NotFoundError("Solicitation Code"));
         }
         where = {
           solicitationCodeId_marathonId: {
@@ -222,7 +222,7 @@ export class DBFundsRepository {
         include: { solicitationCode: { select: { teams: true } } },
       });
       if (!team) {
-        return Err(new NotFoundError({ what: "Team" }));
+        return Err(new NotFoundError("Team"));
       }
       return Ok(team.solicitationCode.teams);
     } catch (error) {
@@ -244,7 +244,7 @@ export class DBFundsRepository {
         include: { solicitationCode: { include: { dbFundsTeams: true } } },
       });
       if (!team) {
-        return Err(new NotFoundError({ what: "Team" }));
+        return Err(new NotFoundError("Team"));
       }
       if (
         !team.solicitationCode ||
@@ -276,7 +276,7 @@ export class DBFundsRepository {
         where: teamParam,
       });
       if (!team) {
-        return Err(new NotFoundError({ what: "Team" }));
+        return Err(new NotFoundError("Team"));
       }
       if ("dbNum" in dbFundsTeamParam) {
         await this.prisma.team.update({
@@ -297,7 +297,7 @@ export class DBFundsRepository {
           where: dbFundsTeamParam,
         });
         if (!dbfTeam) {
-          return Err(new NotFoundError({ what: "DB Funds Team" }));
+          return Err(new NotFoundError("DB Funds Team"));
         }
 
         await this.prisma.team.update({

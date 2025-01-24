@@ -123,7 +123,7 @@ export class FundraisingEntryRepository extends buildDefaultRepository<
         include: wideFundraisingEntryInclude,
       });
       if (!row) {
-        return Err(new NotFoundError({ what: "FundraisingEntry" }));
+        return Err(new NotFoundError("FundraisingEntry"));
       }
       return Ok(row);
     } catch (error: unknown) {
@@ -139,7 +139,7 @@ export class FundraisingEntryRepository extends buildDefaultRepository<
         where: param,
       });
       if (!row) {
-        return Err(new NotFoundError({ what: "FundraisingAssignment" }));
+        return Err(new NotFoundError("FundraisingAssignment"));
       }
       return Ok(row);
     } catch (error: unknown) {
@@ -156,7 +156,7 @@ export class FundraisingEntryRepository extends buildDefaultRepository<
         select: { assignments: true },
       });
       if (!entry) {
-        return Err(new NotFoundError({ what: "FundraisingEntry" }));
+        return Err(new NotFoundError("FundraisingEntry"));
       }
       return Ok(entry.assignments);
     } catch (error: unknown) {
@@ -298,7 +298,7 @@ export class FundraisingEntryRepository extends buildDefaultRepository<
         where: param,
       });
       if (!entry) {
-        return Err(new NotFoundError({ what: "FundraisingEntry" }));
+        return Err(new NotFoundError("FundraisingEntry"));
       }
 
       await this.prisma.fundraisingEntry.update({
@@ -335,7 +335,7 @@ export class FundraisingEntryRepository extends buildDefaultRepository<
         });
 
       if (!updatedEntry) {
-        return Err(new NotFoundError({ what: "FundraisingEntry" }));
+        return Err(new NotFoundError("FundraisingEntry"));
       }
 
       return Ok(updatedEntry);
@@ -455,7 +455,7 @@ export class FundraisingEntryRepository extends buildDefaultRepository<
         },
       });
       if (!assignment) {
-        return Err(new NotFoundError({ what: "FundraisingEntry" }));
+        return Err(new NotFoundError("FundraisingEntry"));
       }
       const assignments = await this.getAssignmentsForEntry({
         id: assignment.parentEntry.id,
@@ -477,7 +477,7 @@ export class FundraisingEntryRepository extends buildDefaultRepository<
       } else if (assignment.parentEntry.dbFundsEntry) {
         entryAmount = assignment.parentEntry.dbFundsEntry.amount;
       } else {
-        return Err(new NotFoundError({ what: "FundraisingEntrySource" }));
+        return Err(new NotFoundError("FundraisingEntrySource"));
       }
       if (entryAmount.lessThan(totalAssigned.add(amount))) {
         return Err(
@@ -505,7 +505,7 @@ export class FundraisingEntryRepository extends buildDefaultRepository<
         select: { person: true },
       });
       if (!assignment) {
-        return Err(new NotFoundError({ what: "FundraisingAssignment" }));
+        return Err(new NotFoundError("FundraisingAssignment"));
       }
       return Ok(assignment.person);
     } catch (error: unknown) {
@@ -559,7 +559,7 @@ export class FundraisingEntryRepository extends buildDefaultRepository<
       });
 
       if (!assignment) {
-        return Err(new NotFoundError({ what: "FundraisingAssignment" }));
+        return Err(new NotFoundError("FundraisingAssignment"));
       }
 
       const teams =
@@ -580,7 +580,7 @@ export class FundraisingEntryRepository extends buildDefaultRepository<
       });
       // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
       if (!result || !result.team || !result.person) {
-        return Err(new NotFoundError({ what: "Membership" }));
+        return Err(new NotFoundError("Membership"));
       }
 
       return Ok(result);
@@ -604,7 +604,7 @@ export class FundraisingEntryRepository extends buildDefaultRepository<
         },
       });
       if (!assignment) {
-        return Err(new NotFoundError({ what: "FundraisingAssignment" }));
+        return Err(new NotFoundError("FundraisingAssignment"));
       }
       return Ok(assignment.parentEntryWithMeta!);
     } catch (error: unknown) {
@@ -655,7 +655,7 @@ export class FundraisingEntryRepository extends buildDefaultRepository<
         },
       });
       if (!entry) {
-        return Err(new NotFoundError({ what: "FundraisingEntry" }));
+        return Err(new NotFoundError("FundraisingEntry"));
       }
       if (!entry.ddn) {
         return Ok(None);

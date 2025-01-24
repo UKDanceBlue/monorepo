@@ -45,10 +45,10 @@ export class ConfigurationResolver
 
     if (row == null) {
       return Err(
-        new NotFoundError({
-          what: `Configuration with key ${key}`,
-          where: "activeConfiguration resolver",
-        })
+        new NotFoundError(
+          `Configuration with key ${key}`,
+          "activeConfiguration resolver"
+        )
       );
     }
 
@@ -71,10 +71,10 @@ export class ConfigurationResolver
 
     if (row == null) {
       return Err(
-        new NotFoundError({
-          what: `Configuration with UUID ${id}`,
-          where: "configuration resolver",
-        })
+        new NotFoundError(
+          `Configuration with UUID ${id}`,
+          "configuration resolver"
+        )
       );
     }
 
@@ -152,10 +152,10 @@ export class ConfigurationResolver
 
     if (row == null) {
       return Err(
-        new NotFoundError({
-          what: `Configuration with UUID ${id}`,
-          where: "deleteConfiguration resolver",
-        })
+        new NotFoundError(
+          `Configuration with UUID ${id}`,
+          "deleteConfiguration resolver"
+        )
       );
     }
 

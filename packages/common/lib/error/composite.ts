@@ -1,16 +1,12 @@
-import { ConcreteError } from "./error.js";
+import { ExtendedError } from "./error.js";
 import * as ErrorCode from "./errorCode.js";
 
-export class CompositeError<E extends ConcreteError> extends ConcreteError {
-  readonly errors: E[];
-
-  constructor(errors: E[]) {
-    super();
-    this.errors = errors;
-  }
-
-  get message(): string {
-    return this.errors.map((error) => error.message).join(", ");
+export class CompositeError<E extends ExtendedError> extends ExtendedError {
+  constructor(public readonly errors: readonly E[]) {
+    super(
+      errors.map((error) => error.message).join(", "),
+      ErrorCode.CompositeError.description
+    );
   }
 
   get detailedMessage(): string {

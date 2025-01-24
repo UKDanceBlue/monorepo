@@ -561,7 +561,7 @@ export class DailyDepartmentNotificationRepository extends buildDefaultRepositor
         error instanceof Prisma.PrismaClientKnownRequestError &&
         error.code === "P2025"
       ) {
-        return Err(new NotFoundError({ what: "DDN" }));
+        return Err(new NotFoundError("DDN"));
       } else {
         return handleRepositoryError(error);
       }
@@ -598,7 +598,7 @@ export class DailyDepartmentNotificationRepository extends buildDefaultRepositor
         error instanceof Prisma.PrismaClientKnownRequestError &&
         error.code === "P2025"
       ) {
-        return Err(new NotFoundError({ what: "DDN" }));
+        return Err(new NotFoundError("DDN"));
       } else {
         return handleRepositoryError(error);
       }
@@ -780,7 +780,7 @@ export class DailyDepartmentNotificationRepository extends buildDefaultRepositor
         select: { batch: true },
       });
       if (!row) {
-        return Err(new NotFoundError({ what: "DDN" }));
+        return Err(new NotFoundError("DDN"));
       }
       return Ok(row.batch);
     } catch (error) {
@@ -798,7 +798,7 @@ export class DailyDepartmentNotificationRepository extends buildDefaultRepositor
         }
       );
       if (!row) {
-        return Err(new NotFoundError({ what: "Batch" }));
+        return Err(new NotFoundError("Batch"));
       }
       return Ok(row);
     } catch (error) {

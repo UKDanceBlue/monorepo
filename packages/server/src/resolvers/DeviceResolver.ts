@@ -17,8 +17,8 @@ import {
   RegisterDeviceResponse,
 } from "@ukdanceblue/common";
 import {
-  type ConcreteError,
   ConcreteResult,
+  type ExtendedError,
   NotFoundError,
   UnauthenticatedError,
 } from "@ukdanceblue/common/error";
@@ -165,11 +165,11 @@ export class DeviceResolver
   async notificationDeliveries(
     @Root() { id: { id } }: DeviceNode,
     @Args(() => NotificationDeliveriesArgs) query: NotificationDeliveriesArgs
-  ): Promise<Result<NotificationDeliveryNode[], ConcreteError>> {
+  ): Promise<Result<NotificationDeliveryNode[], ExtendedError>> {
     const row = await this.deviceRepository.getDeviceByUuid(id);
 
     if (row == null) {
-      return Err(new NotFoundError({ what: "Device" }));
+      return Err(new NotFoundError("Device"));
     }
 
     if (

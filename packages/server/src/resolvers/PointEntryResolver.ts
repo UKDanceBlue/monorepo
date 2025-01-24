@@ -114,10 +114,7 @@ export class PointEntryResolver
 
     if (row == null) {
       return Err(
-        new NotFoundError({
-          what: "PointEntry",
-          why: `couldn't find point entry ${id}`,
-        })
+        new NotFoundError("PointEntry", `couldn't find point entry ${id}`)
       );
     }
 
@@ -149,10 +146,7 @@ export class PointEntryResolver
 
     if (model == null) {
       return Err(
-        new NotFoundError({
-          what: "Team",
-          why: `couldn't find team for point entry ${id}`,
-        })
+        new NotFoundError("Team", `couldn't find team for point entry ${id}`)
       );
     }
 

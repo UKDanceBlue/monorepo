@@ -87,7 +87,7 @@ export class MembershipRepository extends buildDefaultRepository<
         include,
       });
       if (!membership) {
-        return Err(new NotFoundError({ what: "Membership" }));
+        return Err(new NotFoundError("Membership"));
       }
       return Ok(membership);
     } catch (error) {
@@ -109,7 +109,7 @@ export class MembershipRepository extends buildDefaultRepository<
           select: { id: true },
         });
         if (found == null) {
-          return Err(new NotFoundError({ what: "Person" }));
+          return Err(new NotFoundError("Person"));
         }
         personId = found.id;
       } else {
@@ -123,7 +123,7 @@ export class MembershipRepository extends buildDefaultRepository<
           select: { id: true },
         });
         if (found == null) {
-          return Err(new NotFoundError({ what: "Team" }));
+          return Err(new NotFoundError("Team"));
         }
         teamId = found.id;
       } else {

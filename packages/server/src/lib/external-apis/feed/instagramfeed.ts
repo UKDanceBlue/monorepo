@@ -2,7 +2,7 @@ import { Service } from "@freshgum/typedi";
 import { ImageNode, InstagramFeedNode } from "@ukdanceblue/common";
 import {
   BasicError,
-  ConcreteError,
+  ExtendedError,
   FetchError,
   InvariantError,
 } from "@ukdanceblue/common/error";
@@ -78,7 +78,7 @@ export class InsagramApi {
     limit: number
   ): AsyncResult<
     InstagramFeedNode[],
-    readonly [ConcreteError] | readonly [ConcreteError, InstagramFeedNode[]]
+    readonly [ExtendedError] | readonly [ExtendedError, InstagramFeedNode[]]
   > {
     if (
       this.cachedFeedResponse &&

@@ -1,6 +1,6 @@
 import type { Notification, Prisma } from "@prisma/client";
 import type { TeamType } from "@ukdanceblue/common";
-import type { ConcreteError } from "@ukdanceblue/common/error";
+import type { ExtendedError } from "@ukdanceblue/common/error";
 import type { AsyncResult } from "ts-results-es";
 
 export interface SendableNotification {
@@ -29,7 +29,7 @@ export interface NotificationProvider {
   makeNotification(
     sendable: SendableNotification,
     audience: NotificationAudience
-  ): AsyncResult<Notification, ConcreteError>;
+  ): AsyncResult<Notification, ExtendedError>;
 
   /**
    * Sends a pre-existing notification, if it has not already been sent.
@@ -44,5 +44,5 @@ export interface NotificationProvider {
       | {
           value: Notification;
         }
-  ): AsyncResult<void, ConcreteError>;
+  ): AsyncResult<void, ExtendedError>;
 }

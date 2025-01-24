@@ -180,7 +180,7 @@ export class EventRepository extends buildDefaultRepository<
         ...defaultOptions,
         where: this.uniqueToWhere(by),
       }),
-      { what: "event", where: "EventRepository.findOne" }
+      ["event", "EventRepository.findOne"]
     );
   }
 

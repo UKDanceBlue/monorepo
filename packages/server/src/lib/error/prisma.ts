@@ -6,8 +6,8 @@ import {
   PrismaClientValidationError,
 } from "@prisma/client/runtime/library";
 import {
-  ConcreteError,
   ErrorCode,
+  ExtendedError,
   NotFoundError,
 } from "@ukdanceblue/common/error";
 import type { Option } from "ts-results-es";
@@ -22,7 +22,7 @@ type RawPrismaError =
   | PrismaClientInitializationError
   | PrismaClientValidationError;
 
-export abstract class PrismaError extends ConcreteError {
+export abstract class PrismaError extends ExtendedError {
   readonly error: RawPrismaError;
 
   constructor(error: RawPrismaError) {

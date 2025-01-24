@@ -8,7 +8,6 @@ import {
   TeamLegacyStatus,
   TeamType,
 } from "@ukdanceblue/common";
-import { FormattedConcreteError } from "@ukdanceblue/common/error";
 
 import { prismaToken } from "#lib/typediTokens.js";
 
@@ -91,13 +90,13 @@ export class Seed extends EntryPoint {
         year: "DB24",
       });
       if (marathon.isErr()) {
-        throw new FormattedConcreteError(marathon);
+        throw marathon.error;
       }
 
       const ensureCommitteesResult =
         await this.committeeRepository.ensureCommittees([marathon.value]);
       if (ensureCommitteesResult.isErr()) {
-        throw new FormattedConcreteError(ensureCommitteesResult);
+        throw ensureCommitteesResult.error;
       }
 
       const techChair = await this.personRepository.createPerson({
@@ -105,7 +104,7 @@ export class Seed extends EntryPoint {
         linkblue: "jtho264",
       });
       if (techChair.isErr()) {
-        throw new FormattedConcreteError(techChair);
+        throw techChair.error;
       }
 
       await this.committeeRepository.assignPersonToCommittee(

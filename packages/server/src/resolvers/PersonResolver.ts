@@ -21,8 +21,8 @@ import {
 } from "@ukdanceblue/common";
 import {
   ActionDeniedError,
-  ConcreteError,
   ConcreteResult,
+  ExtendedError,
   extractNotFound,
   InvalidArgumentError,
   NotFoundError,
@@ -80,7 +80,7 @@ export class PersonResolver
     return new AsyncResult(
       await this.personRepository.findPersonByUnique({ uuid: id })
     )
-      .andThen((row) => row.toResult(new NotFoundError({ what: "Person" })))
+      .andThen((row) => row.toResult(new NotFoundError("Person")))
       .andThen((row) => personModelToResource(row, this.personRepository))
       .promise;
   }
@@ -96,7 +96,7 @@ export class PersonResolver
         linkblue: linkBlueId.toLowerCase(),
       })
     )
-      .andThen((row) => row.toResult(new NotFoundError({ what: "Person" })))
+      .andThen((row) => row.toResult(new NotFoundError("Person")))
       .map(({ uuid }) => ({ kind: "PersonNode", id: uuid }));
   })
   @Query(() => PersonNode, { name: "personByLinkBlue", nullable: true })
@@ -487,7 +487,7 @@ export class PersonResolver
   @FieldResolver(() => [FundraisingAssignmentNode])
   async fundraisingAssignments(
     @Root() { id: { id } }: PersonNode
-  ): Promise<Result<FundraisingAssignmentNode[], ConcreteError>> {
+  ): Promise<Result<FundraisingAssignmentNode[], ExtendedError>> {
     return new AsyncResult(
       this.fundraisingEntryRepository.getAssignmentsForPerson({
         uuid: id,
@@ -509,7 +509,7 @@ export class PersonResolver
     return new AsyncResult(
       await this.personRepository.findPersonByUnique({ uuid: id })
     )
-      .andThen((row) => row.toResult(new NotFoundError({ what: "Person" })))
+      .andThen((row) => row.toResult(new NotFoundError("Person")))
       .map((row) => row.hashedPassword != null).promise;
   }
 

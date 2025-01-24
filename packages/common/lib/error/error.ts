@@ -1,44 +1,28 @@
-import type {
-  GraphQLFormattedError,
-  GraphQLResolveInfo,
-  SourceLocation,
-} from "graphql";
-import { getLocation, GraphQLError } from "graphql";
-import type { Err } from "ts-results-es";
+import type { GraphQLFormattedError } from "graphql";
+import { GraphQLError } from "graphql";
 
+import { debugStringify } from "../utility/errors/debugStringify.js";
 import * as ErrorCode from "./errorCode.js";
 import type { ErrorCodeType } from "./index.js";
 
-export abstract class ConcreteError {
-  graphqlError: GraphQLError;
-  #stack: string | undefined;
-
-  constructor() {
-    this.graphqlError = new GraphQLError("");
-    // eslint-disable-next-line unicorn/error-message
-    this.#stack = new Error().stack;
-  }
-
-  get graphQlError() {
-    const formatted = this.graphqlError.toJSON();
-    return {
-      ...formatted,
-      message: this.message,
+export abstract class ExtendedError extends GraphQLError {
+  constructor(
+    public readonly message: string,
+    errorCode?: string
+  ) {
+    super(message, {
       extensions: {
-        ...formatted.extensions,
-        code: this.tag.description,
+        code: errorCode,
       },
-    } satisfies GraphQLFormattedErrorWithExtensions;
+    });
   }
 
-  abstract get message(): string;
   get detailedMessage(): string {
     return this.message;
   }
+
   abstract get expose(): boolean;
-  get stack(): string | undefined {
-    return this.#stack;
-  }
+
   abstract get tag(): ErrorCodeType;
 
   toString() {
@@ -47,85 +31,29 @@ export abstract class ConcreteError {
       : `${this.message} - ${this.detailedMessage}`;
   }
 
-  [Symbol.toStringTag]() {
+  toJSON(): GraphQLFormattedError & {
+    details: string;
+  } {
+    return {
+      message: this.message,
+      details: this.detailedMessage,
+      extensions: this.extensions,
+      locations: this.locations,
+      path: this.path,
+    };
+  }
+
+  get [Symbol.toStringTag]() {
     return this.toString();
   }
 }
 
-export interface GraphQLFormattedErrorExtensions {
-  code?: string;
-  stacktrace?: string[];
-  [key: string]: unknown;
-}
-export type GraphQLFormattedErrorWithExtensions = GraphQLFormattedError & {
-  extensions: GraphQLFormattedErrorExtensions;
-};
-
-export class FormattedConcreteError
-  extends Error
-  implements GraphQLFormattedErrorWithExtensions
-{
-  readonly cause: ConcreteError;
-  readonly graphQlError: GraphQLFormattedErrorWithExtensions;
-  readonly #stack: string | undefined;
-  readonly #info: GraphQLResolveInfo | undefined;
-
-  constructor({ error, stack }: Err<ConcreteError>, info?: GraphQLResolveInfo) {
-    super(error.message);
-    this.cause = error;
-    this.#stack = stack;
-    this.#info = info;
-    this.graphQlError = error.graphQlError;
-  }
-
-  get extensions(): GraphQLFormattedErrorExtensions {
-    return {
-      ...this.graphQlError.extensions,
-      stacktrace: this.stack ? this.stack.split("\n") : undefined,
-    };
-  }
-
-  get locations(): readonly SourceLocation[] | undefined {
-    return (
-      this.#info?.fieldNodes
-        .map((node) =>
-          node.loc ? getLocation(node.loc.source, node.loc.start) : undefined
-        )
-        .filter(
-          (location): location is SourceLocation => location !== undefined
-        ) ?? this.graphQlError.locations
-    );
-  }
-
-  get path(): readonly (string | number)[] | undefined {
-    let current = this.#info?.path;
-    if (current) {
-      const path = [];
-      while (current) {
-        path.unshift(current.key);
-        current = current.prev;
-      }
-      return path;
-    } else {
-      return this.graphQlError.path;
-    }
-  }
-
-  get stack(): string | undefined {
-    return this.cause.expose ? (this.cause.stack ?? this.#stack) : undefined;
-  }
-}
-
-export class JsError extends ConcreteError {
+export class JsError extends ExtendedError {
   readonly error: Error;
 
   constructor(error: Error) {
-    super();
+    super(error.message, ErrorCode.JsError.description);
     this.error = error;
-  }
-
-  get message(): string {
-    return this.error.message;
   }
 
   readonly expose = false;
@@ -139,19 +67,17 @@ export class JsError extends ConcreteError {
   }
 }
 
-export class UnknownError extends ConcreteError {
-  readonly #message: string = "Unknown error";
-
+export class UnknownError extends ExtendedError {
   // We use a rest parameter here to detect when undefined is passed. If we just allowed an optional parameter, we wouldn't be able to distinguish between `new UnknownError()` and `new UnknownError(undefined)`.
   constructor(...message: unknown[]) {
-    super();
-    if (message.length > 0) {
-      this.#message = String(message[0]);
-    }
-  }
-
-  get message(): string {
-    return this.#message;
+    super(
+      message.length === 0
+        ? "An unknown error occurred"
+        : message.length === 1
+          ? debugStringify(message[0], false, true)
+          : `Multiple errors occurred: ${message.map((m) => debugStringify(m, false, true)).join(", ")}`,
+      ErrorCode.Unknown.description
+    );
   }
 
   readonly expose = false;

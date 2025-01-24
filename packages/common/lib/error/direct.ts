@@ -1,67 +1,34 @@
-import { type Option } from "ts-results-es";
-
-import { ConcreteError } from "./error.js";
+import { ExtendedError } from "./error.js";
 import * as ErrorCode from "./errorCode.js";
 import { optionOf } from "./option.js";
 
-export class NotFoundError extends ConcreteError {
-  readonly #what: Option<string>;
-  readonly #where: Option<string>;
-  readonly #why: Option<string>;
-  readonly #sensitive: boolean;
-
-  constructor({
-    what,
-    where,
-    why,
-    sensitive = true,
-  }: {
-    what?: string;
-    where?: string;
-    why?: string;
-    sensitive?: boolean;
-  }) {
-    super();
-    this.#what = optionOf(what);
-    this.#where = optionOf(where);
-    this.#why = optionOf(why);
-    this.#sensitive = sensitive;
-  }
-
-  get message(): string {
-    return this.#what.mapOr("Not found", (what) => `Not found: ${what}`);
+export class NotFoundError extends ExtendedError {
+  constructor(
+    public readonly what?: string,
+    public readonly where?: string
+  ) {
+    super(
+      optionOf(what).mapOr("Not found", (what) => `Not found: ${what}`),
+      ErrorCode.NotFound.description
+    );
   }
 
   get detailedMessage(): string {
-    const what = this.#what.unwrapOr("unknown");
-    const where = this.#where.mapOr("", (where) => ` at ${where}`);
-    const why = this.#why.mapOr("", (why) => ` because ${why}`);
-    return `Not found: ${what}${where}${why}`;
+    const what = this.what ?? "Not found";
+    const where = this.where ? ` in ${this.where}` : "";
+    return `Not found: ${what}${where}`;
   }
 
-  get expose(): boolean {
-    return !this.#sensitive;
-  }
-
-  get stack(): string | undefined {
-    return undefined;
-  }
+  readonly expose = true;
 
   get tag(): ErrorCode.NotFound {
     return ErrorCode.NotFound;
   }
 }
 
-export class TimeoutError extends ConcreteError {
-  readonly #what: string | null;
-
-  constructor(what?: string) {
-    super();
-    this.#what = what ?? null;
-  }
-
-  get message(): string {
-    return `${this.#what ?? "A task"} took too long`;
+export class TimeoutError extends ExtendedError {
+  constructor(public readonly what?: string) {
+    super(`${what ?? "A task"} took too long`);
   }
 
   readonly expose = false;
@@ -71,16 +38,9 @@ export class TimeoutError extends ConcreteError {
   }
 }
 
-export class InvalidOperationError extends ConcreteError {
-  readonly #what: string;
-
-  constructor(what: string) {
-    super();
-    this.#what = what;
-  }
-
-  get message(): string {
-    return `Invalid operation: ${this.#what}`;
+export class InvalidOperationError extends ExtendedError {
+  constructor(public readonly what: string) {
+    super(`Invalid operation: ${what}`, ErrorCode.InvalidOperation.description);
   }
 
   readonly expose = false;
@@ -90,16 +50,9 @@ export class InvalidOperationError extends ConcreteError {
   }
 }
 
-export class InvalidArgumentError extends ConcreteError {
-  readonly #what: string;
-
-  constructor(what: string) {
-    super();
-    this.#what = what;
-  }
-
-  get message(): string {
-    return `Invalid argument: ${this.#what}`;
+export class InvalidArgumentError extends ExtendedError {
+  constructor(public readonly what: string) {
+    super(`Invalid argument: ${what}`, ErrorCode.InvalidArgument.description);
   }
 
   readonly expose = false;
@@ -109,16 +62,9 @@ export class InvalidArgumentError extends ConcreteError {
   }
 }
 
-export class InvalidStateError extends ConcreteError {
-  readonly #what: string;
-
-  constructor(what: string) {
-    super();
-    this.#what = what;
-  }
-
-  get message(): string {
-    return `Invalid state: ${this.#what}`;
+export class InvalidStateError extends ExtendedError {
+  constructor(public readonly what: string) {
+    super(`Invalid state: ${what}`, ErrorCode.InvalidState.description);
   }
 
   readonly expose = false;
@@ -128,16 +74,12 @@ export class InvalidStateError extends ConcreteError {
   }
 }
 
-export class InvariantError extends ConcreteError {
-  readonly #what: string;
-
-  constructor(what: string) {
-    super();
-    this.#what = what;
-  }
-
-  get message(): string {
-    return `Invariant violation: ${this.#what}`;
+export class InvariantError extends ExtendedError {
+  constructor(public readonly what: string) {
+    super(
+      `Invariant violation: ${what}`,
+      ErrorCode.InvariantViolation.description
+    );
   }
 
   readonly expose = false;

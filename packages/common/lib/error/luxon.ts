@@ -2,21 +2,17 @@ import type { DateTime, Duration, Interval } from "luxon";
 import type { Result } from "ts-results-es";
 import { Err, Ok } from "ts-results-es";
 
-import { ConcreteError } from "./error.js";
+import { ExtendedError } from "./error.js";
 import { LuxonError as ErrorCodeLuxonError } from "./errorCode.js";
 
-export class LuxonError extends ConcreteError {
+export class LuxonError extends ExtendedError {
   constructor(
     protected readonly value:
       | DateTime<false>
       | Interval<false>
       | Duration<false>
   ) {
-    super();
-  }
-
-  get message() {
-    return this.value.invalidReason;
+    super(value.invalidReason, ErrorCodeLuxonError.description);
   }
 
   get detailedMessage() {

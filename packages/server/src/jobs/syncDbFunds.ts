@@ -1,7 +1,7 @@
 import { Container, Service } from "@freshgum/typedi";
 import type { Marathon, PrismaClient } from "@prisma/client";
 import type { MarathonYearString } from "@ukdanceblue/common";
-import { type ConcreteError, NotFoundError } from "@ukdanceblue/common/error";
+import { type ExtendedError, NotFoundError } from "@ukdanceblue/common/error";
 import { CompositeError } from "@ukdanceblue/common/error";
 import { AsyncResult, Err, None, Ok, type Result } from "ts-results-es";
 
@@ -23,7 +23,7 @@ async function doSyncForMarathon(
   fundraisingProvider: DBFundsFundraisingProvider,
   fundraisingRepository: DBFundsRepository,
   prisma: PrismaClient
-): Promise<Result<None, ConcreteError>> {
+): Promise<Result<None, ExtendedError>> {
   const teams = await fundraisingProvider.getTeams(
     marathon.year as MarathonYearString
   );
@@ -140,13 +140,13 @@ export class SyncDbFundsJob extends Job {
     result.unwrap();
   }
 
-  async doSyncForActive(): Promise<Result<None, ConcreteError>> {
+  async doSyncForActive(): Promise<Result<None, ExtendedError>> {
     const marathonRepository = Container.get(MarathonRepository);
 
     const activeMarathon = await new AsyncResult(
       marathonRepository.findActiveMarathon()
     ).andThen((activeMarathon) =>
-      activeMarathon.toResult(new NotFoundError({ what: "active marathon" }))
+      activeMarathon.toResult(new NotFoundError("active marathon"))
     ).promise;
     if (activeMarathon.isErr()) {
       return activeMarathon;
@@ -187,13 +187,13 @@ export class SyncDbFundsPastJob extends Job {
     result.unwrap();
   }
 
-  async doSyncForPastMarathons(): Promise<Result<None, ConcreteError>> {
+  async doSyncForPastMarathons(): Promise<Result<None, ExtendedError>> {
     const marathonRepository = Container.get(MarathonRepository);
 
     const activeMarathon = await new AsyncResult(
       marathonRepository.findActiveMarathon()
     ).andThen((activeMarathon) =>
-      activeMarathon.toResult(new NotFoundError({ what: "active marathon" }))
+      activeMarathon.toResult(new NotFoundError("active marathon"))
     ).promise;
     if (activeMarathon.isErr()) {
       return activeMarathon;

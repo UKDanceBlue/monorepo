@@ -2,8 +2,8 @@ import { type Container, Service } from "@freshgum/typedi";
 import { type Person, PrismaClient, Session } from "@prisma/client";
 import { AuthSource } from "@ukdanceblue/common";
 import {
-  ConcreteError,
   ErrorCode,
+  ExtendedError,
   InvariantError,
   toBasicError,
   UnauthenticatedError,
@@ -303,7 +303,7 @@ export class SessionRepository extends buildDefaultRepository("Session", {}) {
         } else {
           req.session = null;
           if (
-            awaited.error instanceof ConcreteError &&
+            awaited.error instanceof ExtendedError &&
             awaited.error.tag === ErrorCode.Unauthenticated &&
             tokenFromCookie
           ) {

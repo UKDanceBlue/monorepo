@@ -1,13 +1,13 @@
 import type { Result } from "ts-results-es";
 
-import type { ConcreteError, JsError, UnknownError } from "./error.js";
+import type { ExtendedError, JsError, UnknownError } from "./error.js";
 
-export type ConcreteResult<T, E extends ConcreteError = ConcreteError> = Result<
+export type ConcreteResult<T, E extends ExtendedError = ExtendedError> = Result<
   T,
   E
 >;
 
-export type JsResult<T, E extends ConcreteError> = ConcreteResult<
+export type JsResult<T, E extends ExtendedError> = ConcreteResult<
   T,
   E | JsError | UnknownError
 >;

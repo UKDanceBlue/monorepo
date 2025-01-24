@@ -1,10 +1,5 @@
 import { unwrapResolverError } from "@apollo/server/errors";
-import type { GraphQLFormattedErrorWithExtensions } from "@ukdanceblue/common/error";
-import {
-  ConcreteError,
-  ErrorCode,
-  FormattedConcreteError,
-} from "@ukdanceblue/common/error";
+import { ErrorCode, ExtendedError } from "@ukdanceblue/common/error";
 import type { GraphQLFormattedError } from "graphql";
 import { GraphQLError } from "graphql";
 import jwt from "jsonwebtoken";
@@ -23,8 +18,8 @@ export function formatError(
 ): GraphQLFormattedError {
   const error = unwrapResolverError(maybeWrappedError);
 
-  if (error instanceof FormattedConcreteError) {
-    return error.graphQlError;
+  if (error instanceof ExtendedError) {
+    return error.toJSON();
   } else if (error instanceof GraphQLError) {
     return error.toJSON();
   }
@@ -32,11 +27,17 @@ export function formatError(
   let stacktrace: string[] | undefined;
   if (error instanceof Error) {
     stacktrace = error.stack?.split("\n") ?? [];
-  } else if (error instanceof ConcreteError) {
+  } else if (error instanceof ExtendedError) {
     stacktrace = error.stack?.split("\n") ?? [];
   }
 
-  const formattedError: Writable<GraphQLFormattedErrorWithExtensions> = {
+  const formattedError: Writable<
+    GraphQLFormattedError & {
+      extensions: {
+        code?: string;
+      };
+    }
+  > = {
     ...originalFormattedError,
     extensions: {
       ...originalFormattedError.extensions,
@@ -66,14 +67,6 @@ export function formatError(
     }
     if ("explanation" in error && typeof error.explanation === "string") {
       formattedError.extensions.explanation = error.explanation;
-    }
-    if (
-      "stacktrace" in error &&
-      Array.isArray(error.stacktrace) &&
-      shouldIncludeSensitiveInfo &&
-      formattedError.extensions.stacktrace?.length === 0
-    ) {
-      formattedError.extensions.stacktrace = error.stacktrace.map(String);
     }
   }
 

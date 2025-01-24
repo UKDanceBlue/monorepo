@@ -11,7 +11,7 @@ import {
   ListDailyDepartmentNotificationsArgs,
   ListDailyDepartmentNotificationsResponse,
 } from "@ukdanceblue/common";
-import { ConcreteError, ConcreteResult } from "@ukdanceblue/common/error";
+import { ConcreteResult,ExtendedError } from "@ukdanceblue/common/error";
 import { AsyncResult, Option, Result } from "ts-results-es";
 import {
   Arg,
@@ -150,7 +150,7 @@ export class DailyDepartmentNotificationResolver
   @FieldResolver(() => DailyDepartmentNotificationBatchNode)
   async batch(
     @Root() dailyDepartmentNotification: DailyDepartmentNotificationNode
-  ): Promise<Result<DailyDepartmentNotificationBatchNode, ConcreteError>> {
+  ): Promise<Result<DailyDepartmentNotificationBatchNode, ExtendedError>> {
     return new AsyncResult(
       this.dailyDepartmentNotificationRepository.findBatchForDDN({
         uuid: dailyDepartmentNotification.id.id,
@@ -208,7 +208,7 @@ export class DailyDepartmentNotificationBatchResolver {
   async dailyDepartmentNotifications(
     @Root()
     dailyDepartmentNotificationBatch: DailyDepartmentNotificationBatchNode
-  ): Promise<Result<DailyDepartmentNotificationNode[], ConcreteError>> {
+  ): Promise<Result<DailyDepartmentNotificationNode[], ExtendedError>> {
     return new AsyncResult(
       this.dailyDepartmentNotificationRepository.findDDNsByBatch({
         uuid: dailyDepartmentNotificationBatch.id.id,

@@ -183,13 +183,13 @@ export function buildDefaultRepository<
     ): AsyncRepositoryResult<D>;
     protected handleQueryError<D>(
       promise: Promise<D>,
-      handleNotFound: ConstructorParameters<typeof NotFoundError>[0]
+      handleNotFound: ConstructorParameters<typeof NotFoundError>
     ): AsyncRepositoryResult<NonNullable<D>>;
     protected handleQueryError<D>(
       promise: Promise<D>,
       handleNotFound:
         | false
-        | ConstructorParameters<typeof NotFoundError>[0] = false
+        | ConstructorParameters<typeof NotFoundError> = false
     ): AsyncRepositoryResult<D> {
       return handleNotFound
         ? this.mapToNotFound(this.promiseToAsyncResult(promise), handleNotFound)
@@ -254,18 +254,16 @@ export function buildDefaultRepository<
         | Result<T | null | undefined, E>
         | Promise<Result<T | null | undefined, E>>
         | AsyncResult<T | null | undefined, E>,
-      params: ConstructorParameters<typeof NotFoundError>[0]
+      params: ConstructorParameters<typeof NotFoundError>
     ): AsyncResult<T, E | NotFoundError> {
       return this.resultToAsyncResult(val).andThen((v) =>
         v
           ? Ok(v)
           : Err(
-              new NotFoundError({
-                what: "field",
-                where: `${tableName}Repository`,
-                sensitive: false,
-                ...params,
-              })
+              new NotFoundError(
+                params[0] ?? "field",
+                params[1] ?? `${tableName}Repository`
+              )
             )
       );
     }

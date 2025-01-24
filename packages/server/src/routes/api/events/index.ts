@@ -67,7 +67,7 @@ export default class EventsRouter extends RouterService {
             until,
           }).promise;
         if (upcomingEventsResult.isErr()) {
-          throw upcomingEventsResult.error.graphqlError;
+          throw upcomingEventsResult.error;
         }
         const upcomingEvents = upcomingEventsResult.value;
 

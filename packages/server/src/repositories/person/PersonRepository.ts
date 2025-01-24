@@ -200,7 +200,7 @@ export class PersonRepository extends buildDefaultRepository<
         },
       });
       if (!row) {
-        return Err(new NotFoundError({ what: "Person" }));
+        return Err(new NotFoundError("Person"));
       }
       return Ok(row);
     } catch (error) {
@@ -227,7 +227,7 @@ export class PersonRepository extends buildDefaultRepository<
         !person.value.value.hashedPassword ||
         !person.value.value.salt
       ) {
-        return Err(new NotFoundError({ what: "Person" }));
+        return Err(new NotFoundError("Person"));
       }
 
       const { hashedPassword, salt } = person.value.value;
@@ -287,7 +287,7 @@ export class PersonRepository extends buildDefaultRepository<
         error instanceof Prisma.PrismaClientKnownRequestError &&
         error.code === "P2025"
       ) {
-        return Err(new NotFoundError({ what: "Person" }));
+        return Err(new NotFoundError("Person"));
       } else {
         return handleRepositoryError(error);
       }
@@ -334,7 +334,7 @@ export class PersonRepository extends buildDefaultRepository<
       const marathon = await new AsyncResult(
         this.marathonRepository.findActiveMarathon()
       ).andThen((option) =>
-        option.toResult(new NotFoundError({ what: "active marathon" }))
+        option.toResult(new NotFoundError("active marathon"))
       ).promise;
       if (marathon.isErr()) {
         return Err(marathon.error);
@@ -558,7 +558,7 @@ export class PersonRepository extends buildDefaultRepository<
       });
 
       if (!rows) {
-        return Err(new NotFoundError({ what: "Person" }));
+        return Err(new NotFoundError("Person"));
       }
 
       return Ok(
@@ -616,7 +616,7 @@ export class PersonRepository extends buildDefaultRepository<
         });
 
       if (!rows) {
-        return Err(new NotFoundError({ what: "Person" }));
+        return Err(new NotFoundError("Person"));
       }
 
       return Ok(rows);
@@ -803,7 +803,7 @@ export class PersonRepository extends buildDefaultRepository<
           select: { id: true },
         });
         if (found == null) {
-          return Err(new NotFoundError({ what: "Person" }));
+          return Err(new NotFoundError("Person"));
         }
         personId = found.id;
       } else {
@@ -821,7 +821,7 @@ export class PersonRepository extends buildDefaultRepository<
                   })
                   .then((team) => {
                     if (!team) {
-                      return Err(new NotFoundError({ what: "Team" }));
+                      return Err(new NotFoundError("Team"));
                     } else if (
                       !team.correspondingCommitteeId &&
                       committeeRole
@@ -851,7 +851,7 @@ export class PersonRepository extends buildDefaultRepository<
                   })
                   .then((team) => {
                     if (!team) {
-                      return Err(new NotFoundError({ what: "Team" }));
+                      return Err(new NotFoundError("Team"));
                     } else if (
                       !team.correspondingCommitteeId &&
                       committeeRole
@@ -1005,7 +1005,7 @@ export class PersonRepository extends buildDefaultRepository<
         error instanceof Prisma.PrismaClientKnownRequestError &&
         error.code === "P2025"
       ) {
-        return Err(new NotFoundError({ what: "Person" }));
+        return Err(new NotFoundError("Person"));
       } else {
         return handleRepositoryError(error);
       }
@@ -1035,7 +1035,7 @@ export class PersonRepository extends buildDefaultRepository<
           select: { id: true },
         });
         if (found == null) {
-          return Err(new NotFoundError({ what: "Marathon" }));
+          return Err(new NotFoundError("Marathon"));
         }
         marathonId = found.id;
       }
@@ -1194,7 +1194,7 @@ export class PersonRepository extends buildDefaultRepository<
         error instanceof Prisma.PrismaClientKnownRequestError &&
         error.code === "P2025"
       ) {
-        return Err(new NotFoundError({ what: "Person" }));
+        return Err(new NotFoundError("Person"));
       } else {
         return handleRepositoryError(error);
       }
@@ -1226,7 +1226,7 @@ export class PersonRepository extends buildDefaultRepository<
         });
 
         if (!someMarathon) {
-          return Err(new NotFoundError({ what: "Marathon" }));
+          return Err(new NotFoundError("Marathon"));
         }
 
         demoTeam = await this.prisma.team.create({
@@ -1325,7 +1325,7 @@ export class PersonRepository extends buildDefaultRepository<
       });
 
       if (committees.length === 0) {
-        return Err(new NotFoundError({ what: "Primary committee" }));
+        return Err(new NotFoundError("Primary committee"));
       }
 
       let bestCommittee = undefined;
@@ -1388,7 +1388,7 @@ export class PersonRepository extends buildDefaultRepository<
           fallbackCommittee.team.correspondingCommittee,
         ]);
       } else {
-        return Err(new NotFoundError({ what: "Primary committee" }));
+        return Err(new NotFoundError("Primary committee"));
       }
     } catch (error) {
       return handleRepositoryError(error);

@@ -137,7 +137,7 @@ export class SolicitationCodeRepository {
         },
       });
       if (!entry) {
-        return Err(new NotFoundError({ what: "FundraisingEntry" }));
+        return Err(new NotFoundError("FundraisingEntry"));
       }
 
       const solicitationCode =
@@ -146,12 +146,7 @@ export class SolicitationCodeRepository {
         entry.dbFundsEntry?.dbFundsTeam.solicitationCode;
 
       if (!solicitationCode) {
-        return Err(
-          new NotFoundError({
-            what: "SolicitationCode",
-            where: "FundraisingEntry",
-          })
-        );
+        return Err(new NotFoundError("SolicitationCode", "FundraisingEntry"));
       }
       return Ok(solicitationCode);
     } catch (error: unknown) {
@@ -225,7 +220,7 @@ export class SolicitationCodeRepository {
         include: { solicitationCode: true },
       });
       if (!team) {
-        return Err(new NotFoundError({ what: "Team" }));
+        return Err(new NotFoundError("Team"));
       }
       if (team.solicitationCode) {
         return Err(
@@ -255,7 +250,7 @@ export class SolicitationCodeRepository {
         include: { solicitationCode: true },
       });
       if (!team) {
-        return Err(new NotFoundError({ what: "Team" }));
+        return Err(new NotFoundError("Team"));
       }
       if (!team.solicitationCode) {
         return Err(
@@ -290,7 +285,7 @@ export class SolicitationCodeRepository {
         where: entryParam,
       });
       if (!entry) {
-        return Err(new NotFoundError({ what: "FundraisingEntry" }));
+        return Err(new NotFoundError("FundraisingEntry"));
       }
 
       await this.prisma.fundraisingEntry.update({
@@ -319,7 +314,7 @@ export class SolicitationCodeRepository {
         where: entryParam,
       });
       if (!entry) {
-        return Err(new NotFoundError({ what: "FundraisingEntry" }));
+        return Err(new NotFoundError("FundraisingEntry"));
       }
 
       await this.prisma.fundraisingEntry.update({
@@ -367,7 +362,7 @@ export class SolicitationCodeRepository {
         where: "code" in param ? { prefix_code: param } : param,
       });
       if (!code) {
-        return Err(new NotFoundError({ what: "SolicitationCode" }));
+        return Err(new NotFoundError("SolicitationCode"));
       }
       return Ok(code);
     } catch (error: unknown) {
