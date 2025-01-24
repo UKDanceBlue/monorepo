@@ -181,6 +181,12 @@ export function FundraisingReportSelection({
   const { selectProps } = useTypedSelect({
     fragment: SolicitationCodeSelectFragment,
     props: {
+      sorters: [
+        {
+          field: "text",
+          order: "asc",
+        },
+      ],
       resource: "solicitationCode",
       optionLabel(item) {
         return item.text;
