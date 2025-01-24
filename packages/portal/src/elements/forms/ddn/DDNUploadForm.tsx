@@ -79,9 +79,9 @@ const inputTypeSchema = z.object({
   "UK First Gift": z.enum(["Y", "N"]).transform((v) => v === "Y"),
   "Div First Gift": z.enum(["Y", "N"]).transform((v) => v === "Y"),
   "IDSorter": z.coerce.string().trim(),
-  "Combined Donor Name": z.string().trim(),
-  "Combined Donor Salutation": z.string().trim(),
-  "Combined Donor Sort": z.string().trim(),
+  "Combined Donor Name": defaultStringValidator, //z.string().trim().default("Mr. Dance Blue"),
+  "Combined Donor Salutation": defaultStringValidator, //z.string().trim().default("Mr. Blue"),
+  "Combined Donor Sort": defaultStringValidator, //z.string().trim().default("BLUE/DANCE"),
   "Donor1 ID": z.coerce
     .string()
     .trim()
@@ -204,9 +204,10 @@ export function DDNUploadForm() {
             ukFirstGift: row["UK First Gift"],
             divFirstGift: row["Div First Gift"],
             idSorter: row.IDSorter,
-            combinedDonorName: row["Combined Donor Name"],
-            combinedDonorSalutation: row["Combined Donor Salutation"],
-            combinedDonorSort: row["Combined Donor Sort"],
+            combinedDonorName: row["Combined Donor Name"] ?? "Mr. Dance Blue",
+            combinedDonorSalutation:
+              row["Combined Donor Salutation"] ?? "Mr. Blue",
+            combinedDonorSort: row["Combined Donor Sort"] ?? "BLUE/DANCE",
             donor1Id: row["Donor1 ID"],
             donor1GiftKey: row["Donor1 Gift Key"],
             donor1Name: row["Donor1 Name"],
