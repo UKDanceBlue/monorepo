@@ -1,5 +1,5 @@
 import { EyeOutlined } from "@ant-design/icons";
-import { useTable } from "@refinedev/antd";
+import { getDefaultSortOrder, useTable } from "@refinedev/antd";
 import { Link } from "@tanstack/react-router";
 import type { SolicitationCodeNode } from "@ukdanceblue/common";
 import { BatchType } from "@ukdanceblue/common";
@@ -29,7 +29,7 @@ const DDNsTableFragment = graphql(/* GraphQL */ `
 `);
 
 export const DDNTable = () => {
-  const { searchFormProps, tableProps } = useTable<
+  const { searchFormProps, tableProps, sorters } = useTable<
     ResultOf<typeof DDNsTableFragment>
   >({
     meta: {
@@ -104,6 +104,12 @@ export const DDNTable = () => {
                 text: stringifyDDNBatchType(type as BatchType),
                 value: type,
               })),
+          },
+          {
+            title: "Created At",
+            dataIndex: "createdAt",
+            sorter: true,
+            defaultSortOrder: getDefaultSortOrder("createdAt", sorters),
           },
           {
             title: "Actions",

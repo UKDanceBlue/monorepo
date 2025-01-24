@@ -1,5 +1,5 @@
 import { EditOutlined, EyeOutlined } from "@ant-design/icons";
-import { List, MarkdownField } from "@refinedev/antd";
+import { getDefaultSortOrder, List, MarkdownField } from "@refinedev/antd";
 import { createFileRoute } from "@tanstack/react-router";
 import { Link } from "@tanstack/react-router";
 import {
@@ -30,7 +30,7 @@ export const EventsTableFragment = graphql(/* GraphQL */ `
 `);
 
 function Events() {
-  const { searchFormProps, tableProps } = useTypedTable({
+  const { searchFormProps, tableProps, sorters } = useTypedTable({
     fragment: EventsTableFragment,
     props: {
       resource: "event",
@@ -89,6 +89,7 @@ function Events() {
                 </ul>
               );
             },
+            defaultSortOrder: getDefaultSortOrder("occurrences", sorters),
             width: 400,
           },
           {

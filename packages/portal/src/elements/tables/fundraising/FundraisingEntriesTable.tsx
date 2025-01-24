@@ -1,3 +1,4 @@
+import { getDefaultSortOrder } from "@refinedev/antd";
 import { Link } from "@tanstack/react-router";
 import {
   BatchType,
@@ -70,6 +71,7 @@ export function FundraisingEntriesTable<T extends Record<string, unknown>>({
     tableProps,
     searchFormProps,
     tableQuery: { refetch },
+    sorters,
   } = useTypedTable({
     fragment: FundraisingEntryTableFragment,
     props: {
@@ -129,6 +131,7 @@ export function FundraisingEntriesTable<T extends Record<string, unknown>>({
             key: "donatedOn",
             sorter: true,
             render: (date: string) => DateTime.fromISO(date).toLocaleString(),
+            defaultSortOrder: getDefaultSortOrder("donatedOn", sorters),
           },
           {
             title: "Amount",

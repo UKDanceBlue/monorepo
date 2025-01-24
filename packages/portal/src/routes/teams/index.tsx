@@ -1,10 +1,12 @@
 import { PlusOutlined, UploadOutlined } from "@ant-design/icons";
 import { DollarOutlined, EditOutlined, EyeOutlined } from "@ant-design/icons";
-import { List } from "@refinedev/antd";
+import { getDefaultSortOrder, List } from "@refinedev/antd";
+import { getDefaultFilter } from "@refinedev/core";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import {
   TeamLegacyStatus,
   TeamLegacyStatusValues,
+  TeamType,
   TeamTypeValues,
 } from "@ukdanceblue/common";
 import { Button, Flex, Table } from "antd";
@@ -28,7 +30,7 @@ export const TeamsTableFragment = graphql(/* GraphQL */ `
 export function ListTeamsPage() {
   const { year: marathonYear } = useMarathon() ?? {};
 
-  const { tableProps, searchFormProps } = useTypedTable({
+  const { tableProps, searchFormProps, filters, sorters } = useTypedTable({
     fragment: TeamsTableFragment,
     props: {
       resource: "team",
@@ -38,6 +40,21 @@ export function ListTeamsPage() {
             field: "marathonYear",
             value: marathonYear,
             operator: "eq",
+          },
+        ],
+        initial: [
+          {
+            field: "type",
+            value: [TeamType.Spirit],
+            operator: "in",
+          },
+        ],
+      },
+      sorters: {
+        initial: [
+          {
+            field: "totalPoints",
+            order: "desc",
           },
         ],
       },
@@ -86,6 +103,7 @@ export function ListTeamsPage() {
               text: key,
               value: key,
             })),
+            defaultFilteredValue: getDefaultFilter("type", filters, "in"),
           },
           {
             title: "Legacy Status",
@@ -135,6 +153,7 @@ export function ListTeamsPage() {
             title: "Total Points",
             dataIndex: "totalPoints",
             sorter: true,
+            defaultSortOrder: getDefaultSortOrder("totalPoints", sorters),
           },
           {
             title: "Actions",

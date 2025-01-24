@@ -1,6 +1,6 @@
 import { PlusOutlined } from "@ant-design/icons";
 import { EyeOutlined, InboxOutlined, UploadOutlined } from "@ant-design/icons";
-import { List } from "@refinedev/antd";
+import { getDefaultSortOrder, List } from "@refinedev/antd";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { base64StringToArray } from "@ukdanceblue/common";
 import { Button, Flex, Image, Modal, Table, Typography, Upload } from "antd";
@@ -47,6 +47,7 @@ function RouteComponent() {
     tableQuery: { refetch },
     pageSize,
     current,
+    sorters,
     setCurrent,
   } = useTypedTable({
     fragment: ImagesTableFragment,
@@ -210,6 +211,7 @@ function RouteComponent() {
             sorter: true,
             render: (date: string) =>
               DateTime.fromISO(date).toLocaleString(DateTime.DATETIME_MED),
+            defaultSortOrder: getDefaultSortOrder("createdAt", sorters),
           },
           {
             title: "Actions",

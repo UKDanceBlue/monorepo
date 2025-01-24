@@ -13,7 +13,7 @@ import { useQueryStatusWatcher } from "#hooks/useQueryStatusWatcher.js";
 import type { usePointEntryCreatorForm } from "./usePointEntryCreatorForm.js";
 
 const pointEntryOpportunityLookup = graphql(/* GraphQL */ `
-  query PointEntryOpportunityLookup($name: String!, $marathonUuid: String!) {
+  query PointEntryOpportunityLookup($name: String!, $marathonYear: String!) {
     pointOpportunities(
       filters: {
         operator: AND
@@ -28,9 +28,9 @@ const pointEntryOpportunityLookup = graphql(/* GraphQL */ `
             }
           }
           {
-            field: marathonUuid
+            field: marathonYear
             filter: {
-              singleStringFilter: { comparison: EQUALS, value: $marathonUuid }
+              singleStringFilter: { comparison: EQUALS, value: $marathonYear }
             }
           }
         ]
@@ -81,7 +81,7 @@ export function PointEntryOpportunityLookup({
     pause: !marathon || !searchOpportunitiesField,
     variables: {
       name: searchOpportunitiesField ?? "",
-      marathonUuid: marathon?.id ?? "",
+      marathonYear: marathon?.year ?? "",
     },
   });
   useQueryStatusWatcher({

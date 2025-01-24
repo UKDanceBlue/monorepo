@@ -1,6 +1,6 @@
 import { PlusOutlined, UploadOutlined } from "@ant-design/icons";
 import { EditOutlined, EyeOutlined } from "@ant-design/icons";
-import { List } from "@refinedev/antd";
+import { getDefaultSortOrder, List } from "@refinedev/antd";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import type { CommitteeIdentifier } from "@ukdanceblue/common";
 import {
@@ -30,7 +30,7 @@ const PeopleTableFragment = graphql(/* GraphQL */ `
 
 function ListPeoplePage() {
   const canCreate = useAuthorizationRequirement("create", "PersonNode");
-  const { tableProps, searchFormProps } = useTypedTable({
+  const { tableProps, searchFormProps, sorters } = useTypedTable({
     fragment: PeopleTableFragment,
     props: {
       resource: "person",
@@ -77,6 +77,7 @@ function ListPeoplePage() {
             title: "Name",
             dataIndex: "name",
             sorter: true,
+            defaultSortOrder: getDefaultSortOrder("name", sorters),
           },
           {
             title: "Email",

@@ -53,5 +53,5 @@ export class SetPointOpportunityInput {
 @ArgsType()
 export class ListPointOpportunitiesArgs extends FilteredListQueryArgs(
   "PointOpportunityResolver",
-  ["name", "opportunityDate", "type", "createdAt", "updatedAt", "marathonUuid"]
+  ["name", "opportunityDate", "type", "createdAt", "updatedAt", "marathonYear"]
 ) {}

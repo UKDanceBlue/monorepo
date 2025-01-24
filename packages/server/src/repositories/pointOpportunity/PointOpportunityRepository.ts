@@ -42,9 +42,9 @@ export class PointOpportunityRepository extends buildDefaultRepository<
     getWhere: (opportunityDate) => Ok({ opportunityDate }),
     getOrderBy: (opportunityDate) => Ok({ opportunityDate }),
   },
-  marathonUuid: {
-    getWhere: (marathonUuid) => Ok({ marathon: { uuid: marathonUuid } }),
-    getOrderBy: (marathonUuid) => Ok({ marathon: { uuid: marathonUuid } }),
+  marathonYear: {
+    getWhere: (marathonYear) => Ok({ marathon: { year: marathonYear } }),
+    getOrderBy: (marathonYear) => Ok({ marathon: { year: marathonYear } }),
   },
   createdAt: {
     getWhere: (createdAt) => Ok({ createdAt }),
