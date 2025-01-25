@@ -1,27 +1,14 @@
 import "@mdxeditor/editor/style.css";
 
-import { LoadingOutlined, PlusOutlined } from "@ant-design/icons";
-import {
-  BlockTypeSelect,
-  BoldItalicUnderlineToggles,
-  CreateLink,
-  InsertImage,
-  linkDialogPlugin,
-  linkPlugin,
-  listsPlugin,
-  MDXEditor,
-  quotePlugin,
-  toolbarPlugin,
-  UndoRedo,
-} from "@mdxeditor/editor";
-import { headingsPlugin } from "@mdxeditor/editor";
+import { PlusOutlined } from "@ant-design/icons";
 import { Edit, useForm } from "@refinedev/antd";
 import { type HttpError } from "@refinedev/core";
 import type { FormProps } from "antd";
-import { Button, Flex, Form, Input } from "antd";
+import { Button, Form, Input } from "antd";
 import { DateTime, Interval } from "luxon";
 
 import { EventOccurrencePicker } from "#elements/components/event/EventOccurrencePicker.js";
+import { MarkdownEditor } from "#elements/components/MarkdownEditor.js";
 import type { ResultOf, VariablesOf } from "#gql/index.js";
 
 import type { EventEditorFragment } from "./EventEditorGQL.js";
@@ -154,45 +141,16 @@ export function EventEditor({ id }: { id: string }) {
           )}
         </Form.List>
         <Form.Item label="Description" name="description">
-          {formProps.initialValues ? (
-            <MDXEditor
-              markdown={formProps.initialValues.description ?? ""}
-              onChange={(text) =>
-                formProps.form?.setFieldValue("description", text)
-              }
-              plugins={[
-                headingsPlugin(),
-                quotePlugin(),
-                listsPlugin(),
-                linkPlugin({
-                  validateUrl(url) {
-                    try {
-                      new URL(url);
-                      return true;
-                    } catch {
-                      return false;
-                    }
-                  },
-                }),
-                linkDialogPlugin(),
-                toolbarPlugin({
-                  toolbarContents: () => (
-                    <>
-                      <UndoRedo />
-                      <BoldItalicUnderlineToggles />
-                      <BlockTypeSelect />
-                      <CreateLink />
-                      <InsertImage />
-                    </>
-                  ),
-                }),
-              ]}
-            />
-          ) : (
-            <Flex justify="center">
-              <LoadingOutlined spin />
-            </Flex>
-          )}
+          <MarkdownEditor
+            initialMarkdown={
+              formProps.initialValues
+                ? (formProps.initialValues.description ?? null)
+                : undefined
+            }
+            onChange={(text) =>
+              formProps.form?.setFieldValue("description", text)
+            }
+          />
         </Form.Item>
       </Form>
     </Edit>

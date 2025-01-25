@@ -56,7 +56,11 @@ export class StorageManager {
     if (this.storage === undefined) {
       return null;
     }
-    return this.storage.getItem(key);
+    const val = this.storage.getItem(key);
+    if (val === "undefined") {
+      return null;
+    }
+    return val;
   }
 }
 

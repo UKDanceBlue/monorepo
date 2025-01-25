@@ -1,4 +1,4 @@
-import { ConfigProvider } from "antd";
+import { App, ConfigProvider } from "antd";
 
 import { makeAntDesignTheme } from "./makeAntDesignTheme.js";
 import { StorageManager, useStorageValue } from "./storage.js";
@@ -11,7 +11,7 @@ export function AntdThemeProvider({ children }: { children: React.ReactNode }) {
 
   return (
     <ConfigProvider theme={makeAntDesignTheme({ dark: dark === "true" })}>
-      {children}
+      <App component={false}>{children}</App>
     </ConfigProvider>
   );
 }

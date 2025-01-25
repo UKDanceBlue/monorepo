@@ -2,7 +2,6 @@ import { SettingOutlined } from "@ant-design/icons";
 import { AuthPage } from "@refinedev/antd";
 import { Link, Outlet } from "@tanstack/react-router";
 import { ConfigProvider, Layout, Space } from "antd";
-import { App as AntApp } from "antd";
 import { useState } from "react";
 
 import UKYLogo from "#assets/uky-logo-128.png";
@@ -142,13 +141,13 @@ export function Main() {
 
   return (
     <>
-      <AntApp style={{ height: "100%" }}>
+      <div style={{ height: "100%" }}>
         {content}
         <ConfigModal
           open={settingsOpen}
           onClose={() => setSettinsOpen(false)}
         />
-      </AntApp>
+      </div>
     </>
   );
 }

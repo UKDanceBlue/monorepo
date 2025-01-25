@@ -93,7 +93,6 @@ function ListPeoplePage() {
             title: "Committee Role",
             dataIndex: "committeeRole",
             render: (_, record) => {
-              // TODO: fix
               return record.primaryCommittee?.role ?? "None";
             },
             sorter: false,
@@ -106,7 +105,6 @@ function ListPeoplePage() {
             title: "Committee Name",
             dataIndex: "committeeName",
             render: (_, record) => {
-              // TODO: fix
               return record.primaryCommittee?.identifier
                 ? committeeNames[record.primaryCommittee.identifier]
                 : "None";

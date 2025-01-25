@@ -129,6 +129,10 @@ export const dataProvider: Required<DataProvider> = {
   getOne: async (params) => {
     const { meta, id, resource } = params;
 
+    if (!id) {
+      throw new Error("ID is required.");
+    }
+
     let query;
     if (meta?.gqlQuery) {
       query = meta.gqlQuery;
@@ -329,6 +333,10 @@ export const dataProvider: Required<DataProvider> = {
       throw new Error("Operation is required.");
     }
 
+    if (!id) {
+      throw new Error("ID is required.");
+    }
+
     const response = await urqlClient
       .mutation(gqlOperation, {
         id,
@@ -363,6 +371,10 @@ export const dataProvider: Required<DataProvider> = {
 
   deleteOne: async (params) => {
     const { meta, id, variables, resource } = params;
+
+    if (!id) {
+      throw new Error("ID is required.");
+    }
 
     let query;
     if (meta?.gqlMutation) {

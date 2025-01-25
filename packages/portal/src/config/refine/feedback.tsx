@@ -1,11 +1,12 @@
 import type { NotificationProvider } from "@refinedev/core";
-
-import { useAntFeedback } from "#hooks/useAntFeedback.ts";
+import { App } from "antd";
 
 import { UndoableNotification } from "./UndoableNotification";
 
 export const useNotificationProvider = (): NotificationProvider => {
-  const { appNotification } = useAntFeedback();
+  const app = App.useApp();
+
+  console.log(app);
 
   const notificationProvider: NotificationProvider = {
     open: ({
@@ -17,7 +18,7 @@ export const useNotificationProvider = (): NotificationProvider => {
       undoableTimeout,
     }) => {
       if (type === "progress") {
-        appNotification.open({
+        app.notification.open({
           key,
           description: (
             <UndoableNotification
@@ -25,7 +26,7 @@ export const useNotificationProvider = (): NotificationProvider => {
               message={message}
               cancelMutation={() => {
                 cancelMutation?.();
-                appNotification.destroy(key ?? "");
+                app.notification.destroy(key ?? "");
               }}
               undoableTimeout={undoableTimeout}
             />
@@ -35,7 +36,7 @@ export const useNotificationProvider = (): NotificationProvider => {
           closeIcon: <></>,
         });
       } else {
-        appNotification.open({
+        app.notification.open({
           key,
           description: message,
           message: description ?? null,
@@ -43,7 +44,7 @@ export const useNotificationProvider = (): NotificationProvider => {
         });
       }
     },
-    close: (key) => appNotification.destroy(key),
+    close: (key) => app.notification.destroy(key),
   };
 
   return notificationProvider;
