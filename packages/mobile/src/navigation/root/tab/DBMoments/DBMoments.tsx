@@ -200,9 +200,6 @@ export const DBMomentsScreen = () => {
         });
       }
 
-      console.log(images.front?.uri);
-      console.log(images.back?.uri);
-
       return (
         <PreviewMoment
           frontImg={images.front}

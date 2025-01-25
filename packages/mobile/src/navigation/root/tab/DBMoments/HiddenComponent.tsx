@@ -78,7 +78,6 @@ export const HiddenComponent = ({
           layout: { height, width },
         },
       }) => {
-        console.log("Setting view size...", { width, height });
         setViewSize({ width, height });
       }}
     >

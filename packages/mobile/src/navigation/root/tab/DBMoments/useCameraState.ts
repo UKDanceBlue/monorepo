@@ -104,7 +104,6 @@ export function useCameraState(): {
   };
 
   const onCameraReady = () => {
-    console.log("Camera is ready");
     setCameraLoading(false);
   };
 

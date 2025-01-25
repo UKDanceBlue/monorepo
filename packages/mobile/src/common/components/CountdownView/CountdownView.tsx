@@ -42,8 +42,6 @@ const CountdownView = ({ endTime }: { endTime: number }) => {
     };
   }, [endTime]);
 
-  // console.log(countdownDisplayDuration.toObject());
-
   return (
     <View style={styles.container}>
       <View style={styles.countdownTimer}>

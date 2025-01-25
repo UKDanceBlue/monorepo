@@ -67,20 +67,6 @@ export function FundraisingEntriesTable<T extends Record<string, unknown>>({
         )
       : undefined;
 
-  console.log(
-    fiscalYear,
-    fiscalYear?.isValid,
-    fiscalYear?.isValid
-      ? [
-          {
-            field: "donatedOn",
-            operator: "between",
-            value: [fiscalYear.start!.toISO(), fiscalYear.end!.toISO()],
-          },
-        ]
-      : undefined
-  );
-
   const {
     tableProps,
     searchFormProps,

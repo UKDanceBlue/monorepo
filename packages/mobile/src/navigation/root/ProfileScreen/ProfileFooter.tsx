@@ -55,7 +55,6 @@ export const ProfileFooter = ({
           returnKeyType="go"
           secureTextEntry
           onSubmitEditing={(event) => {
-            console.log(event.nativeEvent.text);
             if (event.nativeEvent.text === "demo-password") {
               logIn(AuthSource.Demo);
             }

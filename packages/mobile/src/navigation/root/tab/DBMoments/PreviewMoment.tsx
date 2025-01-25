@@ -30,19 +30,13 @@ export const PreviewMoment = ({
       return ask().then(() => captureMoment());
     }
     if (saveMoment) {
-      console.log("Saving moment...");
       try {
-        console.log("Capturing image...", {
-          width: viewSize.width,
-          height: viewSize.height,
-        });
         const uri = await captureRef(viewRef, {
           format: "jpg", // Specify the format of the captured image
           quality: 0.8, // Specify the image quality (0.0 to 1.0)
           width: viewSize.width, // Specify the width of the captured image
           height: viewSize.height, // Specify the height of the captured image
         });
-        console.log("Image captured:", uri);
 
         // Implement logic to save or share the captured image URI
         await saveMoment(uri);

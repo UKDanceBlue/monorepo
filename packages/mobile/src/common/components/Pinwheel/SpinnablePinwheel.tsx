@@ -50,7 +50,6 @@ function SpinnablePinwheel<Values>({
     );
 
     if (cooldown) {
-      console.log("disabled", disabled.value);
       disabled.value = true;
       setTimeout(() => {
         disabled.value = false;

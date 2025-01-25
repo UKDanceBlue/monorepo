@@ -130,7 +130,6 @@ export function useExplorerFeed(): {
         );
 
         setBlogPosts(blogPosts);
-        // console.log(JSON.stringify(blogPosts, null, 2));
 
         const podcastPosts = dbWebsiteParsed.items
           .filter((item) =>
@@ -143,7 +142,6 @@ export function useExplorerFeed(): {
           );
 
         setPodcasts(podcastPosts);
-        // console.log(JSON.stringify(podcastPosts, null, 2));
 
         const youtubeRSS = await fetch(
           "https://www.youtube.com/feeds/videos.xml?channel_id=UCcF8V41xkzYkZ0B1IOXntjg"
@@ -152,16 +150,12 @@ export function useExplorerFeed(): {
         const youtubeParsed = await parse(youtubeXML);
         const youtubePosts = youtubeParsed.items;
 
-        // console.log(JSON.stringify(youtubePosts, null, 2));
-
         setYoutubeVideos(youtubePosts);
       } catch (error) {
         console.error(error);
       } finally {
         setLoading(false);
       }
-
-      // TODO: Implement Instagram and TikTok RSS if possible
     }
   }, [isInternetReachable]);
 

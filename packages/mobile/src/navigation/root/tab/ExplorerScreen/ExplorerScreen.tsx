@@ -25,9 +25,6 @@ export const ExplorerScreen = () => {
         refreshControl={
           <RefreshControl refreshing={loading} onRefresh={refresh} />
         }
-        onEnded={() => {
-          console.log("onEnded");
-        }}
       >
         {!loading && feed.length === 0 ? (
           <Text textAlign="center">Sorry, we couldn't find any content</Text>

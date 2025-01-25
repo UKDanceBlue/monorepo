@@ -121,11 +121,6 @@ export const splitEvents = (
     );
 
   for (const [event, occurrence] of calendarEvents) {
-    console.log(
-      readFragment(EventScreenFragment, event).title,
-
-      occurrence.interval.start?.toISO()
-    );
     if (!occurrence.interval.isValid) {
       continue;
     }
