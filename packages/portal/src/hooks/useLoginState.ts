@@ -17,11 +17,15 @@ import {
 import { useMemo } from "react";
 import type { Result } from "ts-results-es";
 import { Err, Ok } from "ts-results-es";
-import type { Client, CombinedError, OperationResult } from "urql";
+import {
+  type Client,
+  type CombinedError,
+  type OperationResult,
+  useQuery,
+} from "urql";
 
 import type { ResultOf, VariablesOf } from "#gql/index.js";
 import { graphql } from "#gql/index.js";
-import { useQuery } from "#hooks/useTypedRefine.ts";
 
 const loginStateDocument = graphql(/* GraphQL */ `
   query LoginState {

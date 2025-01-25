@@ -45,6 +45,16 @@ export class PortalModule {
     }
 
     if (portalIndex) {
+      // This route is used to close the portal popup window after authentication
+      this.expressModule.app.all("/_close", (_req, res) => {
+        return void res
+          .type("html")
+          .status(200)
+          .send(
+            "<html><body><script>window.close();</script><noscript>You may close this window</noscript></body></html>"
+          );
+      });
+
       this.expressModule.app.use(
         "/assets",
         express.static(
@@ -75,6 +85,16 @@ export class PortalModule {
     }
 
     const entryPoint = await this.getSsrEntryPoint(vite);
+
+    // This route is used to close the portal popup window after authentication
+    this.expressModule.app.all("/_close", (_req, res) => {
+      return void res
+        .type("html")
+        .status(200)
+        .send(
+          "<html><body><script>window.close();</script><noscript>You may close this window</noscript></body></html>"
+        );
+    });
 
     this.expressModule.app.use("*", async (req, res, next) => {
       try {

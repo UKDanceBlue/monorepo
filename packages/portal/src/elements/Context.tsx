@@ -13,13 +13,15 @@ import { AntdThemeProvider } from "#config/ant.tsx";
 import { urqlClient } from "#config/api.ts";
 import { NivoThemeProvider } from "#config/nivo.tsx";
 import { authProvider } from "#config/refine/authentication.ts";
-import { accessControlProvider } from "#config/refine/authorization.ts";
+import { getAccessControlProvider } from "#config/refine/authorization.ts";
 import { useNotificationProvider } from "#config/refine/feedback.tsx";
 import { dataProvider } from "#config/refine/graphql/data.ts";
 import { refineResources } from "#config/refine/resources.tsx";
 import { routerBindings } from "#config/refine/router.tsx";
+import { useLoginState } from "#hooks/useLoginState.ts";
 
 export function InnerContext({ children }: { children: React.ReactNode }) {
+  const loginState = useLoginState();
   return (
     <Refine
       dataProvider={dataProvider}
@@ -32,7 +34,7 @@ export function InnerContext({ children }: { children: React.ReactNode }) {
           icon: <img src={watermark} alt="DanceBlue Logo" />,
           text: "DanceBlue Portal",
         },
-        mutationMode: "optimistic",
+        mutationMode: "undoable",
         disableTelemetry: true,
         redirect: {
           afterCreate: "show",
@@ -45,8 +47,9 @@ export function InnerContext({ children }: { children: React.ReactNode }) {
         reactQuery: {
           clientConfig: useQueryClient(),
         },
+        useNewQueryKeys: true,
       }}
-      accessControlProvider={accessControlProvider}
+      accessControlProvider={getAccessControlProvider(loginState)}
       resources={refineResources}
     >
       {children}

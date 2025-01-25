@@ -13,41 +13,29 @@ function openAuthPopup(
   formValues: Record<string, string> | undefined
 ): Promise<string> {
   return new Promise((resolve, _reject) => {
-    // const popup = window.open(
-    //   `${API_BASE_URL}/api/auth/${path}?returning=cookie&redirectTo=${encodeURI(
-    //     new URL("assets/popup.html", window.location.origin).href
-    //   )}`,
-    //   undefined,
-    //   "popup"
-    // );
-    // if (!popup) {
-    //   reject(new Error("Failed to open popup"));
-    //   return;
-    // }
-
-    // addEventListener("message", (event) => {
-    //   console.log(event);
-    //   if (event.origin === window.location.origin) {
-    //     resolve(String(event.data));
-    //     popup.close();
-    //   }
-    // });
-    // popup.addEventListener("error", (event) => {
-    //   reject(new Error(event.message));
-    //   popup.close();
-    // });
-    // popup.addEventListener("beforeunload", () => {
-    //   reject(new Error("User closed the popup"));
-    // });
-    // window.location.href = `${API_BASE_URL}/api/auth/${path}?returning=cookie&redirectTo=${encodeURI(
-    //   window.location.href
-    // )}`;
+    let target: string | undefined =
+      `popup_${Math.random().toString(36).substring(2, 9)}`;
+    const popup = window.open(
+      "",
+      target,
+      "width=600,height=600,menubar=no,toolbar=no"
+    );
+    if (popup) {
+      setInterval(() => {
+        if (popup.closed) {
+          resolve("success");
+        }
+      }, 100);
+    } else {
+      target = undefined;
+    }
     const form = document.createElement("form");
+    if (target) form.target = target;
     form.method = "POST";
     form.style.visibility = "hidden";
     form.action = `${API_BASE_URL}/api/auth/${path}?returning=cookie&redirectTo=${encodeURI(
-      window.location.href
-    )}`;
+      API_BASE_URL
+    )}/_close`;
     for (const [key, value] of Object.entries(formValues ?? {})) {
       const input = document.createElement("input");
       input.type = "hidden";
@@ -57,7 +45,6 @@ function openAuthPopup(
     }
     document.body.appendChild(form);
     form.submit();
-    resolve("success");
   });
 }
 

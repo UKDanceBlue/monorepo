@@ -82,7 +82,7 @@ export const Sider: React.FC<
         loginState
       );
 
-      if (!visible) {
+      if (!visible.can) {
         return;
       }
 
