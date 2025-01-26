@@ -8,11 +8,11 @@
     "scheme": "danceblue",
     "jsEngine": "hermes",
     "notification": {
-      "icon": "./assets/app/icon-2.png"
+      "icon": "./assets/app/20th-appicon.png"
     },
     "platforms": ["ios", "android", "web"],
     "orientation": "portrait",
-    "icon": "./assets/app/icon-2.png",
+    "icon": "./assets/app/20th-appicon.png",
     "splash": {
       "image": "./assets/app/splash.png",
       "resizeMode": "cover",
@@ -58,7 +58,7 @@
       [
         "expo-notifications",
         {
-          "icon": "./assets/app/icon-2.png",
+          "icon": "./assets/app/20th-appicon.png",
           "color": "#ffffff"
         }
       ],
