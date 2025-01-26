@@ -102,6 +102,20 @@ export function makeListDocument(
               },
             },
           },
+          {
+            kind: Kind.VARIABLE_DEFINITION,
+            variable: {
+              kind: Kind.VARIABLE,
+              name: { kind: Kind.NAME, value: "sendAll" },
+            },
+            type: {
+              kind: Kind.NAMED_TYPE,
+              name: {
+                kind: Kind.NAME,
+                value: "Boolean",
+              },
+            },
+          },
         ],
         selectionSet: {
           kind: Kind.SELECTION_SET,
@@ -148,6 +162,14 @@ export function makeListDocument(
                   value: {
                     kind: Kind.VARIABLE,
                     name: { kind: Kind.NAME, value: "search" },
+                  },
+                },
+                {
+                  kind: Kind.ARGUMENT,
+                  name: { kind: Kind.NAME, value: "sendAll" },
+                  value: {
+                    kind: Kind.VARIABLE,
+                    name: { kind: Kind.NAME, value: "sendAll" },
                   },
                 },
               ],

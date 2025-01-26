@@ -315,7 +315,7 @@ export function prefetchTypedForm<
     id: params.props.id,
     meta: {
       ...params.props.meta,
-      gqlFragment: params.mutation,
+      gqlMutation: params.mutation,
     },
   });
 }

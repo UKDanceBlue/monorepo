@@ -28,7 +28,7 @@ const SolicitationCodeTableFragment = graphql(/* GraphQL */ `
 const SolicitationCodeTableDocument = graphql(
   /* GraphQL */ `
     query SolicitationCodeTable($marathonId: GlobalId!) {
-      solicitationCodes {
+      solicitationCodes(sendAll: true) {
         data {
           ...SolicitationCodeTableFragment
         }

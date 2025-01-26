@@ -135,7 +135,8 @@ export function FundraisingEntriesTable<T extends Record<string, unknown>>({
             dataIndex: "donatedOn",
             key: "donatedOn",
             sorter: true,
-            render: (date: string) => DateTime.fromISO(date).toLocaleString(),
+            render: (date: string) =>
+              date && DateTime.fromISO(date).toLocaleString(),
             defaultSortOrder: getDefaultSortOrder("donatedOn", sorters),
           },
           {

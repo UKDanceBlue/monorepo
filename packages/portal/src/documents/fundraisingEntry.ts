@@ -5,6 +5,7 @@ export const FundraisingEntryEditorFragment = graphql(
   /* GraphQL */ `
     fragment FundraisingEntryEditorFragment on FundraisingEntryNode {
       id
+      source
       donatedOn
       donatedOnOverride
       amount

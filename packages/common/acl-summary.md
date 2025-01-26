@@ -143,6 +143,8 @@ Generated automatically on 1/26/2025. This document lists the required permissio
         }));
     }
 ```
+### createFundraisingEntry
+**create** every FundraisingEntryNode.
 ### setFundraisingEntry
 **update** FundraisingEntryNode. with an id of _args.id_
 ### rawFundraisingTotals

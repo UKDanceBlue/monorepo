@@ -3,6 +3,7 @@ import { type HttpError, useRefreshButton } from "@refinedev/core";
 import type { SetFundraisingEntryInput } from "@ukdanceblue/common";
 import {
   BatchType,
+  FundraisingEntrySource,
   localDateFromLuxon,
   stringifyDDNBatchType,
 } from "@ukdanceblue/common";
@@ -110,6 +111,9 @@ export function FundraisingEntryEditor({ id }: { id: string }) {
           });
         }}
       >
+        <Form.Item label="Source" name={["source"]}>
+          <Input readOnly disabled variant="borderless" />
+        </Form.Item>
         <Form.Item
           label="Donated On"
           name={["donatedOn"]}
@@ -142,7 +146,16 @@ export function FundraisingEntryEditor({ id }: { id: string }) {
             variant="borderless"
           />
         </Form.Item>
-        <Form.Item label="Amount Override" name={["amountOverride"]}>
+        <Form.Item
+          label="Amount Override"
+          name={["amountOverride"]}
+          rules={[
+            {
+              required: queryResult?.source === FundraisingEntrySource.Override,
+              message: "Amount override is required when the entry is custom",
+            },
+          ]}
+        >
           <InputNumber prefix="$" min={0} precision={2} />
         </Form.Item>
         <p>
@@ -167,6 +180,13 @@ export function FundraisingEntryEditor({ id }: { id: string }) {
         <Form.Item
           label="Solicitation Code Override"
           name={["solicitationCodeOverrideId"]}
+          rules={[
+            {
+              required: queryResult?.source === FundraisingEntrySource.Override,
+              message:
+                "Solicitation code override is required when the entry is custom",
+            },
+          ]}
         >
           <Select
             {...selectProps}
@@ -191,7 +211,17 @@ export function FundraisingEntryEditor({ id }: { id: string }) {
         >
           <Input readOnly disabled variant="borderless" />
         </Form.Item>
-        <Form.Item label="Batch Type Override" name={["batchTypeOverride"]}>
+        <Form.Item
+          label="Batch Type Override"
+          name={["batchTypeOverride"]}
+          rules={[
+            {
+              required: queryResult?.source === FundraisingEntrySource.Override,
+              message:
+                "Batch type override is required when the entry is custom",
+            },
+          ]}
+        >
           <Select allowClear>
             {Object.values(BatchType).map((value) => (
               <Select.Option key={value} value={value}>

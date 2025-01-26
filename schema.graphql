@@ -173,6 +173,22 @@ input CreateFeedInput {
   title: NonEmptyString!
 }
 
+input CreateFundraisingEntryInput {
+  amount: Float!
+  amountOverride: Float
+  batchType: BatchType!
+  batchTypeOverride: BatchType
+  donatedBy: NonEmptyString
+  donatedByOverride: NonEmptyString
+  donatedOn: LocalDate
+  donatedOnOverride: LocalDate
+  donatedTo: NonEmptyString
+  donatedToOverride: NonEmptyString
+  notes: NonEmptyString
+  solicitationCodeId: GlobalId!
+  solicitationCodeOverrideId: GlobalId
+}
+
 input CreateImageInput {
   alt: NonEmptyString
   url: URL
@@ -581,6 +597,7 @@ type FundraisingEntryNode implements Node {
   notes: String
   solicitationCode: SolicitationCodeNode!
   solicitationCodeOverride: SolicitationCodeNode
+  source: FundraisingEntrySource!
   updatedAt: LuxonDateTime
 }
 
@@ -618,6 +635,12 @@ input FundraisingEntryResolverSearchFilter {
 input FundraisingEntryResolverSort {
   direction: SortDirection! = asc
   field: FundraisingEntryResolverFilterFields!
+}
+
+enum FundraisingEntrySource {
+  DBFunds
+  DDN
+  Override
 }
 
 type GetConfigurationByUuidResponse {
@@ -970,6 +993,7 @@ type Mutation {
 
   """Add a new item to the feed"""
   createFeedItem(input: CreateFeedInput!): FeedNode!
+  createFundraisingEntry(input: CreateFundraisingEntryInput!): FundraisingEntryNode!
   createImage(input: CreateImageInput!): ImageNode!
   createMarathon(input: CreateMarathonInput!): MarathonNode!
   createMarathonHour(input: CreateMarathonHourInput!, marathonUuid: GlobalId!): MarathonHourNode!

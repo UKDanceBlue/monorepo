@@ -41,6 +41,7 @@ export const useNotificationProvider = (): NotificationProvider => {
           description: message,
           message: description ?? null,
           type,
+          duration: type === "error" ? 0 : undefined,
         });
       }
     },
