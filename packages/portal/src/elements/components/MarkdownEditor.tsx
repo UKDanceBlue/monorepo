@@ -3,7 +3,6 @@ import {
   BoldItalicUnderlineToggles,
   CreateLink,
   headingsPlugin,
-  InsertImage,
   linkDialogPlugin,
   linkPlugin,
   listsPlugin,
@@ -60,7 +59,6 @@ export function MarkdownEditor({
                 <BoldItalicUnderlineToggles />
                 <BlockTypeSelect />
                 <CreateLink />
-                <InsertImage />
               </>
             ),
           }),
