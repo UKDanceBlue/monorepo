@@ -55,3 +55,27 @@ export class SetFundraisingEntryInput {
   @Field(() => BatchType, { nullable: true })
   batchTypeOverride?: BatchType;
 }
+
+@InputType("CreateFundraisingEntryInput")
+export class CreateFundraisingEntryInput extends SetFundraisingEntryInput {
+  @Field(() => GlobalIdScalar)
+  solicitationCodeId!: GlobalId;
+
+  @Field(() => Float)
+  amount!: number;
+
+  @Field(() => GraphQLLocalDate, { nullable: true })
+  donatedOn?: LocalDate;
+
+  @Field(() => GraphQLNonEmptyString, { nullable: true })
+  donatedTo?: string;
+
+  @Field(() => GraphQLNonEmptyString, { nullable: true })
+  donatedBy?: string;
+
+  @Field(() => BatchType)
+  batchType!: BatchType;
+
+  @Field(() => GraphQLNonEmptyString, { nullable: true })
+  notes?: string;
+}

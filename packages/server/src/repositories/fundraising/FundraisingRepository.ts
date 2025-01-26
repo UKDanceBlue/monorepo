@@ -311,6 +311,7 @@ export class FundraisingEntryRepository extends buildDefaultRepository<
       donatedTo,
       solicitationCode,
       createdBy,
+      notes,
     },
   }: CreateParams<{
     amount: number;
@@ -318,6 +319,7 @@ export class FundraisingEntryRepository extends buildDefaultRepository<
     donatedBy?: string | undefined | null;
     donatedOn?: Date | LocalDate | undefined | null;
     donatedTo?: string | undefined | null;
+    notes?: string | undefined | null;
     solicitationCode: SolicitationCodeUniqueParam;
     createdBy?: UniquePersonParam;
   }>): AsyncRepositoryResult<
@@ -332,6 +334,7 @@ export class FundraisingEntryRepository extends buildDefaultRepository<
           amountOverride: amount,
           batchTypeOverride: batchType,
           donatedByOverride: donatedBy,
+          notes,
           donatedOnOverride:
             typeof donatedOn === "string"
               ? localDateToLuxon(donatedOn).unwrap().plus({ day: 1 }).toJSDate()

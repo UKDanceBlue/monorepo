@@ -297,13 +297,19 @@ function applyCommitteePermissions(
       allow(
         "manage",
         [
-          "FundraisingEntryNode",
           "DailyDepartmentNotificationNode",
           "SolicitationCodeNode",
           "FundraisingAssignmentNode",
         ],
         "."
       );
+
+      allow(
+        role === CommitteeRole.Chair ? "manage" : "modify",
+        "FundraisingEntryNode",
+        "."
+      );
+
       allow("manage", "TeamNode", [
         ".fundraisingAssignments",
         ".solicitationCode",

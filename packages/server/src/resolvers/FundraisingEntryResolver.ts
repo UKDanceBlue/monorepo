@@ -1,6 +1,7 @@
 import { Container, Service } from "@freshgum/typedi";
 import {
   assertGlobalId,
+  CreateFundraisingEntryInput,
   CrudResolver,
   type GlobalId,
   type MarathonYearString,
@@ -167,6 +168,30 @@ export class FundraisingEntryResolver
           )
         )
       ).promise;
+  }
+
+  @WithAuditLogging()
+  @AccessControlAuthorized("create", ["every", "FundraisingEntryNode"])
+  @Mutation(() => FundraisingEntryNode, { name: "createFundraisingEntry" })
+  createFundraisingEntry(
+    @Arg("input", () => CreateFundraisingEntryInput)
+    input: CreateFundraisingEntryInput
+  ): AsyncRepositoryResult<FundraisingEntryNode> {
+    return this.fundraisingEntryRepository
+      .create({
+        init: {
+          amount: input.amount,
+          batchType: input.batchType,
+          donatedBy: input.donatedBy ?? null,
+          donatedOn: input.donatedOn ?? null,
+          donatedTo: input.donatedTo ?? null,
+          notes: input.notes ?? null,
+          solicitationCode: {
+            uuid: input.solicitationCodeId.id,
+          },
+        },
+      })
+      .map(fundraisingEntryModelToNode);
   }
 
   @WithAuditLogging()
