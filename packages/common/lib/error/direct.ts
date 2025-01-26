@@ -1,3 +1,5 @@
+import { Err, Ok, type Option, type Result } from "ts-results-es";
+
 import { ExtendedError } from "./error.js";
 import * as ErrorCode from "./errorCode.js";
 import { optionOf } from "./option.js";
@@ -23,6 +25,15 @@ export class NotFoundError extends ExtendedError {
 
   get tag(): ErrorCode.NotFound {
     return ErrorCode.NotFound;
+  }
+
+  static fromOption<T>(
+    option: Option<T>,
+    ...params: ConstructorParameters<typeof NotFoundError>
+  ): Result<T, NotFoundError> {
+    return option.isSome()
+      ? Ok(option.value)
+      : Err(new NotFoundError(...params));
   }
 }
 

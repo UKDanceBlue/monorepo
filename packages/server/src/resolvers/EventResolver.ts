@@ -15,6 +15,7 @@ import {
   SetEventInput,
 } from "@ukdanceblue/common";
 import { VoidResolver } from "graphql-scalars";
+import type { Option } from "ts-results-es";
 import {
   Arg,
   Args,
@@ -54,13 +55,15 @@ export class EventResolver implements CrudResolver<EventNode, "event"> {
   })
   event(
     @Arg("id", () => GlobalIdScalar) { id }: GlobalId
-  ): AsyncRepositoryResult<EventNode> {
+  ): AsyncRepositoryResult<Option<EventNode>> {
     return this.eventRepository
       .findOne({ by: { uuid: id } })
       .map((row) =>
-        eventModelToResource(
-          row,
-          row.eventOccurrences.map(eventOccurrenceModelToResource)
+        row.map((row) =>
+          eventModelToResource(
+            row,
+            row.eventOccurrences.map(eventOccurrenceModelToResource)
+          )
         )
       );
   }

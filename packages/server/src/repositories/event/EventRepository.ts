@@ -5,7 +5,11 @@ import type {
   FieldsOfListQueryArgs,
   ListEventsArgs,
 } from "@ukdanceblue/common";
-import { type FetchError, LuxonError } from "@ukdanceblue/common/error";
+import {
+  type FetchError,
+  LuxonError,
+  optionOf,
+} from "@ukdanceblue/common/error";
 import type { Interval } from "luxon";
 import { AsyncResult, Ok, Result } from "ts-results-es";
 
@@ -179,9 +183,8 @@ export class EventRepository extends buildDefaultRepository<
       (tx ?? this.prisma).eventWithOccurrences.findUnique({
         ...defaultOptions,
         where: this.uniqueToWhere(by),
-      }),
-      ["event", "EventRepository.findOne"]
-    );
+      })
+    ).map(optionOf);
   }
 
   findAndCount({
@@ -331,7 +334,8 @@ export class EventRepository extends buildDefaultRepository<
           })
         )
       )
-      .andThen((event) => this.findOne({ by: { id: event.id }, tx }));
+      .andThen((event) => this.findOne({ by: { id: event.id }, tx }))
+      .andThen((val) => this.mapToNotFound(val));
   }
 
   loadForeignEvents(
@@ -494,7 +498,8 @@ export class EventRepository extends buildDefaultRepository<
           tx
         )
       )
-      .andThen((event) => this.findOne({ by: { id: event.id }, tx }));
+      .andThen((event) => this.findOne({ by: { id: event.id }, tx }))
+      .andThen((val) => this.mapToNotFound(val));
   }
 
   delete({
@@ -514,6 +519,8 @@ export class EventRepository extends buildDefaultRepository<
         where: this.uniqueToWhere(by),
         include: { eventOccurrences: true },
       })
-    ).andThen((event) => this.findOne({ by: { id: event.id }, tx }));
+    )
+      .andThen((event) => this.findOne({ by: { id: event.id }, tx }))
+      .andThen((val) => this.mapToNotFound(val));
   }
 }

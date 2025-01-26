@@ -11,7 +11,7 @@ import {
   NotFoundError,
   UnknownError,
 } from "@ukdanceblue/common/error";
-import { AsyncResult } from "ts-results-es";
+import { AsyncResult, type Option } from "ts-results-es";
 import { Result } from "ts-results-es";
 import { Err, Ok } from "ts-results-es";
 import { isPromise } from "util/types";
@@ -75,7 +75,9 @@ type AliasedPrismaResult<T, A, F extends Operation> = Pick<
   NonNullable<Awaited<PrismaResult<T, A, F>>>,
   keyof NonNullable<Awaited<PrismaResult<T, A, F>>>
 >;
-export type FindOneResult<T, A> = AliasedPrismaResult<T, A, "findUnique">;
+export type FindOneResult<T, A> = Option<
+  AliasedPrismaResult<T, A, "findUnique">
+>;
 export interface FindAndCountResult<T, A> {
   total: number;
   selectedRows: PrismaResult<T, A, "findMany">;
@@ -178,22 +180,9 @@ export function buildDefaultRepository<
     }
 
     protected handleQueryError<D>(
-      promise: Promise<D>,
-      handleNotFound?: false
-    ): AsyncRepositoryResult<D>;
-    protected handleQueryError<D>(
-      promise: Promise<D>,
-      handleNotFound: ConstructorParameters<typeof NotFoundError>
-    ): AsyncRepositoryResult<NonNullable<D>>;
-    protected handleQueryError<D>(
-      promise: Promise<D>,
-      handleNotFound:
-        | false
-        | ConstructorParameters<typeof NotFoundError> = false
+      promise: Promise<D>
     ): AsyncRepositoryResult<D> {
-      return handleNotFound
-        ? this.mapToNotFound(this.promiseToAsyncResult(promise), handleNotFound)
-        : this.promiseToAsyncResult(promise);
+      return this.promiseToAsyncResult(promise);
     }
 
     protected handleTransactionError<D>(
@@ -249,22 +238,14 @@ export function buildDefaultRepository<
       return val;
     }
 
-    protected mapToNotFound<T, E>(
-      val:
-        | Result<T | null | undefined, E>
-        | Promise<Result<T | null | undefined, E>>
-        | AsyncResult<T | null | undefined, E>,
-      params: ConstructorParameters<typeof NotFoundError>
-    ): AsyncResult<T, E | NotFoundError> {
-      return this.resultToAsyncResult(val).andThen((v) =>
-        v
-          ? Ok(v)
-          : Err(
-              new NotFoundError(
-                params[0] ?? "field",
-                params[1] ?? `${tableName}Repository`
-              )
-            )
+    protected mapToNotFound<T>(
+      val: Option<T>,
+      ...params: ConstructorParameters<typeof NotFoundError>
+    ): Result<T, NotFoundError> {
+      return NotFoundError.fromOption(
+        val,
+        params[0] ?? "field",
+        params[1] ?? `${tableName}Repository`
       );
     }
 

@@ -1,5 +1,5 @@
 # ACL Summary
-Generated automatically on 1/25/2025. This document lists the required permissions for each GraphQL endpoint in the DanceBlue Server
+Generated automatically on 1/26/2025. This document lists the required permissions for each GraphQL endpoint in the DanceBlue Server
 ## NotificationNode
 ### deliveryIssue
 **get** every NotificationNode.deliveryIssue

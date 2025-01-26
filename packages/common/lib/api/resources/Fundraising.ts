@@ -1,5 +1,5 @@
 import type { DateTime } from "luxon";
-import { Field, Float, ObjectType } from "type-graphql";
+import { Field, Float, ObjectType, registerEnumType } from "type-graphql";
 
 import { createNodeClasses, Node } from "../relay.js";
 import { DateTimeScalar } from "../scalars/DateTimeISO.js";
@@ -8,6 +8,18 @@ import { GlobalIdScalar } from "../scalars/GlobalId.js";
 import { BatchType } from "./DailyDepartmentNotification.js";
 import { TimestampedResource } from "./Resource.js";
 import { SolicitationCodeNode } from "./SolicitationCode.js";
+
+export const FundraisingEntrySource = {
+  DBFunds: "DBFunds",
+  DDN: "DDN",
+  Override: "Override",
+} as const;
+export type FundraisingEntrySource =
+  (typeof FundraisingEntrySource)[keyof typeof FundraisingEntrySource];
+
+registerEnumType(FundraisingEntrySource, {
+  name: "FundraisingEntrySource",
+});
 
 @ObjectType({
   implements: [Node],
@@ -58,6 +70,9 @@ export class FundraisingEntryNode extends TimestampedResource implements Node {
   @Field(() => BatchType, { nullable: true })
   batchTypeOverride!: BatchType | null | undefined;
 
+  @Field(() => FundraisingEntrySource)
+  source!: FundraisingEntrySource;
+
   public getUniqueId(): string {
     return this.id.id;
   }
@@ -79,6 +94,7 @@ export class FundraisingEntryNode extends TimestampedResource implements Node {
     solicitationCodeOverride?: SolicitationCodeNode | null;
     batchType: BatchType;
     batchTypeOverride: BatchType | null;
+    source: FundraisingEntrySource;
   }) {
     return FundraisingEntryNode.createInstance().withValues(init);
   }

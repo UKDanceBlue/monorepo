@@ -18,6 +18,7 @@ import {
 import { Decimal, type DefaultArgs } from "@prisma/client/runtime/library";
 import {
   type FieldsOfListQueryArgs,
+  FundraisingEntrySource,
   type ListFundraisingEntriesArgs,
   LocalDate,
   localDateToLuxon,
@@ -27,23 +28,34 @@ import {
   InvariantError,
   LuxonError,
   NotFoundError,
+  optionOf,
 } from "@ukdanceblue/common/error";
 import { Err, None, Ok, Option, Result, Some } from "ts-results-es";
 
 import { prismaToken } from "#lib/typediTokens.js";
 import {
   buildDefaultRepository,
+  type CreateParams,
+  type CreateResult,
   type FindAndCountParams,
   type FindAndCountResult,
+  type FindOneParams,
+  type FindOneResult,
 } from "#repositories/Default.js";
-import { UniquePersonParam } from "#repositories/person/PersonRepository.js";
+import {
+  PersonRepository,
+  UniquePersonParam,
+} from "#repositories/person/PersonRepository.js";
 import {
   type AsyncRepositoryResult,
   handleRepositoryError,
   RepositoryError,
   SimpleUniqueParam,
 } from "#repositories/shared.js";
-import { SolicitationCodeUniqueParam } from "#repositories/solicitationCode/SolicitationCodeRepository.js";
+import {
+  SolicitationCodeRepository,
+  SolicitationCodeUniqueParam,
+} from "#repositories/solicitationCode/SolicitationCodeRepository.js";
 
 export const wideFundraisingEntryInclude = {
   solicitationCodeOverride: true,
@@ -56,7 +68,7 @@ export type WideFundraisingEntryWithMeta = FundraisingEntryWithMeta & {
 export type FundraisingEntryUniqueParam = SimpleUniqueParam;
 export type FundraisingAssignmentUniqueParam = SimpleUniqueParam;
 
-@Service([prismaToken])
+@Service([prismaToken, SolicitationCodeRepository, PersonRepository])
 export class FundraisingEntryRepository extends buildDefaultRepository<
   PrismaClient["fundraisingEntryWithMeta"],
   FundraisingEntryUniqueParam,
@@ -102,7 +114,11 @@ export class FundraisingEntryRepository extends buildDefaultRepository<
     getWhere: (value) => Ok({ updatedAt: value }),
   },
 }) {
-  constructor(protected readonly prisma: PrismaClient) {
+  constructor(
+    protected readonly prisma: PrismaClient,
+    private readonly solicitationCodeRepository: SolicitationCodeRepository,
+    private readonly personRepository: PersonRepository
+  ) {
     super(prisma);
   }
 
@@ -129,6 +145,27 @@ export class FundraisingEntryRepository extends buildDefaultRepository<
     } catch (error: unknown) {
       return handleRepositoryError(error);
     }
+  }
+
+  findOne({
+    tx,
+    by,
+  }: FindOneParams<SimpleUniqueParam>): AsyncRepositoryResult<
+    FindOneResult<
+      Prisma.FundraisingEntryWithMetaDelegate<
+        DefaultArgs,
+        Prisma.PrismaClientOptions
+      >,
+      { include: { solicitationCodeOverride: true } }
+    >
+  > {
+    const where = this.uniqueToWhere(by);
+    return this.handleQueryError(
+      (tx ?? this.prisma).fundraisingEntryWithMeta.findUnique({
+        where,
+        include: wideFundraisingEntryInclude,
+      })
+    ).map(optionOf);
   }
 
   async findAssignmentByUnique(
@@ -264,6 +301,58 @@ export class FundraisingEntryRepository extends buildDefaultRepository<
       );
   }
 
+  create({
+    tx,
+    init: {
+      amount,
+      batchType,
+      donatedBy,
+      donatedOn,
+      donatedTo,
+      solicitationCode,
+      createdBy,
+    },
+  }: CreateParams<{
+    amount: number;
+    batchType: BatchType;
+    donatedBy?: string | undefined | null;
+    donatedOn?: Date | LocalDate | undefined | null;
+    donatedTo?: string | undefined | null;
+    solicitationCode: SolicitationCodeUniqueParam;
+    createdBy?: UniquePersonParam;
+  }>): AsyncRepositoryResult<
+    CreateResult<
+      Prisma.FundraisingEntryWithMetaDelegate,
+      { include: typeof wideFundraisingEntryInclude }
+    >
+  > {
+    return this.handleQueryError(
+      (tx ?? this.prisma).fundraisingEntry.create({
+        data: {
+          amountOverride: amount,
+          batchTypeOverride: batchType,
+          donatedByOverride: donatedBy,
+          donatedOnOverride:
+            typeof donatedOn === "string"
+              ? localDateToLuxon(donatedOn).unwrap().plus({ day: 1 }).toJSDate()
+              : donatedOn,
+          donatedToOverride: donatedTo,
+          solicitationCodeOverride: {
+            connect:
+              this.solicitationCodeRepository.uniqueToWhere(solicitationCode),
+          },
+          enteredByPerson: createdBy && {
+            connect: this.personRepository.uniqueToWhere(createdBy),
+          },
+        },
+      })
+    )
+      .andThen((entry) => this.findOne({ tx, by: { id: entry.id } }))
+      .andThen((entry) =>
+        this.mapToNotFound(entry, "created FundraisingEntry")
+      );
+  }
+
   async setEntry(
     param: FundraisingEntryUniqueParam,
     {
@@ -296,9 +385,23 @@ export class FundraisingEntryRepository extends buildDefaultRepository<
     try {
       const entry = await this.prisma.fundraisingEntryWithMeta.findUnique({
         where: param,
+        select: {
+          source: true,
+          id: true,
+        },
       });
       if (!entry) {
         return Err(new NotFoundError("FundraisingEntry"));
+      }
+      if (
+        entry.source === FundraisingEntrySource.Override &&
+        (amountOverride == null || solicitationCodeOverride == null)
+      ) {
+        return Err(
+          new ActionDeniedError(
+            "Cannot clear amount or solicitation code for override entry"
+          )
+        );
       }
 
       await this.prisma.fundraisingEntry.update({

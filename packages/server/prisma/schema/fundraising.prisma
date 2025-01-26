@@ -36,21 +36,22 @@ model FundraisingAssignment {
 }
 
 model SolicitationCode {
-  id                        Int                           @id @default(autoincrement())
-  uuid                      String                        @unique() @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  createdAt                 DateTime                      @default(now()) @db.Timestamptz(6)
-  updatedAt                 DateTime                      @updatedAt @db.Timestamptz(6)
-  prefix                    String
-  code                      Int
-  name                      String?
+  id                                   Int                           @id @default(autoincrement())
+  uuid                                 String                        @unique() @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  createdAt                            DateTime                      @default(now()) @db.Timestamptz(6)
+  updatedAt                            DateTime                      @updatedAt @db.Timestamptz(6)
+  prefix                               String
+  code                                 Int
+  name                                 String?
   /// An automatically generated string representation of the solicitation code in the format "AA9999 - Name"
-  text                      String?                       @default(dbgenerated()) @db.Text()
-  dbFundsTeams              DBFundsTeam[]
-  ddns                      DailyDepartmentNotification[]
-  FundraisingEntry          FundraisingEntry[]
-  teams                     Team[]
-  fundraisingEntriesWitMeta FundraisingEntryWithMeta[]
-  teamsWithMeta             TeamWithMeta[]
+  text                                 String?                       @default(dbgenerated()) @db.Text()
+  dbFundsTeams                         DBFundsTeam[]
+  ddns                                 DailyDepartmentNotification[]
+  overriddenFundraisingEntries         FundraisingEntry[]
+  teams                                Team[]
+  overriddenFundraisingEntriesWithMeta FundraisingEntryWithMeta[]    @relation("solicitationCodeOverride")
+  fundraisingEntriesWithMeta           FundraisingEntryWithMeta[]    @relation("solicitationCode")
+  teamsWithMeta                        TeamWithMeta[]
 
   @@unique([prefix, code])
 }
@@ -74,12 +75,15 @@ view FundraisingEntryWithMeta {
   donatedToOverride          String?
   amountOverride             Decimal?                     @db.Decimal(65, 2)
   solicitationCodeText       String?
-  batchType                  BatchType?
+  solicitationCodeId         Int?
+  batchType                  BatchType
   enteredByPerson            Person?                      @relation(fields: [enteredByPersonId], references: [id], onDelete: SetNull)
   assignments                FundraisingAssignment[]
   ddn                        DailyDepartmentNotification?
   dbFundsEntry               DBFundsFundraisingEntry?
-  solicitationCodeOverride   SolicitationCode?            @relation(fields: [solicitationCodeOverrideId], references: [id])
+  solicitationCodeOverride   SolicitationCode?            @relation(fields: [solicitationCodeOverrideId], references: [id], name: "solicitationCodeOverride")
+  solicitationCode           SolicitationCode?            @relation(fields: [solicitationCodeId], references: [id], name: "solicitationCode")
+  source                     FundraisingEntrySource
 
   @@index([uuid])
 }
@@ -93,4 +97,10 @@ enum BatchType {
   NonCash
   PayrollDeduction
   Unknown
+}
+
+enum FundraisingEntrySource {
+  DBFunds
+  DDN
+  Override
 }

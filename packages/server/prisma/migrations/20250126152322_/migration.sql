@@ -1,5 +1,7 @@
-ALTER TABLE "danceblue"."SolicitationCode"
-ADD COLUMN "text" text GENERATED ALWAYS AS (format_solicitation_code(prefix, code, name)) STORED;
+-- CreateEnum
+CREATE TYPE "FundraisingEntrySource" AS ENUM ('DBFunds', 'DDN', 'Override');
+
+DROP VIEW "danceblue"."FundraisingEntryWithMeta";
 
 CREATE VIEW "danceblue"."FundraisingEntryWithMeta" AS (
   SELECT "danceblue"."FundraisingEntry"."id",
@@ -49,9 +51,9 @@ CREATE VIEW "danceblue"."FundraisingEntryWithMeta" AS (
     "danceblue"."SolicitationCode"."text" AS "solicitationCodeText",
     "danceblue"."SolicitationCode"."id" AS "solicitationCodeId",
     CASE
-      WHEN "danceblue"."DBFundsFundraisingEntry"."id" IS NOT NULL THEN 'DBFunds'::"FundraisingSource"
-      WHEN "danceblue"."DailyDepartmentNotification"."id" IS NOT NULL THEN 'DDN'::"FundraisingSource"
-      ELSE 'Override'::"FundraisingSource"
+      WHEN "danceblue"."DBFundsFundraisingEntry"."id" IS NOT NULL THEN 'DBFunds'::"FundraisingEntrySource"
+      WHEN "danceblue"."DailyDepartmentNotification"."id" IS NOT NULL THEN 'DDN'::"FundraisingEntrySource"
+      ELSE 'Override'::"FundraisingEntrySource"
     END AS "source",
     CASE
       WHEN "danceblue"."FundraisingEntry"."batchTypeOverride" IS NOT NULL THEN "danceblue"."FundraisingEntry"."batchTypeOverride"
