@@ -275,5 +275,10 @@ export class ListDailyDepartmentNotificationsArgs extends FilteredListQueryArgs(
     "SolicitationCodePrefix",
     "BatchType",
     "createdAt",
+    "combinedDonorName",
+    "combinedAmount",
+    "comment",
+    "solicitationCode",
+    "batch",
   ]
 ) {}

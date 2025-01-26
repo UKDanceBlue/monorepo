@@ -145,7 +145,7 @@ export class DailyDepartmentNotificationRepository extends buildDefaultRepositor
   },
   Donor: {
     getOrderBy: (sort) => Ok({ combinedDonorSort: sort }),
-    getWhere: (value) => Ok({ combinedDonorSort: value }),
+    getWhere: (value) => Ok({ combinedDonorName: value }),
     searchable: true,
   },
   SolicitationCodeName: {
@@ -163,6 +163,23 @@ export class DailyDepartmentNotificationRepository extends buildDefaultRepositor
   createdAt: {
     getOrderBy: (sort) => Ok({ createdAt: sort }),
     getWhere: (value) => Ok({ createdAt: value }),
+  },
+  get combinedDonorName() {
+    return this.Donor;
+  },
+  get batch() {
+    return this.BatchType;
+  },
+  get combinedAmount() {
+    return this.Amount;
+  },
+  get comment() {
+    return this.Comment;
+  },
+  solicitationCode: {
+    getOrderBy: (sort) => Ok({ solicitationCode: { text: sort } }),
+    getWhere: (value) => Ok({ solicitationCode: { text: value } }),
+    searchable: true,
   },
 }) {
   constructor(protected readonly prisma: PrismaClient) {

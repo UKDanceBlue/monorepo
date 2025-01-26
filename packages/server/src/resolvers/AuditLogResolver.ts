@@ -11,14 +11,18 @@ import {
   PersonNode,
   PrimitiveObject,
 } from "@ukdanceblue/common";
-import { ConcreteResult, optionOf } from "@ukdanceblue/common/error";
+import {
+  ConcreteResult,
+  ExtendedError,
+  optionOf,
+} from "@ukdanceblue/common/error";
 import {
   GraphQLNonEmptyString,
   GraphQLPositiveInt,
   JSONObjectResolver,
 } from "graphql-scalars";
 import { DateTime } from "luxon";
-import { None, Ok, Option, Result } from "ts-results-es";
+import { AsyncResult, None, Ok, Option, Result } from "ts-results-es";
 import {
   Arg,
   Ctx,
@@ -181,7 +185,9 @@ export class AuditLogResolver {
     }
 
     try {
-      return await this.nodeResolver.node(globalId.value, ctx);
+      return await new AsyncResult(
+        this.nodeResolver.node(globalId.value, ctx)
+      ).or<ExtendedError>(Ok(None)).promise;
     } catch {
       return Ok(None);
     }

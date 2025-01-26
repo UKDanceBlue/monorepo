@@ -329,6 +329,7 @@ type DailyDepartmentNotificationNode {
   combinedDonorSalutation: String!
   combinedDonorSort: String
   comment: String
+  createdAt: LuxonDateTime!
   department: String
   divFirstGift: Boolean!
   division: String
@@ -386,7 +387,12 @@ enum DailyDepartmentNotificationResolverFilterFields {
   SolicitationCodeName
   SolicitationCodeNumber
   SolicitationCodePrefix
+  batch
+  combinedAmount
+  combinedDonorName
+  comment
   createdAt
+  solicitationCode
 }
 
 input DailyDepartmentNotificationResolverFilterGroup {

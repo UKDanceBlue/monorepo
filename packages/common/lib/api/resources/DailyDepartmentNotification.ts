@@ -1,9 +1,11 @@
 import { GraphQLLocalDate } from "graphql-scalars";
+import type { DateTime } from "luxon";
 import { Err, Ok, Result } from "ts-results-es";
 import { Field, ObjectType, registerEnumType } from "type-graphql";
 
 import { InvalidArgumentError } from "../../error/direct.js";
 import { Node } from "../relay.js";
+import { DateTimeScalar } from "../scalars/DateTimeISO.js";
 import type { GlobalId } from "../scalars/GlobalId.js";
 import { GlobalIdScalar } from "../scalars/GlobalId.js";
 import { Resource } from "./Resource.js";
@@ -304,6 +306,9 @@ export class DailyDepartmentNotificationNode extends Resource implements Node {
   @Field(() => String, { nullable: true })
   hcUnit?: string;
 
+  @Field(() => DateTimeScalar)
+  createdAt!: DateTime;
+
   public getUniqueId(): string {
     return this.id.id;
   }
@@ -369,6 +374,7 @@ export class DailyDepartmentNotificationNode extends Resource implements Node {
     advFeeAmtUnit?: number;
     advFeeStatus?: string;
     hcUnit?: string;
+    createdAt: DateTime;
   }) {
     return DailyDepartmentNotificationNode.createInstance().withValues(init);
   }

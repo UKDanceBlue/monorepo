@@ -1,4 +1,9 @@
-import { getDefaultSortOrder } from "@refinedev/antd";
+import {
+  DateField,
+  getDefaultSortOrder,
+  NumberField,
+  TagField,
+} from "@refinedev/antd";
 import { Link } from "@tanstack/react-router";
 import {
   BatchType,
@@ -135,8 +140,7 @@ export function FundraisingEntriesTable<T extends Record<string, unknown>>({
             dataIndex: "donatedOn",
             key: "donatedOn",
             sorter: true,
-            render: (date: string) =>
-              date && DateTime.fromISO(date).toLocaleString(),
+            render: (date) => <DateField value={date} />,
             defaultSortOrder: getDefaultSortOrder("donatedOn", sorters),
           },
           {
@@ -144,6 +148,15 @@ export function FundraisingEntriesTable<T extends Record<string, unknown>>({
             dataIndex: "amount",
             key: "amount",
             sorter: true,
+            render: (value) => (
+              <NumberField
+                value={value}
+                options={{
+                  style: "currency",
+                  currency: "USD",
+                }}
+              />
+            ),
             // filtered:
             //   queryOptions.numericFilters.find(({ field }) => field === "amount")
             //     ?.value != null,
@@ -213,6 +226,16 @@ export function FundraisingEntriesTable<T extends Record<string, unknown>>({
             dataIndex: "amountUnassigned",
             key: "amountUnassigned",
             sorter: true,
+
+            render: (value) => (
+              <NumberField
+                value={value}
+                options={{
+                  style: "currency",
+                  currency: "USD",
+                }}
+              />
+            ),
             // filtered:
             //   queryOptions.numericFilters.find(
             //     ({ field }) => field === "amountUnassigned"
@@ -305,7 +328,7 @@ export function FundraisingEntriesTable<T extends Record<string, unknown>>({
             dataIndex: "batchType",
             key: "batchType",
             sorter: true,
-            render: (batchType: string) => batchType,
+            render: (batchType) => <TagField value={batchType} />,
             filters: Object.values(BatchType).map((batchType) => ({
               text: stringifyDDNBatchType(batchType),
               value: batchType,

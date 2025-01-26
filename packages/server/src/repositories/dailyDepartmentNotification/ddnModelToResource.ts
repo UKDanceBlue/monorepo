@@ -9,6 +9,7 @@ import {
   DailyDepartmentNotificationBatchNode,
   DailyDepartmentNotificationNode,
 } from "@ukdanceblue/common";
+import { DateTime } from "luxon";
 
 import { solicitationCodeModelToNode } from "#repositories/fundraising/fundraisingEntryModelToNode.js";
 
@@ -89,6 +90,7 @@ export function dailyDepartmentNotificationModelToResource(
     advFeeAmtUnit: ddn.advFeeAmtUnit?.toNumber(),
     advFeeStatus: ddn.advFeeStatus ?? undefined,
     hcUnit: ddn.hcUnit ?? undefined,
+    createdAt: DateTime.fromJSDate(ddn.createdAt),
   });
 }
 

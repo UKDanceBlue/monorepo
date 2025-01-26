@@ -1,13 +1,19 @@
 import { EyeOutlined } from "@ant-design/icons";
-import { getDefaultSortOrder, useTable } from "@refinedev/antd";
+import {
+  DateField,
+  getDefaultSortOrder,
+  NumberField,
+  TagField,
+} from "@refinedev/antd";
 import { Link } from "@tanstack/react-router";
 import type { SolicitationCodeNode } from "@ukdanceblue/common";
-import { BatchType } from "@ukdanceblue/common";
+import type { BatchType } from "@ukdanceblue/common";
 import { stringifyDDNBatchType } from "@ukdanceblue/common";
 import { Button, Flex, Table } from "antd";
 
 import { RefineSearchForm } from "#elements/components/RefineSearchForm.tsx";
-import { graphql, type ResultOf } from "#gql/index.js";
+import { graphql } from "#gql/index.js";
+import { useTypedTable } from "#hooks/useTypedRefine.ts";
 
 const DDNsTableFragment = graphql(/* GraphQL */ `
   fragment DDNsTableFragment on DailyDepartmentNotificationNode {
@@ -25,27 +31,29 @@ const DDNsTableFragment = graphql(/* GraphQL */ `
       batchType
       batchNumber
     }
+    createdAt
   }
 `);
 
 export const DDNTable = () => {
-  const { searchFormProps, tableProps, sorters } = useTable<
-    ResultOf<typeof DDNsTableFragment>
-  >({
-    meta: {
-      gqlFragment: DDNsTableFragment,
-      fieldTypes: {
-        createdAt: "date",
-      },
-    },
-    syncWithLocation: true,
-    sorters: {
-      initial: [
-        {
-          field: "createdAt",
-          order: "desc",
+  const { searchFormProps, tableProps, sorters } = useTypedTable({
+    fragment: DDNsTableFragment,
+    props: {
+      resource: "dailyDepartmentNotification",
+      meta: {
+        fieldTypes: {
+          createdAt: "date",
         },
-      ],
+      },
+      syncWithLocation: true,
+      sorters: {
+        initial: [
+          {
+            field: "createdAt",
+            order: "desc",
+          },
+        ],
+      },
     },
   });
 
@@ -65,6 +73,15 @@ export const DDNTable = () => {
             title: "Amount",
             dataIndex: "combinedAmount",
             sorter: true,
+            render: (value) => (
+              <NumberField
+                value={value}
+                options={{
+                  style: "currency",
+                  currency: "USD",
+                }}
+              />
+            ),
           },
           {
             title: "Comment",
@@ -92,24 +109,18 @@ export const DDNTable = () => {
           {
             title: "Batch",
             dataIndex: "batch",
-            sorter: true,
             render: (batch: { batchType: BatchType; batchNumber: string }) => (
               <abbr title={batch.batchNumber}>
-                {stringifyDDNBatchType(batch.batchType)}
+                <TagField value={stringifyDDNBatchType(batch.batchType)} />
               </abbr>
             ),
-            filters: Object.keys(BatchType)
-              .filter((type) => type !== "Unknown")
-              .map((type) => ({
-                text: stringifyDDNBatchType(type as BatchType),
-                value: type,
-              })),
           },
           {
             title: "Created At",
             dataIndex: "createdAt",
             sorter: true,
             defaultSortOrder: getDefaultSortOrder("createdAt", sorters),
+            render: (value) => <DateField value={value} />,
           },
           {
             title: "Actions",
