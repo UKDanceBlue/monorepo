@@ -255,6 +255,13 @@ export default eslintTs.config(
         "@typescript-eslint/no-base-to-string": "off",
         "@typescript-eslint/require-await": "error",
         "@typescript-eslint/return-await": "error",
+        "@typescript-eslint/no-invalid-void-type": [
+          "error",
+          {
+            allowAsThisParameter: true,
+            allowInGenericTypeArguments: true,
+          },
+        ],
         "@typescript-eslint/consistent-type-imports": [
           "error",
           {
