@@ -1,0 +1,25 @@
+name: Stage Release
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+# All this job does is fast forward the staging branch to the latest commit on main
+jobs:
+  stage-release:
+    runs-on: ubuntu-latest
+    permissions:
+      packages: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          ref: staging
+          ssh-key: ${{ secrets.RELEASE_DEPLOY_KEY }}
+      - name: Fast forward staging branch to main
+        run: |
+          git fetch origin main
+          git merge --ff-only origin/main
+          git push origin staging

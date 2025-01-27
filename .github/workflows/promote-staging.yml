@@ -1,12 +1,14 @@
-name: Do Release
+name: Promote Staging
 
 on:
-  workflow_dispatch:
+  schedule:
+    # Runs at 1 or 2 AM Eastern Time
+    - cron: "0 6 * * *"
 
 permissions:
   contents: write
 
-# All this job does is fast forward the release branch to the latest commit on main
+# All this job does is fast forward the release branch to the latest commit on staging
 jobs:
   do-release:
     runs-on: ubuntu-latest
@@ -18,8 +20,8 @@ jobs:
         with:
           ref: release
           ssh-key: ${{ secrets.RELEASE_DEPLOY_KEY }}
-      - name: Fast forward release branch to main
+      - name: Fast forward release branch to staging
         run: |
-          git fetch origin main
-          git merge --ff-only origin/main
+          git fetch origin staging
+          git merge --ff-only origin/staging
           git push origin release
