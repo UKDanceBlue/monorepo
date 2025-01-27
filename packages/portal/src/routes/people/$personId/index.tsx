@@ -1,54 +1,74 @@
+import { Show } from "@refinedev/antd";
 import { createFileRoute } from "@tanstack/react-router";
 import { useParams } from "@tanstack/react-router";
+import { Spin } from "antd";
 
-import {
-  PersonViewer,
-  PersonViewerFragment,
-} from "#elements/viewers/person/PersonViewer.js";
+import { PersonViewer } from "#elements/viewers/person/PersonViewer.js";
 import { graphql } from "#gql/index.js";
-import { useLoginState } from "#hooks/useLoginState.js";
-import { useQueryStatusWatcher } from "#hooks/useQueryStatusWatcher.js";
-import { useQuery } from "#hooks/useTypedRefine.ts";
+import { prefetchTypedOne, useTypedOne } from "#hooks/useTypedRefine.ts";
 
-const viewPersonPageDocument = graphql(
-  /* GraphQL */ `
-    query ViewPersonPage($id: GlobalId!) {
-      person(id: $id) {
-        ...PersonViewerFragment
+export const PersonViewerFragment = graphql(/* GraphQL */ `
+  fragment PersonViewerFragment on PersonNode {
+    id
+    name
+    linkblue
+    email
+    primarySpiritTeam: primaryTeam(teamType: Spirit) {
+      team {
+        id
       }
     }
-  `,
-  [PersonViewerFragment]
-);
+    primaryMoraleTeam: primaryTeam(teamType: Morale) {
+      team {
+        id
+      }
+    }
+    teams {
+      position
+      team {
+        marathon {
+          year
+        }
+        id
+        name
+        committeeIdentifier
+      }
+      committeeRole
+    }
+  }
+`);
 
 function ViewPersonPage() {
-  const { authorization } = useLoginState();
   const { personId } = useParams({ from: "/people/$personId/" });
 
-  const [{ data, fetching, error }] = useQuery({
-    query: viewPersonPageDocument,
-    variables: { id: personId },
-  });
-
-  useQueryStatusWatcher({
-    error,
-    fetching,
-    loadingMessage: "Loading person...",
+  const { data } = useTypedOne({
+    fragment: PersonViewerFragment,
+    props: {
+      id: personId,
+      resource: "person",
+    },
   });
 
   return (
-    <div>
-      <PersonViewer
-        personFragment={data?.person}
-        authorization={authorization}
-      />
-    </div>
+    <Show resource="person" recordItemId={personId}>
+      {data?.data == null ? (
+        <Spin size="large" />
+      ) : (
+        <PersonViewer personData={data.data} />
+      )}
+    </Show>
   );
 }
 
 export const Route = createFileRoute("/people/$personId/")({
   component: ViewPersonPage,
-  async beforeLoad({ context, params: { personId } }) {
-    await context.urqlClient.query(viewPersonPageDocument, { id: personId });
+  async beforeLoad({ params: { personId } }) {
+    await prefetchTypedOne({
+      fragment: PersonViewerFragment,
+      props: {
+        id: personId,
+        resource: "person",
+      },
+    });
   },
 });

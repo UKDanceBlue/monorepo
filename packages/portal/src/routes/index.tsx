@@ -1,45 +1,61 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { Typography } from "antd";
 
-import {
-  PersonViewer,
-  PersonViewerFragment,
-} from "#elements/viewers/person/PersonViewer.js";
-import { graphql } from "#gql/index.js";
+import { PersonViewer } from "#elements/viewers/person/PersonViewer.js";
+import { graphql, readFragment } from "#gql/index.js";
 import { useLoginState } from "#hooks/useLoginState.js";
-import { useQueryStatusWatcher } from "#hooks/useQueryStatusWatcher.js";
-import { useQuery } from "#hooks/useTypedRefine.ts";
+import { useTypedCustomQuery } from "#hooks/useTypedRefine.ts";
 
-const ViewMePageDocument = graphql(
-  /* GraphQL */ `
-    query HomePage {
-      me {
-        ...PersonViewerFragment
+export const PersonViewerFragment = graphql(/* GraphQL */ `
+  fragment PersonViewerFragment on PersonNode {
+    id
+    name
+    linkblue
+    email
+    primarySpiritTeam: primaryTeam(teamType: Spirit) {
+      team {
+        id
       }
     }
-  `,
-  [PersonViewerFragment]
-);
+    primaryMoraleTeam: primaryTeam(teamType: Morale) {
+      team {
+        id
+      }
+    }
+    teams {
+      position
+      team {
+        marathon {
+          year
+        }
+        id
+        name
+        committeeIdentifier
+      }
+      committeeRole
+    }
+  }
+`);
 
 export const Route = createFileRoute("/")({
   component: HomePage,
-
-  staticData: {
-    authorizationRules: null,
-  },
 });
 
 function HomePage() {
   const { authorization } = useLoginState();
 
-  const [{ data, fetching, error }] = useQuery({
-    query: ViewMePageDocument,
-  });
-
-  useQueryStatusWatcher({
-    error,
-    fetching,
-    loadingMessage: "Loading person...",
+  const { data } = useTypedCustomQuery({
+    document: graphql(
+      /* GraphQL */ `
+        query HomePage {
+          me {
+            ...PersonViewerFragment
+          }
+        }
+      `,
+      [PersonViewerFragment]
+    ),
+    props: {},
   });
 
   return (
@@ -61,12 +77,12 @@ function HomePage() {
           <li></li>
         </ul>
       </Typography.Paragraph>
-      {data?.me && (
+      {data?.data.me && (
         <>
           <Typography.Title level={2}>Your Information</Typography.Title>
           <PersonViewer
-            personFragment={data.me}
-            authorization={authorization}
+            personData={readFragment(PersonViewerFragment, data.data.me)}
+            personAuthorization={authorization}
           />
         </>
       )}
