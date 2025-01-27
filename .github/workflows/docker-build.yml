@@ -56,7 +56,7 @@ jobs:
       - uses: actions/delete-package-versions@v5
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          package-name: ${{ env.SERVER_IMAGE_NAME }}
+          package-name: ${{ env.REGISTRY }}/${{ env.SERVER_IMAGE_NAME }}
           package-type: container
           min-versions-to-keep: 10
           delete-only-untagged-versions: "true"
