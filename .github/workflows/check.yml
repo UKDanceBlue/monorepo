@@ -29,6 +29,7 @@ on:
         "codegen.ts",
         "tsconfig.json",
       ]
+  workflow_call:
 
 jobs:
   run-eslint:

@@ -8,6 +8,8 @@ permissions:
 
 # All this job does is fast forward the staging branch to the latest commit on main
 jobs:
+  check:
+    uses: ./.github/workflows/check.yml
   stage-release:
     runs-on: ubuntu-latest
     permissions:

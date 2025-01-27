@@ -6,7 +6,7 @@ on:
   push:
     # Release is a special branch that is kept in sync with the production app
     # We also want to keep the development build in sync with the main branch
-    branches: ["release", "main"]
+    branches: ["release", "staging", "main"]
     paths:
       - "packages/common/lib/**"
       - "packages/common/tsconfig.json"
