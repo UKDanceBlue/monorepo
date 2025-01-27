@@ -11,6 +11,7 @@ jobs:
   check:
     uses: ./.github/workflows/check.yml
   stage-release:
+    needs: check
     runs-on: ubuntu-latest
     permissions:
       packages: write
