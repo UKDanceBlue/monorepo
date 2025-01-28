@@ -53,10 +53,10 @@ jobs:
           target: server
           secrets: |
             SENTRY_AUTH_TOKEN=${{ secrets.SENTRY_AUTH_TOKEN }}
-      - uses: actions/delete-package-versions@v5
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          package-name: monorepo/${{ env.SERVER_IMAGE_NAME }}
-          package-type: container
-          min-versions-to-keep: 10
-          delete-only-untagged-versions: "true"
+      # - uses: actions/delete-package-versions@v5
+      #   with:
+      #     token: ${{ secrets.GITHUB_TOKEN }}
+      #     package-name: monorepo/${{ env.SERVER_IMAGE_NAME }}
+      #     package-type: container
+      #     min-versions-to-keep: 10
+      #     delete-only-untagged-versions: "true"
