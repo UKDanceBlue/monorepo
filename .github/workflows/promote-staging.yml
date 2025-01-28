@@ -1,6 +1,7 @@
 name: Promote Staging
 
 on:
+  workflow_dispatch:
   schedule:
     # Runs at 1 or 2 AM Eastern Time
     - cron: "0 6 * * *"
