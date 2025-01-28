@@ -35,8 +35,8 @@ const MS_OIDC_URL = getEnv("MS_OIDC_URL", null);
 const MS_CLIENT_ID = getEnv("MS_CLIENT_ID", null);
 const MS_CLIENT_SECRET = getEnv("MS_CLIENT_SECRET", null);
 const EXPO_ACCESS_TOKEN = getEnv("EXPO_ACCESS_TOKEN", null);
-const DBFUNDS_API_KEY = getEnv("DBFUNDS_API_KEY", null);
-const DBFUNDS_API_ORIGIN = getEnv("DBFUNDS_API_ORIGIN", null);
+// const DBFUNDS_API_KEY = getEnv("DBFUNDS_API_KEY", null);
+// const DBFUNDS_API_ORIGIN = getEnv("DBFUNDS_API_ORIGIN", null);
 const MAX_FILE_SIZE = getEnv("MAX_FILE_SIZE", "10");
 const SERVE_PATH = getEnv("SERVE_PATH", "/data/serve");
 const UPLOAD_PATH = getEnv("UPLOAD_PATH", "/data/serve/uploads");
@@ -108,8 +108,8 @@ try {
     msOidcUrl: new URL(await MS_OIDC_URL),
     msClientId: await MS_CLIENT_ID,
     msClientSecret: await MS_CLIENT_SECRET,
-    dbFundsApiKey: await DBFUNDS_API_KEY,
-    dbFundsApiOrigin: await DBFUNDS_API_ORIGIN,
+    // dbFundsApiKey: await DBFUNDS_API_KEY,
+    // dbFundsApiOrigin: await DBFUNDS_API_ORIGIN,
     maxFileSize,
     servePath,
     uploadPath,

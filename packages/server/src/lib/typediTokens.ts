@@ -35,8 +35,8 @@ export interface Environment {
   msOidcUrl: URL;
   msClientId: string;
   msClientSecret: string;
-  dbFundsApiKey: string;
-  dbFundsApiOrigin: string;
+  // dbFundsApiKey: string;
+  // dbFundsApiOrigin: string;
   maxFileSize: number;
   servePath: string;
   uploadPath: string;
@@ -55,8 +55,8 @@ export function setEnvironment(env: Environment) {
   Container.setValue(msOidcUrlToken, env.msOidcUrl);
   Container.setValue(msClientIdToken, env.msClientId);
   Container.setValue(msClientSecretToken, env.msClientSecret);
-  Container.setValue(dbFundsApiKeyToken, env.dbFundsApiKey);
-  Container.setValue(dbFundsApiOriginToken, env.dbFundsApiOrigin);
+  // Container.setValue(dbFundsApiKeyToken, env.dbFundsApiKey);
+  // Container.setValue(dbFundsApiOriginToken, env.dbFundsApiOrigin);
   Container.setValue(maxFileSizeToken, env.maxFileSize);
   Container.setValue(servePathToken, env.servePath);
   Container.setValue(uploadPathToken, env.uploadPath);
@@ -76,8 +76,8 @@ export function getEnvironment(): Environment {
     msOidcUrl: Container.get(msOidcUrlToken),
     msClientId: Container.get(msClientIdToken),
     msClientSecret: Container.get(msClientSecretToken),
-    dbFundsApiKey: Container.get(dbFundsApiKeyToken),
-    dbFundsApiOrigin: Container.get(dbFundsApiOriginToken),
+    // dbFundsApiKey: Container.get(dbFundsApiKeyToken),
+    // dbFundsApiOrigin: Container.get(dbFundsApiOriginToken),
     maxFileSize: Container.get(maxFileSizeToken),
     servePath: Container.get(servePathToken),
     uploadPath: Container.get(uploadPathToken),

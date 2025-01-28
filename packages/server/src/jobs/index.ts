@@ -7,7 +7,6 @@ import { GarbageCollectLoginFlowSessionsJob } from "./garbageCollectLogins.js";
 import { GetBBNEventsJob } from "./getBBNEvents.js";
 import { HousekeepingJob } from "./housekeeping.js";
 import { NotificationScheduler } from "./NotificationScheduler.js";
-import { SyncDbFundsJob, SyncDbFundsPastJob } from "./syncDbFunds.js";
 
 logger.info("Jobs started");
 
@@ -17,8 +16,6 @@ logger.info("Jobs started");
   GetBBNEventsJob,
   HousekeepingJob,
   NotificationScheduler,
-  SyncDbFundsJob,
-  SyncDbFundsPastJob,
 ])
 export class JobScheduler {
   constructor(
@@ -26,9 +23,7 @@ export class JobScheduler {
     protected readonly garbageCollectLoginFlowSessionsJob: GarbageCollectLoginFlowSessionsJob,
     protected readonly getBBNEventsJob: GetBBNEventsJob,
     protected readonly housekeepingJob: HousekeepingJob,
-    protected readonly notificationScheduler: NotificationScheduler,
-    protected readonly syncDbFundsJob: SyncDbFundsJob,
-    protected readonly syncDbFundsPastJob: SyncDbFundsPastJob
+    protected readonly notificationScheduler: NotificationScheduler
   ) {}
 
   async start() {
@@ -37,7 +32,5 @@ export class JobScheduler {
     await this.getBBNEventsJob.start();
     await this.housekeepingJob.start();
     await this.notificationScheduler.start();
-    await this.syncDbFundsJob.start();
-    await this.syncDbFundsPastJob.start();
   }
 }

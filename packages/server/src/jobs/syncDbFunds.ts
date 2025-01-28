@@ -18,6 +18,8 @@ import type { RepositoryError } from "#repositories/shared.js";
 
 import { Job } from "./Job.js";
 
+throw new Error("DBFunds sync should no longer be used");
+
 async function doSyncForMarathon(
   marathon: Marathon,
   fundraisingProvider: DBFundsFundraisingProvider,
@@ -113,53 +115,6 @@ async function doSyncForMarathon(
   );
 
   return errors.length > 0 ? Err(new CompositeError(errors)) : Ok(None);
-}
-
-@Service([
-  JobStateRepository,
-  MarathonRepository,
-  DBFundsRepository,
-  DBFundsFundraisingProvider,
-  prismaToken,
-])
-export class SyncDbFundsJob extends Job {
-  constructor(
-    protected readonly jobStateRepository: JobStateRepository,
-    protected readonly marathonRepository: MarathonRepository,
-    protected readonly fundraisingRepository: DBFundsRepository,
-    protected readonly fundraisingProvider: DBFundsFundraisingProvider,
-    protected readonly prisma: PrismaClient
-  ) {
-    super("0 */30 * * * *", "sync-db-funds");
-  }
-
-  protected async run(): Promise<void> {
-    logger.info("Syncing DBFunds");
-    const result = await this.doSyncForActive();
-
-    result.unwrap();
-  }
-
-  async doSyncForActive(): Promise<Result<None, ExtendedError>> {
-    const marathonRepository = Container.get(MarathonRepository);
-
-    const activeMarathon = await new AsyncResult(
-      marathonRepository.findActiveMarathon()
-    ).andThen((activeMarathon) =>
-      activeMarathon.toResult(new NotFoundError("active marathon"))
-    ).promise;
-    if (activeMarathon.isErr()) {
-      return activeMarathon;
-    }
-    logger.trace("Found current marathon for DBFunds sync", activeMarathon);
-
-    return doSyncForMarathon(
-      activeMarathon.value,
-      this.fundraisingProvider,
-      this.fundraisingRepository,
-      this.prisma
-    );
-  }
 }
 
 @Service([
