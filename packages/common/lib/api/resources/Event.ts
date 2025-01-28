@@ -24,6 +24,11 @@ export class EventNode extends TimestampedResource implements Node {
   @Field(() => String, { nullable: true })
   location!: string | null;
 
+  @Field(() => String)
+  text(): string {
+    return this.title;
+  }
+
   public getUniqueId(): string {
     return this.id.id;
   }

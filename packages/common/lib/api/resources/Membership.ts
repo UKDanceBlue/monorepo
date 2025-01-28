@@ -36,6 +36,11 @@ export class MembershipNode extends TimestampedResource implements Node {
     return this.id.id;
   }
 
+  @Field(() => String)
+  text(): string {
+    return this.position;
+  }
+
   public static init(init: {
     id: string;
     position: MembershipPositionType;
@@ -55,6 +60,11 @@ export class CommitteeMembershipNode extends MembershipNode implements Node {
 
   @Field(() => CommitteeIdentifier)
   identifier!: CommitteeIdentifier;
+
+  @Field(() => String)
+  text(): string {
+    return `${this.role} of ${this.identifier}`;
+  }
 
   public static init(init: {
     id: string;

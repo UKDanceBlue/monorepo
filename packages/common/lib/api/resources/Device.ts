@@ -19,6 +19,11 @@ export class DeviceNode extends TimestampedResource implements Node {
     return this.id.id;
   }
 
+  @Field(() => String)
+  public text(): string {
+    return this.id.id;
+  }
+
   public static init(init: {
     id: string;
     lastLogin?: DateTime | undefined | null;

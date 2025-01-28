@@ -19,6 +19,11 @@ export class PersonNode extends TimestampedResource implements Node {
   @Field(() => String, { nullable: true })
   linkblue!: string | null;
 
+  @Field(() => String)
+  text(): string {
+    return this.name || this.linkblue || this.email;
+  }
+
   public getUniqueId(): string {
     return this.id.id;
   }

@@ -1,5 +1,5 @@
 import { GraphQLURL } from "graphql-scalars";
-import type { DateTime } from "luxon";
+import { DateTime } from "luxon";
 import { Field, ObjectType } from "type-graphql";
 
 import { AccessControlAuthorized } from "../../authorization/AccessControlParam.js";
@@ -54,6 +54,11 @@ export class NotificationNode extends TimestampedResource implements Node {
     description: "The time the server started sending the notification.",
   })
   startedSendingAt?: DateTime | undefined | null;
+
+  @Field(() => String)
+  text(): string {
+    return `${this.title} (${this.sendAt?.toLocaleString(DateTime.DATETIME_SHORT) ?? this.startedSendingAt?.toLocaleString(DateTime.DATETIME_SHORT) ?? "unscheduled"})`;
+  }
 
   public getUniqueId(): string {
     return this.id.id;
@@ -130,6 +135,11 @@ export class NotificationDeliveryNode
     ".deliveryError"
   )
   deliveryError?: string | undefined | null;
+
+  @Field(() => String)
+  text(): string {
+    return this.id.id;
+  }
 
   public getUniqueId(): string {
     return this.id.id;

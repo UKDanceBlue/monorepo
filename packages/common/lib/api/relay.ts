@@ -41,6 +41,13 @@ export class PageInfo {
 export abstract class Node {
   @Field(() => GlobalIdScalar)
   id!: GlobalId;
+
+  @Field(() => String, {
+    description: "A human-readable string representing the object.",
+  })
+  text(): string {
+    return this.id.id;
+  }
 }
 @InterfaceType()
 export abstract class Edge<N extends Node = Node> {

@@ -17,6 +17,11 @@ export class PointEntryNode extends TimestampedResource implements Node {
   @Field(() => Int)
   points!: number;
 
+  @Field(() => String)
+  text(): string {
+    return `${this.points} points${this.comment ? `: ${this.comment}` : ""}`;
+  }
+
   public getUniqueId(): string {
     return this.id.id;
   }

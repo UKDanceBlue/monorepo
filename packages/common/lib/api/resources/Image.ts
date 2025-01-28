@@ -36,6 +36,11 @@ export class ImageNode extends TimestampedResource implements Node {
     return this.id.id;
   }
 
+  @Field(() => String)
+  text(): string {
+    return this.alt || this.url?.toString() || this.id.id;
+  }
+
   public static init(init: {
     id: string;
     url?: URL | undefined | null;

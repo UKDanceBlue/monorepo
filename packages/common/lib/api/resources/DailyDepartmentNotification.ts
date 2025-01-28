@@ -41,6 +41,10 @@ export const BatchType = {
    */
   PayrollDeduction: "PayrollDeduction",
   /**
+   * P
+   */
+  P: "P",
+  /**
    * Fallback batch type for when the batch type is unknown
    */
   Unknown: "Unknown",
@@ -100,6 +104,9 @@ export function extractDDNBatchType(
     }
     case "X": {
       return Ok(BatchType.PayrollDeduction);
+    }
+    case "P": {
+      return Ok(BatchType.P);
     }
     default: {
       return Err(new InvalidArgumentError(`Unknown batch type: ${code}`));
@@ -308,6 +315,11 @@ export class DailyDepartmentNotificationNode extends Resource implements Node {
 
   @Field(() => DateTimeScalar)
   createdAt!: DateTime;
+
+  @Field(() => String)
+  text(): string {
+    return `${this.combinedAmount} from ${this.combinedDonorName} to ${this.comment ?? "Unknown"}`;
+  }
 
   public getUniqueId(): string {
     return this.id.id;

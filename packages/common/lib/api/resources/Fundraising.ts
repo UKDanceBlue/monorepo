@@ -1,4 +1,4 @@
-import type { DateTime } from "luxon";
+import { DateTime } from "luxon";
 import { Field, Float, ObjectType, registerEnumType } from "type-graphql";
 
 import { createNodeClasses, Node } from "../relay.js";
@@ -73,6 +73,15 @@ export class FundraisingEntryNode extends TimestampedResource implements Node {
   @Field(() => FundraisingEntrySource)
   source!: FundraisingEntrySource;
 
+  @Field(() => String)
+  text(): string {
+    return `Donation of $${this.amount} via ${this.source} from ${
+      this.donatedByText || "Unknown"
+    } to ${this.donatedToText || "Unknown"} on ${
+      this.donatedOn?.toLocaleString(DateTime.DATE_SHORT) || "Unknown"
+    }`;
+  }
+
   public getUniqueId(): string {
     return this.id.id;
   }
@@ -120,6 +129,11 @@ export class FundraisingAssignmentNode
 
   public getUniqueId(): string {
     return this.id.id;
+  }
+
+  @Field(() => String)
+  text(): string {
+    return `Assignment of $${this.amount}`;
   }
 
   public static init(init: {

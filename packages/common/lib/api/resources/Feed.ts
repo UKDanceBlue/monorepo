@@ -67,6 +67,11 @@ export class InstagramFeedNode
     return this.id.id;
   }
 
+  @Field(() => String)
+  text(): string {
+    return this.title;
+  }
+
   public static init(init: {
     id: string;
     title: string;
@@ -95,6 +100,11 @@ export class FeedNode extends TimestampedResource implements Node, FeedItem {
 
   public getUniqueId(): string {
     return this.id.id;
+  }
+
+  @Field(() => String)
+  text(): string {
+    return this.title;
   }
 
   public static init(init: {

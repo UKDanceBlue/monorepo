@@ -22,6 +22,11 @@ export class MarathonHourNode extends TimestampedResource implements Node {
   @Field(() => String)
   durationInfo!: string;
 
+  @Field(() => String)
+  text(): string {
+    return this.title;
+  }
+
   static init({
     id,
     title,

@@ -50,6 +50,11 @@ export class TeamNode extends TimestampedResource implements Node {
   @Field(() => TeamLegacyStatus)
   legacyStatus!: TeamLegacyStatus;
 
+  @Field(() => String)
+  text(): string {
+    return this.name;
+  }
+
   public getUniqueId(): string {
     return this.id.id;
   }

@@ -15,6 +15,11 @@ export class CommitteeNode extends TimestampedResource implements Node {
   @Field(() => CommitteeIdentifier)
   identifier!: CommitteeIdentifier;
 
+  @Field(() => String)
+  text(): string {
+    return this.identifier;
+  }
+
   static init(init: {
     id: string;
     identifier: CommitteeIdentifier;

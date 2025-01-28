@@ -21,6 +21,11 @@ export class PointOpportunityNode extends TimestampedResource implements Node {
   @Field(() => DateTimeScalar, { nullable: true })
   opportunityDate!: DateTime | null;
 
+  @Field(() => String)
+  text(): string {
+    return this.name;
+  }
+
   public getUniqueId(): string {
     return this.id.id;
   }

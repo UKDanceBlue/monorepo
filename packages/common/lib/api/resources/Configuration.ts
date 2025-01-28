@@ -37,6 +37,11 @@ export class ConfigurationNode extends TimestampedResource implements Node {
   @Field(() => DateTimeScalar, { nullable: true })
   validUntil?: DateTime | undefined | null;
 
+  @Field(() => String)
+  text(): string {
+    return this.key;
+  }
+
   public getUniqueId(): string {
     return this.key;
   }

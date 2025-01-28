@@ -26,6 +26,11 @@ export class AuditLogNode extends Resource implements Node {
   @Field(() => DateTimeScalar, { nullable: true })
   createdAt!: DateTime;
 
+  @Field(() => String)
+  text(): string {
+    return this.summary;
+  }
+
   static init(init: {
     id: string;
     summary: string;

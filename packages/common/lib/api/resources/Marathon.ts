@@ -22,6 +22,11 @@ export class MarathonNode extends TimestampedResource implements Node {
   @Field(() => DateTimeScalar, { nullable: true })
   endDate?: DateTime | undefined | null;
 
+  @Field(() => String)
+  text(): string {
+    return this.year;
+  }
+
   static init({
     id: id,
     year,
