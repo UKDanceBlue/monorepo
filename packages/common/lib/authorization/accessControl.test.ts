@@ -23,7 +23,15 @@ describe("Unauthenticated user", (test) => {
 
   test("has no permissions for most resources", ({ expect }) => {
     for (const resource of SubjectStrings) {
-      if (resource === "ConfigurationNode" || resource === "DeviceNode") {
+      if (
+        [
+          "ConfigurationNode",
+          "DeviceNode",
+          "MarathonNode",
+          "MarathonHourNode",
+          "FeedNode",
+        ].includes(resource)
+      ) {
         continue;
       }
 
@@ -48,6 +56,30 @@ describe("Unauthenticated user", (test) => {
     expect(ability).cannot("readActive", "DeviceNode");
     expect(ability).cannot("list", "DeviceNode");
     expect(ability).cannot("update", "DeviceNode");
+  });
+
+  test("has permission to read active marathon", ({ expect }) => {
+    expect(ability).can("readActive", "MarathonNode");
+
+    expect(ability).cannot("get", "MarathonNode");
+    expect(ability).cannot("list", "MarathonNode");
+    expect(ability).cannot("update", "MarathonNode");
+  });
+
+  test("has permission to read active marathon hour", ({ expect }) => {
+    expect(ability).can("readActive", "MarathonHourNode");
+
+    expect(ability).cannot("get", "MarathonHourNode");
+    expect(ability).cannot("list", "MarathonHourNode");
+    expect(ability).cannot("update", "MarathonHourNode");
+  });
+
+  test("has permission to read feeds", ({ expect }) => {
+    expect(ability).can("readActive", "FeedNode");
+
+    expect(ability).cannot("get", "FeedNode");
+    expect(ability).cannot("list", "FeedNode");
+    expect(ability).cannot("update", "FeedNode");
   });
 });
 
@@ -125,20 +157,20 @@ describe("A normal user", (test) => {
   });
 
   test("can read events", ({ expect }) => {
-    expect(ability).can("get", "EventNode");
     expect(ability).can("list", "EventNode");
+    expect(ability).cannot("get", "EventNode");
     expect(ability).cannot("update", "EventNode");
   });
 
-  test("can read committees", ({ expect }) => {
-    expect(ability).can("get", "CommitteeNode");
-    expect(ability).can("list", "CommitteeNode");
+  test("cannot read committees", ({ expect }) => {
+    expect(ability).cannot("get", "CommitteeNode");
+    expect(ability).cannot("list", "CommitteeNode");
     expect(ability).cannot("update", "CommitteeNode");
   });
 
   test("can read images", ({ expect }) => {
     expect(ability).can("get", "ImageNode");
-    expect(ability).can("list", "ImageNode");
+    expect(ability).cannot("list", "ImageNode");
     expect(ability).cannot("update", "ImageNode");
   });
 

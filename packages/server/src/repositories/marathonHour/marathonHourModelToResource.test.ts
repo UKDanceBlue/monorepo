@@ -1,5 +1,6 @@
 import type { MarathonHour } from "@prisma/client";
 import { MarathonHourNode } from "@ukdanceblue/common";
+import { DateTime } from "luxon";
 import { describe, it } from "vitest";
 
 import { marathonHourModelToResource } from "./marathonHourModelToResource.js";
@@ -23,7 +24,7 @@ describe("marathonHourModelToResource", () => {
 
     const result = marathonHourModelToResource(marathonHourModel);
 
-    const nowString = now.toISOString();
+    const nowString = DateTime.fromJSDate(now).toISO();
 
     expect(result).toBeInstanceOf(MarathonHourNode);
     expect(result.id.id).toBe("test-uuid");
@@ -31,8 +32,8 @@ describe("marathonHourModelToResource", () => {
     expect(result.details).toBe("test-details");
     expect(result.durationInfo).toBe("test-durationInfo");
     expect(result.shownStartingAt.toISO()).toBe(nowString);
-    expect(result.createdAt).toBe(now);
-    expect(result.updatedAt).toBe(now);
+    expect(result.createdAt.toISO()).toBe(nowString);
+    expect(result.updatedAt.toISO()).toBe(nowString);
   });
 
   it("Should not add any additional properties", ({ expect }) => {
