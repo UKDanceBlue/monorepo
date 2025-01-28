@@ -204,7 +204,7 @@ setTimeout(() => {
           .join("\n");
         await writeFile(
           fileURLToPath(import.meta.resolve("../../acl-summary.md")),
-          `# ACL Summary\nGenerated automatically on ${new Date().toLocaleDateString()}. This document lists the required permissions for each GraphQL endpoint in the DanceBlue Server\n${summary}`
+          `# ACL Summary\nThis document lists the required permissions for each GraphQL endpoint in the DanceBlue Server\n${summary}`
         );
       }, console.error);
     }
