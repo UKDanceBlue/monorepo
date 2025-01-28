@@ -27,6 +27,7 @@ import {
   type AsyncRepositoryResult,
   handleRepositoryError,
   type RepositoryError,
+  type RepositoryResult,
   type SimpleUniqueParam,
 } from "./shared.js";
 
@@ -186,11 +187,14 @@ export function buildDefaultRepository<
     }
 
     protected handleTransactionError<D>(
-      callback: (tx: Transaction) => AsyncRepositoryResult<D>,
+      callback: (
+        tx: Transaction
+      ) => AsyncRepositoryResult<D> | Promise<RepositoryResult<D>>,
       tx?: Transaction
     ): AsyncRepositoryResult<D> {
       if (tx) {
-        return callback(tx);
+        const cb = callback(tx);
+        return isPromise(cb) ? new AsyncResult(cb) : cb;
       }
 
       return new AsyncResult(
@@ -200,13 +204,14 @@ export function buildDefaultRepository<
           );
           await this.prisma.$transaction(async (tx) => {
             try {
-              result = await callback(tx).promise;
+              const cb = callback(tx);
+              result = await (isPromise(cb) ? cb : cb.promise);
               if (result.isErr()) {
-                throw new Error("Rollback");
+                throw result.error;
               }
             } catch (error) {
               result = handleRepositoryError(error);
-              throw error;
+              throw result.error;
             }
           });
           return result;

@@ -56,6 +56,7 @@ type AuditLogNode implements Node {
   subject: Node
   subjectJson: JSONObject
   summary: String!
+  text: String!
   user: PersonNode
 }
 
@@ -74,6 +75,7 @@ enum BatchType {
   CreditCard
   DBFunds
   NonCash
+  P
   PayrollDeduction
   Transmittal
   Unknown
@@ -120,6 +122,7 @@ type CommitteeMembershipNode implements Node {
   position: MembershipPositionType!
   role: CommitteeRole!
   team: TeamNode!
+  text: String!
   updatedAt: LuxonDateTime
 }
 
@@ -127,6 +130,7 @@ type CommitteeNode implements Node {
   createdAt: LuxonDateTime
   id: GlobalId!
   identifier: CommitteeIdentifier!
+  text: String!
   updatedAt: LuxonDateTime
 }
 
@@ -141,6 +145,7 @@ type ConfigurationNode implements Node {
   createdAt: LuxonDateTime
   id: GlobalId!
   key: String!
+  text: String!
   updatedAt: LuxonDateTime
   validAfter: LuxonDateTime
   validUntil: LuxonDateTime
@@ -244,11 +249,12 @@ input CreateTeamInput {
   type: TeamType!
 }
 
-type DailyDepartmentNotificationBatchNode {
+type DailyDepartmentNotificationBatchNode implements Node {
   batchNumber: String!
   batchType: BatchType!
   dailyDepartmentNotifications: [DailyDepartmentNotificationNode!]!
   id: GlobalId!
+  text: String!
 }
 
 input DailyDepartmentNotificationInput {
@@ -373,6 +379,7 @@ type DailyDepartmentNotificationNode {
   secType: String
   solicitation: String
   solicitationCode: SolicitationCodeNode!
+  text: String!
   transactionDate: LocalDate
   transactionType: String!
   transmittalSn: String
@@ -448,6 +455,7 @@ type DeviceNode implements Node {
     """
     verifier: String
   ): [NotificationDeliveryNode!]!
+  text: String!
   updatedAt: LuxonDateTime
 }
 
@@ -503,6 +511,7 @@ type EventNode implements Node {
   location: String
   occurrences: [EventOccurrenceNode!]!
   summary: String
+  text: String!
   title: String!
   updatedAt: LuxonDateTime
 }
@@ -565,6 +574,7 @@ type FeedNode implements FeedItem & Node {
   """The image associated with this feed item"""
   image: ImageNode
   link: URL
+  text: String!
   textContent: String
   title: String!
   updatedAt: LuxonDateTime
@@ -581,6 +591,7 @@ type FundraisingAssignmentNode implements Node {
   entry: FundraisingEntryNode!
   id: GlobalId!
   person: PersonNode
+  text: String!
   updatedAt: LuxonDateTime
 }
 
@@ -604,6 +615,7 @@ type FundraisingEntryNode implements Node {
   solicitationCode: SolicitationCodeNode!
   solicitationCodeOverride: SolicitationCodeNode
   source: FundraisingEntrySource!
+  text: String!
   updatedAt: LuxonDateTime
 }
 
@@ -666,6 +678,7 @@ type ImageNode implements Node {
   height: Int!
   id: GlobalId!
   mimeType: String!
+  text: String!
   thumbHash: String
   updatedAt: LuxonDateTime
   url: URL
@@ -709,6 +722,7 @@ type InstagramFeedNode implements FeedItem & Node {
   id: GlobalId!
   image: ImageNode
   link: URL
+  text: String!
   textContent: String
   title: String!
   updatedAt: LuxonDateTime
@@ -863,6 +877,7 @@ type MarathonHourNode implements Node {
   id: GlobalId!
   mapImages: [ImageNode!]!
   shownStartingAt: LuxonDateTime!
+  text: String!
   title: String!
   updatedAt: LuxonDateTime
 }
@@ -907,6 +922,7 @@ type MarathonNode implements Node {
   hours: [MarathonHourNode!]!
   id: GlobalId!
   startDate: LuxonDateTime
+  text: String!
   updatedAt: LuxonDateTime
   year: MarathonYear!
 }
@@ -958,6 +974,7 @@ type MembershipNode implements Node {
   person: PersonNode!
   position: MembershipPositionType!
   team: TeamNode!
+  text: String!
   updatedAt: LuxonDateTime
 }
 
@@ -1081,6 +1098,9 @@ enum NoTargetOperators {
 
 interface Node {
   id: GlobalId!
+
+  """A human-readable string representing the object."""
+  text: String!
 }
 
 """A string that cannot be passed as an empty value"""
@@ -1123,6 +1143,7 @@ type NotificationDeliveryNode implements Node {
 
   """The time the server sent the notification to Expo for delivery."""
   sentAt: LuxonDateTime
+  text: String!
   updatedAt: LuxonDateTime
 }
 
@@ -1174,6 +1195,7 @@ type NotificationNode implements Node {
 
   """The time the server started sending the notification."""
   startedSendingAt: LuxonDateTime
+  text: String!
   title: String!
   updatedAt: LuxonDateTime
   url: URL
@@ -1232,6 +1254,7 @@ type PersonNode implements Node {
   primaryCommittee: CommitteeMembershipNode
   primaryTeam(teamType: TeamType!): MembershipNode
   teams: [MembershipNode!]!
+  text: String!
   updatedAt: LuxonDateTime
 }
 
@@ -1275,6 +1298,7 @@ type PointEntryNode implements Node {
   pointOpportunity: PointOpportunityNode
   points: Int!
   team: TeamNode!
+  text: String!
   updatedAt: LuxonDateTime
 }
 
@@ -1313,6 +1337,7 @@ type PointOpportunityNode implements Node {
   id: GlobalId!
   name: String!
   opportunityDate: LuxonDateTime
+  text: String!
   type: TeamType!
   updatedAt: LuxonDateTime
 }
@@ -1974,6 +1999,7 @@ type TeamNode implements Node {
   name: String!
   pointEntries: [PointEntryNode!]!
   solicitationCode: SolicitationCodeNode
+  text: String!
   totalPoints: Int!
   type: TeamType!
   updatedAt: LuxonDateTime

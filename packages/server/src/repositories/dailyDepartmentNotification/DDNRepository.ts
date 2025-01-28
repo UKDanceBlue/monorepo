@@ -18,6 +18,7 @@ import {
 import { InvalidArgumentError, NotFoundError } from "@ukdanceblue/common/error";
 import { Err, None, Ok, Option, Result, Some } from "ts-results-es";
 
+import { logger } from "#lib/logging/standardLogging.js";
 import { prismaToken } from "#lib/typediTokens.js";
 import {
   buildDefaultRepository,
@@ -639,17 +640,22 @@ export class DailyDepartmentNotificationRepository extends buildDefaultRepositor
       RepositoryError | InvalidArgumentError
     >
   > {
+    logger.debug("Loading DDNs in batch");
     try {
       const toLoad = Result.all(data.map((row) => this.parseDDNInit(row)));
+      // This is a safety mechanism to make sure we don't treat two rows with the same properties as the same row
+      const uniqueDDns = new Set<string>();
 
-      return await toLoad.toAsyncResult().map((toLoad) =>
-        this.prisma.$transaction(async (prisma) => {
+      return await toLoad.toAsyncResult().andThen((toLoad) =>
+        this.handleTransactionError(async (prisma) => {
           const results = [];
           const batches = new Map<string, DailyDepartmentNotificationBatch>();
 
           for (const row of toLoad) {
+            logger.trace("Loading DDN");
             const donors = new Map<string, DDNDonor>();
             for (const donor of row.donors) {
+              logger.trace("Loading donor", { donorId: donor.donor.donorId });
               donors.set(
                 donor.donor.donorId,
                 // eslint-disable-next-line no-await-in-loop
@@ -666,6 +672,10 @@ export class DailyDepartmentNotificationRepository extends buildDefaultRepositor
                 })
               );
             }
+            logger.trace("Loading solicitation code", {
+              prefix: row.solicitationCode.prefix,
+              code: row.solicitationCode.code,
+            });
             // eslint-disable-next-line no-await-in-loop
             const solicitationCode = await prisma.solicitationCode.upsert({
               where: {
@@ -685,6 +695,7 @@ export class DailyDepartmentNotificationRepository extends buildDefaultRepositor
             });
             let batch = batches.get(row.batchId);
             if (!batch) {
+              logger.trace("Creating batch", { batchId: row.batchId });
               // eslint-disable-next-line no-await-in-loop
               batch = await prisma.dailyDepartmentNotificationBatch.upsert({
                 where: {
@@ -696,19 +707,43 @@ export class DailyDepartmentNotificationRepository extends buildDefaultRepositor
                 },
               });
               batches.set(row.batchId, batch);
+            } else {
+              logger.trace("Batch already exists", { batchId: row.batchId });
             }
+
+            const idSorter_processDate_batchId_solicitationCodeId_combinedAmount_comment =
+              {
+                idSorter: row.ddn.idSorter,
+                processDate: row.ddn.processDate,
+                batchId: batch.id,
+                solicitationCodeId: solicitationCode.id,
+                combinedAmount: row.ddn.combinedAmount,
+                comment: row.ddn.comment ?? "",
+              };
+            const uniqueStr = `${
+              idSorter_processDate_batchId_solicitationCodeId_combinedAmount_comment.idSorter
+            }-${idSorter_processDate_batchId_solicitationCodeId_combinedAmount_comment.processDate.toString()}-${
+              idSorter_processDate_batchId_solicitationCodeId_combinedAmount_comment.batchId
+            }-${
+              idSorter_processDate_batchId_solicitationCodeId_combinedAmount_comment.solicitationCodeId
+            }-$${idSorter_processDate_batchId_solicitationCodeId_combinedAmount_comment.combinedAmount.toString()}-${
+              idSorter_processDate_batchId_solicitationCodeId_combinedAmount_comment.comment
+            }`;
+            if (uniqueDDns.has(uniqueStr)) {
+              return Err(
+                new InvalidArgumentError(
+                  `Cannot determine the difference between two rows: ${uniqueStr}`
+                )
+              );
+            }
+            uniqueDDns.add(uniqueStr);
+            logger.trace("Creating DDN", { uniqueStr });
+
             results.push(
               // eslint-disable-next-line no-await-in-loop
               await prisma.dailyDepartmentNotification.upsert({
                 where: {
-                  idSorter_processDate_batchId_solicitationCodeId_combinedAmount:
-                    {
-                      idSorter: row.ddn.idSorter,
-                      processDate: row.ddn.processDate,
-                      batchId: batch.id,
-                      solicitationCodeId: solicitationCode.id,
-                      combinedAmount: row.ddn.combinedAmount,
-                    },
+                  idSorter_processDate_batchId_solicitationCodeId_combinedAmount_comment,
                 },
                 create: {
                   ...row.ddn,
@@ -780,7 +815,7 @@ export class DailyDepartmentNotificationRepository extends buildDefaultRepositor
               })
             );
           }
-          return results;
+          return Ok(results);
         })
       ).promise;
     } catch (error) {

@@ -630,13 +630,18 @@ export function parseFindManyParams<T, Field extends string>(
       );
     });
 
-    order = Ok({
-      _relevance: {
-        fields,
-        search: params.search.query,
-        sort: SortDirection.desc,
+    order = (
+      params.sortBy ? buildOrder(params.sortBy, fieldLookup) : Ok([])
+    ).map((val) => [
+      ...val,
+      {
+        _relevance: {
+          fields,
+          search: params.search?.query,
+          sort: SortDirection.desc,
+        },
       },
-    });
+    ]);
   } else {
     where = params.filters
       ? buildWhereFromGroup(params.filters, fieldLookup)

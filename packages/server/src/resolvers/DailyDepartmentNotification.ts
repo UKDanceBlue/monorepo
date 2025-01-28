@@ -11,7 +11,7 @@ import {
   ListDailyDepartmentNotificationsArgs,
   ListDailyDepartmentNotificationsResponse,
 } from "@ukdanceblue/common";
-import { ConcreteResult,ExtendedError } from "@ukdanceblue/common/error";
+import { ConcreteResult, ExtendedError } from "@ukdanceblue/common/error";
 import { AsyncResult, Option, Result } from "ts-results-es";
 import {
   Arg,

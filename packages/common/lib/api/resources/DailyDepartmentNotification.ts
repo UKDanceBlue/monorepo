@@ -392,8 +392,11 @@ export class DailyDepartmentNotificationNode extends Resource implements Node {
   }
 }
 
-@ObjectType()
-export class DailyDepartmentNotificationBatchNode extends Resource {
+@ObjectType({ implements: [Node] })
+export class DailyDepartmentNotificationBatchNode
+  extends Resource
+  implements Node
+{
   @Field(() => GlobalIdScalar)
   id!: GlobalId;
 
@@ -407,6 +410,11 @@ export class DailyDepartmentNotificationBatchNode extends Resource {
 
   public getUniqueId(): string {
     return this.id.id;
+  }
+
+  @Field(() => String)
+  text(): string {
+    return `Batch ${this.batchNumber}`;
   }
 
   public static init(init: { id: string; batchNumber: string }) {
