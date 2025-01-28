@@ -57,7 +57,7 @@ export class SetFundraisingEntryInput {
 }
 
 @InputType("CreateFundraisingEntryInput")
-export class CreateFundraisingEntryInput extends SetFundraisingEntryInput {
+export class CreateFundraisingEntryInput {
   @Field(() => GlobalIdScalar)
   solicitationCodeId!: GlobalId;
 

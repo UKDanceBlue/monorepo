@@ -1,8 +1,14 @@
 import { DollarOutlined } from "@ant-design/icons";
 import { Create } from "@refinedev/antd";
 import { createFileRoute } from "@tanstack/react-router";
-import { BatchType, stringifyDDNBatchType } from "@ukdanceblue/common";
+import {
+  BatchType,
+  type CreateFundraisingEntryInput,
+  localDateFromLuxon,
+  stringifyDDNBatchType,
+} from "@ukdanceblue/common";
 import { Form, Input, InputNumber, Select } from "antd";
+import type { DateTime } from "luxon";
 
 import { LuxonDatePicker } from "#elements/components/antLuxonComponents.tsx";
 import { graphql } from "#gql/index.ts";
@@ -50,7 +56,28 @@ function RouteComponent() {
 
   return (
     <Create saveButtonProps={saveButtonProps}>
-      <Form {...formProps} layout="vertical">
+      <Form
+        {...formProps}
+        layout="vertical"
+        onFinish={(data) => {
+          formProps.onFinish?.({
+            amount: data.amount,
+            donatedBy: data.donatedBy ?? undefined,
+            donatedTo: data.donatedTo ?? undefined,
+            notes: data.notes ?? undefined,
+            solicitationCodeId: data.solicitationCodeId,
+            batchType: data.batchType,
+            donatedOn: data.donatedOn
+              ? localDateFromLuxon(data.donatedOn as unknown as DateTime)
+              : undefined,
+          } satisfies Omit<
+            CreateFundraisingEntryInput,
+            "solicitationCodeId"
+          > & {
+            solicitationCodeId: string | undefined;
+          });
+        }}
+      >
         <Form.Item
           label="Amount"
           name="amount"
