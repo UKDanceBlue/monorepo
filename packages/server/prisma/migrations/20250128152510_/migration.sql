@@ -1,5 +1,27 @@
-ALTER TABLE "danceblue"."SolicitationCode"
-ADD COLUMN "text" text GENERATED ALWAYS AS (format_solicitation_code(prefix, code, name)) STORED;
+/*
+ Warnings:
+ 
+ - A unique constraint covering the columns `[idSorter,processDate,batchId,solicitationCodeId,combinedAmount,comment]` on the table `DailyDepartmentNotification` will be added. If there are existing duplicate values, this will fail.
+ 
+ */
+-- AlterEnum
+ALTER TYPE "BatchType"
+ADD VALUE 'P';
+
+-- DropIndex
+DROP INDEX "DailyDepartmentNotification_idSorter_processDate_batchId_so_key";
+
+-- CreateIndex
+CREATE UNIQUE INDEX "DailyDepartmentNotification_idSorter_processDate_batchId_so_key" ON "DailyDepartmentNotification"(
+  "idSorter",
+  "processDate",
+  "batchId",
+  "solicitationCodeId",
+  "combinedAmount",
+  "comment"
+);
+
+DROP VIEW "danceblue"."FundraisingEntryWithMeta";
 
 CREATE VIEW "danceblue"."FundraisingEntryWithMeta" AS (
   SELECT "danceblue"."FundraisingEntry"."id",

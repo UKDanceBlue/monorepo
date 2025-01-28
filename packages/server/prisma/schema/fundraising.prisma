@@ -96,6 +96,7 @@ enum BatchType {
   ACH
   NonCash
   PayrollDeduction
+  P
   Unknown
 }
 
