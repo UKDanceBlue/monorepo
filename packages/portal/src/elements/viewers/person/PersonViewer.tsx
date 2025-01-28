@@ -61,8 +61,8 @@ export function PersonViewer({
 
   return (
     <Descriptions
-      column={1}
-      layout="vertical"
+      column={2}
+      layout="horizontal"
       items={[
         { label: "Name", children: name },
         {
@@ -109,24 +109,10 @@ export function PersonViewer({
             ) : (
               <dl style={{ marginTop: "0" }}>
                 {teams.map((team) => {
-                  let children;
-
-                  if (
+                  const isCaptain =
                     personAuthorization &&
                     (personAuthorization.accessLevel >= AccessLevel.Committee ||
-                      team.position === MembershipPositionType.Captain)
-                  ) {
-                    children = (
-                      <Link
-                        to="/teams/$teamId"
-                        params={{ teamId: team.team.id }}
-                      >
-                        {team.position}
-                      </Link>
-                    );
-                  } else {
-                    children = team.position;
-                  }
+                      team.position === MembershipPositionType.Captain);
 
                   return (
                     <div key={team.team.id}>
@@ -139,9 +125,22 @@ export function PersonViewer({
                               : "normal",
                         }}
                       >
-                        {team.team.name} ({team.team.marathon.year})
+                        {team.team.name} {team.position} (
+                        {team.team.marathon.year})
                       </dt>
-                      <dd>{children}</dd>
+                      <dd>
+                        <br />
+                        {isCaptain ? (
+                          <Link
+                            to="/teams/$teamId"
+                            params={{ teamId: team.team.id }}
+                          >
+                            Click here to view
+                          </Link>
+                        ) : (
+                          ""
+                        )}
+                      </dd>
                     </div>
                   );
                 })}

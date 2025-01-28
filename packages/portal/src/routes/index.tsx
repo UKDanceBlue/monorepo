@@ -1,9 +1,12 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { Typography } from "antd";
+import { Card, Flex, Typography } from "antd";
 
 import { PersonViewer } from "#elements/viewers/person/PersonViewer.js";
 import { graphql, readFragment } from "#gql/index.js";
-import { useLoginState } from "#hooks/useLoginState.js";
+import {
+  useAuthorizationRequirement,
+  useLoginState,
+} from "#hooks/useLoginState.js";
 import { useTypedCustomQuery } from "#hooks/useTypedRefine.ts";
 
 export const PersonViewerFragment = graphql(/* GraphQL */ `
@@ -58,13 +61,14 @@ function HomePage() {
     props: {},
   });
 
+  const meData = readFragment(PersonViewerFragment, data?.data.me);
+
   return (
-    <div>
+    <Flex vertical gap="large" align="center">
       <Typography.Title>
         Welcome to the DanceBlue online portal!
       </Typography.Title>
-      <Typography.Title level={2}>What's New?</Typography.Title>
-      <Typography.Paragraph>
+      <Card title="What's New?" style={{ maxWidth: "120ch" }}>
         <ul>
           <li>
             More of the portal has switched to our new forms, you may see some
@@ -74,18 +78,21 @@ function HomePage() {
             Did some more work on permissions (sorry to those team captains and
             committee members who have had issues)
           </li>
-          <li></li>
         </ul>
-      </Typography.Paragraph>
-      {data?.data.me && (
-        <>
-          <Typography.Title level={2}>Your Information</Typography.Title>
+      </Card>
+      {!useAuthorizationRequirement("list", { kind: "TeamNode" }) && (
+        <Card title="How do I use this site?" style={{ maxWidth: "120ch" }}>
+          Click your
+        </Card>
+      )}
+      {meData && (
+        <Card title="Your Information" style={{ maxWidth: "120ch" }}>
           <PersonViewer
-            personData={readFragment(PersonViewerFragment, data.data.me)}
+            personData={meData}
             personAuthorization={authorization}
           />
-        </>
+        </Card>
       )}
-    </div>
+    </Flex>
   );
 }

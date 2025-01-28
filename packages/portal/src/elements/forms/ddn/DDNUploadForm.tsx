@@ -1,10 +1,9 @@
 import { type DDNInit, localDateFromJs } from "@ukdanceblue/common";
-import { useMutation } from "urql";
+import { useClient } from "urql";
 import { z } from "zod";
 
 import { SpreadsheetUploader } from "#elements/components/SpreadsheetUploader";
 import { graphql } from "#gql/index.js";
-import { useQueryStatusWatcher } from "#hooks/useQueryStatusWatcher";
 
 const defaultStringValidator = z
   .string()
@@ -156,11 +155,8 @@ const UploadDdnDocument = graphql(/* GraphQL */ `
 `);
 
 export function DDNUploadForm() {
-  const [uploadDdnDocumentStatus, uploadDdn] = useMutation(UploadDdnDocument);
-  useQueryStatusWatcher({
-    ...uploadDdnDocumentStatus,
-    loadingMessage: "Uploading DDN data...",
-  });
+  const urql = useClient();
+
   return (
     <SpreadsheetUploader
       rowSchema={inputTypeSchema}
@@ -232,9 +228,12 @@ export function DDNUploadForm() {
           })
         );
 
-        await uploadDdn({
+        const result = await urql.mutation(UploadDdnDocument, {
           ddnData,
         });
+        if (result.error) {
+          throw result.error;
+        }
       }}
       text="Upload DDN Spreadsheet"
     />
