@@ -121,6 +121,7 @@ export class ReportResolver {
         >((acc, entry) => {
           const date =
             entry.donatedOn && DateTime.fromJSDate(entry.donatedOn).toISODate();
+          // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
           if (!date || !entry.batchType) {
             return acc;
           }
@@ -213,6 +214,7 @@ export class ReportResolver {
         >((acc, entry) => {
           const date =
             entry.donatedOn && DateTime.fromJSDate(entry.donatedOn).toISODate();
+          // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
           if (!date || !entry.batchType || !entry.solicitationCodeText) {
             return acc;
           }
@@ -274,6 +276,7 @@ export class ReportResolver {
           Record<string, Partial<Record<BatchType, number>>>
         >((acc, entry) => {
           const code = entry.solicitationCodeText;
+          // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
           if (!code || !entry.batchType) {
             return acc;
           }
