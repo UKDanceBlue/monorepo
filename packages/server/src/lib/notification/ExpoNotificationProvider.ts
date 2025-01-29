@@ -17,7 +17,6 @@ import type {
   ExpoPushSuccessTicket,
   ExpoPushTicket,
 } from "expo-server-sdk";
-import { Expo } from "expo-server-sdk";
 import { DateTime } from "luxon";
 import { AsyncResult, Err, Ok, Result } from "ts-results-es";
 
@@ -32,7 +31,7 @@ import {
   RepositoryError,
 } from "#repositories/shared.js";
 
-import { expoServiceToken } from "./expoServiceToken.js";
+import { ExpoService } from "./ExpoService.js";
 import type {
   NotificationAudience,
   NotificationProvider,
@@ -76,14 +75,14 @@ function makeExpoNotifications(
   NotificationRepository,
   NotificationDeliveryRepository,
   DeviceRepository,
-  expoServiceToken,
+  ExpoService,
 ])
 export class ExpoNotificationProvider implements NotificationProvider {
   constructor(
     protected notificationRepository: NotificationRepository,
     protected notificationDeliveryRepository: NotificationDeliveryRepository,
     protected deviceRepository: DeviceRepository,
-    protected expoSdk: Expo
+    protected expoSdk: ExpoService
   ) {}
 
   protected async prepareNotification(sendable: SendableNotification) {

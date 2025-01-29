@@ -3,11 +3,14 @@ import "reflect-metadata";
 import { Container } from "@freshgum/typedi";
 
 import type { EntryPoint } from "./entry/EntryPoint.js";
+import { DotEnvEnvironmentService } from "./entry/environment/DotEnvEnvironmentService.js";
 
 // No top level imports that cause side effects should be used in this file
 // We want to control the order of execution
 
 const entryPointStr = process.argv[process.argv.length - 1];
+
+await Container.get(DotEnvEnvironmentService).populate();
 
 let entryPoint: EntryPoint;
 switch (entryPointStr) {

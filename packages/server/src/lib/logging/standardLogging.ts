@@ -11,9 +11,6 @@ import { logDirToken, loggingLevelToken } from "#lib/typediTokens.js";
 
 import { SyslogLevels } from "./SyslogLevels.js";
 
-const logDir = Container.get(logDirToken);
-const loggingLevel = Container.get(loggingLevelToken);
-
 interface StandardLogger extends winston.Logger {
   emerg: winston.LeveledLogMethod;
   alert: winston.LeveledLogMethod;
@@ -78,13 +75,23 @@ const combinedLogTransport = new transports.File({
   filename: "combined.log",
   maxsize: 1_000_000,
   maxFiles: 3,
-  dirname: logDir,
-  silent: logDir === "TEST",
+  get dirname() {
+    return Container.getOrNull(logDirToken) ?? ".";
+  },
+  get silent() {
+    const logDir = Container.getOrNull(logDirToken);
+    if (logDir == null) {
+      return true;
+    }
+    return logDir === "TEST";
+  },
   format: format.json({}),
 });
 
 export const logger = createLogger({
-  level: loggingLevel,
+  get level() {
+    return Container.getOrNull(loggingLevelToken) ?? "debug";
+  },
   levels: SyslogLevels,
   transports: [combinedLogTransport, consoleTransport],
   exitOnError: false,

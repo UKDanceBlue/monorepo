@@ -5,14 +5,20 @@ import { createLogger, format, transports } from "winston";
 import { logDirToken } from "#lib/typediTokens.js";
 import { isDevelopmentToken } from "#lib/typediTokens.js";
 
-const logDir = Container.get(logDirToken);
-
 const databaseLogTransport = new transports.File({
   filename: "database.log",
   maxsize: 1_000_000,
   maxFiles: 1,
-  dirname: logDir,
-  silent: logDir === "TEST",
+  get dirname() {
+    return Container.getOrNull(logDirToken) ?? ".";
+  },
+  get silent() {
+    const logDir = Container.getOrNull(logDirToken);
+    if (logDir == null) {
+      return true;
+    }
+    return logDir === "TEST";
+  },
 });
 
 interface SqlLogger extends winston.Logger {
@@ -46,11 +52,10 @@ export const sqlLogger = createLogger({
     warning: 1,
     error: 0,
   },
-  transports: Container.get(isDevelopmentToken) ? databaseLogTransport : [],
-  silent: !Container.get(isDevelopmentToken),
+  transports: [databaseLogTransport],
+  get silent() {
+    const isDevelopment = Container.getOrNull(isDevelopmentToken);
+    return isDevelopment === true;
+  },
   format: format.combine(format.timestamp(), format.simple()),
 }) as SqlLogger;
-
-if (Container.get(isDevelopmentToken)) {
-  sqlLogger.info("SQL Logger initialized");
-}
