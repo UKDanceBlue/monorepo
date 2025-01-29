@@ -17,8 +17,6 @@ import { DotEnvEnvironmentService } from "./environment/DotEnvEnvironmentService
 // No top level imports that cause side effects should be used in this file
 // We want to control the order of execution
 
-await import("#environment");
-
 const { Container } = await import("@freshgum/typedi");
 
 const logDir = Container.get(logDirToken);
@@ -29,8 +27,6 @@ const { logger } = await import("#logging/logger.js");
 logger.info(
   `Logger initialized with level "${loggingLevel}", writing log files to "${logDir}"`
 );
-
-await import("#lib/prisma.js");
 
 const { resolversList } = await import("#lib/resolversList.js");
 
