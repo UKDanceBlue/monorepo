@@ -108,7 +108,9 @@ export class DBFundsFundraisingProvider implements FundraisingProvider<number> {
   constructor(
     private readonly dbFundsApiOrigin: string,
     private readonly dbFundsApiKey: string
-  ) {}
+  ) {
+    throw new Error("DBFunds sync is disabled");
+  }
 
   private async fetchJson(
     path: string | URL
