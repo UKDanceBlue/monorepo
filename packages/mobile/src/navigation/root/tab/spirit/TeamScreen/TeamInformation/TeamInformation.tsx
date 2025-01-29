@@ -1,12 +1,14 @@
 import { FontAwesome5 } from "@expo/vector-icons";
+import { useNavigation } from "@react-navigation/core";
 import { openBrowserAsync } from "expo-web-browser";
-import { Flex, HStack, Text, View } from "native-base";
+import { Button, Center, Flex, HStack, Text, View } from "native-base";
 import { useWindowDimensions } from "react-native";
 import { TouchableOpacity } from "react-native-gesture-handler";
 
 import Breadcrumbs from "@/common/components/Breadcrumbs";
 import { useThemeFonts } from "@/common/customHooks";
 import { universalCatch } from "@/common/logging";
+import type { SpiritStackScreenProps } from "@/common-types/navigationTypes";
 
 import CommitteeHoldingSign from "../../../../../../../assets/svgs/CommitteeHoldingSign";
 import DanceBlueRibbon from "../../../../../../../assets/svgs/DBRibbon";
@@ -18,18 +20,20 @@ const TeamInformation = ({
   captains,
   scoreboardData,
   teamTotal,
+  showFundraisingButton,
 }: {
   name: string;
   captains: readonly string[];
   members: readonly string[];
   scoreboardData: readonly StandingType[];
   teamTotal: number;
+  showFundraisingButton: boolean;
 }) => {
   const { body, mono } = useThemeFonts();
   const { width: screenWidth } = useWindowDimensions();
 
-  // const { navigate } =
-  //   useNavigation<SpiritStackScreenProps<"MyTeam">["navigation"]>();
+  const { navigate } =
+    useNavigation<SpiritStackScreenProps<"MyTeam">["navigation"]>();
 
   const captainString = captains.join(", ");
 
@@ -72,14 +76,16 @@ const TeamInformation = ({
             </Text>
           )}
         </View>
-        {/* <Center>
-          <Button
-            onPress={() => navigate("Fundraising", {})}
-            colorScheme="primary"
-          >
-            View Fundraising
-          </Button>
-        </Center> */}
+        {showFundraisingButton && (
+          <Center>
+            <Button
+              onPress={() => navigate("Fundraising", {})}
+              colorScheme="primary"
+            >
+              View Fundraising
+            </Button>
+          </Center>
+        )}
         <HStack alignItems="center">
           <CommitteeHoldingSign
             svgProps={{ width: screenWidth / 2, height: 200 }}

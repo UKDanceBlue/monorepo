@@ -51,13 +51,13 @@ export const MyFundraisingFragment = graphql(/* GraphQL */ `
 const TeamScreen = ({
   myTeamFragment,
   userUuid,
-  loading: _loading,
-  refresh: _refresh,
+  showFundraisingButton,
 }: {
   myTeamFragment: FragmentOf<typeof MyTeamFragment> | null;
   userUuid: string;
   loading: boolean;
   refresh: () => void;
+  showFundraisingButton: boolean;
 }) => {
   const team = readFragment(MyTeamFragment, myTeamFragment);
 
@@ -131,6 +131,7 @@ const TeamScreen = ({
 
     return (
       <TeamInformation
+        showFundraisingButton={showFundraisingButton}
         captains={members
           .filter(
             (member) =>

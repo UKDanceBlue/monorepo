@@ -5,7 +5,7 @@ import { useQuery } from "urql";
 
 import { Logger } from "@/common/logger/Logger";
 import { showMessage } from "@/common/util/alertUtils";
-import { graphql } from "@/graphql/index";
+import { graphql, readFragment } from "@/graphql/index";
 
 import type { SpiritStackParamList } from "../../../../types/navigationTypes";
 import FundraisingScreen, {
@@ -164,6 +164,10 @@ const SpiritScreen = () => {
       <SpiritStack.Screen name="MyTeam">
         {() => (
           <TeamScreen
+            showFundraisingButton={
+              (readFragment(MyFundraisingFragment, query.data?.me)
+                ?.fundraisingTotalAmount ?? 0) > 0
+            }
             myTeamFragment={query.data?.me?.primaryTeam?.team ?? null}
             userUuid={query.data?.me?.id ?? ""}
             loading={!spiritMode || query.fetching}

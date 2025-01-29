@@ -124,10 +124,11 @@ const FundraisingScreen = ({
               <Flex direction="column">
                 <Text
                   fontFamily="headingBold"
-                  fontSize="5xl"
+                  fontSize="3xl"
                   color="secondary.400"
                   textAlign="center"
                   paddingTop={2}
+                  noOfLines={1}
                 >
                   ${(fundraising?.fundraisingTotalAmount ?? 0).toFixed(2)}
                 </Text>
