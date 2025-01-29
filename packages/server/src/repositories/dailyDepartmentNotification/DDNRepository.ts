@@ -95,11 +95,11 @@ interface ParsedDDNInit<
   donors: {
     amount: number;
     relation: string | undefined;
+    giftKey: string | undefined;
     donor: {
       donorId: string;
       constituency: string | undefined;
       deceased: boolean;
-      giftKey: string | undefined;
       name: string | undefined;
       titleBar: string | undefined;
       degrees: string[];
@@ -337,15 +337,16 @@ export class DailyDepartmentNotificationRepository extends buildDefaultRepositor
     }
 
     const donors: ParsedDDNInit["donors"] = [];
+    let donorSummary = comment ?? "";
     if (donor1Id) {
       donors.push({
         amount: donor1Amount ?? 0,
         relation: donor1Relation,
+        giftKey: donor1GiftKey,
         donor: {
           donorId: donor1Id,
           constituency: donor1Constituency,
           deceased: donor1Deceased ?? false,
-          giftKey: donor1GiftKey,
           name: donor1Name,
           titleBar: donor1TitleBar,
           degrees: donor1Degrees ? donor1Degrees.split(", ") : [],
@@ -353,16 +354,17 @@ export class DailyDepartmentNotificationRepository extends buildDefaultRepositor
           pm: donor1Pm,
         },
       });
+      donorSummary += `${donor1Id}-${donor1GiftKey}`;
     }
     if (donor2Id) {
       donors.push({
         amount: donor2Amount ?? 0,
         relation: donor2Relation,
+        giftKey: donor2GiftKey,
         donor: {
           donorId: donor2Id,
           constituency: donor2Constituency,
           deceased: donor2Deceased ?? false,
-          giftKey: donor2GiftKey,
           name: donor2Name,
           titleBar: donor2TitleBar,
           degrees: donor2Degrees ? donor2Degrees.split(", ") : [],
@@ -370,6 +372,7 @@ export class DailyDepartmentNotificationRepository extends buildDefaultRepositor
           pm: donor2Pm,
         },
       });
+      donorSummary += `${donor2Id}-${donor2GiftKey}`;
     }
 
     return Ok({
@@ -380,6 +383,8 @@ export class DailyDepartmentNotificationRepository extends buildDefaultRepositor
         processDate: localDateToJs(processDate),
         effectiveDate: effectiveDate && localDateToJs(effectiveDate),
         transactionDate: transactionDate && localDateToJs(transactionDate),
+
+        donorSummary,
 
         accountName,
         accountNumber,
@@ -711,24 +716,19 @@ export class DailyDepartmentNotificationRepository extends buildDefaultRepositor
               logger.trace("Batch already exists", { batchId: row.batchId });
             }
 
-            const idSorter_processDate_batchId_solicitationCodeId_combinedAmount_comment =
-              {
-                idSorter: row.ddn.idSorter,
-                processDate: row.ddn.processDate,
-                batchId: batch.id,
-                solicitationCodeId: solicitationCode.id,
-                combinedAmount: row.ddn.combinedAmount,
-                comment: row.ddn.comment ?? "",
-              };
+            const uniques = {
+              idSorter: row.ddn.idSorter,
+              processDate: row.ddn.processDate,
+              batchId: batch.id,
+              solicitationCodeId: solicitationCode.id,
+              combinedAmount: row.ddn.combinedAmount,
+              donorSummary: row.ddn.donorSummary ?? null,
+            };
             const uniqueStr = `${
-              idSorter_processDate_batchId_solicitationCodeId_combinedAmount_comment.idSorter
-            }-${idSorter_processDate_batchId_solicitationCodeId_combinedAmount_comment.processDate.toString()}-${
-              idSorter_processDate_batchId_solicitationCodeId_combinedAmount_comment.batchId
-            }-${
-              idSorter_processDate_batchId_solicitationCodeId_combinedAmount_comment.solicitationCodeId
-            }-$${idSorter_processDate_batchId_solicitationCodeId_combinedAmount_comment.combinedAmount.toString()}-${
-              idSorter_processDate_batchId_solicitationCodeId_combinedAmount_comment.comment
-            }`;
+              uniques.idSorter
+            }-${uniques.processDate.toString()}-${uniques.batchId}-${
+              uniques.solicitationCodeId
+            }-$${uniques.combinedAmount.toString()}-${uniques.donorSummary}`;
             if (uniqueDDns.has(uniqueStr)) {
               return Err(
                 new InvalidArgumentError(
@@ -743,7 +743,8 @@ export class DailyDepartmentNotificationRepository extends buildDefaultRepositor
               // eslint-disable-next-line no-await-in-loop
               await prisma.dailyDepartmentNotification.upsert({
                 where: {
-                  idSorter_processDate_batchId_solicitationCodeId_combinedAmount_comment,
+                  idSorter_processDate_batchId_solicitationCodeId_combinedAmount_donorSummary:
+                    uniques,
                 },
                 create: {
                   ...row.ddn,
