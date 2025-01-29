@@ -2,7 +2,11 @@ import type { PrismaClient } from "@prisma/client";
 import type { Mock } from "vitest";
 import { vi } from "vitest";
 
-export function makePrismaMock() {
+import { prismaToken } from "#lib/typediTokens.js";
+
+import { testContainer } from "./testContainer.js";
+
+export function loadPrismaMock() {
   const mocksToClear: Mock[] = [];
 
   function makeMockFn() {
@@ -86,6 +90,8 @@ export function makePrismaMock() {
       return this as unknown as PrismaClient;
     },
   };
+
+  testContainer.setValue(prismaToken, prismaMock.prismaClient);
 
   return {
     prismaMock,

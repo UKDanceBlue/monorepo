@@ -10,12 +10,14 @@ import {
 } from "#lib/typediTokens.js";
 
 import type { EntryPoint } from "../EntryPoint.js";
+import { DotEnvEnvironmentService } from "../environment/DotEnvEnvironmentService.js";
 import { ApolloModule } from "./Apollo.js";
 import { ExpressModule } from "./Express.js";
 import { PortalModule } from "./Portal.js";
 import { SentryInstrumentation } from "./SentryInstrumentation.js";
 
 @Service([
+  DotEnvEnvironmentService,
   ApolloModule,
   ExpressModule,
   PortalModule,
@@ -27,6 +29,7 @@ import { SentryInstrumentation } from "./SentryInstrumentation.js";
 ])
 export class Server implements EntryPoint {
   constructor(
+    private readonly dotEnvEnvironmentService: DotEnvEnvironmentService,
     private readonly apolloModule: ApolloModule,
     private readonly expressModule: ExpressModule,
     private readonly portalModule: PortalModule,
@@ -38,6 +41,10 @@ export class Server implements EntryPoint {
   ) {}
 
   async start(): Promise<void> {
+    Sentry.setTag("state", "Environment Setup");
+
+    await this.dotEnvEnvironmentService.populate();
+
     const { logger } = await import("#logging/logger.js");
     logger.info(
       `Logger initialized with level "${this.loggingLevel}", writing log files to "${this.logDir}"`

@@ -14,8 +14,13 @@ export const instagramApiKeyToken = new Token<string>("INSTAGRAM_API_KEY");
 export const msOidcUrlToken = new Token<URL>("MS_OIDC_URL");
 export const msClientIdToken = new Token<string>("MS_CLIENT_ID");
 export const msClientSecretToken = new Token<string>("MS_CLIENT_SECRET");
-export const dbFundsApiKeyToken = new Token<string>("DBFUNDS_API_KEY");
-export const dbFundsApiOriginToken = new Token<string>("DBFUNDS_API_ORIGIN");
+export const dbFundsEnabledToken = new Token<boolean>("DBFUNDS_ENABLED");
+export const dbFundsApiKeyToken = new Token<string | undefined>(
+  "DBFUNDS_API_KEY"
+);
+export const dbFundsApiOriginToken = new Token<string | undefined>(
+  "DBFUNDS_API_ORIGIN"
+);
 export const maxFileSizeToken = new Token<number>("MAX_FILE_SIZE");
 export const servePathToken = new Token<string>("SERVE_PATH");
 export const uploadPathToken = new Token<string>("UPLOAD_PATH");
@@ -35,8 +40,9 @@ export interface Environment {
   msOidcUrl: URL;
   msClientId: string;
   msClientSecret: string;
-  // dbFundsApiKey: string;
-  // dbFundsApiOrigin: string;
+  dbFundsEnabled: boolean;
+  dbFundsApiKey?: string;
+  dbFundsApiOrigin?: string;
   maxFileSize: number;
   servePath: string;
   uploadPath: string;
@@ -55,8 +61,15 @@ export function setEnvironment(env: Environment) {
   Container.setValue(msOidcUrlToken, env.msOidcUrl);
   Container.setValue(msClientIdToken, env.msClientId);
   Container.setValue(msClientSecretToken, env.msClientSecret);
-  // Container.setValue(dbFundsApiKeyToken, env.dbFundsApiKey);
-  // Container.setValue(dbFundsApiOriginToken, env.dbFundsApiOrigin);
+  Container.setValue(dbFundsEnabledToken, env.dbFundsEnabled);
+  Container.setValue(
+    dbFundsApiKeyToken,
+    env.dbFundsEnabled ? env.dbFundsApiKey : undefined
+  );
+  Container.setValue(
+    dbFundsApiOriginToken,
+    env.dbFundsEnabled ? env.dbFundsApiOrigin : undefined
+  );
   Container.setValue(maxFileSizeToken, env.maxFileSize);
   Container.setValue(servePathToken, env.servePath);
   Container.setValue(uploadPathToken, env.uploadPath);
@@ -76,8 +89,9 @@ export function getEnvironment(): Environment {
     msOidcUrl: Container.get(msOidcUrlToken),
     msClientId: Container.get(msClientIdToken),
     msClientSecret: Container.get(msClientSecretToken),
-    // dbFundsApiKey: Container.get(dbFundsApiKeyToken),
-    // dbFundsApiOrigin: Container.get(dbFundsApiOriginToken),
+    dbFundsEnabled: Container.get(dbFundsEnabledToken),
+    dbFundsApiKey: Container.get(dbFundsApiKeyToken),
+    dbFundsApiOrigin: Container.get(dbFundsApiOriginToken),
     maxFileSize: Container.get(maxFileSizeToken),
     servePath: Container.get(servePathToken),
     uploadPath: Container.get(uploadPathToken),

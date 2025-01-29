@@ -12,6 +12,7 @@ import {
 } from "#lib/typediTokens.js";
 
 import { EntryPoint } from "./EntryPoint.js";
+import { DotEnvEnvironmentService } from "./environment/DotEnvEnvironmentService.js";
 
 // No top level imports that cause side effects should be used in this file
 // We want to control the order of execution
@@ -35,9 +36,17 @@ const { resolversList } = await import("#lib/resolversList.js");
 
 Container.setValue(isReplToken, true);
 
-@Service([])
+@Service([DotEnvEnvironmentService])
 export class Repl extends EntryPoint {
+  constructor(
+    private readonly dotEnvEnvironmentService: DotEnvEnvironmentService
+  ) {
+    super();
+  }
+
   async start(): Promise<void> {
+    await this.dotEnvEnvironmentService.populate();
+
     Container.setValue(isReplToken, true);
 
     const replServer = repl.start({

@@ -1,10 +1,10 @@
 import { beforeEach, describe, expect, it } from "vitest";
 
-import { makePrismaMock } from "../../testing/PrismaMock.js";
+import { loadPrismaMock } from "../../testing/PrismaMock.js";
 import { DeviceRepository } from "./DeviceRepository.js";
 
 describe("deviceRepository", () => {
-  const { prismaMock, resetMocks } = makePrismaMock();
+  const { prismaMock, resetMocks } = loadPrismaMock();
 
   beforeEach(() => {
     resetMocks();
