@@ -32,7 +32,10 @@ export {
   Result,
 } from "../relay.js";
 export * from "../resourceError.js";
+export * from "../scalars/Cursor.js";
+export * from "../scalars/DateTimeISO.js";
 export * from "../scalars/GlobalId.js";
+export * from "../scalars/MarathonYear.js";
 export * from "../scalars/Void.js";
 export { AuthIdPairResource as AuthIdPairNode } from "../types/AuthIdPair.js";
 export { EffectiveCommitteeRole } from "../types/EffectiveCommitteeRole.js";

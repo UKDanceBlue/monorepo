@@ -4,6 +4,7 @@ import {
   AccessControlAuthorized,
   ConfigurationNode,
   dateTimeFromSomething,
+  DateTimeScalar,
   GlobalIdScalar,
   SortDirection,
 } from "@ukdanceblue/common";
@@ -12,8 +13,11 @@ import {
   GetConfigurationResponse,
 } from "@ukdanceblue/common";
 import { ConcreteResult, NotFoundError } from "@ukdanceblue/common/error";
-import { Err, Ok } from "ts-results-es";
+import { readFile } from "fs/promises";
+import { DateTime } from "luxon";
+import { Err, None, Ok, type Option, Some } from "ts-results-es";
 import { Arg, Mutation, Query, Resolver } from "type-graphql";
+import { fileURLToPath } from "url";
 
 import { WithAuditLogging } from "#lib/logging/auditLogging.js";
 import { configurationModelToResource } from "#repositories/configuration/configurationModelToResource.js";
@@ -29,6 +33,18 @@ export class ConfigurationResolver
     private readonly configurationRepository: ConfigurationRepository
   ) {}
 
+  @Query(() => DateTimeScalar, { nullable: true })
+  async buildTimestamp(): Promise<Option<DateTime>> {
+    try {
+      const file = await readFile(
+        fileURLToPath(import.meta.resolve("../BUILD_TIME")),
+        "utf8"
+      );
+      return Some(DateTime.fromISO(file.trim()));
+    } catch (error) {
+      return None;
+    }
+  }
   @AccessControlAuthorized("readActive", ["every", "ConfigurationNode"])
   @Query(() => GetConfigurationResponse, {
     name: "activeConfiguration",

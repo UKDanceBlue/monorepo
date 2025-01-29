@@ -1381,6 +1381,7 @@ type Query {
 
   """Get a list of audit logs"""
   auditLogs(idSearch: NonEmptyString, page: PositiveInt = 1, pageSize: PositiveInt = 10, textSearch: NonEmptyString, typenameSearch: NonEmptyString): ListAuditLogsResponse!
+  buildTimestamp: LuxonDateTime
 
   """Get a particular configuration entry by UUID"""
   configuration(id: GlobalId!): ConfigurationNode!

@@ -28,3 +28,4 @@ local-uploads/*
 yarn-error.log
 *.session.sql
 /doc/
+packages/server/BUILD_DATE

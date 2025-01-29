@@ -1,10 +1,13 @@
 import { MoonOutlined, SunOutlined } from "@ant-design/icons";
 import { Button, Form, Modal, Select, Switch } from "antd";
+import { DateTime } from "luxon";
 import { useContext } from "react";
 
 import { marathonContext } from "#config/marathonContext.js";
 import { StorageManager, useStorageValue } from "#config/storage.js";
+import { graphql } from "#gql/index.js";
 import { useAuthorizationRequirement } from "#hooks/useLoginState.js";
+import { useTypedCustomQuery } from "#hooks/useTypedRefine.js";
 
 import { MasqueradeSelector } from "./MasqueradeSelector.js";
 
@@ -27,6 +30,15 @@ export const ConfigModal = ({
 
   const { setMarathon, marathon, loading, marathons } =
     useContext(marathonContext);
+
+  const { data } = useTypedCustomQuery({
+    document: graphql(/* GraphQL */ `
+      query GetBuildDate {
+        buildTimestamp
+      }
+    `),
+    props: {},
+  });
 
   return (
     <Modal open={open} onCancel={onClose} footer={null} title="Settings">
@@ -81,6 +93,16 @@ export const ConfigModal = ({
           ) : null}
         </Form.Item>
       </Form>
+      {data?.data.buildTimestamp && (
+        <div>
+          <p>
+            Build Date:{" "}
+            {DateTime.fromISO(data.data.buildTimestamp).toLocaleString(
+              DateTime.DATETIME_SHORT
+            )}
+          </p>
+        </div>
+      )}
     </Modal>
   );
 };
