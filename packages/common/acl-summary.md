@@ -147,10 +147,6 @@ This document lists the required permissions for each GraphQL endpoint in the Da
 **create** every FundraisingEntryNode.
 ### setFundraisingEntry
 **update** FundraisingEntryNode. with an id of _args.id_
-### rawFundraisingTotals
-**list** every FundraisingEntryNode.
-### rawFundraisingEntries
-**list** every FundraisingEntryNode.
 ## ImageResolver
 ### image
 **get** ImageNode. with an id of _args.id_

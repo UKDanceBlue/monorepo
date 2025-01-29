@@ -31,7 +31,6 @@ import { Route as PeopleBulkImport } from "./routes/people/bulk";
 import { Route as NotificationsCreateImport } from "./routes/notifications/create";
 import { Route as MarathonCreateImport } from "./routes/marathon/create";
 import { Route as FundraisingReportImport } from "./routes/fundraising/report";
-import { Route as FundraisingDbfundsImport } from "./routes/fundraising/dbfunds";
 import { Route as FundraisingCreateImport } from "./routes/fundraising/create";
 import { Route as EventsCreateImport } from "./routes/events/create";
 import { Route as AdminLogsImport } from "./routes/admin/logs";
@@ -175,12 +174,6 @@ const MarathonCreateRoute = MarathonCreateImport.update({
 const FundraisingReportRoute = FundraisingReportImport.update({
   id: "/fundraising/report",
   path: "/fundraising/report",
-  getParentRoute: () => rootRoute,
-} as any);
-
-const FundraisingDbfundsRoute = FundraisingDbfundsImport.update({
-  id: "/fundraising/dbfunds",
-  path: "/fundraising/dbfunds",
   getParentRoute: () => rootRoute,
 } as any);
 
@@ -372,13 +365,6 @@ declare module "@tanstack/react-router" {
       path: "/fundraising/create";
       fullPath: "/fundraising/create";
       preLoaderRoute: typeof FundraisingCreateImport;
-      parentRoute: typeof rootRoute;
-    };
-    "/fundraising/dbfunds": {
-      id: "/fundraising/dbfunds";
-      path: "/fundraising/dbfunds";
-      fullPath: "/fundraising/dbfunds";
-      preLoaderRoute: typeof FundraisingDbfundsImport;
       parentRoute: typeof rootRoute;
     };
     "/fundraising/report": {
@@ -700,7 +686,6 @@ export interface FileRoutesByFullPath {
   "/admin/logs": typeof AdminLogsRoute;
   "/events/create": typeof EventsCreateRoute;
   "/fundraising/create": typeof FundraisingCreateRoute;
-  "/fundraising/dbfunds": typeof FundraisingDbfundsRoute;
   "/fundraising/report": typeof FundraisingReportRoute;
   "/marathon/create": typeof MarathonCreateRoute;
   "/notifications/create": typeof NotificationsCreateRoute;
@@ -747,7 +732,6 @@ export interface FileRoutesByTo {
   "/admin/logs": typeof AdminLogsRoute;
   "/events/create": typeof EventsCreateRoute;
   "/fundraising/create": typeof FundraisingCreateRoute;
-  "/fundraising/dbfunds": typeof FundraisingDbfundsRoute;
   "/fundraising/report": typeof FundraisingReportRoute;
   "/marathon/create": typeof MarathonCreateRoute;
   "/notifications/create": typeof NotificationsCreateRoute;
@@ -794,7 +778,6 @@ export interface FileRoutesById {
   "/admin/logs": typeof AdminLogsRoute;
   "/events/create": typeof EventsCreateRoute;
   "/fundraising/create": typeof FundraisingCreateRoute;
-  "/fundraising/dbfunds": typeof FundraisingDbfundsRoute;
   "/fundraising/report": typeof FundraisingReportRoute;
   "/marathon/create": typeof MarathonCreateRoute;
   "/notifications/create": typeof NotificationsCreateRoute;
@@ -844,7 +827,6 @@ export interface FileRouteTypes {
     | "/admin/logs"
     | "/events/create"
     | "/fundraising/create"
-    | "/fundraising/dbfunds"
     | "/fundraising/report"
     | "/marathon/create"
     | "/notifications/create"
@@ -890,7 +872,6 @@ export interface FileRouteTypes {
     | "/admin/logs"
     | "/events/create"
     | "/fundraising/create"
-    | "/fundraising/dbfunds"
     | "/fundraising/report"
     | "/marathon/create"
     | "/notifications/create"
@@ -935,7 +916,6 @@ export interface FileRouteTypes {
     | "/admin/logs"
     | "/events/create"
     | "/fundraising/create"
-    | "/fundraising/dbfunds"
     | "/fundraising/report"
     | "/marathon/create"
     | "/notifications/create"
@@ -984,7 +964,6 @@ export interface RootRouteChildren {
   AdminLogsRoute: typeof AdminLogsRoute;
   EventsCreateRoute: typeof EventsCreateRoute;
   FundraisingCreateRoute: typeof FundraisingCreateRoute;
-  FundraisingDbfundsRoute: typeof FundraisingDbfundsRoute;
   FundraisingReportRoute: typeof FundraisingReportRoute;
   MarathonCreateRoute: typeof MarathonCreateRoute;
   NotificationsCreateRoute: typeof NotificationsCreateRoute;
@@ -1027,7 +1006,6 @@ const rootRouteChildren: RootRouteChildren = {
   AdminLogsRoute: AdminLogsRoute,
   EventsCreateRoute: EventsCreateRoute,
   FundraisingCreateRoute: FundraisingCreateRoute,
-  FundraisingDbfundsRoute: FundraisingDbfundsRoute,
   FundraisingReportRoute: FundraisingReportRoute,
   MarathonCreateRoute: MarathonCreateRoute,
   NotificationsCreateRoute: NotificationsCreateRoute,
@@ -1083,7 +1061,6 @@ export const routeTree = rootRoute
         "/admin/logs",
         "/events/create",
         "/fundraising/create",
-        "/fundraising/dbfunds",
         "/fundraising/report",
         "/marathon/create",
         "/notifications/create",
@@ -1132,9 +1109,6 @@ export const routeTree = rootRoute
     },
     "/fundraising/create": {
       "filePath": "fundraising/create.tsx"
-    },
-    "/fundraising/dbfunds": {
-      "filePath": "fundraising/dbfunds.tsx"
     },
     "/fundraising/report": {
       "filePath": "fundraising/report.tsx"

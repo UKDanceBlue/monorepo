@@ -64,19 +64,6 @@ export const refineResources = [
     list: "/fundraising/ddn",
   },
   {
-    name: "dbfunds",
-    meta: {
-      label: "DB Funds (Legacy)",
-      parent: "fundraising-group",
-      modelName: "FundraisingEntryNode",
-      menuWeight: 4,
-    },
-    create: "/fundraising/dbfunds/create",
-    edit: "/fundraising/dbfunds/:id/edit",
-    show: "/fundraising/dbfunds/:id",
-    list: "/fundraising/dbfunds",
-  },
-  {
     name: "fundraisingEntry",
     meta: {
       label: "Entries",

@@ -1671,8 +1671,6 @@ type Query {
     sortBy: [PointOpportunityResolverSort!]
   ): ListPointOpportunitiesResponse!
   pointOpportunity(id: GlobalId!): PointOpportunityNode!
-  rawFundraisingEntries(identifier: Int!, marathonYear: String!): String!
-  rawFundraisingTotals(marathonYear: String!): String!
 
   """
   The output of this query is not stable. Do not rely on an exact format.

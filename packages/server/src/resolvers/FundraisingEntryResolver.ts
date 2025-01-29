@@ -4,7 +4,6 @@ import {
   CreateFundraisingEntryInput,
   CrudResolver,
   type GlobalId,
-  type MarathonYearString,
   SetFundraisingEntryInput,
 } from "@ukdanceblue/common";
 import {
@@ -30,15 +29,12 @@ import {
   Arg,
   Args,
   FieldResolver,
-  Int,
   Mutation,
   Query,
   Resolver,
   Root,
 } from "type-graphql";
 
-import { DBFundsFundraisingProvider } from "#lib/fundraising/DbFundsProvider.js";
-import type { FundraisingProvider } from "#lib/fundraising/FundraisingProvider.js";
 import { WithAuditLogging } from "#lib/logging/auditLogging.js";
 import { dailyDepartmentNotificationModelToResource } from "#repositories/dailyDepartmentNotification/ddnModelToResource.js";
 import { fundraisingAssignmentModelToNode } from "#repositories/fundraising/fundraisingAssignmentModelToNode.js";
@@ -49,17 +45,12 @@ import type { AsyncRepositoryResult } from "#repositories/shared.js";
 import { SolicitationCodeRepository } from "#repositories/solicitationCode/SolicitationCodeRepository.js";
 
 @Resolver(() => FundraisingEntryNode)
-@Service([
-  DBFundsFundraisingProvider,
-  FundraisingEntryRepository,
-  SolicitationCodeRepository,
-])
+@Service([FundraisingEntryRepository, SolicitationCodeRepository])
 export class FundraisingEntryResolver
   implements
     CrudResolver<FundraisingEntryNode, "fundraisingEntry", "fundraisingEntries">
 {
   constructor(
-    private readonly fundraisingProvider: FundraisingProvider<number>,
     private readonly fundraisingEntryRepository: FundraisingEntryRepository,
     private readonly solicitationCodeRepository: SolicitationCodeRepository
   ) {}
@@ -219,37 +210,6 @@ export class FundraisingEntryResolver
       }
     );
     return entry.toAsyncResult().map(fundraisingEntryModelToNode).promise;
-  }
-
-  @AccessControlAuthorized("list", ["every", "FundraisingEntryNode"])
-  @Query(() => String)
-  async rawFundraisingTotals(
-    @Arg("marathonYear", () => String) marathonYear: MarathonYearString
-  ) {
-    const result = await this.fundraisingProvider.getTeams(marathonYear);
-    return result.map((data) => JSON.stringify(data));
-  }
-
-  @AccessControlAuthorized("list", ["every", "FundraisingEntryNode"])
-  @Query(() => String)
-  async rawFundraisingEntries(
-    @Arg("marathonYear", () => String) marathonYear: MarathonYearString,
-    @Arg("identifier", () => Int) identifier: number
-  ) {
-    const result = await this.fundraisingProvider.getTeamEntries(
-      marathonYear,
-      identifier
-    );
-    return result
-      .map((data) =>
-        data.map((val) => ({
-          donatedBy: val.donatedBy.unwrapOr(null),
-          donatedTo: val.donatedBy.unwrapOr(null),
-          donatedOn: val.donatedOn.toISO(),
-          amount: val.amount,
-        }))
-      )
-      .map((data) => JSON.stringify(data));
   }
 
   @FieldResolver(() => DailyDepartmentNotificationNode, { nullable: true })
