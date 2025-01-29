@@ -35,7 +35,7 @@ import {
 } from "type-graphql";
 
 import type { GraphQLContext } from "#auth/context.js";
-import { prismaToken } from "#lib/typediTokens.js";
+import { PrismaService } from "#lib/prisma.js";
 import { personModelToResource } from "#repositories/person/personModelToResource.js";
 import { PersonRepository } from "#repositories/person/PersonRepository.js";
 import { RepositoryError } from "#repositories/shared.js";
@@ -51,7 +51,7 @@ export class ListAuditLogsResponse extends AbstractGraphQLPaginatedResponse<Audi
 }
 
 @Resolver(() => AuditLogNode)
-@Service([prismaToken, PersonRepository, NodeResolver])
+@Service([PrismaService, PersonRepository, NodeResolver])
 export class AuditLogResolver {
   constructor(
     private readonly prisma: PrismaClient,

@@ -11,6 +11,7 @@ export const applicationPortToken = new Token<number>("APPLICATION_PORT");
 export const cookieSecretToken = new Token<string>("COOKIE_SECRET");
 export const jwtSecretToken = new Token<string>("JWT_SECRET");
 export const instagramApiKeyToken = new Token<string>("INSTAGRAM_API_KEY");
+export const expoApiKeyToken = new Token<string>("EXPO_ACCESS_TOKEN");
 export const msOidcUrlToken = new Token<URL>("MS_OIDC_URL");
 export const msClientIdToken = new Token<string>("MS_CLIENT_ID");
 export const msClientSecretToken = new Token<string>("MS_CLIENT_SECRET");
@@ -37,6 +38,7 @@ export interface Environment {
   cookieSecret: string;
   jwtSecret: string;
   instagramApiKey: string;
+  expoApiKey: string;
   msOidcUrl: URL;
   msClientId: string;
   msClientSecret: string;
@@ -58,6 +60,7 @@ export function setEnvironment(env: Environment) {
   Container.setValue(cookieSecretToken, env.cookieSecret);
   Container.setValue(jwtSecretToken, env.jwtSecret);
   Container.setValue(instagramApiKeyToken, env.instagramApiKey);
+  Container.setValue(expoApiKeyToken, env.expoApiKey);
   Container.setValue(msOidcUrlToken, env.msOidcUrl);
   Container.setValue(msClientIdToken, env.msClientId);
   Container.setValue(msClientSecretToken, env.msClientSecret);
@@ -86,6 +89,7 @@ export function getEnvironment(): Environment {
     cookieSecret: Container.get(cookieSecretToken),
     jwtSecret: Container.get(jwtSecretToken),
     instagramApiKey: Container.get(instagramApiKeyToken),
+    expoApiKey: Container.get(expoApiKeyToken),
     msOidcUrl: Container.get(msOidcUrlToken),
     msClientId: Container.get(msClientIdToken),
     msClientSecret: Container.get(msClientSecretToken),
@@ -101,4 +105,4 @@ export function getEnvironment(): Environment {
     isRepl: Container.get(isReplToken),
   };
 }
-export const prismaToken = new Token<PrismaClient>("PrismaClient");
+export const PrismaService = new Token<PrismaClient>("PrismaClient");

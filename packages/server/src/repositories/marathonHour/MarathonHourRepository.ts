@@ -7,7 +7,7 @@ import type {
 } from "@ukdanceblue/common";
 import { Ok } from "ts-results-es";
 
-import { prismaToken } from "#lib/typediTokens.js";
+import { PrismaService } from "#lib/prisma.js";
 import {
   buildDefaultRepository,
   type FindAndCountParams,
@@ -20,7 +20,7 @@ import type {
 
 type MarathonHourUniqueParam = SimpleUniqueParam;
 
-@Service([prismaToken])
+@Service([PrismaService])
 export class MarathonHourRepository extends buildDefaultRepository<
   PrismaClient["marathonHour"],
   MarathonHourUniqueParam,
@@ -57,7 +57,7 @@ export class MarathonHourRepository extends buildDefaultRepository<
     getOrderBy: (updatedAt) => Ok({ updatedAt }),
   },
 }) {
-  constructor(protected readonly prisma: PrismaClient) {
+  constructor(protected readonly prisma: PrismaService) {
     super(prisma);
   }
 

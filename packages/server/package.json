@@ -15,7 +15,6 @@
   "type": "module",
   "imports": {
     "#auth/*.js": "./dist/src/lib/auth/*.js",
-    "#environment": "./dist/src/environment.js",
     "#error/*.js": "./dist/src/lib/error/*.js",
     "#files/*.js": "./dist/src/lib/files/*.js",
     "#jobs/*.js": "./dist/src/jobs/*.js",

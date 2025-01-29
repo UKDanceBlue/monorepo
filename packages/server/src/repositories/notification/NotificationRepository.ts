@@ -9,7 +9,7 @@ import type {
 import { NotFoundError } from "@ukdanceblue/common/error";
 import { AsyncResult, Err, Ok, Result } from "ts-results-es";
 
-import { prismaToken } from "#lib/typediTokens.js";
+import { PrismaService } from "#lib/prisma.js";
 import {
   buildDefaultRepository,
   type FindAndCountParams,
@@ -22,7 +22,7 @@ import {
   type SimpleUniqueParam,
 } from "#repositories/shared.js";
 
-@Service([prismaToken])
+@Service([PrismaService])
 export class NotificationRepository extends buildDefaultRepository<
   PrismaClient["notification"],
   SimpleUniqueParam,
@@ -65,7 +65,7 @@ export class NotificationRepository extends buildDefaultRepository<
     getOrderBy: (updatedAt) => Ok({ updatedAt }),
   },
 }) {
-  constructor(protected readonly prisma: PrismaClient) {
+  constructor(protected readonly prisma: PrismaService) {
     super(prisma);
   }
 

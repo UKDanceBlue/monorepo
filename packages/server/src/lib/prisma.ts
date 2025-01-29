@@ -1,11 +1,10 @@
-import { Container } from "@freshgum/typedi";
+import { Service } from "@freshgum/typedi";
+import type { Prisma } from "@prisma/client";
 import { PrismaClient } from "@prisma/client";
 
-import { prismaToken } from "#lib/typediTokens.js";
 import { sqlLogger } from "#logging/sqlLogging.js";
-import { logger } from "#logging/standardLogging.js";
 
-const prisma = new PrismaClient({
+const options = {
   log: [
     {
       emit: "event",
@@ -24,27 +23,24 @@ const prisma = new PrismaClient({
       level: "query",
     },
   ],
-});
+} satisfies Prisma.PrismaClientOptions;
 
-prisma.$on("query", (e) => {
-  sqlLogger.sql(e.query);
-});
-prisma.$on("info", (e) => {
-  sqlLogger.info(e.message);
-});
-prisma.$on("warn", (e) => {
-  sqlLogger.warning(e.message);
-});
-prisma.$on("error", (e) => {
-  sqlLogger.error(e.message);
-});
+@Service([])
+export class PrismaService extends PrismaClient<typeof options> {
+  constructor() {
+    super(options);
 
-// Typescript takes a full second to make sure the types are correct, so we just cast to any to avoid that
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-Container.setValue(prismaToken, prisma as any);
-
-if (!Container.has(prismaToken)) {
-  throw new Error("PrismaClient not registered");
-} else {
-  logger.info("PrismaClient registered");
+    this.$on("query", (e) => {
+      sqlLogger.sql(e.query);
+    });
+    this.$on("info", (e) => {
+      sqlLogger.info(e.message);
+    });
+    this.$on("warn", (e) => {
+      sqlLogger.warning(e.message);
+    });
+    this.$on("error", (e) => {
+      sqlLogger.error(e.message);
+    });
+  }
 }

@@ -1,5 +1,5 @@
 import { type Container, Service } from "@freshgum/typedi";
-import { type Person, PrismaClient, Session } from "@prisma/client";
+import { type Person, Session } from "@prisma/client";
 import { AuthSource } from "@ukdanceblue/common";
 import {
   ErrorCode,
@@ -14,17 +14,14 @@ import jsonwebtoken from "jsonwebtoken";
 import { DateTime, Duration } from "luxon";
 import { AsyncResult, Err, Ok } from "ts-results-es";
 
-import {
-  isDevelopmentToken,
-  jwtSecretToken,
-  prismaToken,
-} from "#lib/typediTokens.js";
+import { isDevelopmentToken, jwtSecretToken } from "#lib/typediTokens.js";
 
 const { sign, verify } = jsonwebtoken;
 
 import * as Sentry from "@sentry/node";
 
 import { breadCrumbTrace, logger } from "#lib/logging/standardLogging.js";
+import { PrismaService } from "#lib/prisma.js";
 
 import { buildDefaultRepository } from "./Default.js";
 import {
@@ -49,10 +46,10 @@ declare global {
   }
 }
 
-@Service([prismaToken, jwtSecretToken, isDevelopmentToken, PersonRepository])
+@Service([PrismaService, jwtSecretToken, isDevelopmentToken, PersonRepository])
 export class SessionRepository extends buildDefaultRepository("Session", {}) {
   constructor(
-    protected readonly prisma: PrismaClient,
+    protected readonly prisma: PrismaService,
     private readonly jwtSecret: string,
     private readonly isDevelopment: boolean,
     private readonly personRepository: PersonRepository

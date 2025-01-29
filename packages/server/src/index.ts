@@ -7,9 +7,6 @@ import type { EntryPoint } from "./entry/EntryPoint.js";
 // No top level imports that cause side effects should be used in this file
 // We want to control the order of execution
 
-await import("#environment");
-await import("#lib/prisma.js");
-
 const entryPointStr = process.argv[process.argv.length - 1];
 
 let entryPoint: EntryPoint;

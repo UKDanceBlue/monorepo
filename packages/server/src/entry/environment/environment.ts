@@ -1,19 +1,14 @@
 // This file is first imported by index.ts
 
-import { Container } from "@freshgum/typedi";
-import { Expo } from "expo-server-sdk";
-
 import {
   type Environment,
   getEnvironment,
   setEnvironment,
 } from "#lib/typediTokens.js";
-import { expoServiceToken } from "#notification/expoServiceToken.js";
 
 export abstract class EnvironmentService {
   protected abstract getEnvObject(): Promise<
     Environment & {
-      expoAccessToken: string;
       NODE_ENV: string;
     }
   >;
@@ -27,10 +22,6 @@ export abstract class EnvironmentService {
       process.exit(1);
     }
 
-    Container.setValue(
-      expoServiceToken,
-      new Expo({ accessToken: env.expoAccessToken })
-    );
     setEnvironment(env);
     try {
       getEnvironment();

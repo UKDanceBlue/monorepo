@@ -1,5 +1,5 @@
 import { Container, Service } from "@freshgum/typedi";
-import type { Marathon, PrismaClient } from "@prisma/client";
+import type { Marathon } from "@prisma/client";
 import type { MarathonYearString } from "@ukdanceblue/common";
 import { type ExtendedError, NotFoundError } from "@ukdanceblue/common/error";
 import { CompositeError } from "@ukdanceblue/common/error";
@@ -9,7 +9,7 @@ import {
   DBFundsFundraisingProvider,
   type DBFundsFundraisingProviderError,
 } from "#lib/fundraising/DbFundsProvider.js";
-import { prismaToken } from "#lib/typediTokens.js";
+import { PrismaService } from "#lib/prisma.js";
 import { logger } from "#logging/standardLogging.js";
 import { DBFundsRepository } from "#repositories/fundraising/DBFundsRepository.js";
 import { JobStateRepository } from "#repositories/JobState.js";
@@ -18,13 +18,11 @@ import type { RepositoryError } from "#repositories/shared.js";
 
 import { Job } from "./Job.js";
 
-throw new Error("DBFunds sync should no longer be used");
-
 async function doSyncForMarathon(
   marathon: Marathon,
   fundraisingProvider: DBFundsFundraisingProvider,
   fundraisingRepository: DBFundsRepository,
-  prisma: PrismaClient
+  prisma: PrismaService
 ): Promise<Result<None, ExtendedError>> {
   const teams = await fundraisingProvider.getTeams(
     marathon.year as MarathonYearString
@@ -122,7 +120,54 @@ async function doSyncForMarathon(
   MarathonRepository,
   DBFundsRepository,
   DBFundsFundraisingProvider,
-  prismaToken,
+  PrismaService,
+])
+export class SyncDbFundsJob extends Job {
+  constructor(
+    protected readonly jobStateRepository: JobStateRepository,
+    protected readonly marathonRepository: MarathonRepository,
+    protected readonly fundraisingRepository: DBFundsRepository,
+    protected readonly fundraisingProvider: DBFundsFundraisingProvider,
+    protected readonly prisma: PrismaService
+  ) {
+    super("0 */30 * * * *", "sync-db-funds");
+  }
+
+  protected async run(): Promise<void> {
+    logger.info("Syncing DBFunds");
+    const result = await this.doSyncForActive();
+
+    result.unwrap();
+  }
+
+  async doSyncForActive(): Promise<Result<None, ExtendedError>> {
+    const marathonRepository = Container.get(MarathonRepository);
+
+    const activeMarathon = await new AsyncResult(
+      marathonRepository.findActiveMarathon()
+    ).andThen((activeMarathon) =>
+      activeMarathon.toResult(new NotFoundError("active marathon"))
+    ).promise;
+    if (activeMarathon.isErr()) {
+      return activeMarathon;
+    }
+    logger.trace("Found current marathon for DBFunds sync", activeMarathon);
+
+    return doSyncForMarathon(
+      activeMarathon.value,
+      this.fundraisingProvider,
+      this.fundraisingRepository,
+      this.prisma
+    );
+  }
+}
+
+@Service([
+  JobStateRepository,
+  MarathonRepository,
+  DBFundsRepository,
+  DBFundsFundraisingProvider,
+  PrismaService,
 ])
 export class SyncDbFundsPastJob extends Job {
   constructor(
@@ -130,7 +175,7 @@ export class SyncDbFundsPastJob extends Job {
     protected readonly marathonRepository: MarathonRepository,
     protected readonly fundraisingRepository: DBFundsRepository,
     protected readonly fundraisingProvider: DBFundsFundraisingProvider,
-    protected readonly prisma: PrismaClient
+    protected readonly prisma: PrismaService
   ) {
     super("0 0 */2 * * *", "sync-db-funds-past");
   }

@@ -14,7 +14,7 @@ import type { Interval } from "luxon";
 import { AsyncResult, Ok, Result } from "ts-results-es";
 
 import { externalUrlToImage } from "#lib/external-apis/externalUrlToImage.js";
-import { prismaToken } from "#lib/typediTokens.js";
+import { PrismaService } from "#lib/prisma.js";
 import {
   buildDefaultRepository,
   type CreateParams,
@@ -50,7 +50,7 @@ type EventFilterKeys = FieldsOfListQueryArgs<ListEventsArgs>;
 
 const defaultOptions = { include: { eventOccurrences: true } } as const;
 
-@Service([prismaToken])
+@Service([PrismaService])
 export class EventRepository extends buildDefaultRepository<
   PrismaClient["eventWithOccurrences"],
   UniqueEventParam,
@@ -156,7 +156,7 @@ export class EventRepository extends buildDefaultRepository<
       }),
   },
 }) {
-  constructor(protected readonly prisma: PrismaClient) {
+  constructor(protected readonly prisma: PrismaService) {
     super(prisma);
   }
 

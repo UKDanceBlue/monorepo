@@ -16,7 +16,7 @@ import { ActionDeniedError, NotFoundError } from "@ukdanceblue/common/error";
 import type { Result } from "ts-results-es";
 import { Err, None, Ok } from "ts-results-es";
 
-import { prismaToken } from "#lib/typediTokens.js";
+import { PrismaService } from "#lib/prisma.js";
 import {
   buildDefaultRepository,
   type FindAndCountParams,
@@ -42,7 +42,7 @@ export type SolicitationCodeUniqueParam =
       prefix: string;
     };
 
-@Service([prismaToken])
+@Service([PrismaService])
 export class SolicitationCodeRepository extends buildDefaultRepository<
   PrismaClient["solicitationCode"],
   SolicitationCodeUniqueParam,
@@ -74,7 +74,7 @@ export class SolicitationCodeRepository extends buildDefaultRepository<
     getWhere: (updatedAt) => Ok({ updatedAt }),
   },
 }) {
-  constructor(protected readonly prisma: PrismaClient) {
+  constructor(protected readonly prisma: PrismaService) {
     super(prisma);
   }
 

@@ -44,7 +44,7 @@ import type {
 } from "@ukdanceblue/common";
 import { Ok } from "ts-results-es";
 
-import { prismaToken } from "#lib/typediTokens.js";
+import { PrismaService } from "#lib/prisma.js";
 import {
   buildDefaultRepository,
   type FindAndCountParams,
@@ -56,7 +56,7 @@ import type {
   SimpleUniqueParam,
 } from "#repositories/shared.js";
 
-@Service([prismaToken, NotificationRepository])
+@Service([PrismaService, NotificationRepository])
 export class NotificationDeliveryRepository extends buildDefaultRepository<
   PrismaClient["notificationDelivery"],
   SimpleUniqueParam,
@@ -84,7 +84,7 @@ export class NotificationDeliveryRepository extends buildDefaultRepository<
   },
 }) {
   constructor(
-    protected readonly prisma: PrismaClient,
+    protected readonly prisma: PrismaService,
     private readonly notificationRepository: NotificationRepository
   ) {
     super(prisma);

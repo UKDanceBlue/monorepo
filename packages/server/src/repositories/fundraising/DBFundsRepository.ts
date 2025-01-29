@@ -35,9 +35,9 @@ export type UniqueDbFundsTeamParam =
       marathon: { id: number };
     };
 
-import { prismaToken } from "#lib/typediTokens.js";
+import { PrismaService } from "#lib/prisma.js";
 
-@Service([prismaToken, MarathonRepository])
+@Service([PrismaService, MarathonRepository])
 export class DBFundsRepository {
   constructor(
     private readonly prisma: PrismaClient,

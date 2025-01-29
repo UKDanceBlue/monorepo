@@ -44,7 +44,7 @@ import {
 } from "ts-results-es";
 
 import { findPersonForLogin } from "#auth/findPersonForLogin.js";
-import { prismaToken } from "#lib/typediTokens.js";
+import { PrismaService } from "#lib/prisma.js";
 import { CommitteeRepository } from "#repositories/committee/CommitteeRepository.js";
 import {
   buildDefaultRepository,
@@ -74,7 +74,7 @@ export type UniquePersonParam =
     };
 
 @Service([
-  prismaToken,
+  PrismaService,
   MembershipRepository,
   CommitteeRepository,
   MarathonRepository,
@@ -129,7 +129,7 @@ export class PersonRepository extends buildDefaultRepository<
   },
 }) {
   constructor(
-    protected readonly prisma: PrismaClient,
+    protected readonly prisma: PrismaService,
     private membershipRepository: MembershipRepository,
     private committeeRepository: CommitteeRepository,
     private marathonRepository: MarathonRepository

@@ -8,7 +8,7 @@ import type {
 import { NotFoundError, optionOf } from "@ukdanceblue/common/error";
 import { Err, Ok, Option, Result } from "ts-results-es";
 
-import { prismaToken } from "#lib/typediTokens.js";
+import { PrismaService } from "#lib/prisma.js";
 import {
   buildDefaultRepository,
   type FindAndCountParams,
@@ -23,7 +23,7 @@ import {
 
 export type UniqueMarathonParam = SimpleUniqueParam | { year: string };
 
-@Service([prismaToken])
+@Service([PrismaService])
 export class MarathonRepository extends buildDefaultRepository<
   PrismaClient["marathon"],
   UniqueMarathonParam,
@@ -51,7 +51,7 @@ export class MarathonRepository extends buildDefaultRepository<
     getOrderBy: (updatedAt) => Ok({ updatedAt }),
   },
 }) {
-  constructor(protected readonly prisma: PrismaClient) {
+  constructor(protected readonly prisma: PrismaService) {
     super(prisma);
   }
 

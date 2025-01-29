@@ -10,7 +10,7 @@ type UniqueImageParam = SimpleUniqueParam;
 import type { DefaultArgs } from "@prisma/client/runtime/library";
 import { Ok } from "ts-results-es";
 
-import { prismaToken } from "#lib/typediTokens.js";
+import { PrismaService } from "#lib/prisma.js";
 import {
   buildDefaultRepository,
   type FindAndCountParams,
@@ -23,7 +23,7 @@ import type {
 
 const imageRepositoryInclude = { file: true };
 
-@Service([prismaToken])
+@Service([PrismaService])
 export class ImageRepository extends buildDefaultRepository<
   PrismaClient["image"],
   UniqueImageParam,
@@ -52,7 +52,7 @@ export class ImageRepository extends buildDefaultRepository<
     getWhere: (placeholder) => Ok({ updatedAt: placeholder }),
   },
 }) {
-  constructor(protected readonly prisma: PrismaClient) {
+  constructor(protected readonly prisma: PrismaService) {
     super(prisma);
   }
 

@@ -4,9 +4,9 @@ import type { MIMEType } from "util";
 
 type UniqueParam = { id: number } | { uuid: string };
 
-import { prismaToken } from "#lib/typediTokens.js";
+import { PrismaService } from "#lib/prisma.js";
 
-@Service([prismaToken])
+@Service([PrismaService])
 /**
  * This class should not be directly accessed by API routes, but rather by the FileManager class which keeps track of the storage provider.
  */

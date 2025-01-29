@@ -1,18 +1,17 @@
 /* eslint-disable no-await-in-loop */
 import { Service } from "@freshgum/typedi";
-import type { PrismaClient } from "@prisma/client";
 
-import { prismaToken } from "#lib/typediTokens.js";
+import { PrismaService } from "#lib/prisma.js";
 import { logger } from "#logging/standardLogging.js";
 import { JobStateRepository } from "#repositories/JobState.js";
 
 import { Job } from "./Job.js";
 
-@Service([JobStateRepository, prismaToken])
+@Service([JobStateRepository, PrismaService])
 export class HousekeepingJob extends Job {
   constructor(
     protected readonly jobStateRepository: JobStateRepository,
-    protected readonly prisma: PrismaClient
+    protected readonly prisma: PrismaService
   ) {
     super("1 0 * * * *", "housekeeping");
   }

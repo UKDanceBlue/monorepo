@@ -15,13 +15,13 @@ import { Err, Ok } from "ts-results-es";
 import { Args, Query, Resolver } from "type-graphql";
 
 import { WithAuditLogging } from "#lib/logging/auditLogging.js";
-import { prismaToken } from "#lib/typediTokens.js";
+import { PrismaService } from "#lib/prisma.js";
 
 /**
  * This resolver makes direct queries to the database to generate reports, it is the exception to the rule of using repositories.
  */
 @Resolver(() => Report)
-@Service([prismaToken])
+@Service([PrismaService])
 export class ReportResolver {
   constructor(private readonly prisma: PrismaClient) {}
 

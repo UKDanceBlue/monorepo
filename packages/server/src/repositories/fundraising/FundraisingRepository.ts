@@ -32,7 +32,7 @@ import {
 } from "@ukdanceblue/common/error";
 import { Err, None, Ok, Option, Result, Some } from "ts-results-es";
 
-import { prismaToken } from "#lib/typediTokens.js";
+import { PrismaService } from "#lib/prisma.js";
 import {
   buildDefaultRepository,
   type CreateParams,
@@ -68,7 +68,7 @@ export type WideFundraisingEntryWithMeta = FundraisingEntryWithMeta & {
 export type FundraisingEntryUniqueParam = SimpleUniqueParam;
 export type FundraisingAssignmentUniqueParam = SimpleUniqueParam;
 
-@Service([prismaToken, SolicitationCodeRepository, PersonRepository])
+@Service([PrismaService, SolicitationCodeRepository, PersonRepository])
 export class FundraisingEntryRepository extends buildDefaultRepository<
   PrismaClient["fundraisingEntryWithMeta"],
   FundraisingEntryUniqueParam,
@@ -115,7 +115,7 @@ export class FundraisingEntryRepository extends buildDefaultRepository<
   },
 }) {
   constructor(
-    protected readonly prisma: PrismaClient,
+    protected readonly prisma: PrismaService,
     private readonly solicitationCodeRepository: SolicitationCodeRepository,
     private readonly personRepository: PersonRepository
   ) {

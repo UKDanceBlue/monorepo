@@ -12,9 +12,7 @@ import { EnvironmentService } from "./environment.js";
 
 @Service({ scope: "singleton" }, [])
 export abstract class DotEnvEnvironmentService extends EnvironmentService {
-  protected async getEnvObject(): Promise<
-    Environment & { expoAccessToken: string; NODE_ENV: string }
-  > {
+  protected async getEnvObject(): Promise<Environment & { NODE_ENV: string }> {
     const rawEnvironment: Record<string, string | undefined> = structuredClone(
       process.env
     );
@@ -143,7 +141,7 @@ export abstract class DotEnvEnvironmentService extends EnvironmentService {
     // Save values to the container
     return {
       NODE_ENV,
-      expoAccessToken: await EXPO_ACCESS_TOKEN,
+      expoApiKey: await EXPO_ACCESS_TOKEN,
       loggingLevel: (await LOGGING_LEVEL) as SyslogLevels,
       applicationPort,
       cookieSecret: await COOKIE_SECRET,

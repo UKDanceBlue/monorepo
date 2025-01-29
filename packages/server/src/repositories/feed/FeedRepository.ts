@@ -3,9 +3,9 @@ import { FeedItem, Prisma, PrismaClient } from "@prisma/client";
 
 type UniqueParam = { id: number } | { uuid: string };
 
-import { prismaToken } from "#lib/typediTokens.js";
+import { PrismaService } from "#lib/prisma.js";
 
-@Service([prismaToken])
+@Service([PrismaService])
 export class FeedRepository {
   constructor(private prisma: PrismaClient) {}
 

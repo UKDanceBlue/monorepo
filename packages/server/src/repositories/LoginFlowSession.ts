@@ -5,9 +5,9 @@ import { randomPKCECodeVerifier } from "openid-client";
 
 type LoginFlowSessionUniqueParam = { id: number } | { uuid: string };
 
-import { prismaToken } from "#lib/typediTokens.js";
+import { PrismaService } from "#lib/prisma.js";
 
-@Service([prismaToken])
+@Service([PrismaService])
 export class LoginFlowRepository {
   constructor(private prisma: PrismaClient) {}
 

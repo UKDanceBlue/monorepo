@@ -8,7 +8,7 @@ import {
   isReplToken,
   logDirToken,
   loggingLevelToken,
-  prismaToken,
+  PrismaService,
 } from "#lib/typediTokens.js";
 
 import { EntryPoint } from "./EntryPoint.js";
@@ -61,7 +61,7 @@ export class Repl extends EntryPoint {
 
     replServer.context.getService = Container.get.bind(Container);
 
-    replServer.context.prisma = Container.get(prismaToken);
+    replServer.context.prisma = Container.get(PrismaService);
 
     replServer.context.env = getEnvironment();
 

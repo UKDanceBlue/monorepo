@@ -1,10 +1,10 @@
 import { Service } from "@freshgum/typedi";
 import { PrismaClient } from "@prisma/client";
 
-import { prismaToken } from "#lib/typediTokens.js";
+import { PrismaService } from "#lib/prisma.js";
 import { RouterService } from "#routes/RouteService.js";
 
-@Service([prismaToken])
+@Service([PrismaService])
 export default class HealthCheckRouter extends RouterService {
   constructor(prisma: PrismaClient) {
     super("/healthcheck");

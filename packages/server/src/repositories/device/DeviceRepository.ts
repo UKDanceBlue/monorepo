@@ -20,14 +20,14 @@ type DeviceFields = FieldsOfListQueryArgs<ListDevicesArgs>;
 
 import type { DefaultArgs } from "@prisma/client/runtime/library";
 
-import { prismaToken } from "#lib/typediTokens.js";
+import { PrismaService } from "#lib/prisma.js";
 import {
   buildDefaultRepository,
   type FindAndCountParams,
   type FindAndCountResult,
 } from "#repositories/Default.js";
 
-@Service([prismaToken, PersonRepository])
+@Service([PrismaService, PersonRepository])
 export class DeviceRepository extends buildDefaultRepository<
   PrismaClient["device"],
   SimpleUniqueParam,
@@ -58,7 +58,7 @@ export class DeviceRepository extends buildDefaultRepository<
   },
 }) {
   constructor(
-    protected readonly prisma: PrismaClient,
+    protected readonly prisma: PrismaService,
     private personRepository: PersonRepository
   ) {
     super(prisma);

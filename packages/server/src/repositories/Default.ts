@@ -17,6 +17,7 @@ import { Err, Ok } from "ts-results-es";
 import { isPromise } from "util/types";
 
 import { toPrismaError } from "#error/prisma.js";
+import type { PrismaService } from "#lib/prisma.js";
 import {
   type FieldLookup,
   type FindManyParams,
@@ -163,7 +164,7 @@ export function buildDefaultRepository<
       fieldLookup
     ) as Field[];
 
-    constructor(protected readonly prisma: PrismaClient) {
+    constructor(protected readonly prisma: PrismaService) {
       // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
       Container.setValue(`${tableName}Repository` as string, this);
     }

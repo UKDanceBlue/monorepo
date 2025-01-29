@@ -16,7 +16,7 @@ import { ConcreteResult, optionOf } from "@ukdanceblue/common/error";
 import { DateTime } from "luxon";
 import { None, Ok, Option, Result, Some } from "ts-results-es";
 
-import { prismaToken } from "#lib/typediTokens.js";
+import { PrismaService } from "#lib/prisma.js";
 import {
   buildDefaultRepository,
   type FindAndCountParams,
@@ -32,7 +32,7 @@ import {
 
 type TeamUniqueParam = SimpleUniqueParam;
 
-@Service([prismaToken])
+@Service([PrismaService])
 export class TeamRepository extends buildDefaultRepository<
   PrismaClient["teamWithMeta"],
   TeamUniqueParam,
@@ -60,7 +60,7 @@ export class TeamRepository extends buildDefaultRepository<
     getWhere: (totalPoints) => Ok({ totalPoints }),
   },
 }) {
-  constructor(protected readonly prisma: PrismaClient) {
+  constructor(protected readonly prisma: PrismaService) {
     super(prisma);
   }
 

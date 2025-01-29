@@ -11,7 +11,7 @@ import type {
 } from "@ukdanceblue/common";
 import { Ok } from "ts-results-es";
 
-import { prismaToken } from "#lib/typediTokens.js";
+import { PrismaService } from "#lib/prisma.js";
 import {
   buildDefaultRepository,
   type FindAndCountParams,
@@ -23,7 +23,7 @@ import {
   SimpleUniqueParam,
 } from "#repositories/shared.js";
 
-@Service([prismaToken])
+@Service([PrismaService])
 export class PointOpportunityRepository extends buildDefaultRepository<
   PrismaClient["pointOpportunity"],
   SimpleUniqueParam,
@@ -55,7 +55,7 @@ export class PointOpportunityRepository extends buildDefaultRepository<
     getOrderBy: (updatedAt) => Ok({ updatedAt }),
   },
 }) {
-  constructor(protected readonly prisma: PrismaClient) {
+  constructor(protected readonly prisma: PrismaService) {
     super(prisma);
   }
 

@@ -2,7 +2,7 @@ import type { PrismaClient } from "@prisma/client";
 import type { Mock } from "vitest";
 import { vi } from "vitest";
 
-import { prismaToken } from "#lib/typediTokens.js";
+import { PrismaService } from "#lib/prisma.js";
 
 import { testContainer } from "./testContainer.js";
 
@@ -91,7 +91,15 @@ export function loadPrismaMock() {
     },
   };
 
-  testContainer.setValue(prismaToken, prismaMock.prismaClient);
+  testContainer.set(
+    {
+      id: PrismaService,
+      type: null,
+      value: prismaMock.prismaClient,
+      container: testContainer,
+    },
+    []
+  );
 
   return {
     prismaMock,

@@ -18,14 +18,14 @@ type ConfigurationKeys =
 import type { DefaultArgs } from "@prisma/client/runtime/library";
 import { Ok } from "ts-results-es";
 
-import { prismaToken } from "#lib/typediTokens.js";
+import { PrismaService } from "#lib/prisma.js";
 import {
   buildDefaultRepository,
   type FindAndCountParams,
   type FindAndCountResult,
 } from "#repositories/Default.js";
 
-@Service([prismaToken])
+@Service([PrismaService])
 export class ConfigurationRepository extends buildDefaultRepository<
   PrismaClient["configuration"],
   SimpleUniqueParam,
@@ -57,7 +57,7 @@ export class ConfigurationRepository extends buildDefaultRepository<
     getWhere: (value) => Ok({ updatedAt: value }),
   },
 }) {
-  constructor(protected readonly prisma: PrismaClient) {
+  constructor(protected readonly prisma: PrismaService) {
     super(prisma);
   }
 

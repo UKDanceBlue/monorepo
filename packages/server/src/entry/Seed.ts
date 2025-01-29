@@ -9,7 +9,7 @@ import {
   TeamType,
 } from "@ukdanceblue/common";
 
-import { prismaToken } from "#lib/typediTokens.js";
+import { PrismaService } from "#lib/prisma.js";
 
 import { EntryPoint } from "./EntryPoint.js";
 
@@ -41,7 +41,7 @@ const { TeamRepository } = await import("#repositories/team/TeamRepository.js");
   EventRepository,
   ImageRepository,
   TeamRepository,
-  prismaToken,
+  PrismaService,
 ])
 export class Seed extends EntryPoint {
   constructor(

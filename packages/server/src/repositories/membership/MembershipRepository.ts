@@ -12,16 +12,16 @@ import {
 
 type UniqueMembershipParam = { id: number } | { uuid: string };
 
-import { prismaToken } from "#lib/typediTokens.js";
+import { PrismaService } from "#lib/prisma.js";
 import { buildDefaultRepository } from "#repositories/Default.js";
 
-@Service([prismaToken])
+@Service([PrismaService])
 export class MembershipRepository extends buildDefaultRepository<
   PrismaClient["membership"],
   SimpleUniqueParam,
   never
 >("Membership", {}) {
-  constructor(protected readonly prisma: PrismaClient) {
+  constructor(protected readonly prisma: PrismaService) {
     super(prisma);
   }
 

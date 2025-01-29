@@ -19,7 +19,7 @@ import { InvalidArgumentError, NotFoundError } from "@ukdanceblue/common/error";
 import { Err, None, Ok, Option, Result, Some } from "ts-results-es";
 
 import { logger } from "#lib/logging/standardLogging.js";
-import { prismaToken } from "#lib/typediTokens.js";
+import { PrismaService } from "#lib/prisma.js";
 import {
   buildDefaultRepository,
   type FindAndCountParams,
@@ -124,7 +124,7 @@ const ddnInclude = {
   },
 } as const satisfies Prisma.DailyDepartmentNotificationInclude;
 
-@Service([prismaToken])
+@Service([PrismaService])
 export class DailyDepartmentNotificationRepository extends buildDefaultRepository<
   PrismaClient["dailyDepartmentNotification"],
   UniqueDailyDepartmentNotificationParam,
@@ -183,7 +183,7 @@ export class DailyDepartmentNotificationRepository extends buildDefaultRepositor
     searchable: true,
   },
 }) {
-  constructor(protected readonly prisma: PrismaClient) {
+  constructor(protected readonly prisma: PrismaService) {
     super(prisma);
   }
 
