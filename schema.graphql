@@ -180,18 +180,12 @@ input CreateFeedInput {
 
 input CreateFundraisingEntryInput {
   amount: Float!
-  amountOverride: Float
   batchType: BatchType!
-  batchTypeOverride: BatchType
   donatedBy: NonEmptyString
-  donatedByOverride: NonEmptyString
   donatedOn: LocalDate
-  donatedOnOverride: LocalDate
   donatedTo: NonEmptyString
-  donatedToOverride: NonEmptyString
   notes: NonEmptyString
   solicitationCodeId: GlobalId!
-  solicitationCodeOverrideId: GlobalId
 }
 
 input CreateImageInput {
