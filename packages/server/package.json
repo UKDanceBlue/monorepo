@@ -37,7 +37,7 @@
     "start": "node --import ./dist/src/entry/server/initSentry.js --enable-source-maps ./dist/src/index.js start",
     "repl": "node --enable-source-maps ./dist/src/index.js repl",
     "test": "jest",
-    "build-time": "date -Iminutes > ./dist/src/BUILD_TIME"
+    "build-time": "mkdir -p ./dist/src && date -Iminutes > ./dist/src/BUILD_TIME"
   },
   "dependencies": {
     "@apollo/server": "^4.11.3",
