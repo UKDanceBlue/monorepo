@@ -230,4 +230,32 @@ export class MembershipRepository extends buildDefaultRepository<
       return handleRepositoryError(error);
     }
   }
+
+  async totalPointsFromMembership(
+    param: SimpleUniqueParam
+  ): Promise<Result<number, RepositoryError>> {
+    try {
+      const points = await this.prisma.pointEntry.aggregate({
+        where: {
+          person: {
+            memberships: {
+              some: param,
+            },
+          },
+          team: {
+            memberships: {
+              some: param,
+            },
+          },
+        },
+        _sum: {
+          points: true,
+        },
+      });
+
+      return Ok(points._sum.points ?? 0);
+    } catch (error) {
+      return handleRepositoryError(error);
+    }
+  }
 }

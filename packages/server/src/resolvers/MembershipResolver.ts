@@ -6,6 +6,7 @@ import {
   TeamNode,
 } from "@ukdanceblue/common";
 import { ConcreteResult } from "@ukdanceblue/common/error";
+import { GraphQLNonNegativeInt } from "graphql-scalars";
 import { AsyncResult } from "ts-results-es";
 import { FieldResolver, Resolver, Root } from "type-graphql";
 
@@ -61,6 +62,15 @@ export class MembershipResolver {
     return new AsyncResult(
       this.membershipRepository.findMembershipByUnique({ uuid: id })
     ).map((row) => row.committeeRole).promise;
+  }
+
+  @FieldResolver(() => GraphQLNonNegativeInt)
+  async points(
+    @Root() { id: { id } }: MembershipNode
+  ): Promise<ConcreteResult<number>> {
+    return new AsyncResult(
+      this.membershipRepository.totalPointsFromMembership({ uuid: id })
+    ).promise;
   }
 
   // TODO: Add a field resolver for the amount of points someone has for this membership

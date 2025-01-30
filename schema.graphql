@@ -119,6 +119,7 @@ type CommitteeMembershipNode implements Node {
   id: GlobalId!
   identifier: CommitteeIdentifier!
   person: PersonNode!
+  points: NonNegativeInt!
   position: MembershipPositionType!
   role: CommitteeRole!
   team: TeamNode!
@@ -966,6 +967,7 @@ type MembershipNode implements Node {
   createdAt: LuxonDateTime
   id: GlobalId!
   person: PersonNode!
+  points: NonNegativeInt!
   position: MembershipPositionType!
   team: TeamNode!
   text: String!

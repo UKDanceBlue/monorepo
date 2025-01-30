@@ -1,7 +1,6 @@
 import { FontAwesome5 } from "@expo/vector-icons";
 import { MembershipPositionType } from "@ukdanceblue/common";
 import { Center, Text } from "native-base";
-import { useEffect, useState } from "react";
 import { useWindowDimensions } from "react-native";
 
 import type { StandingType } from "@/common-types/StandingType";
@@ -16,20 +15,15 @@ export const MyTeamFragment = graphql(/* GraphQL */ `
     name
     totalPoints
     fundraisingTotalAmount
-    pointEntries {
-      personFrom {
+    members {
+      id
+      position
+      person {
         id
         name
         linkblue
       }
       points
-    }
-    members {
-      position
-      person {
-        linkblue
-        name
-      }
     }
   }
 `);
@@ -59,52 +53,20 @@ const TeamScreen = ({
   refresh: () => void;
   showFundraisingButton: boolean;
 }) => {
+  const { width: screenWidth } = useWindowDimensions();
+
   const team = readFragment(MyTeamFragment, myTeamFragment);
 
-  const [teamStandings, setTeamStandings] = useState<StandingType[]>([]);
-
-  useEffect(() => {
-    if (team?.pointEntries == null) {
-      setTeamStandings([]);
-      return;
-    } else {
-      const entriesRecord = new Map<string, StandingType>();
-      for (const entry of team.pointEntries) {
-        const { personFrom, points } = entry;
-        const { id: uuid, name, linkblue } = personFrom ?? {};
-        if (uuid) {
-          const existing = entriesRecord.get(uuid);
-          if (existing == null) {
-            entriesRecord.set(uuid, {
-              id: uuid,
-              name: name ?? linkblue ?? "Unknown",
-              highlighted: uuid === userUuid,
-              points,
-            });
-          } else {
-            existing.points += points;
-          }
-        } else {
-          const existing = entriesRecord.get("%TEAM%");
-          if (existing == null) {
-            entriesRecord.set("%TEAM%", {
-              id: "%TEAM%",
-              name: "Team",
-              highlighted: false,
-              points,
-            });
-          } else {
-            existing.points += points;
-          }
-        }
-      }
-      setTeamStandings(
-        [...entriesRecord.values()].sort((a, b) => b.points - a.points)
-      );
-    }
-  }, [team?.pointEntries, userUuid]);
-
-  const { width: screenWidth } = useWindowDimensions();
+  const teamStandings: StandingType[] = [];
+  for (const member of team?.members ?? []) {
+    teamStandings.push({
+      id: member.person.id,
+      name: member.person.name ?? member.person.linkblue ?? "Unknown",
+      highlighted: member.person.id === userUuid,
+      points: member.points,
+    });
+  }
+  teamStandings.sort((a, b) => b.points - a.points);
 
   if (team == null) {
     return (
