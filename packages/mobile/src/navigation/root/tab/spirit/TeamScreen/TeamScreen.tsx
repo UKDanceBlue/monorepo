@@ -4,8 +4,7 @@ import { Center, Text } from "native-base";
 import { useWindowDimensions } from "react-native";
 
 import type { StandingType } from "@/common-types/StandingType";
-import type { FragmentOf } from "@/graphql/index";
-import { graphql, readFragment } from "@/graphql/index";
+import { type FragmentOf, graphql, readFragment } from "@/graphql/index";
 
 import TeamInformation from "./TeamInformation";
 
