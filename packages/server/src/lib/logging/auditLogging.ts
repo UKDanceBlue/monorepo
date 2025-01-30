@@ -15,54 +15,11 @@ import {
   createMethodMiddlewareDecorator,
   getMetadataStorage,
 } from "type-graphql";
-import type { LeveledLogMethod, Logger } from "winston";
-import { createLogger, format, transports } from "winston";
 
 import type { GraphQLContext } from "#auth/context.js";
-import { logDirToken, PrismaService } from "#lib/typediTokens.js";
-import { isDevelopmentToken } from "#lib/typediTokens.js";
+import { PrismaService } from "#lib/typediTokens.js";
 
 import { logger } from "./standardLogging.js";
-
-const logDir = Container.get(logDirToken);
-
-export interface AuditLogger extends Logger {
-  action: (
-    message: string,
-    meta: {
-      details?: PrimitiveObject;
-      userId?: string | number;
-      subjectGlobalId?: string | GlobalId;
-    }
-  ) => void;
-
-  info: LeveledLogMethod;
-  warn: never;
-  help: never;
-  data: never;
-  debug: never;
-  prompt: never;
-  http: never;
-  verbose: never;
-  input: never;
-  silly: never;
-  emerg: never;
-  alert: never;
-  crit: never;
-  warning: never;
-  notice: never;
-}
-
-export const auditLoggerFileName = "audit.log.json";
-
-const fileTransport = new transports.File({
-  filename: auditLoggerFileName,
-  dirname: logDir,
-  silent: logDir === "TEST",
-  maxsize: 1_000_000,
-  maxFiles: 3,
-  format: format.combine(format.timestamp(), format.json()),
-});
 
 const writeAuditLog = (
   message: string,
@@ -86,18 +43,6 @@ const writeAuditLog = (
         : undefined,
     },
   });
-
-const isDevelopment = Container.get(isDevelopmentToken);
-const auditLogger = createLogger({
-  silent: !isDevelopment,
-  transports: [fileTransport],
-  levels: {
-    info: 6,
-    action: 3,
-  },
-}) as AuditLogger;
-
-auditLogger.info("Audit Logger initialized");
 
 export function WithAuditLogging() {
   return createMethodMiddlewareDecorator<GraphQLContext>(
@@ -226,11 +171,6 @@ export async function logAuditEvent(
   }
 
   try {
-    auditLogger.action(message, {
-      details: args,
-      userId: context.authenticatedUser?.id.id,
-      subjectGlobalId: id,
-    });
     await writeAuditLog(message, args, context.authenticatedUser?.id.id, id);
   } catch (error) {
     logger.error("Error writing audit log", { error });
