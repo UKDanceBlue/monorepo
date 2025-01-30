@@ -1,7 +1,7 @@
 import { AuthSource } from "@ukdanceblue/common";
 import type { NextFunction, Request, Response } from "express";
 
-import { getOrMakeDemoUser } from "#lib/demo.js";
+import { PersonRepository } from "#repositories/person/PersonRepository.js";
 import { SessionRepository } from "#repositories/Session.js";
 
 export const demoLogin = async (
@@ -24,7 +24,7 @@ export const demoLogin = async (
       ? req.query.returning
       : [req.query.returning];
 
-    const person = await getOrMakeDemoUser();
+    const person = await req.getService(PersonRepository).getDemoUser();
     if (person.isErr()) {
       return next(person.error);
     }
