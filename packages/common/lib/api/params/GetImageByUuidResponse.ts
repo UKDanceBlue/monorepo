@@ -3,7 +3,7 @@ import { ArgsType, Field, InputType, ObjectType } from "type-graphql";
 
 import { FilteredListQueryArgs } from "../filtering/FilteredListQueryArgs.js";
 import { ImageNode } from "../resources/Image.js";
-import { AbstractGraphQLPaginatedResponse } from "./ApiResponse.js";
+import { AbstractGraphQLPaginatedResponse } from "./PaginatedResponse.js";
 
 @InputType()
 export class CreateImageInput implements Partial<ImageNode> {

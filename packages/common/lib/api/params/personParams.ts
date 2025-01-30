@@ -10,7 +10,7 @@ import {
 import { FilteredListQueryArgs } from "../filtering/FilteredListQueryArgs.js";
 import { PersonNode } from "../resources/Person.js";
 import { type GlobalId, GlobalIdScalar } from "../scalars/GlobalId.js";
-import { AbstractGraphQLPaginatedResponse } from "./ApiResponse.js";
+import { AbstractGraphQLPaginatedResponse } from "./PaginatedResponse.js";
 
 @ObjectType("ListPeopleResponse", {
   implements: AbstractGraphQLPaginatedResponse<PersonNode>,

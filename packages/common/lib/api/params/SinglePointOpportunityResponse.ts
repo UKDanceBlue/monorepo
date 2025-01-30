@@ -7,7 +7,7 @@ import { PointOpportunityNode } from "../resources/PointOpportunity.js";
 import { TeamType } from "../resources/Team.js";
 import { DateTimeScalar } from "../scalars/DateTimeISO.js";
 import { type GlobalId, GlobalIdScalar } from "../scalars/GlobalId.js";
-import { AbstractGraphQLPaginatedResponse } from "./ApiResponse.js";
+import { AbstractGraphQLPaginatedResponse } from "./PaginatedResponse.js";
 
 @ObjectType("ListPointOpportunitiesResponse", {
   implements: AbstractGraphQLPaginatedResponse<PointOpportunityNode>,

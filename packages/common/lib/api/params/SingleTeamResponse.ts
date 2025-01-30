@@ -4,7 +4,7 @@ import { ArgsType, Field, InputType, Int, ObjectType } from "type-graphql";
 import { OptionalToNullable } from "../../utility/primitive/TypeUtils.js";
 import { FilteredListQueryArgs } from "../filtering/FilteredListQueryArgs.js";
 import { TeamLegacyStatus, TeamNode, TeamType } from "../resources/Team.js";
-import { AbstractGraphQLPaginatedResponse } from "./ApiResponse.js";
+import { AbstractGraphQLPaginatedResponse } from "./PaginatedResponse.js";
 @ObjectType("ListTeamsResponse", {
   implements: AbstractGraphQLPaginatedResponse<TeamNode>,
 })

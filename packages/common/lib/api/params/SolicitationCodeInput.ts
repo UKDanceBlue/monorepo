@@ -4,7 +4,7 @@ import { ArgsType, Field, InputType, ObjectType } from "type-graphql";
 
 import { FilteredListQueryArgs } from "../filtering/FilteredListQueryArgs.js";
 import { SolicitationCodeNode } from "../resources/SolicitationCode.js";
-import { AbstractGraphQLPaginatedResponse } from "./ApiResponse.js";
+import { AbstractGraphQLPaginatedResponse } from "./PaginatedResponse.js";
 
 @ArgsType()
 export class ListSolicitationCodesArgs extends FilteredListQueryArgs(

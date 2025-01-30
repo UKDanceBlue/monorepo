@@ -4,7 +4,7 @@ import { ArgsType, Field, InputType, ObjectType } from "type-graphql";
 import type { LocalDate } from "../../utility/time/localDate.js";
 import { FilteredListQueryArgs } from "../filtering/FilteredListQueryArgs.js";
 import { DailyDepartmentNotificationNode } from "../resources/DailyDepartmentNotification.js";
-import { AbstractGraphQLPaginatedResponse } from "./ApiResponse.js";
+import { AbstractGraphQLPaginatedResponse } from "./PaginatedResponse.js";
 
 export interface DDNInit {
   division?: string | undefined;

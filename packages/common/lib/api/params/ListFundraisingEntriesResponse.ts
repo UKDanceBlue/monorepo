@@ -6,7 +6,7 @@ import { FilteredListQueryArgs } from "../filtering/FilteredListQueryArgs.js";
 import { BatchType } from "../resources/DailyDepartmentNotification.js";
 import { FundraisingEntryNode } from "../resources/Fundraising.js";
 import { type GlobalId, GlobalIdScalar } from "../scalars/GlobalId.js";
-import { AbstractGraphQLPaginatedResponse } from "./ApiResponse.js";
+import { AbstractGraphQLPaginatedResponse } from "./PaginatedResponse.js";
 
 @ArgsType()
 export class ListFundraisingEntriesArgs extends FilteredListQueryArgs(

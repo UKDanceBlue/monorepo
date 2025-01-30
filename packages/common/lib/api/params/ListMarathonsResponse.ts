@@ -10,7 +10,7 @@ import {
   IsAfterDateTime,
   IsBeforeDateTime,
 } from "../validation/beforeAfter.js";
-import { AbstractGraphQLPaginatedResponse } from "./ApiResponse.js";
+import { AbstractGraphQLPaginatedResponse } from "./PaginatedResponse.js";
 
 @ObjectType("ListMarathonsResponse", {
   implements: AbstractGraphQLPaginatedResponse<MarathonNode[]>,

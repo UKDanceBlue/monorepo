@@ -4,7 +4,7 @@ import { ArgsType, Field, InputType, ObjectType } from "type-graphql";
 import { FilteredListQueryArgs } from "../filtering/FilteredListQueryArgs.js";
 import { DeviceNode } from "../resources/Device.js";
 import { GlobalId, GlobalIdScalar } from "../scalars/GlobalId.js";
-import { AbstractGraphQLPaginatedResponse } from "./ApiResponse.js";
+import { AbstractGraphQLPaginatedResponse } from "./PaginatedResponse.js";
 
 @ObjectType("GetDeviceByUuidResponse")
 export class GetDeviceByUuidResponse {

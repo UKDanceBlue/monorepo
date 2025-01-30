@@ -1,4 +1,4 @@
-export * from "./ApiResponse.js";
+export * from "./PaginatedResponse.js";
 export * from "./CreateFeedInput.js";
 export * from "./DailyDepartmentNotificationParams.js";
 export * from "./deviceParams.js";

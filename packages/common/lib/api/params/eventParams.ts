@@ -5,7 +5,7 @@ import { FilteredListQueryArgs } from "../filtering/FilteredListQueryArgs.js";
 import { EventNode } from "../resources/Event.js";
 import { GlobalId, GlobalIdScalar } from "../scalars/GlobalId.js";
 import { IntervalISO } from "../types/IntervalISO.js";
-import { AbstractGraphQLPaginatedResponse } from "./ApiResponse.js";
+import { AbstractGraphQLPaginatedResponse } from "./PaginatedResponse.js";
 
 @ObjectType("ListEventsResponse", {
   implements: AbstractGraphQLPaginatedResponse<EventNode[]>,

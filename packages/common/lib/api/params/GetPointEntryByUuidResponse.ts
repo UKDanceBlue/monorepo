@@ -4,7 +4,7 @@ import { ArgsType, Field, InputType, Int, ObjectType } from "type-graphql";
 import { FilteredListQueryArgs } from "../filtering/FilteredListQueryArgs.js";
 import { PointEntryNode } from "../resources/PointEntry.js";
 import { type GlobalId, GlobalIdScalar } from "../scalars/GlobalId.js";
-import { AbstractGraphQLPaginatedResponse } from "./ApiResponse.js";
+import { AbstractGraphQLPaginatedResponse } from "./PaginatedResponse.js";
 
 @ObjectType("ListPointEntriesResponse", {
   implements: AbstractGraphQLPaginatedResponse<PointEntryNode>,

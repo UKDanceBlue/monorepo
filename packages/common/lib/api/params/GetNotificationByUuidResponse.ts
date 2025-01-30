@@ -8,7 +8,7 @@ import {
 } from "../resources/Notification.js";
 import { TeamType } from "../resources/Team.js";
 import { type GlobalId, GlobalIdScalar } from "../scalars/GlobalId.js";
-import { AbstractGraphQLPaginatedResponse } from "./ApiResponse.js";
+import { AbstractGraphQLPaginatedResponse } from "./PaginatedResponse.js";
 
 @ObjectType("ListNotificationsResponse", {
   implements: AbstractGraphQLPaginatedResponse<NotificationNode>,

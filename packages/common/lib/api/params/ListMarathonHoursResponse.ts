@@ -5,7 +5,7 @@ import { ArgsType, Field, InputType, ObjectType } from "type-graphql";
 import { FilteredListQueryArgs } from "../filtering/FilteredListQueryArgs.js";
 import { MarathonHourNode } from "../resources/MarathonHour.js";
 import { DateTimeScalar } from "../scalars/DateTimeISO.js";
-import { AbstractGraphQLPaginatedResponse } from "./ApiResponse.js";
+import { AbstractGraphQLPaginatedResponse } from "./PaginatedResponse.js";
 
 @ObjectType("ListMarathonHoursResponse", {
   implements: AbstractGraphQLPaginatedResponse<MarathonHourNode[]>,
