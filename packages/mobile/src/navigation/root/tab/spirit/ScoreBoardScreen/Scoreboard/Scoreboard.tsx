@@ -62,6 +62,7 @@ const Scoreboard = ({
           const scoreboardItem = (
             <ScoreboardItem
               key={item.id}
+              showPoints
               rank={index + 1}
               name={item.name}
               amount={item.points}

@@ -52,12 +52,14 @@ function Award({ rank, size }: { rank: number; size: number }) {
 
 const ScoreboardItem = ({
   rank,
+  showPoints,
   name,
   amount,
   amountPrefix = "",
   amountDecimalPlaces = 0,
   highlighted = false,
 }: {
+  showPoints?: boolean;
   rank?: number;
   name: string;
   amount: number;
@@ -120,8 +122,7 @@ const ScoreboardItem = ({
             {amount.toFixed(amountDecimalPlaces)}
           </Text>
           <Text color="primary.600" fontSize="lg" fontFamily="mono">
-            {" "}
-            points
+            {showPoints && " points"}
           </Text>
         </Container>
       </Flex>
