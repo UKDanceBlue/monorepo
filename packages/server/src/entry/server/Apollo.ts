@@ -75,7 +75,9 @@ export class ApolloModule {
     this.expressModule.app.use(
       "/graphql",
 
-      express.json(),
+      express.json({
+        limit: "50mb",
+      }),
 
       expressMiddleware<GraphQLContext>(this.apolloServer, {
         context: authenticate,
