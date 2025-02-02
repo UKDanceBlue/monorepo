@@ -9,7 +9,7 @@ import { defineConfig } from "vite";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
-export const literalConfig: UserConfig = {
+export const literalConfig = {
   root: __dirname,
   resolve: {
     alias: {
@@ -52,7 +52,7 @@ export const literalConfig: UserConfig = {
       /@nivo/,
     ],
   },
-};
+} satisfies UserConfig;
 
 // https://vitejs.dev/config/
 export default defineConfig(literalConfig);

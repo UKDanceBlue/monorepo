@@ -1,4 +1,4 @@
-name: Check
+name: Test
 
 on:
   push:
@@ -7,11 +7,12 @@ on:
     paths:
       [
         "packages/**",
+        "vitest.workspace.ts",
         "package.json",
         "yarn.lock",
         ".yarnrc.yml",
         "tsconfig.json",
-        ".github/workflows/check.yml",
+        ".github/workflows/test.yml",
       ]
   pull_request:
     branches:
@@ -19,6 +20,7 @@ on:
     paths:
       [
         "packages/**",
+        "vitest.workspace.ts",
         "package.json",
         "yarn.lock",
         ".yarnrc.yml",
@@ -28,7 +30,7 @@ on:
 
 jobs:
   run-eslint:
-    name: Check Repository
+    name: Test Repository
     runs-on: ubuntu-latest
 
     steps:
@@ -53,5 +55,5 @@ jobs:
       - name: Build common
         run: yarn run common:build
 
-      - name: Run Check
-        run: yarn run repo:check
+      - name: Run Tests
+        run: yarn repo:test --run

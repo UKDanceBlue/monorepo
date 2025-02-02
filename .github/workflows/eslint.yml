@@ -16,14 +16,11 @@ on:
     paths:
       [
         "packages/**",
-        "eslint.config.js",
-        "graphql.config.json",
         "package.json",
         "yarn.lock",
         ".yarnrc.yml",
-        "codegen.ts",
         "tsconfig.json",
-        ".github/workflows/eslint.yml"
+        ".github/workflows/eslint.yml",
       ]
   pull_request:
     branches:
@@ -52,7 +49,7 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-      
+
       - name: Enable Corepack before setting up Node
         run: corepack enable
 
@@ -78,8 +75,8 @@ jobs:
       - name: Run ESLint
         env:
           SARIF_ESLINT_IGNORE_SUPPRESSED: "true"
-        run: yarn repo:lint
-          --format @microsoft/eslint-formatter-sarif
+        run:
+          yarn repo:lint --format @microsoft/eslint-formatter-sarif
           --output-file eslint-results.sarif
         continue-on-error: true
 

@@ -2,10 +2,6 @@ import type { PrismaClient } from "@prisma/client";
 import type { Mock } from "vitest";
 import { vi } from "vitest";
 
-import { PrismaService } from "#lib/prisma.js";
-
-import { testContainer } from "./testContainer.js";
-
 export function loadPrismaMock() {
   const mocksToClear: Mock[] = [];
 
@@ -90,16 +86,6 @@ export function loadPrismaMock() {
       return this as unknown as PrismaClient;
     },
   };
-
-  testContainer.set(
-    {
-      id: PrismaService,
-      type: null,
-      value: prismaMock.prismaClient,
-      container: testContainer,
-    },
-    []
-  );
 
   return {
     prismaMock,
