@@ -1,4 +1,3 @@
-export * from "./PaginatedResponse.js";
 export * from "./CreateFeedInput.js";
 export * from "./DailyDepartmentNotificationParams.js";
 export * from "./deviceParams.js";
@@ -12,6 +11,7 @@ export * from "./ListFundraisingEntriesResponse.js";
 export * from "./ListMarathonHoursResponse.js";
 export * from "./ListMarathonsResponse.js";
 export * from "./LoginState.js";
+export * from "./PaginatedResponse.js";
 export * from "./personParams.js";
 export * from "./ReportParams.js";
 export * from "./SinglePointOpportunityResponse.js";

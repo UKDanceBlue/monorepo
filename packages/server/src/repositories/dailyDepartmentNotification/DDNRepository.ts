@@ -722,7 +722,7 @@ export class DailyDepartmentNotificationRepository extends buildDefaultRepositor
               batchId: batch.id,
               solicitationCodeId: solicitationCode.id,
               combinedAmount: row.ddn.combinedAmount,
-              donorSummary: row.ddn.donorSummary ?? null,
+              donorSummary: row.ddn.donorSummary,
             };
             const uniqueStr = `${
               uniques.idSorter
