@@ -4,12 +4,6 @@ import type { MessageType } from "antd/es/message/interface.js";
 import { useCallback, useEffect, useRef } from "react";
 import type { CombinedError } from "urql";
 
-import {
-  extractServerError,
-  handleApiError,
-} from "../tools/apolloErrorHandler.js";
-
-// const MAX_ALLOWED_ERROR_MS = 500;
 const MAX_ALLOWED_LOADING_MS = 5000;
 
 export function useQueryStatusWatcher({
@@ -33,8 +27,7 @@ export function useQueryStatusWatcher({
 
   useEffect(() => {
     if (error) {
-      for (const err of extractServerError(error))
-        handleApiError(err, { message: antApp.message.error });
+      antApp.message.error(error.message);
     }
   }, [antApp.message, error]);
 

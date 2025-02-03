@@ -3,8 +3,6 @@ import type { ModalFunc } from "antd/es/modal/confirm.js";
 import type { ReactNode } from "react";
 import { useCallback, useState } from "react";
 
-import { handleUnknownError } from "#tools/apolloErrorHandler.js";
-
 export const useAntFeedback = () => {
   const { message, notification, modal } = App.useApp();
 
@@ -119,17 +117,16 @@ export const useUnknownErrorHandler = (): {
 
   return {
     showErrorMessage: useCallback(
-      (error: unknown) =>
-        handleUnknownError(error, { message: showErrorMessage }),
+      (error: unknown) => showErrorMessage(String(error)),
       [showErrorMessage]
     ),
     showErrorNotification: useCallback(
-      (error: unknown) =>
-        handleUnknownError(error, { notification: showErrorNotification }),
+      (error: unknown) => showErrorMessage(String(error)),
       [showErrorNotification]
     ),
     showErrorModal: useCallback(
-      (error: unknown) => handleUnknownError(error, { modal: showErrorModal }),
+      (error: unknown) =>
+        showErrorModal({ title: "Error", content: String(error) }),
       [showErrorModal]
     ),
   };

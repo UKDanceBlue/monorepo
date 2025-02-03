@@ -1,7 +1,6 @@
 import { Service } from "@freshgum/typedi";
 import type { Prisma } from "@prisma/client";
 import { PrismaClient } from "@prisma/client";
-import { LegacyError, LegacyErrorCode } from "@ukdanceblue/common";
 
 type UniqueParam =
   | {
@@ -23,26 +22,11 @@ type UniqueParam =
 
 type BasicUniqueParam = { id: number } | { uuid: string };
 
-// import { PrismaService } from "#prisma";
-
-// @Service([PrismaService])
-// export class EventOccurrenceRepository {
-//   constructor(private prisma: PrismaClient) {}
-
-//   findEventOccurrenceByUnique(param: UniqueParam) {
-//     return this.prisma.eventOccurrence.findUnique({ where: param });
-//   }
-
-//   findOccurrencesByEventUnique(param: UniqueParam) {
-//     return this.prisma.eventOccurrence.findMany({
-//       where: {
-//         event: param,
-//       },
-//     });
-//   }
-// }
+import { InvariantError } from "@ukdanceblue/common/error";
+import { Err, Ok } from "ts-results-es";
 
 import { PrismaService } from "#lib/prisma.js";
+import type { RepositoryResult } from "#repositories/shared.js";
 
 @Service([PrismaService])
 export class EventImagesRepository {
@@ -106,19 +90,22 @@ export class EventImagesRepository {
    * @param param A specifier for the image-event relationship to remove
    * @returns Whether the image-event relationship was removed successfully
    */
-  async removeEventImageByUnique(param: UniqueParam): Promise<boolean> {
+  async removeEventImageByUnique(
+    param: UniqueParam
+  ): Promise<RepositoryResult<boolean>> {
     const { count } = await this.prisma.eventImage.deleteMany({
       where: eventImageWhereFromParam(param),
     });
 
     if (count === 0) {
-      return false;
+      return Ok(false);
     } else if (count === 1) {
-      return true;
+      return Ok(true);
     } else {
-      throw new LegacyError(
-        LegacyErrorCode.InternalFailure,
-        "Expected to remove at most one event-image relationship, but removed more than one."
+      return Err(
+        new InvariantError(
+          "Expected to remove at most one event-image relationship, but removed more than one"
+        )
       );
     }
   }

@@ -1,6 +1,9 @@
 {
   "version": "0.2",
-  "ignorePaths": ["./.devcontainer/**", "**/package.json"],
+  "ignorePaths": [
+    "./.devcontainer/**",
+    "**/package.json"
+  ],
   "dictionaryDefinitions": [],
   "enabledFileTypes": {
     "prisma": true
@@ -18,6 +21,7 @@
   "words": [
     "autoincrement",
     "bbnvolved",
+    "casl",
     "catchable",
     "citext",
     "codegen",
