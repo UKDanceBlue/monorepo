@@ -23,15 +23,7 @@ import { PointOpportunityNode } from "./PointOpportunity.js";
 import { SolicitationCodeNode } from "./SolicitationCode.js";
 import { TeamNode } from "./Team.js";
 
-export {
-  Connection,
-  Edge,
-  Node,
-  NodeResource,
-  PageInfo,
-  Result,
-} from "../relay.js";
-export * from "../resourceError.js";
+export { Node } from "../relay.js";
 export * from "../scalars/Cursor.js";
 export * from "../scalars/DateTimeISO.js";
 export * from "../scalars/GlobalId.js";

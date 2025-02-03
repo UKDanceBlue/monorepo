@@ -2,7 +2,7 @@ import { GraphQLURL } from "graphql-scalars";
 import { DateTime } from "luxon";
 import { Field, InterfaceType, ObjectType } from "type-graphql";
 
-import { createNodeClasses, Node } from "../relay.js";
+import { Node } from "../relay.js";
 import { DateTimeScalar } from "../scalars/DateTimeISO.js";
 import type { GlobalId } from "../scalars/GlobalId.js";
 import { GlobalIdScalar } from "../scalars/GlobalId.js";
@@ -117,8 +117,3 @@ export class FeedNode extends TimestampedResource implements Node, FeedItem {
     return FeedNode.createInstance().withValues(init);
   }
 }
-
-export const { FeedConnection, FeedEdge, FeedResult } = createNodeClasses(
-  FeedNode,
-  "Feed"
-);

@@ -1,7 +1,7 @@
 import { DateTime } from "luxon";
 import { Field, ObjectType, registerEnumType } from "type-graphql";
 
-import { createNodeClasses, Node } from "../relay.js";
+import { Node } from "../relay.js";
 import type { GlobalId } from "../scalars/GlobalId.js";
 import { GlobalIdScalar } from "../scalars/GlobalId.js";
 import { TimestampedResource } from "./Resource.js";
@@ -70,8 +70,3 @@ export class TeamNode extends TimestampedResource implements Node {
     return TeamNode.createInstance().withValues(init);
   }
 }
-
-export const { TeamConnection, TeamEdge, TeamResult } = createNodeClasses(
-  TeamNode,
-  "Team"
-);

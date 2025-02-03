@@ -1,7 +1,7 @@
 import type { DateTime } from "luxon";
 import { Field, ObjectType } from "type-graphql";
 
-import { createNodeClasses, Node } from "../relay.js";
+import { Node } from "../relay.js";
 import { DateTimeScalar } from "../scalars/DateTimeISO.js";
 import type { GlobalId } from "../scalars/GlobalId.js";
 import { GlobalIdScalar } from "../scalars/GlobalId.js";
@@ -33,8 +33,3 @@ export class DeviceNode extends TimestampedResource implements Node {
     return this.createInstance().withValues(init);
   }
 }
-
-export const { DeviceConnection, DeviceEdge, DeviceResult } = createNodeClasses(
-  DeviceNode,
-  "Device"
-);

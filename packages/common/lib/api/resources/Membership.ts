@@ -5,7 +5,7 @@ import {
   CommitteeIdentifier,
   CommitteeRole,
 } from "../../authorization/structures.js";
-import { createNodeClasses, Node } from "../relay.js";
+import { Node } from "../relay.js";
 import type { GlobalId } from "../scalars/GlobalId.js";
 import { GlobalIdScalar } from "../scalars/GlobalId.js";
 import { TimestampedResource } from "./Resource.js";
@@ -77,11 +77,3 @@ export class CommitteeMembershipNode extends MembershipNode implements Node {
     return CommitteeMembershipNode.createInstance().withValues(init);
   }
 }
-
-export const { MembershipConnection, MembershipEdge, MembershipResult } =
-  createNodeClasses(MembershipNode, "Membership");
-export const {
-  CommitteeMembershipConnection,
-  CommitteeMembershipEdge,
-  CommitteeMembershipResult,
-} = createNodeClasses(CommitteeMembershipNode, "CommitteeMembership");

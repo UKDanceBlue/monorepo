@@ -3,7 +3,7 @@ import { DateTime } from "luxon";
 import { Field, ObjectType } from "type-graphql";
 
 import { AccessControlAuthorized } from "../../authorization/AccessControlParam.js";
-import { createNodeClasses, Node } from "../relay.js";
+import { Node } from "../relay.js";
 import { DateTimeScalar } from "../scalars/DateTimeISO.js";
 import type { GlobalId } from "../scalars/GlobalId.js";
 import { GlobalIdScalar } from "../scalars/GlobalId.js";
@@ -80,9 +80,6 @@ export class NotificationNode extends TimestampedResource implements Node {
   }
 }
 
-export const { NotificationConnection, NotificationEdge, NotificationResult } =
-  createNodeClasses(NotificationNode, "Notification");
-
 @ObjectType({
   implements: [Node],
 })
@@ -157,9 +154,3 @@ export class NotificationDeliveryNode
     return NotificationDeliveryNode.createInstance().withValues(init);
   }
 }
-
-export const {
-  NotificationDeliveryConnection,
-  NotificationDeliveryEdge,
-  NotificationDeliveryResult,
-} = createNodeClasses(NotificationDeliveryNode, "NotificationDelivery");

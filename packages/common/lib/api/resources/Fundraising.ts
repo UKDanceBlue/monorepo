@@ -1,7 +1,7 @@
 import { DateTime } from "luxon";
 import { Field, Float, ObjectType, registerEnumType } from "type-graphql";
 
-import { createNodeClasses, Node } from "../relay.js";
+import { Node } from "../relay.js";
 import { DateTimeScalar } from "../scalars/DateTimeISO.js";
 import type { GlobalId } from "../scalars/GlobalId.js";
 import { GlobalIdScalar } from "../scalars/GlobalId.js";
@@ -109,12 +109,6 @@ export class FundraisingEntryNode extends TimestampedResource implements Node {
   }
 }
 
-export const {
-  FundraisingEntryConnection,
-  FundraisingEntryEdge,
-  FundraisingEntryResult,
-} = createNodeClasses(FundraisingEntryNode, "FundraisingEntry");
-
 @ObjectType({
   implements: [Node],
 })
@@ -145,9 +139,3 @@ export class FundraisingAssignmentNode
     return FundraisingAssignmentNode.createInstance().withValues(init);
   }
 }
-
-export const {
-  FundraisingAssignmentConnection,
-  FundraisingAssignmentEdge,
-  FundraisingAssignmentResult,
-} = createNodeClasses(FundraisingAssignmentNode, "FundraisingAssignment");

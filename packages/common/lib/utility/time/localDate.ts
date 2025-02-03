@@ -26,9 +26,9 @@ export function localDateFromLuxon(date: DateTime<true>): LocalDate {
 }
 
 export function localDateToJs(date: LocalDate): Date {
-  return DateTime.fromFormat(date, "yyyy-MM-dd", {
-    zone: "America/New_York",
-  }).toJSDate();
+  return DateTime.fromFormat(date, "yyyy-MM-dd")
+    .setZone("America/New_York")
+    .toJSDate();
 }
 
 export function localDateToLuxon(

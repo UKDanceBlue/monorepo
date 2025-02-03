@@ -2,7 +2,7 @@ import type { DateTime } from "luxon";
 import { Field, ObjectType } from "type-graphql";
 
 import type { MarathonYearString } from "../../utility/primitive/SimpleTypes.js";
-import { createNodeClasses, Node } from "../relay.js";
+import { Node } from "../relay.js";
 import { DateTimeScalar } from "../scalars/DateTimeISO.js";
 import type { GlobalId } from "../scalars/GlobalId.js";
 import { GlobalIdScalar } from "../scalars/GlobalId.js";
@@ -56,6 +56,3 @@ export class MarathonNode extends TimestampedResource implements Node {
     return this.id.id;
   }
 }
-
-export const { MarathonConnection, MarathonEdge, MarathonResult } =
-  createNodeClasses(MarathonNode, "Marathon");

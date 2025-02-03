@@ -153,5 +153,10 @@ export function isArrayOf<TypeName extends TypeOfTypeNames>(
   value: TypeOfMap<TypeName>[] | unknown[],
   type: TypeName
 ): value is TypeOfMap<TypeName>[] {
-  return typeof value[0] === type;
+  for (const item of value) {
+    if (typeof item !== type) {
+      return false;
+    }
+  }
+  return true;
 }

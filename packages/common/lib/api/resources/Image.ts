@@ -2,7 +2,7 @@ import { GraphQLURL } from "graphql-scalars";
 import { DateTime } from "luxon";
 import { Field, Int, ObjectType } from "type-graphql";
 
-import { createNodeClasses, Node } from "../relay.js";
+import { Node } from "../relay.js";
 import type { GlobalId } from "../scalars/GlobalId.js";
 import { GlobalIdScalar } from "../scalars/GlobalId.js";
 import { TimestampedResource } from "./Resource.js";
@@ -55,8 +55,3 @@ export class ImageNode extends TimestampedResource implements Node {
     return this.createInstance().withValues(init);
   }
 }
-
-export const { ImageConnection, ImageEdge, ImageResult } = createNodeClasses(
-  ImageNode,
-  "Image"
-);

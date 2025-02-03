@@ -1,7 +1,7 @@
 import { DateTime } from "luxon";
 import { Field, ObjectType } from "type-graphql";
 
-import { createNodeClasses, Node } from "../relay.js";
+import { Node } from "../relay.js";
 import type { GlobalId } from "../scalars/GlobalId.js";
 import { GlobalIdScalar } from "../scalars/GlobalId.js";
 import { IntervalISO } from "../types/IntervalISO.js";
@@ -67,8 +67,3 @@ export class EventOccurrenceNode extends Resource {
     return resource;
   }
 }
-
-export const { EventConnection, EventEdge, EventResult } = createNodeClasses(
-  EventNode,
-  "Event"
-);
