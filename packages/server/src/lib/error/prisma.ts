@@ -24,8 +24,8 @@ type RawPrismaError =
 
 export abstract class PrismaError extends ExtendedError {
   declare cause: RawPrismaError;
-  constructor(prismaError: RawPrismaError) {
-    super(prismaError.message, ErrorCode.PrismaError.description);
+  constructor(prismaError: RawPrismaError, message?: string) {
+    super(message ?? prismaError.message, ErrorCode.PrismaError.description);
     this.stack = prismaError.stack;
     this.cause = prismaError;
   }
@@ -41,8 +41,12 @@ export class PrismaKnownRequestError extends PrismaError {
   readonly error: PrismaClientKnownRequestError;
 
   constructor(error: PrismaClientKnownRequestError) {
-    super(error);
+    super(error, error.meta?.message ? String(error.meta.message) : undefined);
     this.error = error;
+  }
+
+  get detailedMessage(): string {
+    return this.error.message;
   }
 }
 
