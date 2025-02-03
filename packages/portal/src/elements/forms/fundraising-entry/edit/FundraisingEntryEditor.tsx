@@ -10,7 +10,7 @@ import {
 import { Form, Input, InputNumber, Select } from "antd";
 import { readFragment, type ResultOf, type VariablesOf } from "gql.tada";
 import { DateTime } from "luxon";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 import {
   FundraisingEntryEditorFragment,
@@ -82,15 +82,15 @@ export function FundraisingEntryEditor({ id }: { id: string }) {
     optionValue: "id",
   });
 
-  // Stupid workaround for a bug that causes the form to ignore the first update
-  useEffect(() => {
-    formProps.onValuesChange?.({}, {});
-  }, [formProps]);
-
   const queryResult = query?.data?.data;
 
   return (
     <Edit saveButtonProps={saveButtonProps}>
+      <p>
+        There is a known issue where the first time you touch a field in this
+        form the form will reset, just click the field again and it will work as
+        expected. We are working on a fix.
+      </p>
       <Form
         {...formProps}
         layout="horizontal"
