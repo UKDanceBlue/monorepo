@@ -12,7 +12,13 @@ export const SolicitationCodeTextFragment = graphql(/* GraphQL */ `
 export const solicitationCodesDocument = graphql(
   /* GraphQL */ `
     query SolicitationCodes {
-      solicitationCodes(sendAll: true) {
+      solicitationCodes(
+        sendAll: true
+        sortBy: [
+          { direction: asc, field: name }
+          { direction: asc, field: text }
+        ]
+      ) {
         data {
           ...SolicitationCodeText
         }

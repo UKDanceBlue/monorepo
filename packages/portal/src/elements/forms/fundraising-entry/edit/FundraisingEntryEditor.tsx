@@ -10,15 +10,14 @@ import {
 import { Form, Input, InputNumber, Select } from "antd";
 import { readFragment, type ResultOf, type VariablesOf } from "gql.tada";
 import { DateTime } from "luxon";
-import { useState } from "react";
+import { useEffect } from "react";
 
 import {
   FundraisingEntryEditorFragment,
   getFundraisingEntryDocument,
   setFundraisingEntryDocument,
 } from "#documents/fundraisingEntry.ts";
-import type { SolicitationCodeTextFragment } from "#documents/solicitationCode.ts";
-import { solicitationCodesDocument } from "#documents/solicitationCode.ts";
+import { SolicitationCodeTextFragment } from "#documents/solicitationCode.ts";
 import { LuxonDatePicker } from "#elements/components/antLuxonComponents.tsx";
 import { FundraisingAssignmentsTable } from "#elements/tables/fundraising/FundraisingEntryAssignmentsTable.tsx";
 
@@ -64,7 +63,8 @@ export function FundraisingEntryEditor({ id }: { id: string }) {
     },
   });
 
-  const [solicitationCodeSearch, setSolicitationCodeSearch] = useState("");
+  const queryResult = query?.data?.data;
+
   const { selectProps } = useSelect<
     ResultOf<typeof SolicitationCodeTextFragment>,
     HttpError,
@@ -72,24 +72,34 @@ export function FundraisingEntryEditor({ id }: { id: string }) {
   >({
     resource: "solicitationCode",
     meta: {
-      gqlQuery: solicitationCodesDocument,
-      gqlVariables: { sendAll: true },
+      gqlFragment: SolicitationCodeTextFragment,
     },
-    pagination: {
-      mode: "off",
-    },
+    sorters: [
+      {
+        field: "name",
+        order: "asc",
+      },
+      {
+        field: "text",
+        order: "asc",
+      },
+    ],
     optionLabel: "text",
     optionValue: "id",
   });
 
-  const queryResult = query?.data?.data;
+  // Stupid workaround for a bug that causes the form to ignore the first update
+  useEffect(() => {
+    formProps.onValuesChange?.({}, {});
+  }, [formProps]);
 
   return (
     <Edit saveButtonProps={saveButtonProps}>
       <p>
-        There is a known issue where the first time you touch a field in this
-        form the form will reset, just click the field again and it will work as
-        expected. We are working on a fix.
+        There is a known issue with the solicitation code override field. Once
+        you type your search, the field will close itself but the search will
+        still work. We're working on figuring out where this issue is coming
+        from and we'll have a fix soon.
       </p>
       <Form
         {...formProps}
@@ -193,17 +203,7 @@ export function FundraisingEntryEditor({ id }: { id: string }) {
             },
           ]}
         >
-          <Select
-            {...selectProps}
-            allowClear
-            onSearch={setSolicitationCodeSearch}
-            options={selectProps.options?.filter((option) =>
-              option.label
-                ?.toString()
-                .toLowerCase()
-                .includes(solicitationCodeSearch.toLowerCase())
-            )}
-          />
+          <Select {...selectProps} open allowClear />
         </Form.Item>
         <Form.Item
           label="Batch Type"
