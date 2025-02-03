@@ -6,6 +6,7 @@ import {
   FileImageOutlined,
   FileTextOutlined,
   FlagOutlined,
+  MobileOutlined,
   TeamOutlined,
   ToolOutlined,
   UserOutlined,
@@ -178,7 +179,7 @@ export const refineResources = [
   {
     name: "device",
     meta: {
-      icon: <ToolOutlined />,
+      icon: <MobileOutlined />,
       label: "Devices",
       modelName: "DeviceNode",
     },

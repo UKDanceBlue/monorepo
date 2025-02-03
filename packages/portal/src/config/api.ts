@@ -24,4 +24,21 @@ export const urqlClient = new Client({
         : undefined,
     };
   },
+  fetch: async (input, init) => {
+    const response = await fetch(input, init);
+    if (response.status === 500) {
+      let message;
+      try {
+        const json = (await response.clone().json()) as unknown;
+        if (json && typeof json === "object" && "message" in json) {
+          message = String(json.message);
+        }
+      } catch {
+        const text = await response.clone().text();
+        message = text.substring(0, 1000);
+      }
+      throw new Error(`Server error: ${message}`);
+    }
+    return response;
+  },
 });

@@ -6,8 +6,6 @@ import { UndoableNotification } from "./UndoableNotification";
 export const useNotificationProvider = (): NotificationProvider => {
   const app = App.useApp();
 
-  console.log(app);
-
   const notificationProvider: NotificationProvider = {
     open: ({
       key,

@@ -1,6 +1,6 @@
 import { PlusOutlined } from "@ant-design/icons";
 import { List } from "@refinedev/antd";
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { Button } from "antd";
 
 import { SolicitationCodeTable } from "#elements/tables/fundraising/SolicitationCodeTable";
@@ -13,9 +13,11 @@ function RouteComponent() {
   return (
     <List
       headerButtons={
-        <Button icon={<PlusOutlined />} size="large">
-          Create Solicitation Code
-        </Button>
+        <Link to="/fundraising/solicitation-code/create">
+          <Button icon={<PlusOutlined />} size="large">
+            Create Solicitation Code
+          </Button>
+        </Link>
       }
     >
       <SolicitationCodeTable />

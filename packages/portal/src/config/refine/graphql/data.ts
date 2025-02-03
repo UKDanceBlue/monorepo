@@ -44,17 +44,28 @@ export type FieldTypes = Record<string, FieldType | [string, FieldType]>;
 
 const postgresFtsOperators = /[!&():|]/g;
 
-function combinedToHttpError(error: CombinedError): HttpError {
+function combinedToHttpError(error?: CombinedError): HttpError {
+  console.error(error);
+
+  if (!error) {
+    return {
+      statusCode: 500,
+      message: "Unknown error",
+      cause: new Error("Unknown error"),
+    };
+  }
+
+  const response = error.response as Response | undefined;
+
   if (error.networkError) {
     return {
-      statusCode: 0,
+      statusCode: response?.status ?? 500,
       message: error.networkError.message,
       cause: error.networkError,
     };
   } else {
     const { code } =
       error.graphQLErrors.find((e) => e.extensions.code)?.extensions ?? {};
-    console.error(error);
     return {
       statusCode:
         code === "BAD_USER_INPUT" ? 400 : code === "UNAUTHORIZED" ? 401 : 500,
