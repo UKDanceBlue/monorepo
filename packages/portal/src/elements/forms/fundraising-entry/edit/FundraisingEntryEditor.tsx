@@ -10,7 +10,7 @@ import {
 import { Form, Input, InputNumber, Select } from "antd";
 import { readFragment, type ResultOf, type VariablesOf } from "gql.tada";
 import { DateTime } from "luxon";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import {
   FundraisingEntryEditorFragment,
@@ -81,6 +81,11 @@ export function FundraisingEntryEditor({ id }: { id: string }) {
     optionLabel: "text",
     optionValue: "id",
   });
+
+  // Stupid workaround for a bug that causes the form to ignore the first update
+  useEffect(() => {
+    formProps.onValuesChange?.({}, {});
+  }, [formProps]);
 
   const queryResult = query?.data?.data;
 
