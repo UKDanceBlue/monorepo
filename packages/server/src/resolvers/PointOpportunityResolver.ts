@@ -4,8 +4,6 @@ import {
   AccessControlAuthorized,
   EventNode,
   GlobalIdScalar,
-  LegacyError,
-  LegacyErrorCode,
   PointOpportunityNode,
   TeamType,
 } from "@ukdanceblue/common";
@@ -15,6 +13,7 @@ import {
   ListPointOpportunitiesResponse,
   SetPointOpportunityInput,
 } from "@ukdanceblue/common";
+import { ActionDeniedError, NotFoundError } from "@ukdanceblue/common/error";
 import {
   Arg,
   Args,
@@ -52,10 +51,7 @@ export class PointOpportunityResolver
       });
 
     if (row == null) {
-      throw new LegacyError(
-        LegacyErrorCode.NotFound,
-        "PointOpportunity not found"
-      );
+      throw new NotFoundError("PointOpportunity");
     }
 
     return pointOpportunityModelToResource(row);
@@ -91,10 +87,7 @@ export class PointOpportunityResolver
     @Arg("input") input: CreatePointOpportunityInput
   ): Promise<PointOpportunityNode> {
     if (input.type === TeamType.Mini) {
-      throw new LegacyError(
-        LegacyErrorCode.InvalidRequest,
-        "Mini teams cannot have point opportunities"
-      );
+      throw new ActionDeniedError("Mini teams cannot have point opportunities");
     }
     const row = await this.pointOpportunityRepository.createPointOpportunity({
       name: input.name,
@@ -117,10 +110,7 @@ export class PointOpportunityResolver
     @Arg("input") input: SetPointOpportunityInput
   ): Promise<PointOpportunityNode> {
     if (input.type === TeamType.Mini) {
-      throw new LegacyError(
-        LegacyErrorCode.InvalidRequest,
-        "Mini teams cannot have point opportunities"
-      );
+      throw new ActionDeniedError("Mini teams cannot have point opportunities");
     }
     const row = await this.pointOpportunityRepository.updatePointOpportunity(
       { uuid: id },
@@ -133,10 +123,7 @@ export class PointOpportunityResolver
     );
 
     if (!row) {
-      throw new LegacyError(
-        LegacyErrorCode.NotFound,
-        "PointOpportunity not found"
-      );
+      throw new NotFoundError("PointOpportunity");
     }
 
     return pointOpportunityModelToResource(row);
@@ -155,10 +142,7 @@ export class PointOpportunityResolver
     });
 
     if (!row) {
-      throw new LegacyError(
-        LegacyErrorCode.NotFound,
-        "PointOpportunity not found"
-      );
+      throw new NotFoundError("PointOpportunity");
     }
 
     return pointOpportunityModelToResource(row);

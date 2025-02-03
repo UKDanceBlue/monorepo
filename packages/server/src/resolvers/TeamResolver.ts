@@ -11,8 +11,6 @@ import {
   AuthSource,
   BulkTeamInput,
   GlobalIdScalar,
-  LegacyError,
-  LegacyErrorCode,
   MembershipNode,
   PointEntryNode,
   SolicitationCodeNode,
@@ -24,7 +22,7 @@ import {
   ListTeamsResponse,
   SetTeamInput,
 } from "@ukdanceblue/common";
-import { ConcreteResult } from "@ukdanceblue/common/error";
+import { ConcreteResult, NotFoundError } from "@ukdanceblue/common/error";
 import { AsyncResult, None, Ok, Option, Some } from "ts-results-es";
 import {
   Arg,
@@ -137,7 +135,7 @@ export class TeamResolver implements CrudResolver<TeamNode, "team"> {
     );
 
     if (row == null) {
-      throw new LegacyError(LegacyErrorCode.NotFound, "Team not found");
+      throw new NotFoundError("Team not found");
     }
 
     return teamModelToResource(row);
@@ -166,7 +164,7 @@ export class TeamResolver implements CrudResolver<TeamNode, "team"> {
     const row = await this.teamRepository.deleteTeam({ uuid: id });
 
     if (row == null) {
-      throw new LegacyError(LegacyErrorCode.NotFound, "Team not found");
+      throw new NotFoundError("Team not found");
     }
 
     return teamModelToResource(row);
@@ -223,7 +221,7 @@ export class TeamResolver implements CrudResolver<TeamNode, "team"> {
     const result = await this.teamRepository.getMarathon({ uuid: id });
 
     if (result == null) {
-      throw new LegacyError(LegacyErrorCode.NotFound, "Marathon not found");
+      throw new NotFoundError("Marathon not found");
     }
 
     return marathonModelToResource(result);

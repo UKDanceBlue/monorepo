@@ -5,8 +5,6 @@ import {
   EventNode,
   GlobalIdScalar,
   ImageNode,
-  LegacyError,
-  LegacyErrorCode,
 } from "@ukdanceblue/common";
 import {
   CreateEventInput,
@@ -14,8 +12,9 @@ import {
   ListEventsResponse,
   SetEventInput,
 } from "@ukdanceblue/common";
+import { NotFoundError } from "@ukdanceblue/common/error";
 import { VoidResolver } from "graphql-scalars";
-import type { Option } from "ts-results-es";
+import { AsyncResult, Err, Ok, type Option } from "ts-results-es";
 import {
   Arg,
   Args,
@@ -182,18 +181,16 @@ export class EventResolver implements CrudResolver<EventNode, "event"> {
     name: "removeImageFromEvent",
     description: "Remove an image from an event",
   })
-  async removeImage(
+  removeImage(
     @Arg("eventId", () => GlobalIdScalar) eventUuid: GlobalId,
     @Arg("imageId", () => GlobalIdScalar) imageUuid: GlobalId
-  ): Promise<void> {
-    const row = await this.eventImageRepository.removeEventImageByUnique({
-      eventUuid: eventUuid.id,
-      imageUuid: imageUuid.id,
-    });
-
-    if (!row) {
-      throw new LegacyError(LegacyErrorCode.NotFound, "Image not found");
-    }
+  ): AsyncRepositoryResult<void> {
+    return new AsyncResult(
+      this.eventImageRepository.removeEventImageByUnique({
+        eventUuid: eventUuid.id,
+        imageUuid: imageUuid.id,
+      })
+    ).andThen((val) => (val ? Ok(undefined) : Err(new NotFoundError("Image"))));
   }
 
   @WithAuditLogging()

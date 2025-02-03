@@ -8,8 +8,6 @@ import {
   GlobalIdScalar,
   ImageNode,
   InstagramFeedNode,
-  LegacyError,
-  LegacyErrorCode,
 } from "@ukdanceblue/common";
 import { CreateFeedInput, SetFeedInput } from "@ukdanceblue/common";
 import { ConcreteResult, NotFoundError } from "@ukdanceblue/common/error";
@@ -117,7 +115,7 @@ export class FeedResolver {
       }
     );
     if (feedItem == null) {
-      throw new LegacyError(LegacyErrorCode.NotFound, "Feed item not found");
+      throw new NotFoundError("Feed item");
     }
     return feedItemModelToResource(feedItem);
   }
@@ -131,7 +129,7 @@ export class FeedResolver {
       uuid: feedItemUuid.id,
     });
     if (feedItem == null) {
-      throw new LegacyError(LegacyErrorCode.NotFound, "Feed item not found");
+      throw new NotFoundError("Feed item");
     }
     return feedItemModelToResource(feedItem);
   }
@@ -150,7 +148,7 @@ export class FeedResolver {
       }
     );
     if (feedItem == null) {
-      throw new LegacyError(LegacyErrorCode.NotFound, "Feed item not found");
+      throw new NotFoundError("Feed item");
     }
     return feedItemModelToResource(feedItem);
   }

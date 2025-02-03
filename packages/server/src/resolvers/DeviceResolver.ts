@@ -5,8 +5,6 @@ import {
   DeviceNode,
   GetDeviceByUuidResponse,
   GlobalIdScalar,
-  LegacyError,
-  LegacyErrorCode,
   ListDevicesArgs,
   ListDevicesResponse,
   NotificationDeliveriesArgs,
@@ -68,7 +66,7 @@ export class DeviceResolver
     const row = await this.deviceRepository.getDeviceByUuid(id);
 
     if (row == null) {
-      throw new LegacyError(LegacyErrorCode.NotFound, "Device not found");
+      throw new NotFoundError("Device");
     }
 
     const resp = new GetDeviceByUuidResponse();

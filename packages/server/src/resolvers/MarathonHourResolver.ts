@@ -4,8 +4,6 @@ import {
   AccessControlAuthorized,
   GlobalIdScalar,
   ImageNode,
-  LegacyError,
-  LegacyErrorCode,
   MarathonHourNode,
 } from "@ukdanceblue/common";
 import {
@@ -14,6 +12,7 @@ import {
   ListMarathonHoursResponse,
   SetMarathonHourInput,
 } from "@ukdanceblue/common";
+import { NotFoundError } from "@ukdanceblue/common/error";
 import { VoidResolver } from "graphql-scalars";
 import {
   Arg,
@@ -46,7 +45,7 @@ export class MarathonHourResolver
         uuid: id,
       });
     if (marathonHour == null) {
-      throw new LegacyError(LegacyErrorCode.NotFound, "MarathonHour not found");
+      throw new NotFoundError("MarathonHour");
     }
     return marathonHourModelToResource(marathonHour);
   }
@@ -121,7 +120,7 @@ export class MarathonHourResolver
       }
     );
     if (marathonHour == null) {
-      throw new LegacyError(LegacyErrorCode.NotFound, "MarathonHour not found");
+      throw new NotFoundError("MarathonHour");
     }
     return marathonHourModelToResource(marathonHour);
   }
@@ -134,7 +133,7 @@ export class MarathonHourResolver
       uuid: id,
     });
     if (marathonHour == null) {
-      throw new LegacyError(LegacyErrorCode.NotFound, "MarathonHour not found");
+      throw new NotFoundError("MarathonHour");
     }
     return marathonHourModelToResource(marathonHour);
   }
@@ -151,7 +150,7 @@ export class MarathonHourResolver
       { uuid: imageUuid.id }
     );
     if (marathonHour == null) {
-      throw new LegacyError(LegacyErrorCode.NotFound, "MarathonHour not found");
+      throw new NotFoundError("MarathonHour");
     }
     return marathonHourModelToResource(marathonHour);
   }
@@ -168,7 +167,7 @@ export class MarathonHourResolver
       { uuid: imageUuid.id }
     );
     if (marathonHour == null) {
-      throw new LegacyError(LegacyErrorCode.NotFound, "MarathonHour not found");
+      throw new NotFoundError("MarathonHour");
     }
   }
 }

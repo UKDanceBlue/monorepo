@@ -3,8 +3,6 @@ import type { CrudResolver, GlobalId } from "@ukdanceblue/common";
 import {
   AccessControlAuthorized,
   GlobalIdScalar,
-  LegacyError,
-  LegacyErrorCode,
   NotificationDeliveryNode,
   NotificationNode,
 } from "@ukdanceblue/common";
@@ -20,6 +18,7 @@ import {
   ActionDeniedError,
   ConcreteResult,
   InvalidArgumentError,
+  NotFoundError,
 } from "@ukdanceblue/common/error";
 import { VoidResolver } from "graphql-scalars";
 import { Err, Ok } from "ts-results-es";
@@ -365,7 +364,7 @@ export class NotificationDeliveryResolver {
       });
 
     if (notification == null) {
-      throw new LegacyError(LegacyErrorCode.NotFound, "Notification not found");
+      throw new NotFoundError("Notification");
     }
 
     return notificationModelToResource(notification);

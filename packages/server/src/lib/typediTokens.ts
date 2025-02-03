@@ -1,7 +1,6 @@
 // This file is first imported by index.ts
 
 import { Container, Token } from "@freshgum/typedi";
-import type { PrismaClient } from "@prisma/client";
 
 import type { SyslogLevels } from "./logging/SyslogLevels.js";
 
@@ -105,4 +104,3 @@ export function getEnvironment(): Environment {
     isRepl: Container.get(isReplToken),
   };
 }
-export const PrismaService = new Token<PrismaClient>("PrismaClient");

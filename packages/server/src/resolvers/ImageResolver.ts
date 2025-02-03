@@ -6,14 +6,13 @@ import {
   AccessControlAuthorized,
   GlobalIdScalar,
   ImageNode,
-  LegacyError,
-  LegacyErrorCode,
 } from "@ukdanceblue/common";
 import {
   CreateImageInput,
   ListImagesArgs,
   ListImagesResponse,
 } from "@ukdanceblue/common";
+import { InvalidArgumentError, NotFoundError } from "@ukdanceblue/common/error";
 import { GraphQLURL } from "graphql-scalars";
 import fetch from "node-fetch";
 import { Result } from "ts-results-es";
@@ -46,7 +45,7 @@ export class ImageResolver implements CrudResolver<ImageNode, "image"> {
     const result = await this.imageRepository.findImageByUnique({ uuid: id });
 
     if (result == null) {
-      throw new LegacyError(LegacyErrorCode.NotFound, "Image not found");
+      throw new NotFoundError("Image");
     }
 
     return imageModelToResource(
@@ -159,7 +158,7 @@ export class ImageResolver implements CrudResolver<ImageNode, "image"> {
     );
 
     if (result == null) {
-      throw new LegacyError(LegacyErrorCode.NotFound, "Image not found");
+      throw new NotFoundError("Image");
     }
 
     return imageModelToResource(
@@ -207,7 +206,7 @@ export class ImageResolver implements CrudResolver<ImageNode, "image"> {
     );
 
     if (result == null) {
-      throw new LegacyError(LegacyErrorCode.NotFound, "Image not found");
+      throw new NotFoundError("Image");
     }
 
     return imageModelToResource(
@@ -228,7 +227,7 @@ export class ImageResolver implements CrudResolver<ImageNode, "image"> {
     const result = await this.imageRepository.deleteImage({ uuid: id });
 
     if (result == null) {
-      throw new LegacyError(LegacyErrorCode.NotFound, "Image not found");
+      throw new NotFoundError("Image");
     }
 
     return imageModelToResource(
@@ -247,8 +246,7 @@ export class ImageResolver implements CrudResolver<ImageNode, "image"> {
   }> {
     if (url != null) {
       if (url.protocol !== "https:") {
-        throw new LegacyError(
-          LegacyErrorCode.InvalidRequest,
+        throw new InvalidArgumentError(
           "An Image URL must be a valid HTTPS URL"
         );
       } else {
@@ -260,8 +258,7 @@ export class ImageResolver implements CrudResolver<ImageNode, "image"> {
 
           const contentType = download.headers.get("content-type");
           if (contentType == null) {
-            throw new LegacyError(
-              LegacyErrorCode.InvalidRequest,
+            throw new InvalidArgumentError(
               "The requested image does not have a content type"
             );
           }
@@ -272,8 +269,7 @@ export class ImageResolver implements CrudResolver<ImageNode, "image"> {
             logger.error("Failed to parse MIME type in createImage", {
               error,
             });
-            throw new LegacyError(
-              LegacyErrorCode.InvalidRequest,
+            throw new InvalidArgumentError(
               "Could not determine the MIME type of the requested image"
             );
           }
@@ -285,8 +281,7 @@ export class ImageResolver implements CrudResolver<ImageNode, "image"> {
           logger.error("Failed to fetch an image from url in createImage", {
             error,
           });
-          throw new LegacyError(
-            LegacyErrorCode.InvalidRequest,
+          throw new InvalidArgumentError(
             "Could not access the requested image"
           );
         }

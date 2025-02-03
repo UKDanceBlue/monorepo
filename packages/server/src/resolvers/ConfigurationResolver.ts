@@ -20,21 +20,27 @@ import { Arg, Mutation, Query, Resolver } from "type-graphql";
 import { fileURLToPath } from "url";
 
 import { WithAuditLogging } from "#lib/logging/auditLogging.js";
+import { isDevelopmentToken } from "#lib/typediTokens.js";
 import { configurationModelToResource } from "#repositories/configuration/configurationModelToResource.js";
 import { ConfigurationRepository } from "#repositories/configuration/ConfigurationRepository.js";
 import type { AsyncRepositoryResult } from "#repositories/shared.js";
 
 @Resolver(() => ConfigurationNode)
-@Service([ConfigurationRepository])
+@Service([ConfigurationRepository, isDevelopmentToken])
 export class ConfigurationResolver
   implements CrudResolver<ConfigurationNode, "configuration">
 {
   constructor(
-    private readonly configurationRepository: ConfigurationRepository
+    private readonly configurationRepository: ConfigurationRepository,
+    private readonly isDevelopment: boolean
   ) {}
 
   @Query(() => DateTimeScalar, { nullable: true })
   async buildTimestamp(): Promise<Option<DateTime>> {
+    if (this.isDevelopment) {
+      return None;
+    }
+
     try {
       const file = await readFile(
         fileURLToPath(import.meta.resolve("../BUILD_TIME")),

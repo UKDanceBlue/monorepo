@@ -3,8 +3,6 @@ import type { CrudResolver, GlobalId } from "@ukdanceblue/common";
 import {
   AccessControlAuthorized,
   GlobalIdScalar,
-  LegacyError,
-  LegacyErrorCode,
   PersonNode,
   PointEntryNode,
   PointOpportunityNode,
@@ -56,7 +54,7 @@ export class PointEntryResolver
     });
 
     if (model == null) {
-      throw new LegacyError(LegacyErrorCode.NotFound, "PointEntry not found");
+      throw new NotFoundError("PointEntry");
     }
 
     return pointEntryModelToResource(model);

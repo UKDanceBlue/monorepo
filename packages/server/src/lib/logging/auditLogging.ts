@@ -17,7 +17,7 @@ import {
 } from "type-graphql";
 
 import type { GraphQLContext } from "#auth/context.js";
-import { PrismaService } from "#lib/typediTokens.js";
+import { PrismaService } from "#lib/prisma.js";
 
 import { logger } from "./standardLogging.js";
 

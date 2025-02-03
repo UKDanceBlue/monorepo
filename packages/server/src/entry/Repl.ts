@@ -3,12 +3,12 @@ import "reflect-metadata";
 import { Service } from "@freshgum/typedi";
 import repl from "repl";
 
+import { PrismaService } from "#lib/prisma.js";
 import {
   getEnvironment,
   isReplToken,
   logDirToken,
   loggingLevelToken,
-  PrismaService,
 } from "#lib/typediTokens.js";
 
 import { EntryPoint } from "./EntryPoint.js";
