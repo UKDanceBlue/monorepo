@@ -109,7 +109,8 @@ export function extractDDNBatchType(
       return Ok(BatchType.P);
     }
     default: {
-      return Err(new InvalidArgumentError(`Unknown batch type: ${code}`));
+      console.warn(`Unknown batch type: ${code}`);
+      return Ok(BatchType.Unknown);
     }
   }
 }
