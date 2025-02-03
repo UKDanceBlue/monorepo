@@ -3,7 +3,6 @@ import "reflect-metadata";
 export * from "./api/filtering/Filter.js";
 export * from "./api/filtering/FilteredListQueryArgs.js";
 export * from "./api/filtering/ListQueryTypes.js";
-export type * from "./api/jwt.js";
 export * from "./api/params/index.js";
 export * from "./api/resources/index.js";
 export * from "./api/standardResolver.js";
