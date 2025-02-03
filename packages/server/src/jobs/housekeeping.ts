@@ -18,7 +18,6 @@ export class HousekeepingJob extends Job {
 
   protected async run(): Promise<void> {
     await this.userHousekeeping();
-    await this.fundraisingHousekeeping();
   }
 
   async userHousekeeping() {
@@ -89,28 +88,5 @@ export class HousekeepingJob extends Job {
     } catch (error) {
       logger.error("Failed to clean up user data", { error });
     }
-  }
-
-  async fundraisingHousekeeping() {
-    const orphanEntries = await this.prisma.fundraisingEntry.deleteMany({
-      where: {
-        AND: [
-          {
-            dbFundsEntry: {
-              is: null,
-            },
-          },
-          {
-            ddn: {
-              is: null,
-            },
-          },
-        ],
-      },
-    });
-    if (orphanEntries.count > 0)
-      logger.info("Deleted sourceless entries", {
-        count: orphanEntries.count,
-      });
   }
 }
