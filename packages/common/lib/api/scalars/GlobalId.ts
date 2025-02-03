@@ -15,8 +15,6 @@ import {
   UTF8ArrToStr,
 } from "../../utility/primitive/base64.js";
 
-const uuidRegex = / ^[\da-f]{8}(?:\b-[\da-f]{4}){3}\b-[\da-f]{12}$/i;
-
 export interface GlobalId {
   typename: string;
   id: string;
@@ -106,9 +104,6 @@ export const GlobalIdScalar = new GraphQLScalarType({
       const parsed = parseGlobalId(value);
       if (parsed.isErr()) {
         throw new TypeError(parsed.error.message);
-      }
-      if (!uuidRegex.test(parsed.value.id)) {
-        throw new TypeError("GlobalIdScalar can only parse valid UUIDs");
       }
       return parsed.value;
     } else {
