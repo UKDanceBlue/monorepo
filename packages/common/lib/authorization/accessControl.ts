@@ -32,7 +32,9 @@ export interface SimpleTeamMembership {
   position: MembershipPositionType;
 }
 
+// We use this as a placeholder for fields that shouldn't be used to check permissions
 const NEVER = {} as never;
+
 const extraFieldsByResource = {
   PersonNode: {
     [".fundraisingAssignments"]: NEVER,
@@ -304,11 +306,9 @@ function applyCommitteePermissions(
         "."
       );
 
-      allow(
-        role === CommitteeRole.Chair ? "manage" : "modify",
-        "FundraisingEntryNode",
-        "."
-      );
+      if (role !== CommitteeRole.Member) {
+        allow("manage", "FundraisingEntryNode", ".");
+      }
 
       allow("manage", "TeamNode", [
         ".fundraisingAssignments",
