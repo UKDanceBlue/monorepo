@@ -1,4 +1,3 @@
-import { LegacyErrorCode } from "@ukdanceblue/common";
 import { DateTime } from "luxon";
 import { useCallback, useEffect, useState } from "react";
 import { useClient } from "urql";
@@ -121,7 +120,7 @@ export function useLoadNotifications(): {
           try {
             if (result.error) {
               const code = result.error.graphQLErrors[0]?.extensions?.code;
-              if (code === LegacyErrorCode.Unauthorized) {
+              if (code === "Unauthenticated") {
                 // I don't really want to handle dealing with a device that's forgotten it's verifier...
                 // ...so I'm just going to tell the user to report it as a bug and we'll figure it out if it happens
                 showMessage(
