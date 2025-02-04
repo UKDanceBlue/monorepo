@@ -203,7 +203,7 @@ export function FundraisingEntryEditor({ id }: { id: string }) {
             },
           ]}
         >
-          <Select {...selectProps} open allowClear />
+          <Select {...selectProps} allowClear />
         </Form.Item>
         <Form.Item
           label="Batch Type"
