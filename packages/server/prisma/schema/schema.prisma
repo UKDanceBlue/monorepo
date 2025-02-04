@@ -4,6 +4,12 @@ generator client {
   binaryTargets   = ["native", "debian-openssl-3.0.x"]
 }
 
+generator markdown {
+  provider = "prisma-markdown"
+  output   = "../diagram.md"
+  title    = "DanceBlue Server"
+}
+
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
