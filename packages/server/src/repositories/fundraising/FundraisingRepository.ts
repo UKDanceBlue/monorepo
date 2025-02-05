@@ -32,6 +32,7 @@ import {
 } from "@ukdanceblue/common/error";
 import { Err, None, Ok, Option, Result, Some } from "ts-results-es";
 
+import { logger } from "#lib/logging/standardLogging.js";
 import { PrismaService } from "#lib/prisma.js";
 import {
   buildDefaultRepository,
@@ -630,32 +631,69 @@ export class FundraisingEntryRepository extends buildDefaultRepository<
       RepositoryError
     >
   > {
+    const assignment = await this.prisma.fundraisingAssignment.findUnique({
+      where: assignmentParam,
+      select: {
+        person: {
+          select: {
+            id: true,
+          },
+        },
+        parentEntry: {
+          select: {
+            id: true,
+          },
+        },
+      },
+    });
+
+    if (!assignment) {
+      return Err(new NotFoundError("FundraisingAssignment"));
+    }
+
+    return this.getMembershipForEntryAndPerson(
+      {
+        id: assignment.parentEntry.id,
+      },
+      {
+        id: assignment.person.id,
+      }
+    );
+  }
+
+  async getMembershipForEntryAndPerson(
+    entryParam: FundraisingEntryUniqueParam,
+    personParam: UniquePersonParam
+  ): Promise<
+    Result<
+      Membership & {
+        team: Team;
+        person: Person;
+      },
+      RepositoryError
+    >
+  > {
     try {
-      const assignment = await this.prisma.fundraisingAssignment.findUnique({
-        where: assignmentParam,
+      const entry = await this.prisma.fundraisingEntryWithMeta.findUnique({
+        where: entryParam,
         select: {
-          person: true,
-          parentEntry: {
+          solicitationCodeOverride: {
+            select: { teams: { select: { id: true } } },
+          },
+          ddn: {
             select: {
-              solicitationCodeOverride: {
+              solicitationCode: {
                 select: { teams: { select: { id: true } } },
               },
-              ddn: {
+              batch: true,
+            },
+          },
+          dbFundsEntry: {
+            select: {
+              dbFundsTeam: {
                 select: {
                   solicitationCode: {
                     select: { teams: { select: { id: true } } },
-                  },
-                  batch: true,
-                },
-              },
-              dbFundsEntry: {
-                select: {
-                  dbFundsTeam: {
-                    select: {
-                      solicitationCode: {
-                        select: { teams: { select: { id: true } } },
-                      },
-                    },
                   },
                 },
               },
@@ -664,32 +702,38 @@ export class FundraisingEntryRepository extends buildDefaultRepository<
         },
       });
 
-      if (!assignment) {
+      if (!entry) {
         return Err(new NotFoundError("FundraisingAssignment"));
       }
 
       const teams =
-        assignment.parentEntry.solicitationCodeOverride?.teams ??
-        assignment.parentEntry.ddn?.solicitationCode.teams ??
-        assignment.parentEntry.dbFundsEntry?.dbFundsTeam.solicitationCode
-          .teams ??
+        entry.solicitationCodeOverride?.teams ??
+        entry.ddn?.solicitationCode.teams ??
+        entry.dbFundsEntry?.dbFundsTeam.solicitationCode.teams ??
         [];
 
-      const result = await this.prisma.membership.findFirst({
+      const result = await this.prisma.membership.findMany({
         where: {
-          personId: assignment.person.id,
+          person: personParam,
           teamId: {
             in: teams.map((t) => t.id),
           },
         },
         include: { team: true, person: true },
       });
+      if (result.length > 1) {
+        logger.warning("Multiple memberships found for entry and person", {
+          entryParam,
+          personParam,
+          result,
+        });
+      }
       // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-      if (!result || !result.team || !result.person) {
+      if (!result[0] || !result[0].team || !result[0].person) {
         return Err(new NotFoundError("Membership"));
       }
 
-      return Ok(result);
+      return Ok(result[0]);
     } catch (error: unknown) {
       return handleRepositoryError(error);
     }

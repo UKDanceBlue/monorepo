@@ -47,13 +47,13 @@ export class FundraisingAssignmentResolver
 
   @AccessControlAuthorized<"TeamNode">(
     "get",
-    (_, { entryId }) => {
-      if (!isGlobalId(entryId)) {
+    (_, { id }) => {
+      if (!isGlobalId(id)) {
         return Err(new InvalidArgumentError("Invalid entryId"));
       }
       return new AsyncResult(
         Container.get(FundraisingEntryRepository).getMembershipForAssignment({
-          uuid: entryId.id,
+          uuid: id.id,
         })
       ).map(
         ({ team: { uuid } }) =>
@@ -80,14 +80,24 @@ export class FundraisingAssignmentResolver
 
   @AccessControlAuthorized<"TeamNode">(
     "create",
-    (_, { entryId }) => {
+    (_, { entryId, personId }) => {
       if (!isGlobalId(entryId)) {
         return Err(new InvalidArgumentError("Invalid entryId"));
       }
+      if (!isGlobalId(personId)) {
+        return Err(new InvalidArgumentError("Invalid personId"));
+      }
       return new AsyncResult(
-        Container.get(FundraisingEntryRepository).getMembershipForAssignment({
-          uuid: entryId.id,
-        })
+        Container.get(
+          FundraisingEntryRepository
+        ).getMembershipForEntryAndPerson(
+          {
+            uuid: entryId.id,
+          },
+          {
+            uuid: personId.id,
+          }
+        )
       ).map(
         ({ team: { uuid } }) =>
           ({
@@ -117,13 +127,13 @@ export class FundraisingAssignmentResolver
 
   @AccessControlAuthorized<"TeamNode">(
     "update",
-    (_, { entryId }) => {
-      if (!isGlobalId(entryId)) {
-        return Err(new InvalidArgumentError("Invalid entryId"));
+    (_, { id }) => {
+      if (!isGlobalId(id)) {
+        return Err(new InvalidArgumentError("Invalid id"));
       }
       return new AsyncResult(
         Container.get(FundraisingEntryRepository).getMembershipForAssignment({
-          uuid: entryId.id,
+          uuid: id.id,
         })
       ).map(
         ({ team: { uuid } }) =>
@@ -151,13 +161,13 @@ export class FundraisingAssignmentResolver
 
   @AccessControlAuthorized<"TeamNode">(
     "delete",
-    (_, { entryId }) => {
-      if (!isGlobalId(entryId)) {
-        return Err(new InvalidArgumentError("Invalid entryId"));
+    (_, { id }) => {
+      if (!isGlobalId(id)) {
+        return Err(new InvalidArgumentError("Invalid id"));
       }
       return new AsyncResult(
         Container.get(FundraisingEntryRepository).getMembershipForAssignment({
-          uuid: entryId.id,
+          uuid: id.id,
         })
       ).map(
         ({ team: { uuid } }) =>
