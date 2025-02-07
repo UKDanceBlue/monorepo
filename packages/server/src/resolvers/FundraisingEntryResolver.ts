@@ -212,6 +212,19 @@ export class FundraisingEntryResolver
     return entry.toAsyncResult().map(fundraisingEntryModelToNode).promise;
   }
 
+  @WithAuditLogging()
+  @AccessControlAuthorized("delete", ["getId", "FundraisingEntryNode", "id"])
+  @Mutation(() => FundraisingEntryNode, { name: "deleteFundraisingEntry" })
+  deleteFundraisingEntry(
+    @Arg("id", () => GlobalIdScalar) { id }: GlobalId
+  ): AsyncRepositoryResult<FundraisingEntryNode> {
+    return this.fundraisingEntryRepository
+      .deleteEntry({
+        uuid: id,
+      })
+      .map(fundraisingEntryModelToNode);
+  }
+
   @FieldResolver(() => DailyDepartmentNotificationNode, { nullable: true })
   async dailyDepartmentNotification(
     @Root()

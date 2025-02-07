@@ -118,37 +118,32 @@ function RouteComponent() {
 
   return (
     <div style={{ padding: 24, display: "flex", justifyContent: "center" }}>
+      <style>
+        {`#ddnTable tbody:nth-child(odd) {
+          margin-top: 1rem
+        }`}
+      </style>
       {fragmentData ? (
-        <Descriptions title="DDN Details" bordered column={2}>
-          <Descriptions.Item label="Account Name">
-            {fragmentData.accountName}
-          </Descriptions.Item>
-          <Descriptions.Item label="Account Number">
-            {fragmentData.accountNumber}
-          </Descriptions.Item>
-          <Descriptions.Item label="Adv Fee Amt Phil">
-            {fragmentData.advFeeAmtPhil}
-          </Descriptions.Item>
-          <Descriptions.Item label="Adv Fee Amt Unit">
-            {fragmentData.advFeeAmtUnit}
-          </Descriptions.Item>
-          <Descriptions.Item label="Adv Fee Cc Phil">
-            {fragmentData.advFeeCcPhil}
-          </Descriptions.Item>
-          <Descriptions.Item label="Adv Fee Cc Unit">
-            {fragmentData.advFeeCcUnit}
-          </Descriptions.Item>
-          <Descriptions.Item label="Adv Fee Status">
-            {fragmentData.advFeeStatus}
-          </Descriptions.Item>
+        <Descriptions
+          title="DDN Details"
+          bordered
+          column={{
+            xxl: 8,
+            xl: 6,
+            lg: 5,
+            md: 5,
+            sm: 2,
+            xs: 1,
+          }}
+          layout="vertical"
+          size="middle"
+          id="ddnTable"
+        >
           <Descriptions.Item label="Batch ID">
             {fragmentData.batch.batchNumber}
           </Descriptions.Item>
           <Descriptions.Item label="Batch Type">
             {stringifyDDNBatchType(fragmentData.batch.batchType)}
-          </Descriptions.Item>
-          <Descriptions.Item label="Behalf Honor Memorial">
-            {fragmentData.behalfHonorMemorial}
           </Descriptions.Item>
           <Descriptions.Item label="Combined Amount">
             {fragmentData.combinedAmount}
@@ -165,14 +160,26 @@ function RouteComponent() {
           <Descriptions.Item label="Comment">
             {fragmentData.comment}
           </Descriptions.Item>
-          <Descriptions.Item label="Department">
-            {fragmentData.department}
+          <Descriptions.Item label="Solicitation">
+            {fragmentData.solicitation}
           </Descriptions.Item>
-          <Descriptions.Item label="Div First Gift">
-            {fragmentData.divFirstGift}
+          <Descriptions.Item label="Solicitation Code">
+            {fragmentData.solicitationCode.prefix}
+            {fragmentData.solicitationCode.code
+              .toString()
+              .padStart(4, "0")}: {fragmentData.solicitationCode.name}
           </Descriptions.Item>
-          <Descriptions.Item label="Division">
-            {fragmentData.division}
+          <Descriptions.Item label="Effective Date">
+            {fragmentData.effectiveDate}
+          </Descriptions.Item>
+          <Descriptions.Item label="Pledged Date">
+            {fragmentData.pledgedDate}
+          </Descriptions.Item>
+          <Descriptions.Item label="Process Date">
+            {fragmentData.processDate}
+          </Descriptions.Item>
+          <Descriptions.Item label="Transaction Date">
+            {fragmentData.transactionDate}
           </Descriptions.Item>
           <Descriptions.Item label="Donor 1 Amount">
             {fragmentData.donor1Amount}
@@ -234,8 +241,38 @@ function RouteComponent() {
           <Descriptions.Item label="Donor 2 Title Bar">
             {fragmentData.donor2TitleBar}
           </Descriptions.Item>
-          <Descriptions.Item label="Effective Date">
-            {fragmentData.effectiveDate}
+          <Descriptions.Item label="Account Name">
+            {fragmentData.accountName}
+          </Descriptions.Item>
+          <Descriptions.Item label="Account Number">
+            {fragmentData.accountNumber}
+          </Descriptions.Item>
+          <Descriptions.Item label="Adv Fee Amt Phil">
+            {fragmentData.advFeeAmtPhil}
+          </Descriptions.Item>
+          <Descriptions.Item label="Adv Fee Amt Unit">
+            {fragmentData.advFeeAmtUnit}
+          </Descriptions.Item>
+          <Descriptions.Item label="Adv Fee Cc Phil">
+            {fragmentData.advFeeCcPhil}
+          </Descriptions.Item>
+          <Descriptions.Item label="Adv Fee Cc Unit">
+            {fragmentData.advFeeCcUnit}
+          </Descriptions.Item>
+          <Descriptions.Item label="Adv Fee Status">
+            {fragmentData.advFeeStatus}
+          </Descriptions.Item>
+          <Descriptions.Item label="Behalf Honor Memorial">
+            {fragmentData.behalfHonorMemorial}
+          </Descriptions.Item>
+          <Descriptions.Item label="Department">
+            {fragmentData.department}
+          </Descriptions.Item>
+          <Descriptions.Item label="Div First Gift">
+            {fragmentData.divFirstGift}
+          </Descriptions.Item>
+          <Descriptions.Item label="Division">
+            {fragmentData.division}
           </Descriptions.Item>
           <Descriptions.Item label="GIK Description">
             {fragmentData.gikDescription}
@@ -267,12 +304,6 @@ function RouteComponent() {
           <Descriptions.Item label="Pledged Amount">
             {fragmentData.pledgedAmount}
           </Descriptions.Item>
-          <Descriptions.Item label="Pledged Date">
-            {fragmentData.pledgedDate}
-          </Descriptions.Item>
-          <Descriptions.Item label="Process Date">
-            {fragmentData.processDate}
-          </Descriptions.Item>
           <Descriptions.Item label="SAP Doc Date">
             {fragmentData.sapDocDate}
           </Descriptions.Item>
@@ -284,18 +315,6 @@ function RouteComponent() {
           </Descriptions.Item>
           <Descriptions.Item label="Sec Type">
             {fragmentData.secType}
-          </Descriptions.Item>
-          <Descriptions.Item label="Solicitation">
-            {fragmentData.solicitation}
-          </Descriptions.Item>
-          <Descriptions.Item label="Solicitation Code">
-            {fragmentData.solicitationCode.prefix}
-            {fragmentData.solicitationCode.code
-              .toString()
-              .padStart(4, "0")}: {fragmentData.solicitationCode.name}
-          </Descriptions.Item>
-          <Descriptions.Item label="Transaction Date">
-            {fragmentData.transactionDate}
           </Descriptions.Item>
           <Descriptions.Item label="Transaction Type">
             {fragmentData.transactionType}

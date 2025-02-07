@@ -36,6 +36,7 @@ export const FundraisingEntryTableFragment = graphql(
       donatedByText
       donatedToText
       donatedOn
+      createdAt
       batchType
       solicitationCode {
         id
@@ -226,7 +227,7 @@ export function FundraisingEntriesTable<T extends Record<string, unknown>>({
             dataIndex: "amountUnassigned",
             key: "amountUnassigned",
             sorter: true,
-
+            hidden: potentialAssignees == null,
             render: (value) => (
               <NumberField
                 value={value}
@@ -333,6 +334,14 @@ export function FundraisingEntriesTable<T extends Record<string, unknown>>({
               text: stringifyDDNBatchType(batchType),
               value: batchType,
             })),
+          },
+          {
+            title: "Entry Created",
+            dataIndex: "createdAt",
+            key: "createdAt",
+            sorter: true,
+            render: (date) => <DateField value={date} />,
+            defaultSortOrder: getDefaultSortOrder("createdAt", sorters),
           },
           Table.EXPAND_COLUMN,
           {

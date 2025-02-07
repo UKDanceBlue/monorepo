@@ -1037,6 +1037,7 @@ type Mutation {
   """Delete a feed item"""
   deleteFeedItem(feedItemUuid: GlobalId!): Boolean!
   deleteFundraisingAssignment(id: GlobalId!): FundraisingAssignmentNode!
+  deleteFundraisingEntry(id: GlobalId!): FundraisingEntryNode!
   deleteImage(id: GlobalId!): ImageNode!
   deleteMarathon(id: GlobalId!): MarathonNode!
   deleteMarathonHour(id: GlobalId!): MarathonHourNode!

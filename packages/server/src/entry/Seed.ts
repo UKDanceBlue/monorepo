@@ -112,10 +112,11 @@ export class Seed extends EntryPoint {
     });
 
     logger.info("Seeding people");
-    const people: Person[] = [];
+    const peoplePromises: Promise<Person>[] = [];
     for (let i = 0; i < 400; i++) {
-      people.push(await this.seedPerson());
+      peoplePromises.push(this.seedPerson());
     }
+    const people: Person[] = await Promise.all(peoplePromises);
 
     logger.info("Seeding solicitation codes");
     const solicitationCodes = [];
@@ -129,15 +130,31 @@ export class Seed extends EntryPoint {
     }
 
     logger.info("Seeding DDNs");
-    for (let i = 0; i < 1000; i++) {
-      await this.seedDDNWithDonorData(solicitationCodes, people);
+    // We split it into batches of 250 to avoid overwhelming the database
+    const ddnPromises: Promise<void>[] = [];
+    for (let i = 0; i < 250; i++) {
+      ddnPromises.push(this.seedDDNWithDonorData(solicitationCodes, people));
     }
+    await Promise.all(ddnPromises);
+    for (let i = 0; i < 250; i++) {
+      ddnPromises.push(this.seedDDNWithDonorData(solicitationCodes, people));
+    }
+    await Promise.all(ddnPromises);
+    for (let i = 0; i < 250; i++) {
+      ddnPromises.push(this.seedDDNWithDonorData(solicitationCodes, people));
+    }
+    await Promise.all(ddnPromises);
+    for (let i = 0; i < 250; i++) {
+      ddnPromises.push(this.seedDDNWithDonorData(solicitationCodes, people));
+    }
+    await Promise.all(ddnPromises);
 
-    await this.seedMarathon("DB21", people, solicitationCodes);
-    await this.seedMarathon("DB22", people, solicitationCodes);
-    await this.seedMarathon("DB23", people, solicitationCodes);
-    await this.seedMarathon("DB24", people, solicitationCodes);
-    const db25 = await this.seedMarathon("DB25", people, solicitationCodes);
+    await this.committeeRepository.ensureCommittees();
+    const [, , db25] = await Promise.all([
+      this.seedMarathon("DB23", people, solicitationCodes),
+      this.seedMarathon("DB24", people, solicitationCodes),
+      this.seedMarathon("DB25", people, solicitationCodes),
+    ]);
 
     await this.seedSuperAdmin(db25.marathon);
   }
@@ -160,6 +177,66 @@ export class Seed extends EntryPoint {
     const committees = (
       await this.committeeRepository.ensureCommittees([marathon])
     ).unwrap();
+
+    logger.info(`Seeding committee members for ${year}`);
+    for (const committee of Object.values(CommitteeIdentifier)) {
+      const chair = await this.personRepository
+        .createPerson({
+          email: `${marathon.year}.${committee}.chair@uky.edu`,
+          linkblue: `${marathon.year}.${committee}.chair`,
+          name: `${marathon.year} ${committee} Chair`,
+        })
+        .then((a) => a.unwrap());
+      const coordinators = Promise.all(
+        Array.from({ length: faker.number.int({ min: 1, max: 3 }) }, (_, i) =>
+          this.personRepository
+            .createPerson({
+              email: `${marathon.year}.${committee}.coordinator.${i}@uky.edu`,
+              linkblue: `${marathon.year}.${committee}.coordinator.${i}`,
+              name: `${marathon.year} ${committee} Coordinator ${i}`,
+            })
+            .then((a) => a.unwrap())
+        )
+      );
+      const members = Promise.all(
+        Array.from({ length: faker.number.int({ min: 5, max: 10 }) }, (_, i) =>
+          this.personRepository
+            .createPerson({
+              email: `${marathon.year}.${committee}.member.${i}@uky.edu`,
+              linkblue: `${marathon.year}.${committee}.member.${i}`,
+              name: `${marathon.year} ${committee} Member ${i}`,
+            })
+            .then((a) => a.unwrap())
+        )
+      );
+
+      await this.committeeRepository.assignPersonToCommittee(
+        { id: chair.id },
+        committee,
+        CommitteeRole.Chair,
+        { id: marathon.id }
+      );
+      await Promise.all(
+        (await coordinators).map((coordinator) =>
+          this.committeeRepository.assignPersonToCommittee(
+            { id: coordinator.id },
+            committee,
+            CommitteeRole.Coordinator,
+            { id: marathon.id }
+          )
+        )
+      );
+      await Promise.all(
+        (await members).map((member) =>
+          this.committeeRepository.assignPersonToCommittee(
+            { id: member.id },
+            committee,
+            CommitteeRole.Member,
+            { id: marathon.id }
+          )
+        )
+      );
+    }
 
     logger.info(`Seeding images for ${year}`);
     const images = [];

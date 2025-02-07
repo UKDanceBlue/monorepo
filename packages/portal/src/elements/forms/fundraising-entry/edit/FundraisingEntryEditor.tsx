@@ -1,5 +1,6 @@
 import { Edit, useForm, useSelect } from "@refinedev/antd";
 import { type HttpError, useRefreshButton } from "@refinedev/core";
+import { Link } from "@tanstack/react-router";
 import type { SetFundraisingEntryInput } from "@ukdanceblue/common";
 import {
   BatchType,
@@ -20,6 +21,7 @@ import {
 import { SolicitationCodeTextFragment } from "#documents/solicitationCode.ts";
 import { LuxonDatePicker } from "#elements/components/antLuxonComponents.tsx";
 import { FundraisingAssignmentsTable } from "#elements/tables/fundraising/FundraisingEntryAssignmentsTable.tsx";
+import { useAuthorizationRequirement } from "#hooks/useLoginState.ts";
 
 export function FundraisingEntryEditor({ id }: { id: string }) {
   const { formProps, saveButtonProps, query } = useForm<
@@ -94,7 +96,12 @@ export function FundraisingEntryEditor({ id }: { id: string }) {
   }, [formProps]);
 
   return (
-    <Edit saveButtonProps={saveButtonProps}>
+    <Edit
+      saveButtonProps={saveButtonProps}
+      canDelete={useAuthorizationRequirement("delete", {
+        kind: "FundraisingEntryNode",
+      })}
+    >
       <p>
         There is a known issue with the solicitation code override field. Once
         you type your search, the field will close itself but the search will
@@ -126,9 +133,23 @@ export function FundraisingEntryEditor({ id }: { id: string }) {
           });
         }}
       >
-        <Form.Item label="Source" name={["source"]}>
+        <Form.Item
+          label="Source"
+          name={["source"]}
+          extra={
+            queryResult?.dailyDepartmentNotification && (
+              <Link
+                to="/fundraising/ddn/$ddnId"
+                params={{ ddnId: queryResult.dailyDepartmentNotification.id }}
+              >
+                View
+              </Link>
+            )
+          }
+        >
           <Input readOnly disabled variant="borderless" />
         </Form.Item>
+
         <Form.Item
           label="Donated On"
           name={["donatedOn"]}

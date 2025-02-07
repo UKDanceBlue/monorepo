@@ -6,7 +6,6 @@ import {
   DDNDonor,
   DDNDonorLink,
   FundraisingAssignment,
-  FundraisingEntry,
   FundraisingEntryWithMeta,
   Membership,
   Person,
@@ -30,7 +29,15 @@ import {
   NotFoundError,
   optionOf,
 } from "@ukdanceblue/common/error";
-import { Err, None, Ok, Option, Result, Some } from "ts-results-es";
+import {
+  AsyncResult,
+  Err,
+  None,
+  Ok,
+  Option,
+  Result,
+  Some,
+} from "ts-results-es";
 
 import { logger } from "#lib/logging/standardLogging.js";
 import { PrismaService } from "#lib/prisma.js";
@@ -52,6 +59,7 @@ import {
   handleRepositoryError,
   RepositoryError,
   SimpleUniqueParam,
+  unwrapRepositoryError,
 } from "#repositories/shared.js";
 import {
   SolicitationCodeRepository,
@@ -451,23 +459,21 @@ export class FundraisingEntryRepository extends buildDefaultRepository<
     }
   }
 
-  async deleteEntry(
+  deleteEntry(
     param: FundraisingEntryUniqueParam
-  ): Promise<Result<Option<FundraisingEntry>, RepositoryError>> {
-    try {
-      return Ok(
-        Some(await this.prisma.fundraisingEntry.delete({ where: param }))
-      );
-    } catch (error) {
-      if (
-        error instanceof Prisma.PrismaClientKnownRequestError &&
-        error.code === "P2025"
-      ) {
-        return Ok(None);
-      } else {
-        return handleRepositoryError(error);
+  ): AsyncResult<WideFundraisingEntryWithMeta, RepositoryError> {
+    return new AsyncResult(this.findEntryByUnique(param)).andThen((entry) => {
+      if (entry.source === FundraisingEntrySource.DBFunds) {
+        return Err(new ActionDeniedError("Cannot delete DB Funds entry"));
       }
-    }
+      return new AsyncResult(
+        this.prisma.fundraisingEntry
+          .delete({
+            where: { id: entry.id },
+          })
+          .then(() => Ok(entry), Err)
+      ).mapErr(unwrapRepositoryError);
+    });
   }
 
   async addAssignmentToEntry(
