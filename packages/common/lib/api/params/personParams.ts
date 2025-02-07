@@ -79,14 +79,14 @@ export class SetPersonInput {
 }
 @InputType()
 export class BulkPersonInput {
-  @Field(() => GraphQLNonEmptyString)
-  name!: string;
+  @Field(() => GraphQLNonEmptyString, { nullable: true })
+  name!: string | null | undefined;
 
   @Field(() => EmailAddressResolver)
   email!: string;
 
-  @Field(() => GraphQLNonEmptyString)
-  linkblue!: string;
+  @Field(() => GraphQLNonEmptyString, { nullable: true })
+  linkblue!: string | null | undefined;
 
   @Field(() => CommitteeIdentifier, { nullable: true })
   committee!: CommitteeIdentifier | null | undefined;

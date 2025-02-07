@@ -36,6 +36,7 @@ type CommitteeUniqueParam =
   | { identifier: CommitteeIdentifier };
 
 import { PrismaService } from "#lib/prisma.js";
+import type { UniquePersonParam } from "#repositories/person/PersonRepository.js";
 
 @Service([PrismaService, MembershipRepository, MarathonRepository])
 export class CommitteeRepository {
@@ -60,7 +61,7 @@ export class CommitteeRepository {
   }
 
   async assignPersonToCommittee(
-    personParam: SimpleUniqueParam,
+    personParam: UniquePersonParam,
     committeeParam: CommitteeIdentifier,
     committeeRole: CommitteeRole,
     marathonParam?: UniqueMarathonParam

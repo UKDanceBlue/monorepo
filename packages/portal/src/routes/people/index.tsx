@@ -1,4 +1,4 @@
-import { PlusOutlined, UploadOutlined } from "@ant-design/icons";
+import { PlusOutlined } from "@ant-design/icons";
 import { EditOutlined, EyeOutlined } from "@ant-design/icons";
 import { getDefaultSortOrder, List } from "@refinedev/antd";
 import { createFileRoute, Link } from "@tanstack/react-router";
@@ -10,9 +10,11 @@ import {
 } from "@ukdanceblue/common";
 import { Button, Flex, Table } from "antd";
 
+import { Authorized } from "#elements/components/Authorized.tsx";
 import { RefineSearchForm } from "#elements/components/RefineSearchForm.tsx";
+import { UploadPersonButton } from "#elements/forms/person/create/BulkPersonCreator.tsx";
 import { graphql } from "#gql/index.js";
-import { useAuthorizationRequirement } from "#hooks/useLoginState.js";
+import { withAuthorized } from "#hooks/useLoginState.tsx";
 import { useTypedTable } from "#hooks/useTypedRefine.ts";
 
 const PeopleTableFragment = graphql(/* GraphQL */ `
@@ -29,7 +31,6 @@ const PeopleTableFragment = graphql(/* GraphQL */ `
 `);
 
 function ListPeoplePage() {
-  const canCreate = useAuthorizationRequirement("create", "PersonNode");
   const { tableProps, searchFormProps, sorters } = useTypedTable({
     fragment: PeopleTableFragment,
     props: {
@@ -52,20 +53,14 @@ function ListPeoplePage() {
   return (
     <List
       headerButtons={
-        canCreate && (
-          <>
-            <Link from="/people" to="create">
-              <Button icon={<PlusOutlined />} size="large">
-                Add Person
-              </Button>
-            </Link>
-            <Link from="/people" to="bulk">
-              <Button icon={<UploadOutlined />} size="large">
-                Bulk Add People
-              </Button>
-            </Link>
-          </>
-        )
+        <Authorized action="create" subject="PersonNode">
+          <Link from="/people" to="create">
+            <Button icon={<PlusOutlined />} size="large">
+              Add Person
+            </Button>
+          </Link>
+          <UploadPersonButton />
+        </Authorized>
       }
     >
       <RefineSearchForm searchFormProps={searchFormProps} />
@@ -146,5 +141,5 @@ function ListPeoplePage() {
 }
 
 export const Route = createFileRoute("/people/")({
-  component: ListPeoplePage,
+  component: withAuthorized("list", "PersonNode")(<ListPeoplePage />),
 });

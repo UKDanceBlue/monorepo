@@ -3,6 +3,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { Form, Input } from "antd";
 
 import { graphql } from "#gql/index.ts";
+import { withAuthorized } from "#hooks/useLoginState.tsx";
 import { useTypedForm } from "#hooks/useTypedRefine.ts";
 
 const CreatePersonMutation = graphql(/* GraphQL */ `
@@ -44,5 +45,5 @@ function CreatePersonPage() {
 }
 
 export const Route = createFileRoute("/people/create")({
-  component: CreatePersonPage,
+  component: withAuthorized("create", "PersonNode")(<CreatePersonPage />),
 });

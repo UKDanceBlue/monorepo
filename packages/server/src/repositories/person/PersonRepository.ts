@@ -1014,9 +1014,9 @@ export class PersonRepository extends buildDefaultRepository<
 
   async bulkLoadPeople(
     people: {
-      name: string;
+      name: string | null | undefined;
       email: string;
-      linkblue: string;
+      linkblue: string | null | undefined;
       committee: CommitteeIdentifier | null | undefined;
       role: CommitteeRole | null | undefined;
     }[],
@@ -1061,121 +1061,36 @@ export class PersonRepository extends buildDefaultRepository<
         committeeIds[committee.identifier] = committee.id;
       }
 
-      const addToVice: {
-        name: string;
-        email: string;
-        linkblue: string;
-        committee: CommitteeIdentifier | null | undefined;
-        role: CommitteeRole | null | undefined;
-      }[] = [];
-
       const result = await this.prisma.$transaction(
         people.map((person) => {
-          if (
-            person.committee === CommitteeIdentifier.overallCommittee ||
-            person.committee === CommitteeIdentifier.fundraisingCommittee ||
-            person.committee === CommitteeIdentifier.dancerRelationsCommittee
-          ) {
-            addToVice.push(person);
-          }
-
           return this.prisma.person.upsert({
             where: {
-              linkblue: person.linkblue.toLowerCase(),
+              email: person.email,
             },
             create: {
               name: person.name,
-              email: person.email,
-              linkblue: person.linkblue.toLowerCase(),
-              memberships:
-                person.committee && person.role
-                  ? {
-                      create: {
-                        team: {
-                          connect: {
-                            marathonId_correspondingCommitteeId: {
-                              marathonId,
-                              correspondingCommitteeId:
-                                committeeIds[person.committee],
-                            },
-                          },
-                        },
-                        position:
-                          person.role === CommitteeRole.Chair
-                            ? MembershipPositionType.Captain
-                            : MembershipPositionType.Member,
-                        committeeRole: person.role,
-                      },
-                    }
-                  : undefined,
+              email: person.email.toLowerCase(),
+              linkblue: person.linkblue?.toLowerCase(),
             },
             update: {
               name: person.name,
-              email: person.email,
-              linkblue: person.linkblue.toLowerCase(),
-              memberships:
-                person.committee && person.role
-                  ? {
-                      create: {
-                        team: {
-                          connect: {
-                            marathonId_correspondingCommitteeId: {
-                              marathonId,
-                              correspondingCommitteeId:
-                                committeeIds[person.committee],
-                            },
-                          },
-                        },
-                        position:
-                          person.role === CommitteeRole.Chair
-                            ? MembershipPositionType.Captain
-                            : MembershipPositionType.Member,
-                        committeeRole: person.role,
-                      },
-                    }
-                  : undefined,
+              email: person.email.toLowerCase(),
+              linkblue: person.linkblue?.toLowerCase(),
             },
           });
         })
       );
 
-      for (const person of addToVice) {
-        // eslint-disable-next-line no-await-in-loop
-        await this.prisma.membership.upsert({
-          create: {
-            person: {
-              connect: {
-                email: person.email,
-              },
-            },
-            team: {
-              connect: {
-                marathonId_correspondingCommitteeId: {
-                  marathonId,
-                  correspondingCommitteeId: committeeIds.viceCommittee,
-                },
-              },
-            },
-            position:
-              person.role === CommitteeRole.Chair
-                ? MembershipPositionType.Captain
-                : MembershipPositionType.Member,
-            committeeRole: person.role,
-          },
-          update: {
-            position:
-              person.role === CommitteeRole.Chair
-                ? MembershipPositionType.Captain
-                : MembershipPositionType.Member,
-            committeeRole: person.role,
-          },
-          where: {
-            personId_teamId: {
-              personId: result.find((r) => r.email === person.email)!.id,
-              teamId: marathonId,
-            },
-          },
-        });
+      for (const person of people) {
+        if (person.committee) {
+          // eslint-disable-next-line no-await-in-loop
+          await this.committeeRepository.assignPersonToCommittee(
+            { email: person.email },
+            person.committee,
+            person.role ?? CommitteeRole.Member,
+            { id: marathonId }
+          );
+        }
       }
 
       return Ok(result);

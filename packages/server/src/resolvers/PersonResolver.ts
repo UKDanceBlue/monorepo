@@ -274,17 +274,19 @@ export class PersonResolver
   @WithAuditLogging()
   async bulkLoad(
     @Arg("people", () => [BulkPersonInput]) people: BulkPersonInput[],
-    @Arg("marathonId", () => GlobalIdScalar) marathonId: GlobalId
+    @Arg("marathonId", () => GlobalIdScalar) marathonId: GlobalId,
+    @Ctx() { ability }: GraphQLContext
   ): Promise<ConcreteResult<PersonNode[]>> {
-    for (const person of people) {
-      if (person.committee || person.role) {
-        return Err(
-          new ActionDeniedError(
-            "Only tech committee can create committee members"
-          )
-        );
+    if (ability.cannot("manage", { kind: "CommitteeNode" }))
+      for (const person of people) {
+        if (person.committee || person.role) {
+          return Err(
+            new ActionDeniedError(
+              "Only tech committee can create committee members"
+            )
+          );
+        }
       }
-    }
     return new AsyncResult(
       this.personRepository.bulkLoadPeople(people, {
         uuid: marathonId.id,

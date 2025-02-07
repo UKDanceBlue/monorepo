@@ -27,7 +27,6 @@ import { Route as ConfigIndexImport } from "./routes/config/index";
 import { Route as TeamsCreateImport } from "./routes/teams/create";
 import { Route as TeamsBulkImport } from "./routes/teams/bulk";
 import { Route as PeopleCreateImport } from "./routes/people/create";
-import { Route as PeopleBulkImport } from "./routes/people/bulk";
 import { Route as NotificationsCreateImport } from "./routes/notifications/create";
 import { Route as MarathonCreateImport } from "./routes/marathon/create";
 import { Route as FundraisingReportImport } from "./routes/fundraising/report";
@@ -150,12 +149,6 @@ const TeamsBulkRoute = TeamsBulkImport.update({
 const PeopleCreateRoute = PeopleCreateImport.update({
   id: "/people/create",
   path: "/people/create",
-  getParentRoute: () => rootRoute,
-} as any);
-
-const PeopleBulkRoute = PeopleBulkImport.update({
-  id: "/people/bulk",
-  path: "/people/bulk",
   getParentRoute: () => rootRoute,
 } as any);
 
@@ -386,13 +379,6 @@ declare module "@tanstack/react-router" {
       path: "/notifications/create";
       fullPath: "/notifications/create";
       preLoaderRoute: typeof NotificationsCreateImport;
-      parentRoute: typeof rootRoute;
-    };
-    "/people/bulk": {
-      id: "/people/bulk";
-      path: "/people/bulk";
-      fullPath: "/people/bulk";
-      preLoaderRoute: typeof PeopleBulkImport;
       parentRoute: typeof rootRoute;
     };
     "/people/create": {
@@ -689,7 +675,6 @@ export interface FileRoutesByFullPath {
   "/fundraising/report": typeof FundraisingReportRoute;
   "/marathon/create": typeof MarathonCreateRoute;
   "/notifications/create": typeof NotificationsCreateRoute;
-  "/people/bulk": typeof PeopleBulkRoute;
   "/people/create": typeof PeopleCreateRoute;
   "/teams/bulk": typeof TeamsBulkRoute;
   "/teams/create": typeof TeamsCreateRoute;
@@ -735,7 +720,6 @@ export interface FileRoutesByTo {
   "/fundraising/report": typeof FundraisingReportRoute;
   "/marathon/create": typeof MarathonCreateRoute;
   "/notifications/create": typeof NotificationsCreateRoute;
-  "/people/bulk": typeof PeopleBulkRoute;
   "/people/create": typeof PeopleCreateRoute;
   "/teams/bulk": typeof TeamsBulkRoute;
   "/teams/create": typeof TeamsCreateRoute;
@@ -781,7 +765,6 @@ export interface FileRoutesById {
   "/fundraising/report": typeof FundraisingReportRoute;
   "/marathon/create": typeof MarathonCreateRoute;
   "/notifications/create": typeof NotificationsCreateRoute;
-  "/people/bulk": typeof PeopleBulkRoute;
   "/people/create": typeof PeopleCreateRoute;
   "/teams/bulk": typeof TeamsBulkRoute;
   "/teams/create": typeof TeamsCreateRoute;
@@ -830,7 +813,6 @@ export interface FileRouteTypes {
     | "/fundraising/report"
     | "/marathon/create"
     | "/notifications/create"
-    | "/people/bulk"
     | "/people/create"
     | "/teams/bulk"
     | "/teams/create"
@@ -875,7 +857,6 @@ export interface FileRouteTypes {
     | "/fundraising/report"
     | "/marathon/create"
     | "/notifications/create"
-    | "/people/bulk"
     | "/people/create"
     | "/teams/bulk"
     | "/teams/create"
@@ -919,7 +900,6 @@ export interface FileRouteTypes {
     | "/fundraising/report"
     | "/marathon/create"
     | "/notifications/create"
-    | "/people/bulk"
     | "/people/create"
     | "/teams/bulk"
     | "/teams/create"
@@ -967,7 +947,6 @@ export interface RootRouteChildren {
   FundraisingReportRoute: typeof FundraisingReportRoute;
   MarathonCreateRoute: typeof MarathonCreateRoute;
   NotificationsCreateRoute: typeof NotificationsCreateRoute;
-  PeopleBulkRoute: typeof PeopleBulkRoute;
   PeopleCreateRoute: typeof PeopleCreateRoute;
   TeamsBulkRoute: typeof TeamsBulkRoute;
   TeamsCreateRoute: typeof TeamsCreateRoute;
@@ -1009,7 +988,6 @@ const rootRouteChildren: RootRouteChildren = {
   FundraisingReportRoute: FundraisingReportRoute,
   MarathonCreateRoute: MarathonCreateRoute,
   NotificationsCreateRoute: NotificationsCreateRoute,
-  PeopleBulkRoute: PeopleBulkRoute,
   PeopleCreateRoute: PeopleCreateRoute,
   TeamsBulkRoute: TeamsBulkRoute,
   TeamsCreateRoute: TeamsCreateRoute,
@@ -1064,7 +1042,6 @@ export const routeTree = rootRoute
         "/fundraising/report",
         "/marathon/create",
         "/notifications/create",
-        "/people/bulk",
         "/people/create",
         "/teams/bulk",
         "/teams/create",
@@ -1118,9 +1095,6 @@ export const routeTree = rootRoute
     },
     "/notifications/create": {
       "filePath": "notifications/create.tsx"
-    },
-    "/people/bulk": {
-      "filePath": "people/bulk.tsx"
     },
     "/people/create": {
       "filePath": "people/create.tsx"

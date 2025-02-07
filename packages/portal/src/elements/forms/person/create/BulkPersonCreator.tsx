@@ -1,11 +1,12 @@
-import { CommitteeIdentifier, CommitteeRole } from "@ukdanceblue/common";
+import { useNotification } from "@refinedev/core";
+import { CommitteeRole } from "@ukdanceblue/common";
+import { CommitteeIdentifier } from "@ukdanceblue/common";
 import { useMutation } from "urql";
+import { z } from "zod";
 
 import { useMarathon } from "#config/marathonContext.js";
-import { SpreadsheetUploader } from "#elements/components/SpreadsheetUploader.js";
-import type { InputOf } from "#gql/index.js";
-import { graphql } from "#gql/index.js";
-import { useAntFeedback } from "#hooks/useAntFeedback.js";
+import { UploadButton } from "#elements/components/UploadButton.tsx";
+import { graphql, type VariablesOf } from "#gql/index.js";
 import { useQueryStatusWatcher } from "#hooks/useQueryStatusWatcher.js";
 
 const personBulkCreatorDocument = graphql(/* GraphQL */ `
@@ -20,6 +21,11 @@ const personBulkCreatorDocument = graphql(/* GraphQL */ `
 `);
 
 function mapCommitteeNameToIdentifier(committee: string): CommitteeIdentifier {
+  for (const [key, value] of Object.entries(CommitteeIdentifier)) {
+    if (committee === key || committee === value) {
+      return value;
+    }
+  }
   switch (committee) {
     case "Community Development/Morale": {
       return CommitteeIdentifier.communityDevelopmentCommittee;
@@ -63,27 +69,7 @@ function mapCommitteeNameToIdentifier(committee: string): CommitteeIdentifier {
   }
 }
 
-interface CsvRow {
-  name: string;
-  email: `${string}@uky.edu`;
-  linkblue: string;
-  committee?:
-    | "Community Development/Morale"
-    | "Overall"
-    | "Corporate Relations"
-    | "Dancer Relations"
-    | "Family Relations"
-    | "Fundraising"
-    | "Marketing"
-    | "Corporate"
-    | "Mini Marathons"
-    | "Operations"
-    | "Programming"
-    | "Technology";
-  role?: "Chair" | "Coordinator" | "Member";
-}
-
-export function BulkPersonCreator() {
+export function UploadPersonButton() {
   const [{ fetching, error }, bulkCreatePeople] = useMutation(
     personBulkCreatorDocument
   );
@@ -95,97 +81,85 @@ export function BulkPersonCreator() {
 
   const selectedMarathon = useMarathon();
 
-  const { showErrorMessage, showSuccessNotification } = useAntFeedback();
+  const { open } = useNotification();
 
   return (
-    <SpreadsheetUploader
-      rowValidator={(row): row is CsvRow => {
-        if (typeof row !== "object" || !row) {
-          return false;
-        }
-
-        if (!("name" in row) || !("email" in row) || !("linkblue" in row)) {
-          return false;
-        }
-
-        if (
-          typeof row.name !== "string" ||
-          typeof row.email !== "string" ||
-          typeof row.linkblue !== "string"
-        ) {
-          return false;
-        }
-
-        if (!row.email.endsWith("@uky.edu")) {
-          return false;
-        }
-
-        if (
-          "committee" in row &&
-          (typeof row.committee !== "string" ||
-            ![
-              "Community Development/Morale",
-              "Overall",
-              "Corporate Relations",
-              "Dancer Relations",
-              "Family Relations",
-              "Fundraising",
-              "Marketing",
-              "Corporate",
-              "Mini Marathons",
-              "Operations",
-              "Programming",
-              "Technology",
-            ].includes(row.committee))
-        ) {
-          return false;
-        }
-
-        if (
-          "role" in row &&
-          (typeof row.role !== "string" ||
-            !["Chair", "Coordinator", "Member"].includes(row.role))
-        ) {
-          return false;
-        }
-
-        return true;
-      }}
-      rowMapper={(
-        row: CsvRow
-      ): InputOf<typeof personBulkCreatorDocument>[number] => {
-        return {
-          name: row.name,
-          email: row.email,
-          linkblue: row.linkblue,
-          committee: row.committee
-            ? mapCommitteeNameToIdentifier(row.committee)
-            : undefined,
-          role: row.role
-            ? row.role === "Chair"
-              ? CommitteeRole.Chair
-              : row.role === "Coordinator"
-                ? CommitteeRole.Coordinator
-                : (row.role satisfies typeof CommitteeRole.Member)
-            : undefined,
-        };
-      }}
-      onUpload={async (output) => {
+    <UploadButton
+      title="Import People"
+      onConfirm={async (
+        input: {
+          name: string | undefined;
+          linkblue: string | undefined;
+          email: string;
+          committee: CommitteeIdentifier | undefined;
+          role: CommitteeRole | undefined;
+        }[]
+      ) => {
         if (!selectedMarathon) {
           throw new Error("No marathon selected");
         }
         const result = await bulkCreatePeople({
-          input: output,
+          input: input as VariablesOf<
+            typeof personBulkCreatorDocument
+          >["input"],
           marathonId: selectedMarathon.id,
         });
 
         if (result.error) {
-          showErrorMessage(String(result.error));
-          return;
+          throw result.error;
+        } else {
+          open?.({ type: "success", message: "People created successfully" });
         }
-
-        showSuccessNotification({ message: "People created successfully" });
       }}
+      columns={[
+        {
+          id: "name",
+          title: "Name",
+          validator: z.string().nonempty().optional(),
+        },
+        {
+          id: "email",
+          title: "Email",
+          validator: z.string().email(),
+        },
+        {
+          id: "linkblue",
+          title: "Linkblue",
+          validator: z.string().nonempty().optional(),
+        },
+        {
+          id: "committee",
+          title: "Committee",
+          validator: z
+            .string()
+            .optional()
+            .transform((committee, ctx) => {
+              try {
+                if (committee == null) {
+                  return undefined;
+                }
+                return mapCommitteeNameToIdentifier(committee);
+              } catch (error) {
+                ctx.addIssue({
+                  message: String(error),
+                  code: z.ZodIssueCode.custom,
+                });
+                return z.NEVER;
+              }
+            }),
+        },
+        {
+          id: "role",
+          title: "Role",
+          validator: z
+            .enum([
+              CommitteeRole.Member,
+              CommitteeRole.Coordinator,
+              CommitteeRole.Chair,
+            ])
+            .optional(),
+        },
+      ]}
     />
   );
 }

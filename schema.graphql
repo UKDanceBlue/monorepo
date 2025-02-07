@@ -84,8 +84,8 @@ enum BatchType {
 input BulkPersonInput {
   committee: CommitteeIdentifier
   email: EmailAddress!
-  linkblue: NonEmptyString!
-  name: NonEmptyString!
+  linkblue: NonEmptyString
+  name: NonEmptyString
   role: CommitteeRole
 }
 
