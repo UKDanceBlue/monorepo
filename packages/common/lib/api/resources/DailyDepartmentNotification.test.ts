@@ -1,7 +1,6 @@
 import { DateTime } from "luxon";
 import { describe, expect, it } from "vitest";
 
-import { InvalidArgumentError } from "../../error/direct.js";
 import type { GlobalId } from "../scalars/GlobalId.js";
 import {
   BatchType,
@@ -14,24 +13,20 @@ import { SolicitationCodeNode } from "./SolicitationCode.js";
 
 describe("extractDDNBatchType", () => {
   it("should return the correct BatchType for valid batch IDs", () => {
-    expect(extractDDNBatchType("123C").unwrap()).toBe(BatchType.Check);
-    expect(extractDDNBatchType("123T").unwrap()).toBe(BatchType.Transmittal);
-    expect(extractDDNBatchType("123D").unwrap()).toBe(BatchType.CreditCard);
-    expect(extractDDNBatchType("123A").unwrap()).toBe(BatchType.ACH);
-    expect(extractDDNBatchType("123N").unwrap()).toBe(BatchType.NonCash);
-    expect(extractDDNBatchType("123X").unwrap()).toBe(
+    expect(extractDDNBatchType("123C1").unwrap()).toBe(BatchType.Check);
+    expect(extractDDNBatchType("123T1").unwrap()).toBe(BatchType.Transmittal);
+    expect(extractDDNBatchType("123D1").unwrap()).toBe(BatchType.CreditCard);
+    expect(extractDDNBatchType("123A1").unwrap()).toBe(BatchType.ACH);
+    expect(extractDDNBatchType("123N1").unwrap()).toBe(BatchType.NonCash);
+    expect(extractDDNBatchType("123X1").unwrap()).toBe(
       BatchType.PayrollDeduction
     );
-    expect(extractDDNBatchType("123P").unwrap()).toBe(BatchType.P);
+    expect(extractDDNBatchType("123P1").unwrap()).toBe(BatchType.P);
   });
 
   it("should return an error for invalid batch IDs", () => {
-    expect(extractDDNBatchType("123Z").unwrapErr()).toBeInstanceOf(
-      InvalidArgumentError
-    );
-    expect(extractDDNBatchType("123").unwrapErr()).toBeInstanceOf(
-      InvalidArgumentError
-    );
+    expect(extractDDNBatchType("123Z1").unwrap()).toBe(BatchType.Unknown);
+    expect(extractDDNBatchType("12311").unwrap()).toBe(BatchType.Unknown);
   });
 });
 
