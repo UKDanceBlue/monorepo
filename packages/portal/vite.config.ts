@@ -22,13 +22,24 @@ export const literalConfig = {
     },
   },
   build: {
-    chunkSizeWarningLimit: 1000,
+    chunkSizeWarningLimit: 2000,
     sourcemap: true,
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          react: ["react", "react-dom"],
+          antd: ["antd"],
+          refine: ["@refinedev/core", "@refinedev/antd"],
+        },
+      },
+    },
   },
+
   plugins: [
     TanStackRouterVite({
       quoteStyle: "double",
       semicolons: true,
+      autoCodeSplitting: true,
     }),
     react(),
     sentryVitePlugin({

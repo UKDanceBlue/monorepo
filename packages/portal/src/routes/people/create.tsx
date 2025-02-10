@@ -45,5 +45,5 @@ function CreatePersonPage() {
 }
 
 export const Route = createFileRoute("/people/create")({
-  component: withAuthorized("create", "PersonNode")(<CreatePersonPage />),
+  component: withAuthorized("create", "PersonNode")(CreatePersonPage),
 });

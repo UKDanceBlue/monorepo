@@ -141,5 +141,5 @@ function ListPeoplePage() {
 }
 
 export const Route = createFileRoute("/people/")({
-  component: withAuthorized("list", "PersonNode")(<ListPeoplePage />),
+  component: withAuthorized("list", "PersonNode")(ListPeoplePage),
 });

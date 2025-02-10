@@ -14,7 +14,7 @@ import {
   getAuthorizationFor,
   roleToAccessLevel,
 } from "@ukdanceblue/common";
-import { type ReactNode, useMemo } from "react";
+import { type ReactElement, useMemo } from "react";
 import type { Result } from "ts-results-es";
 import { Err, Ok } from "ts-results-es";
 import {
@@ -190,11 +190,13 @@ export function withAuthorized<S extends Exclude<Subject, "all">>(
       >
     | "."
 ) {
-  return (children: ReactNode) => {
-    return () => (
-      <Authorized action={action} subject={subject} field={field} showError>
-        {children}
-      </Authorized>
-    );
+  return (Comp: () => ReactElement) => {
+    return function AuthorizedWrapper() {
+      return (
+        <Authorized action={action} subject={subject} field={field} showError>
+          <Comp />
+        </Authorized>
+      );
+    };
   };
 }
