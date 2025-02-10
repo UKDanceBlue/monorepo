@@ -4,7 +4,7 @@ on:
   push:
     # Release is a special branch that is kept in sync with the production environment
     # We also want to keep the dev environment in sync with the main branch
-    branches: ["release", "staging", "main"]
+    branches: "main"
     paths:
       - ".github/workflows/docker-build.yml"
       - "packages/common/**"

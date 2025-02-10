@@ -6,6 +6,10 @@ on:
 permissions:
   contents: write
 
+env:
+  REGISTRY: ghcr.io
+  SERVER_IMAGE_NAME: ukdanceblue/app-server
+
 # All this job does is fast forward the staging branch to the latest commit on main
 jobs:
   check:
@@ -19,10 +23,18 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
-          ref: staging
+          ref: release
           ssh-key: ${{ secrets.RELEASE_DEPLOY_KEY }}
-      - name: Fast forward staging branch to main
-        run: |
-          git fetch origin main
-          git merge --ff-only origin/main
-          git push origin staging
+      - name: Log in to the Container registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Setup EAS
+        uses: expo/expo-github-action@v8
+        with:
+          eas-version: latest
+          token: ${{ secrets.EXPO_TOKEN }}
+      - name: Promote release
+        run: scripts/promote-branch.sh main staging
