@@ -37,4 +37,6 @@ jobs:
           eas-version: latest
           token: ${{ secrets.EXPO_TOKEN }}
       - name: Promote release
-        run: ./scripts/promote-branch.sh main staging
+        run: |
+          ls
+          ./scripts/promote-branch.sh main staging
