@@ -25,9 +25,12 @@ RUN corepack yarn prisma generate
 
 RUN corepack yarn build
 
-RUN date -Iminutes > ./dist/src/BUILD_TIME
+RUN date -Iminutes > ./dist/src/BUILD_TIME && git rev-parse --short HEAD > ./dist/src/BUILD_COMMIT
 
 RUN --mount=type=secret,id=SENTRY_AUTH_TOKEN,env=SENTRY_AUTH_TOKEN,required \
+  corepack yarn sentry-cli releases new  --org ukdanceblue --project server $(cat ./dist/src/BUILD_COMMIT) && \
+  corepack yarn sentry-cli releases set-commits --org ukdanceblue --project server $(cat ./dist/src/BUILD_COMMIT) --auto && \
+  corepack yarn sentry-cli releases finalize --org ukdanceblue --project server $(cat ./dist/src/BUILD_COMMIT) && \
   corepack yarn sentry-cli sourcemaps inject --org ukdanceblue --project server ./dist && \
   corepack yarn sentry-cli sourcemaps upload --org ukdanceblue --project server ./dist
 

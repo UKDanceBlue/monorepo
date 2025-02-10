@@ -1,5 +1,8 @@
 import "@freshgum/typedi";
 
+import { readFile } from "node:fs/promises";
+import { fileURLToPath } from "node:url";
+
 import * as Sentry from "@sentry/node";
 
 export default Sentry.init({
@@ -12,6 +15,9 @@ export default Sentry.init({
   // Tracing
   tracesSampleRate: 0.5,
   // profilesSampleRate: 0.1,
-
+  release: await readFile(
+    fileURLToPath(import.meta.resolve("#BUILD_COMMIT")),
+    "utf8"
+  ).catch(() => undefined),
   enabled: process.env.NODE_ENV === "production",
 });

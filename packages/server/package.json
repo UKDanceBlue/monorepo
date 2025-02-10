@@ -24,7 +24,9 @@
     "#prisma": "./dist/src/prisma.js",
     "#repositories/*.js": "./dist/src/repositories/*.js",
     "#resolvers/*.js": "./dist/src/resolvers/*.js",
-    "#routes/*.js": "./dist/src/routes/*.js"
+    "#routes/*.js": "./dist/src/routes/*.js",
+    "#BUILD_TIME": "./dist/src/BUILD_TIME",
+    "#BUILD_COMMIT": "./dist/src/BUILD_COMMIT"
   },
   "main": "dist/src/index.js",
   "scripts": {

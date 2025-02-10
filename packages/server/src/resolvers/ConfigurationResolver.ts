@@ -43,7 +43,7 @@ export class ConfigurationResolver
 
     try {
       const file = await readFile(
-        fileURLToPath(import.meta.resolve("../BUILD_TIME")),
+        fileURLToPath(import.meta.resolve("#BUILD_TIME")),
         "utf8"
       );
       return Some(DateTime.fromISO(file.trim()));
