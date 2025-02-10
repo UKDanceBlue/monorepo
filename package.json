@@ -23,7 +23,7 @@
     "gql:build:mobile": "graphql-codegen-esm --config graphql.config.ts --project mobile",
     "gql:build": "yarn gql:build:mobile",
     "gql:watch:mobile": "chokidar \"packages/mobile/src/**/*\" --ignore \"packages/mobile/src/graphql/**/*\" --initial --silent --verbose --command \"yarn gql:build:mobile\"",
-    "postinstall": "yarn constraints",
+    "postinstall": "yarn constraints && yarn repo:sort-package-json && yarn repo:licenses:gen-disclaimer",
     "mobile:check": "yarn workspace @ukdanceblue/mobile check",
     "mobile:start": "yarn workspace @ukdanceblue/mobile start",
     "mobile:start:tunnel": "yarn workspace @ukdanceblue/mobile start:tunnel",
