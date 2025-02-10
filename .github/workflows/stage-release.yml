@@ -3,26 +3,18 @@ name: Stage Release
 on:
   workflow_dispatch:
 
-permissions:
-  contents: write
-
 env:
   REGISTRY: ghcr.io
   SERVER_IMAGE_NAME: ukdanceblue/app-server
 
 jobs:
-  check:
-    uses: ./.github/workflows/check.yml
   stage-release:
-    needs: check
     runs-on: ubuntu-latest
     permissions:
       packages: write
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-        with:
-          ssh-key: ${{ secrets.RELEASE_DEPLOY_KEY }}
       - name: Log in to the Container registry
         uses: docker/login-action@v3
         with:
@@ -34,6 +26,6 @@ jobs:
         with:
           eas-version: latest
           token: ${{ secrets.EXPO_TOKEN }}
+          packager: npm
       - name: Promote release
-        working-directory: .
         run: ./scripts/promote-branch.sh main staging
