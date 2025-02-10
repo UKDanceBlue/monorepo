@@ -20,8 +20,8 @@
     "common:watch": "yarn workspace @ukdanceblue/common run watch",
     "docker:server:start": "docker-compose up -d --build",
     "docker:server:stop": "docker-compose down",
-    "gql:build:mobile": "graphql-codegen-esm --config graphql.config.ts --project mobile",
     "gql:build": "yarn gql:build:mobile",
+    "gql:build:mobile": "graphql-codegen-esm --config graphql.config.ts --project mobile",
     "gql:watch:mobile": "chokidar \"packages/mobile/src/**/*\" --ignore \"packages/mobile/src/graphql/**/*\" --initial --silent --verbose --command \"yarn gql:build:mobile\"",
     "postinstall": "yarn constraints && yarn repo:sort-package-json && yarn repo:licenses:gen-disclaimer",
     "mobile:check": "yarn workspace @ukdanceblue/mobile check",
@@ -37,7 +37,9 @@
     "repo:coverage-browser": "vitest run --coverage --reporter html && yarn dlx vite preview --outDir html",
     "repo:format": "prettier --check --log-level warn . && echo 'Prettier \t✅'",
     "repo:format:fix": "prettier --write --log-level warn . && echo 'Prettier \t✅'",
-    "repo:licenses:check": "yarn licenses audit --allowed MIT --allowed Beerware --allowed MPL-2.0 --allowed BSD-3-Clause --allowed BSD-2-Clause --allowed Apache-2.0",
+    "repo:gen-doc": "typedoc",
+    "repo:gen-doc:watch": "typedoc --watch",
+    "repo:licenses:check": "yarn licenses audit --allowed MIT --allowed MPL-2.0 --allowed BSD-3-Clause --allowed BSD-2-Clause --allowed Apache-2.0 && echo 'All licenses are MIT, MPL-2.0, BSD-3-Clause, BSD-2-Clause, or Apache-2.0'",
     "repo:licenses:gen-disclaimer": "yarn licenses generate-disclaimer -R > DISCLAIMER",
     "repo:lint": "eslint --cache .",
     "repo:lint:fix": "eslint --cache --fix .",
@@ -46,21 +48,19 @@
     "repo:sort-package-json": "sort-package-json package.json ./packages/*/package.json",
     "repo:test": "vitest",
     "repo:test-ui": "vitest --ui --coverage",
-    "repo:gen-doc": "typedoc",
-    "repo:gen-doc:watch": "typedoc --watch",
     "server:bs": "yarn workspace @ukdanceblue/server run bs",
     "server:build": "yarn workspace @ukdanceblue/server run build",
     "server:check": "yarn workspace @ukdanceblue/server run check",
     "server:dev": "yarn workspace @ukdanceblue/server run dev",
     "server:prisma": "yarn workspace @ukdanceblue/server prisma",
     "server:prisma-generate": "yarn workspace @ukdanceblue/server prisma generate --no-hints",
-    "server:start": "yarn workspace @ukdanceblue/server run start",
-    "server:repl": "yarn workspace @ukdanceblue/server run repl"
+    "server:repl": "yarn workspace @ukdanceblue/server run repl",
+    "server:start": "yarn workspace @ukdanceblue/server run start"
   },
   "resolutions": {
+    "@prisma/instrumentation": "^6.2.1",
     "promise": "npm:promise@^8.3.0",
-    "urijs": "npm:uri-js-replace",
-    "@prisma/instrumentation": "^6.2.1"
+    "urijs": "npm:uri-js-replace"
   },
   "devDependencies": {
     "@eslint/compat": "^1.2.5",

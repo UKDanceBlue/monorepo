@@ -36,8 +36,8 @@
     "dev": "tsc --watch & node --import ./dist/src/entry/server/initSentry.js --enable-source-maps --watch-path=./dist --watch-path=../common/dist ./dist/src/index.js start",
     "lint": "eslint .",
     "migrate-and-start": "yarn dlx prisma migrate deploy && yarn run start",
-    "start": "node --import ./dist/src/entry/server/initSentry.js --enable-source-maps ./dist/src/index.js start",
     "repl": "node --enable-source-maps ./dist/src/index.js repl",
+    "start": "node --import ./dist/src/entry/server/initSentry.js --enable-source-maps ./dist/src/index.js start",
     "test": "jest"
   },
   "dependencies": {

@@ -13,11 +13,6 @@
     "url": "https://danceblue.org"
   },
   "type": "module",
-  "exports": {
-    "./*": {
-      "import": "./dist/*"
-    }
-  },
   "imports": {
     "#config/*": "./src/config/*",
     "#elements/*": "./src/elements/*",
@@ -30,14 +25,19 @@
     "#gql/*": "./gql/*",
     "#mocks/*": "./mocks/*"
   },
+  "exports": {
+    "./*": {
+      "import": "./dist/*"
+    }
+  },
   "scripts": {
-    "refine": "refine",
-    "refine-devtools": "refine devtools",
-    "dev": "vite --host",
     "build": "vite build",
     "build:ssr": "vite build --ssr src/entry-server.tsx --outDir dist/server",
     "check": "tsc --noEmit",
-    "preview": "vite preview"
+    "dev": "vite --host",
+    "preview": "vite preview",
+    "refine": "refine",
+    "refine-devtools": "refine devtools"
   },
   "dependencies": {
     "@ant-design/icons": "^5.5.2",

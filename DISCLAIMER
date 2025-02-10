@@ -37248,19 +37248,6 @@ SOFTWARE.
 
 -----
 
-The following software may be included in this product: react-native-fit-image. A copy of the source code may be downloaded from git+https://github.com/huiseoul/react-native-fit-image.git. This software contains the following license and notice below:
-
-/*
- * ----------------------------------------------------------------------------
- * "THE BEER-WARE LICENSE" (Revision 42):
- * <originerd@gmail.com> wrote this file. As long as you retain this notice you
- * can do whatever you want with this stuff. If we meet some day, and you think
- * this stuff is worth it, you can buy me a beer in return.           Jitae Kim
- * ----------------------------------------------------------------------------
- */
-
------
-
 The following software may be included in this product: react-native-gesture-handler, react-native-reanimated. A copy of the source code may be downloaded from git+https://github.com/software-mansion/react-native-gesture-handler.git (react-native-gesture-handler), git+https://github.com/software-mansion/react-native-reanimated.git (react-native-reanimated). This software contains the following license and notice below:
 
 The MIT License (MIT)

@@ -11391,7 +11391,6 @@ __metadata:
     react-native-bundle-visualizer: "npm:^3.1.3"
     react-native-calendars: "npm:^1.1308.0"
     react-native-elements: "npm:^3.4.3"
-    react-native-fit-image: "npm:^1.5.5"
     react-native-gesture-handler: "npm:~2.22.0"
     react-native-infinite-pager: "patch:react-native-infinite-pager@npm%3A0.3.13#../../.yarn/patches/react-native-infinite-pager-npm-0.3.13-59b67e2e46.patch"
     react-native-open-maps: "npm:^0.4.3"
@@ -26866,15 +26865,6 @@ __metadata:
     react-native-safe-area-context: ">= 3.0.0"
     react-native-vector-icons: ">7.0.0"
   checksum: 10/bae1ac0972c33a2527f88de81716569a4a452e12128a0fffa82ac5b375d3451495244aaaa303c081b41cfa36496653f84febda8a19157dbd8bedc56346851022
-  languageName: node
-  linkType: hard
-
-"react-native-fit-image@npm:^1.5.5":
-  version: 1.5.5
-  resolution: "react-native-fit-image@npm:1.5.5"
-  dependencies:
-    prop-types: "npm:^15.5.10"
-  checksum: 10/f12effdf21af83eaaff510635eb076a8d069650496ed9c3286a38e8ca43d47393a99769b339e69244d57a0cb566f96dd315ee8d99443302499174298129ca688
   languageName: node
   linkType: hard
 

@@ -1,9 +1,8 @@
 import type { ASTNode } from "@ukdanceblue/react-native-markdown-display";
+import { Image, type ImageProps } from "expo-image";
 import type { Key } from "react";
 import { useEffect, useState } from "react";
 import type { ImageStyle, StyleProp } from "react-native";
-import type { IFitImageProps } from "react-native-fit-image";
-import FitImage from "react-native-fit-image";
 
 import { Logger } from "@/common/logger/Logger";
 import type { MarkdownRuleStyles } from "@/common/markdownRules";
@@ -30,7 +29,7 @@ export const CustomImageRenderer = ({
     : undefined;
 
   const [imageProps, setImageProps] = useState<
-    (IFitImageProps & { key?: Key }) | undefined | null
+    (ImageProps & { key?: Key }) | undefined | null
   >(null);
   useEffect(() => {
     // we check that the source starts with at least one of the elements in allowedImageHandlers
@@ -80,7 +79,7 @@ export const CustomImageRenderer = ({
     return null;
   } else {
     return (
-      <FitImage
+      <Image
         {...imageProps}
         {...((alt ?? title)
           ? {
