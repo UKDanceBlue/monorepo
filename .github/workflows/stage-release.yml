@@ -38,8 +38,14 @@ jobs:
       - name: Promote release
         working-directory: .
         run: |
+          echo "ls"
           ls -la
+          echo "pwd"
           pwd
-          ls ..
-          ls ../..
+          echo "ls ./scripts"
+          ls -la ./scripts
+          echo "ls ./scripts/promote-branch.sh"
+          ls -la ./scripts/promote-branch.sh
+          echo "chmod +x ./scripts/promote-branch.sh"
+          chmod +x ./scripts/promote-branch.sh
           ./scripts/promote-branch.sh main staging
