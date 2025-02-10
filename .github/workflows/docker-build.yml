@@ -18,6 +18,10 @@ env:
   REGISTRY: ghcr.io
   SERVER_IMAGE_NAME: ukdanceblue/app-server
 
+concurrency:
+  group: "docker-build"
+  cancel-in-progress: false
+
 jobs:
   build-and-push-images:
     runs-on: ubuntu-latest

@@ -25,12 +25,14 @@ RUN corepack yarn prisma generate
 
 RUN corepack yarn build
 
+RUN date -Iminutes > ./dist/src/BUILD_TIME
+
 RUN --mount=type=secret,id=SENTRY_AUTH_TOKEN,env=SENTRY_AUTH_TOKEN,required \
   corepack yarn sentry-cli sourcemaps inject --org ukdanceblue --project server ./dist && \
   corepack yarn sentry-cli sourcemaps upload --org ukdanceblue --project server ./dist
 
 # Server
-FROM node:23 AS server
+FROM node:22 AS server
 
 ENV MS_OIDC_URL="https://login.microsoftonline.com/2b30530b-69b6-4457-b818-481cb53d42ae/v2.0/.well-known/openid-configuration"
 ENV APPLICATION_PORT="8000"
@@ -56,6 +58,6 @@ COPY --from=build /builddir/yarn.lock /app/yarn.lock
 WORKDIR /app/packages/server
 
 ENTRYPOINT ["/app/packages/server/docker-entrypoint.sh"]
-CMD [ "node", "--import", "./dist/src/entry/server/initSentry.js", "--enable-source-maps", "./dist/src/index.js", "start" ]
+CMD [ "start" ]
 
 HEALTHCHECK --interval=30s --timeout=30s --start-period=5s --retries=3 CMD bash -c '[[ "$(curl -fs http://localhost:8000/api/healthcheck)" == "OK" ]] || exit 1'

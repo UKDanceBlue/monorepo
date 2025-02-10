@@ -29,15 +29,14 @@
   "main": "dist/src/index.js",
   "scripts": {
     "bs": "yarn run build && yarn run start",
-    "build": "yarn run build-time && tsc",
+    "build": "tsc",
     "check": "tsc --noEmit",
     "dev": "tsc --watch & node --import ./dist/src/entry/server/initSentry.js --enable-source-maps --watch-path=./dist --watch-path=../common/dist ./dist/src/index.js start",
     "lint": "eslint .",
     "migrate-and-start": "yarn dlx prisma migrate deploy && yarn run start",
     "start": "node --import ./dist/src/entry/server/initSentry.js --enable-source-maps ./dist/src/index.js start",
     "repl": "node --enable-source-maps ./dist/src/index.js repl",
-    "test": "jest",
-    "build-time": "mkdir -p ./dist/src && date -Iminutes > ./dist/src/BUILD_TIME"
+    "test": "jest"
   },
   "dependencies": {
     "@apollo/server": "^4.11.3",
