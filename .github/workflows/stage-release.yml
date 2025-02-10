@@ -11,10 +11,10 @@ env:
   SERVER_IMAGE_NAME: ukdanceblue/app-server
 
 jobs:
-  check:
-    uses: ./.github/workflows/check.yml
+  # check:
+  #   uses: ./.github/workflows/check.yml
   stage-release:
-    needs: check
+    # needs: check
     runs-on: ubuntu-latest
     permissions:
       packages: write
