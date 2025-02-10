@@ -33,6 +33,7 @@ jobs:
         with:
           eas-version: latest
           token: ${{ secrets.EXPO_TOKEN }}
-          packager: npm
+      - name: Install dependencies
+        run: yarn install
       - name: Promote release
         run: ./scripts/promote-branch.sh main staging
