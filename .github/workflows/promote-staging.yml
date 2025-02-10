@@ -38,5 +38,4 @@ jobs:
           token: ${{ secrets.EXPO_TOKEN }}
       - name: Promote release
         run: |
-          ls
-          ./scripts/promote-branch.sh main staging
+          bash ./scripts/promote-branch.sh staging release

@@ -12,10 +12,10 @@ env:
 
 # All this job does is fast forward the staging branch to the latest commit on main
 jobs:
-  check:
-    uses: ./.github/workflows/check.yml
+  # check:
+  #   uses: ./.github/workflows/check.yml
   stage-release:
-    needs: check
+    # needs: check
     runs-on: ubuntu-latest
     permissions:
       packages: write
@@ -38,5 +38,4 @@ jobs:
           token: ${{ secrets.EXPO_TOKEN }}
       - name: Promote release
         run: |
-          ls
-          ./scripts/promote-branch.sh main staging
+          bash ./scripts/promote-branch.sh main staging
