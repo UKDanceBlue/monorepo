@@ -10,12 +10,11 @@ env:
   REGISTRY: ghcr.io
   SERVER_IMAGE_NAME: ukdanceblue/app-server
 
-# All this job does is fast forward the staging branch to the latest commit on main
 jobs:
-  # check:
-  #   uses: ./.github/workflows/check.yml
+  check:
+    uses: ./.github/workflows/check.yml
   stage-release:
-    # needs: check
+    needs: check
     runs-on: ubuntu-latest
     permissions:
       packages: write
@@ -37,5 +36,10 @@ jobs:
           eas-version: latest
           token: ${{ secrets.EXPO_TOKEN }}
       - name: Promote release
+        working-directory: .
         run: |
-          bash ./scripts/promote-branch.sh main staging
+          ls -la
+          pwd
+          ls ..
+          ls ../..
+          ./scripts/promote-branch.sh main staging
