@@ -21,6 +21,11 @@ jobs:
           registry: ${{ env.REGISTRY }}
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Set up node 22.x
+        uses: actions/setup-node@v4.1.0
+        with:
+          node-version: 22
+          cache: yarn
       - name: Setup EAS
         uses: expo/expo-github-action@v8
         with:
