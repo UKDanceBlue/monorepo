@@ -4,7 +4,7 @@ import { useMemo } from "react";
 
 import { graphql, readFragment } from "#gql/index.js";
 import { useQueryStatusWatcher } from "#hooks/useQueryStatusWatcher.js";
-import { useQuery } from "#hooks/useTypedRefine.ts";
+import { useQuery } from "#hooks/useTypedRefine.js";
 
 export const ConfigFragment = graphql(/* GraphQL */ `
   fragment ConfigFragment on ConfigurationNode {

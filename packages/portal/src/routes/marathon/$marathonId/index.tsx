@@ -5,7 +5,7 @@ import {
   MarathonViewerFragment,
 } from "#elements/viewers/marathon/MarathonViewer.js";
 import { graphql } from "#gql/index.js";
-import { useQuery } from "#hooks/useTypedRefine.ts";
+import { useQuery } from "#hooks/useTypedRefine.js";
 
 const marathonPageDocument = graphql(
   /* GraphQL */ `

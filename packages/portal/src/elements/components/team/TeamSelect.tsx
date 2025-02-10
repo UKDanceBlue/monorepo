@@ -3,11 +3,11 @@ import type { AutoCompleteProps } from "antd";
 import { AutoComplete } from "antd";
 import { useState } from "react";
 
-import { TeamSelectFragment } from "#documents/team.ts";
+import { TeamSelectFragment } from "#documents/team.js";
 import { graphql } from "#gql/index.js";
 import { readFragment } from "#gql/index.js";
 import { useAntFeedback } from "#hooks/useAntFeedback";
-import { useQuery } from "#hooks/useTypedRefine.ts";
+import { useQuery } from "#hooks/useTypedRefine.js";
 
 const teamSelectDocument = graphql(
   /* GraphQL */ `

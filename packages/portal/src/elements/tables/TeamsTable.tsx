@@ -8,10 +8,10 @@ import {
 import { Button, Flex, Table } from "antd";
 import type { ReactNode } from "react";
 
-import { useMarathon } from "#config/marathonContext.ts";
-import { RefineSearchForm } from "#elements/components/RefineSearchForm.tsx";
+import { useMarathon } from "#config/marathonContext.js";
+import { RefineSearchForm } from "#elements/components/RefineSearchForm.js";
 import { graphql } from "#gql/index.js";
-import { useTypedTable } from "#hooks/useTypedRefine.ts";
+import { useTypedTable } from "#hooks/useTypedRefine.js";
 
 export const TeamsTableFragment = graphql(/* GraphQL */ `
   fragment TeamsTableFragment on TeamNode {

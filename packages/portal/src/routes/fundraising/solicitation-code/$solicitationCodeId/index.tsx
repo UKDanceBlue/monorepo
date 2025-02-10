@@ -15,14 +15,14 @@ import {
 import { Button, Flex, Form, Input, Table } from "antd";
 import { useMutation } from "urql";
 
-import { PaginationFragment } from "#documents/shared.ts";
+import { PaginationFragment } from "#documents/shared.js";
 import {
   AssignTeamToSolicitationCodeDocument,
   setSolicitationCodeDocument,
   SetSolicitationCodeFragment,
   solicitationCodeDocument,
   UnassignTeamFromSolicitationCodeDocument,
-} from "#documents/solicitationCode.ts";
+} from "#documents/solicitationCode.js";
 import { TeamSelect } from "#elements/components/team/TeamSelect";
 import {
   FundraisingEntriesTable,
@@ -32,7 +32,7 @@ import type { ResultOf, VariablesOf } from "#gql/index.js";
 import { graphql, readFragment } from "#gql/index.js";
 import { useAntFeedback, useAskConfirm } from "#hooks/useAntFeedback";
 import { useQueryStatusWatcher } from "#hooks/useQueryStatusWatcher";
-import { useTypedOne } from "#hooks/useTypedRefine.ts";
+import { useTypedOne } from "#hooks/useTypedRefine.js";
 
 export const Route = createFileRoute(
   "/fundraising/solicitation-code/$solicitationCodeId/"

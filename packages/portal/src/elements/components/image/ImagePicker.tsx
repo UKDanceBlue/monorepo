@@ -4,7 +4,7 @@ import { useState } from "react";
 
 import { graphql } from "#gql/index.js";
 import { useQueryStatusWatcher } from "#hooks/useQueryStatusWatcher.js";
-import { useQuery } from "#hooks/useTypedRefine.ts";
+import { useQuery } from "#hooks/useTypedRefine.js";
 
 const imagePickerDocument = graphql(/* GraphQL */ `
   query ImagePicker($filters: ImageResolverFilterGroup) {

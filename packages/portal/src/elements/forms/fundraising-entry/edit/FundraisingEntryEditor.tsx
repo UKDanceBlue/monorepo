@@ -17,11 +17,11 @@ import {
   FundraisingEntryEditorFragment,
   getFundraisingEntryDocument,
   setFundraisingEntryDocument,
-} from "#documents/fundraisingEntry.ts";
-import { SolicitationCodeTextFragment } from "#documents/solicitationCode.ts";
-import { LuxonDatePicker } from "#elements/components/antLuxonComponents.tsx";
-import { FundraisingAssignmentsTable } from "#elements/tables/fundraising/FundraisingEntryAssignmentsTable.tsx";
-import { useAuthorizationRequirement } from "#hooks/useLoginState.ts";
+} from "#documents/fundraisingEntry.js";
+import { SolicitationCodeTextFragment } from "#documents/solicitationCode.js";
+import { LuxonDatePicker } from "#elements/components/antLuxonComponents.js";
+import { FundraisingAssignmentsTable } from "#elements/tables/fundraising/FundraisingEntryAssignmentsTable.js";
+import { useAuthorizationRequirement } from "#hooks/useLoginState.js";
 
 export function FundraisingEntryEditor({ id }: { id: string }) {
   const { formProps, saveButtonProps, query } = useForm<

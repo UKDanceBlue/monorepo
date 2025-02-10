@@ -2,12 +2,12 @@ import { SendOutlined } from "@ant-design/icons";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Button, Flex, Typography } from "antd";
 
-import { SingleNotificationFragment } from "#documents/notification.ts";
+import { SingleNotificationFragment } from "#documents/notification.js";
 import { NotificationDeliveriesTable } from "#elements/tables/notification/NotificationDeliveriesTable.js";
 import { NotificationViewer } from "#elements/viewers/notification/NotificationViewer.js";
 import { graphql } from "#gql/index.js";
 import { useQueryStatusWatcher } from "#hooks/useQueryStatusWatcher.js";
-import { useQuery } from "#hooks/useTypedRefine.ts";
+import { useQuery } from "#hooks/useTypedRefine.js";
 
 const notificationViewerDocument = graphql(
   /* GraphQL */ `

@@ -7,7 +7,7 @@ import { utils } from "xlsx";
 
 import { graphql } from "#gql/index.js";
 import { useQueryStatusWatcher } from "#hooks/useQueryStatusWatcher.js";
-import { useQuery, useTypedSelect } from "#hooks/useTypedRefine.ts";
+import { useQuery, useTypedSelect } from "#hooks/useTypedRefine.js";
 
 import { LuxonDatePicker } from "../antLuxonComponents";
 

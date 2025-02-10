@@ -2,9 +2,9 @@ import { List } from "@refinedev/antd";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { Table } from "antd";
 
-import { RefineSearchForm } from "#elements/components/RefineSearchForm.tsx";
-import { graphql } from "#gql/index.ts";
-import { useTypedTable } from "#hooks/useTypedRefine.ts";
+import { RefineSearchForm } from "#elements/components/RefineSearchForm.js";
+import { graphql } from "#gql/index.js";
+import { useTypedTable } from "#hooks/useTypedRefine.js";
 
 export const Route = createFileRoute("/devices/")({
   component: RouteComponent,

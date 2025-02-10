@@ -5,7 +5,7 @@ import { Descriptions } from "antd";
 import { LoadingRibbon } from "#elements/components/design/RibbonSpinner";
 import { graphql, readFragment } from "#gql/index.js";
 import { useQueryStatusWatcher } from "#hooks/useQueryStatusWatcher";
-import { useQuery } from "#hooks/useTypedRefine.ts";
+import { useQuery } from "#hooks/useTypedRefine.js";
 
 export const Route = createFileRoute("/fundraising/ddn/$ddnId/")({
   component: RouteComponent,

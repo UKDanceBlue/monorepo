@@ -8,7 +8,7 @@ import type { DefinitionNode } from "graphql";
 import { Kind, OperationTypeNode } from "graphql";
 import pluralize from "pluralize";
 
-import { PaginationFragment } from "#documents/shared.ts";
+import { PaginationFragment } from "#documents/shared.js";
 
 export function makeListDocument(
   pascalResource: string,

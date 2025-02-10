@@ -24,7 +24,7 @@ import {
   useQuery,
 } from "urql";
 
-import { Authorized } from "#elements/components/Authorized.tsx";
+import { Authorized } from "#elements/components/Authorized.js";
 import type { ResultOf, VariablesOf } from "#gql/index.js";
 import { graphql } from "#gql/index.js";
 

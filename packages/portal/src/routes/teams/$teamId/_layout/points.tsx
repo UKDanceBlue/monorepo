@@ -6,7 +6,7 @@ import { PointEntryCreator } from "#elements/forms/point-entry/create/PointEntry
 import { PointEntryTable } from "#elements/tables/point-entry/PointEntryTable.js";
 import { useAuthorizationRequirement } from "#hooks/useLoginState.js";
 import { useQueryStatusWatcher } from "#hooks/useQueryStatusWatcher.js";
-import { useQuery } from "#hooks/useTypedRefine.ts";
+import { useQuery } from "#hooks/useTypedRefine.js";
 
 function ViewTeamPoints() {
   const { teamId: teamUuid } = Route.useParams();

@@ -28,10 +28,10 @@ import {
 import type { ItemType } from "antd/es/menu/interface";
 import React, { useContext, useMemo, useState } from "react";
 
-import { marathonContext } from "#config/marathonContext.ts";
-import { canSync } from "#config/refine/authorization.ts";
-import { StorageManager, useStorageValue } from "#config/storage.ts";
-import { useLoginState } from "#hooks/useLoginState.ts";
+import { marathonContext } from "#config/marathonContext.js";
+import { canSync } from "#config/refine/authorization.js";
+import { StorageManager, useStorageValue } from "#config/storage.js";
+import { useLoginState } from "#hooks/useLoginState.js";
 
 import { drawerButtonStyles } from "./styles";
 

@@ -5,8 +5,8 @@ import type {
   OnErrorResponse,
 } from "@refinedev/core";
 
-import { API_BASE_URL, urqlClient } from "#config/api.ts";
-import { getLoginState, refreshLoginState } from "#hooks/useLoginState.ts";
+import { API_BASE_URL, urqlClient } from "#config/api.js";
+import { getLoginState, refreshLoginState } from "#hooks/useLoginState.js";
 
 function openAuthPopup(
   path: "login" | "logout",

@@ -23,7 +23,7 @@ import {
 } from "graphql";
 import pluralize from "pluralize";
 
-import type { PaginationFragment } from "#documents/shared.ts";
+import type { PaginationFragment } from "#documents/shared.js";
 
 import { API_BASE_URL, urqlClient } from "../../api";
 import {

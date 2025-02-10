@@ -1,7 +1,7 @@
 import { Descriptions, Empty } from "antd";
 import { DateTime } from "luxon";
 
-import { SingleNotificationFragment } from "#documents/notification.ts";
+import { SingleNotificationFragment } from "#documents/notification.js";
 import { NotificationPreview } from "#elements/components/notification/NotificationPreview.js";
 import type { FragmentOf } from "#gql/index.js";
 import { readFragment } from "#gql/index.js";

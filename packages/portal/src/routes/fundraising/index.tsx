@@ -9,7 +9,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { Button } from "antd";
 
 import { FundraisingEntriesTable } from "#elements/tables/fundraising/FundraisingEntriesTable";
-import { useAuthorizationRequirement } from "#hooks/useLoginState.ts";
+import { useAuthorizationRequirement } from "#hooks/useLoginState.js";
 
 export const Route = createFileRoute("/fundraising/")({
   component: RouteComponent,

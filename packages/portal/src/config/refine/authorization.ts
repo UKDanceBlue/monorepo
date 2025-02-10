@@ -1,7 +1,7 @@
 import type { AccessControlProvider, CanParams } from "@refinedev/core";
 import type { Action } from "@ukdanceblue/common";
 
-import { type PortalAuthData } from "#hooks/useLoginState.ts";
+import { type PortalAuthData } from "#hooks/useLoginState.js";
 
 export function getAccessControlProvider(
   loginState: PortalAuthData

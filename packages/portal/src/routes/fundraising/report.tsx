@@ -9,9 +9,9 @@ import { utils, type WorkBook, writeFile } from "xlsx";
 import type {
   ReportConfigFormat,
   ReportType,
-} from "#elements/components/fundraising/FundraisingReportSelection.tsx";
-import { FundraisingReportSelection } from "#elements/components/fundraising/FundraisingReportSelection.tsx";
-import { useLoginState } from "#hooks/useLoginState.ts";
+} from "#elements/components/fundraising/FundraisingReportSelection.js";
+import { FundraisingReportSelection } from "#elements/components/fundraising/FundraisingReportSelection.js";
+import { useLoginState } from "#hooks/useLoginState.js";
 
 export const Route = createFileRoute("/fundraising/report")({
   component: RouteComponent,

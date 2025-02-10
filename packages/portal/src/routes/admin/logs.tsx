@@ -8,7 +8,7 @@ import {
 } from "@tanstack/react-router";
 import { Input, Space, Table } from "antd";
 
-import { findResourceByGlobalId } from "#config/refine/resources.tsx";
+import { findResourceByGlobalId } from "#config/refine/resources.js";
 import type { ResultOf, VariablesOf } from "#gql/index.js";
 import { graphql } from "#gql/index.js";
 

@@ -2,7 +2,7 @@ import type { Action, Subject, SubjectObject } from "@ukdanceblue/common";
 import { Result } from "antd";
 import type { PropsWithChildren } from "react";
 
-import { useAuthorizationRequirement } from "#hooks/useLoginState.ts";
+import { useAuthorizationRequirement } from "#hooks/useLoginState.js";
 
 export function Authorized<S extends Exclude<Subject, "all">>({
   children,

@@ -10,12 +10,12 @@ import {
 } from "@ukdanceblue/common";
 import { Button, Flex, Table } from "antd";
 
-import { Authorized } from "#elements/components/Authorized.tsx";
-import { RefineSearchForm } from "#elements/components/RefineSearchForm.tsx";
-import { UploadPersonButton } from "#elements/forms/person/create/BulkPersonCreator.tsx";
+import { Authorized } from "#elements/components/Authorized.js";
+import { RefineSearchForm } from "#elements/components/RefineSearchForm.js";
+import { UploadPersonButton } from "#elements/forms/person/create/BulkPersonCreator.js";
 import { graphql } from "#gql/index.js";
-import { withAuthorized } from "#hooks/useLoginState.tsx";
-import { useTypedTable } from "#hooks/useTypedRefine.ts";
+import { withAuthorized } from "#hooks/useLoginState.js";
+import { useTypedTable } from "#hooks/useTypedRefine.js";
 
 const PeopleTableFragment = graphql(/* GraphQL */ `
   fragment PeopleTableFragment on PersonNode {

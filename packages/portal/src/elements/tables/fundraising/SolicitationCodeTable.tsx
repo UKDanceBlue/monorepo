@@ -8,8 +8,8 @@ import { useMarathon } from "#config/marathonContext";
 import {
   AssignTeamToSolicitationCodeDocument,
   UnassignTeamFromSolicitationCodeDocument,
-} from "#documents/solicitationCode.ts";
-import { TeamSelectFragment } from "#documents/team.ts";
+} from "#documents/solicitationCode.js";
+import { TeamSelectFragment } from "#documents/team.js";
 import { readFragment } from "#gql/index.js";
 import { graphql } from "#gql/index.js";
 import { useQueryStatusWatcher } from "#hooks/useQueryStatusWatcher";

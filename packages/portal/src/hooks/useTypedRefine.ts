@@ -42,8 +42,8 @@ import type { ResultOf, TadaDocumentNode, VariablesOf } from "gql.tada";
 import type { DocumentNode } from "graphql";
 import type { AnyVariables, UseQueryResponse } from "urql";
 
-import { dataProvider, type FieldTypes } from "#config/refine/graphql/data.ts";
-import type { RefineResourceName } from "#config/refine/resources.tsx";
+import { dataProvider, type FieldTypes } from "#config/refine/graphql/data.js";
+import type { RefineResourceName } from "#config/refine/resources.js";
 
 export interface UseTypedTableMeta<
   T extends Record<string, unknown>,

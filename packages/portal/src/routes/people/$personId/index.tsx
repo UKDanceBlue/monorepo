@@ -5,7 +5,7 @@ import { Spin } from "antd";
 
 import { PersonViewer } from "#elements/viewers/person/PersonViewer.js";
 import { graphql } from "#gql/index.js";
-import { prefetchTypedOne, useTypedOne } from "#hooks/useTypedRefine.ts";
+import { prefetchTypedOne, useTypedOne } from "#hooks/useTypedRefine.js";
 
 export const PersonViewerFragment = graphql(/* GraphQL */ `
   fragment PersonViewerFragment on PersonNode {

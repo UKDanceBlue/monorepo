@@ -4,7 +4,7 @@ import { AutoComplete, type AutoCompleteProps } from "antd";
 import { useRef, useState } from "react";
 
 import { graphql } from "#gql/index.js";
-import { useQuery } from "#hooks/useTypedRefine.ts";
+import { useQuery } from "#hooks/useTypedRefine.js";
 
 const personSearchDocument = graphql(/* GraphQL */ `
   query PersonSearch($search: String!) {

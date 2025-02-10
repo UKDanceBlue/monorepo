@@ -1,10 +1,10 @@
 import { createFileRoute } from "@tanstack/react-router";
 
-import { SingleNotificationFragment } from "#documents/notification.ts";
+import { SingleNotificationFragment } from "#documents/notification.js";
 import { ManageNotificationForm } from "#elements/forms/notification/manage/ManageNotificationForm.js";
 import { graphql } from "#gql/index.js";
 import { useQueryStatusWatcher } from "#hooks/useQueryStatusWatcher.js";
-import { useQuery } from "#hooks/useTypedRefine.ts";
+import { useQuery } from "#hooks/useTypedRefine.js";
 
 const notificationManagerDocument = graphql(
   /* GraphQL */ `

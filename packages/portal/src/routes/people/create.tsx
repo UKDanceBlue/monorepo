@@ -2,9 +2,9 @@ import { Create } from "@refinedev/antd";
 import { createFileRoute } from "@tanstack/react-router";
 import { Form, Input } from "antd";
 
-import { graphql } from "#gql/index.ts";
-import { withAuthorized } from "#hooks/useLoginState.tsx";
-import { useTypedForm } from "#hooks/useTypedRefine.ts";
+import { graphql } from "#gql/index.js";
+import { withAuthorized } from "#hooks/useLoginState.js";
+import { useTypedForm } from "#hooks/useTypedRefine.js";
 
 const CreatePersonMutation = graphql(/* GraphQL */ `
   mutation CreatePersonMutation($input: CreatePersonInput!) {

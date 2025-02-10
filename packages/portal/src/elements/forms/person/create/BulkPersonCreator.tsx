@@ -5,7 +5,7 @@ import { useMutation } from "urql";
 import { z } from "zod";
 
 import { useMarathon } from "#config/marathonContext.js";
-import { UploadButton } from "#elements/components/UploadButton.tsx";
+import { UploadButton } from "#elements/components/UploadButton.js";
 import { graphql, type VariablesOf } from "#gql/index.js";
 import { useQueryStatusWatcher } from "#hooks/useQueryStatusWatcher.js";
 

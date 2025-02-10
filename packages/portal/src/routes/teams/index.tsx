@@ -11,11 +11,11 @@ import {
 } from "@ukdanceblue/common";
 import { Button, Flex, Table } from "antd";
 
-import { useMarathon } from "#config/marathonContext.ts";
-import { RefineSearchForm } from "#elements/components/RefineSearchForm.tsx";
+import { useMarathon } from "#config/marathonContext.js";
+import { RefineSearchForm } from "#elements/components/RefineSearchForm.js";
 import { graphql } from "#gql/index.js";
 import { useAuthorizationRequirement } from "#hooks/useLoginState.js";
-import { useTypedTable } from "#hooks/useTypedRefine.ts";
+import { useTypedTable } from "#hooks/useTypedRefine.js";
 
 export const TeamsTableFragment = graphql(/* GraphQL */ `
   fragment TeamsTableFragment on TeamNode {

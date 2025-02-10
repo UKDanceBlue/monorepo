@@ -8,9 +8,9 @@ import {
 } from "@ukdanceblue/common/client-parsers";
 import { Button, Flex, Table } from "antd";
 
-import { RefineSearchForm } from "#elements/components/RefineSearchForm.tsx";
+import { RefineSearchForm } from "#elements/components/RefineSearchForm.js";
 import { graphql } from "#gql/index.js";
-import { useTypedTable } from "#hooks/useTypedRefine.ts";
+import { useTypedTable } from "#hooks/useTypedRefine.js";
 
 export const EventsTableFragment = graphql(/* GraphQL */ `
   fragment EventsTableFragment on EventNode {

@@ -1,6 +1,6 @@
 import { createFileRoute, useParams } from "@tanstack/react-router";
 
-import { FundraisingEntryEditor } from "#elements/forms/fundraising-entry/edit/FundraisingEntryEditor.tsx";
+import { FundraisingEntryEditor } from "#elements/forms/fundraising-entry/edit/FundraisingEntryEditor.js";
 
 export const Route = createFileRoute("/fundraising/$entryId/edit")({
   component: RouteComponent,

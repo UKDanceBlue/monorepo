@@ -10,9 +10,9 @@ import {
 import { Form, Input, InputNumber, Select } from "antd";
 import type { DateTime } from "luxon";
 
-import { LuxonDatePicker } from "#elements/components/antLuxonComponents.tsx";
-import { graphql } from "#gql/index.ts";
-import { useTypedForm, useTypedSelect } from "#hooks/useTypedRefine.ts";
+import { LuxonDatePicker } from "#elements/components/antLuxonComponents.js";
+import { graphql } from "#gql/index.js";
+import { useTypedForm, useTypedSelect } from "#hooks/useTypedRefine.js";
 
 export const Route = createFileRoute("/fundraising/create")({
   component: RouteComponent,

@@ -5,9 +5,9 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { Button, Flex, Table } from "antd";
 import { DateTime } from "luxon";
 
-import { RefineSearchForm } from "#elements/components/RefineSearchForm.tsx";
+import { RefineSearchForm } from "#elements/components/RefineSearchForm.js";
 import { graphql } from "#gql/index.js";
-import { useTypedTable } from "#hooks/useTypedRefine.ts";
+import { useTypedTable } from "#hooks/useTypedRefine.js";
 
 const NotificationsTableFragment = graphql(/* GraphQL */ `
   fragment NotificationsTableFragment on NotificationNode {

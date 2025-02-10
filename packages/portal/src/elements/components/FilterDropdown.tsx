@@ -2,7 +2,7 @@ import { SingleTargetOperators } from "@ukdanceblue/common";
 import type { InputRef } from "antd";
 import Search from "antd/es/input/Search.js";
 
-import type { FilterItem } from "#config/refine/graphql/crudFiltersToFilterObject.ts";
+import type { FilterItem } from "#config/refine/graphql/crudFiltersToFilterObject.js";
 
 export function FilterSearchDropdown<Field extends string>({
   updateFilter,

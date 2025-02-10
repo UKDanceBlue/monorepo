@@ -7,8 +7,8 @@ import type { useAppProps } from "antd/es/app/context.js";
 import { lazy, Suspense } from "react";
 import type { Client as UrqlClient } from "urql";
 
-import { MarathonConfigProvider } from "#config/marathon.tsx";
-import { Main } from "#elements/Main.tsx";
+import { MarathonConfigProvider } from "#config/marathon.js";
+import { Main } from "#elements/Main.js";
 import { refreshLoginState } from "#hooks/useLoginState.js";
 
 const TanStackRouterDevtools =

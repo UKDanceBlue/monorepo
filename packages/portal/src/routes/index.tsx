@@ -7,7 +7,7 @@ import {
   useAuthorizationRequirement,
   useLoginState,
 } from "#hooks/useLoginState.js";
-import { useTypedCustomQuery } from "#hooks/useTypedRefine.ts";
+import { useTypedCustomQuery } from "#hooks/useTypedRefine.js";
 
 export const PersonViewerFragment = graphql(/* GraphQL */ `
   fragment PersonViewerFragment on PersonNode {

@@ -14,13 +14,13 @@ import {
 import { Table } from "antd";
 import { DateTime } from "luxon";
 
-import { RefineSearchForm } from "#elements/components/RefineSearchForm.tsx";
+import { RefineSearchForm } from "#elements/components/RefineSearchForm.js";
 import { graphql } from "#gql/index.js";
-import { useAuthorizationRequirement } from "#hooks/useLoginState.ts";
+import { useAuthorizationRequirement } from "#hooks/useLoginState.js";
 import {
   useTypedTable,
   type UseTypedTableMeta,
-} from "#hooks/useTypedRefine.ts";
+} from "#hooks/useTypedRefine.js";
 
 import {
   FundraisingAssignmentsTable,

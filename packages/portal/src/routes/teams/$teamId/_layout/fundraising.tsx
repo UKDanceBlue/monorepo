@@ -4,7 +4,7 @@ import { AutoComplete, Button, Card, Flex, Form, Space } from "antd";
 import { useState } from "react";
 import { useMutation, useQuery } from "urql";
 
-import { PaginationFragment } from "#documents/shared.ts";
+import { PaginationFragment } from "#documents/shared.js";
 import {
   FundraisingEntriesTable,
   FundraisingEntryTableFragment,
@@ -12,7 +12,7 @@ import {
 import { graphql } from "#gql/index.js";
 import { useAuthorizationRequirement } from "#hooks/useLoginState.js";
 import { useQueryStatusWatcher } from "#hooks/useQueryStatusWatcher.js";
-import { useTypedOne } from "#hooks/useTypedRefine.ts";
+import { useTypedOne } from "#hooks/useTypedRefine.js";
 
 const TeamFundraisingEntriesDocument = graphql(
   /* GraphQL */ `

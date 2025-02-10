@@ -1,9 +1,9 @@
 import { Select } from "antd";
 import { useMemo, useRef, useState } from "react";
 
-import { StorageManager, useStorageValue } from "#config/storage.ts";
+import { StorageManager, useStorageValue } from "#config/storage.js";
 import { graphql } from "#gql/index.js";
-import { useQuery } from "#hooks/useTypedRefine.ts";
+import { useQuery } from "#hooks/useTypedRefine.js";
 
 export function MasqueradeSelector() {
   const [search, setSearch] = useState("");

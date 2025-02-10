@@ -8,7 +8,7 @@ import {
 // import { ConfigProvider } from "antd";
 import type * as express from "express";
 
-// import { makeAntDesignTheme } from "#config/makeAntDesignTheme.ts";
+// import { makeAntDesignTheme } from "#config/makeAntDesignTheme.js";
 import { createRouter } from "../router";
 
 // const cssLight = extractStyle((node) => (

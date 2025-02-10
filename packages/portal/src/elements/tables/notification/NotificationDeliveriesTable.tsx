@@ -1,9 +1,9 @@
 import { Table } from "antd";
 import { DateTime } from "luxon";
 
-import { PaginationFragment } from "#documents/shared.ts";
+import { PaginationFragment } from "#documents/shared.js";
 import { graphql } from "#gql/index.js";
-import { useTypedTable } from "#hooks/useTypedRefine.ts";
+import { useTypedTable } from "#hooks/useTypedRefine.js";
 import { renderDateTime } from "#tools/luxonTools.js";
 
 const NotificationDeliveriesTableFragment = graphql(/* GraphQL */ `

@@ -4,9 +4,9 @@ import { createFileRoute } from "@tanstack/react-router";
 import { Button, Table } from "antd";
 
 import { graphql } from "#gql/index.js";
-import { useQueryStatusWatcher } from "#hooks/useQueryStatusWatcher.ts";
-import { useQuery } from "#hooks/useTypedRefine.ts";
-import { useTypedTable } from "#hooks/useTypedRefine.ts";
+import { useQueryStatusWatcher } from "#hooks/useQueryStatusWatcher.js";
+import { useQuery } from "#hooks/useTypedRefine.js";
+import { useTypedTable } from "#hooks/useTypedRefine.js";
 
 const marathonOverviewPageDocument = graphql(/* GraphQL */ `
   query MarathonOverviewPage {

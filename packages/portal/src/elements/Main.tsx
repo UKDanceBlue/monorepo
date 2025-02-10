@@ -6,9 +6,9 @@ import { useState } from "react";
 
 import UKYLogo from "#assets/uky-logo-128.png";
 import watermark from "#assets/watermark.svg";
-import { StorageManager, useStorageValue } from "#config/storage.ts";
-import { Sider } from "#elements/components/sider/index.tsx";
-import { ConfigModal } from "#elements/singletons/ConfigModal.tsx";
+import { StorageManager, useStorageValue } from "#config/storage.js";
+import { Sider } from "#elements/components/sider/index.js";
+import { ConfigModal } from "#elements/singletons/ConfigModal.js";
 import { useLoginState } from "#hooks/useLoginState.js";
 
 export function Main() {

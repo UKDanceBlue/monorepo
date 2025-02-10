@@ -9,16 +9,16 @@ import { StrictMode, useState } from "react";
 import { Provider as UrqlProvider } from "urql";
 
 import watermark from "#assets/watermark.svg";
-import { AntdThemeProvider } from "#config/ant.tsx";
-import { urqlClient } from "#config/api.ts";
-import { NivoThemeProvider } from "#config/nivo.tsx";
-import { authProvider } from "#config/refine/authentication.ts";
-import { getAccessControlProvider } from "#config/refine/authorization.ts";
-import { useNotificationProvider } from "#config/refine/feedback.tsx";
-import { dataProvider } from "#config/refine/graphql/data.ts";
-import { refineResources } from "#config/refine/resources.tsx";
-import { routerBindings } from "#config/refine/router.tsx";
-import { useLoginState } from "#hooks/useLoginState.ts";
+import { AntdThemeProvider } from "#config/ant.js";
+import { urqlClient } from "#config/api.js";
+import { NivoThemeProvider } from "#config/nivo.js";
+import { authProvider } from "#config/refine/authentication.js";
+import { getAccessControlProvider } from "#config/refine/authorization.js";
+import { useNotificationProvider } from "#config/refine/feedback.js";
+import { dataProvider } from "#config/refine/graphql/data.js";
+import { refineResources } from "#config/refine/resources.js";
+import { routerBindings } from "#config/refine/router.js";
+import { useLoginState } from "#hooks/useLoginState.js";
 
 export function InnerContext({ children }: { children: React.ReactNode }) {
   const loginState = useLoginState();
