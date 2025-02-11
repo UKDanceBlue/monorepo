@@ -4,3 +4,12 @@ body,
   height: 100%;
   margin: 0 !important;
 }
+
+.hide-unless-hover {
+  background-color: black;
+  color: black;
+}
+.hide-unless-hover:hover {
+  background-color: unset;
+  color: unset;
+}

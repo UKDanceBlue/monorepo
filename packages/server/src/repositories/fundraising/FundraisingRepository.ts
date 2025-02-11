@@ -18,6 +18,7 @@ import { Decimal, type DefaultArgs } from "@prisma/client/runtime/library";
 import {
   type FieldsOfListQueryArgs,
   FundraisingEntrySource,
+  getFiscalYear,
   type ListFundraisingEntriesArgs,
   LocalDate,
   localDateToLuxon,
@@ -29,6 +30,7 @@ import {
   NotFoundError,
   optionOf,
 } from "@ukdanceblue/common/error";
+import { DateTime } from "luxon";
 import {
   AsyncResult,
   Err,
@@ -50,6 +52,10 @@ import {
   type FindOneParams,
   type FindOneResult,
 } from "#repositories/Default.js";
+import {
+  MarathonRepository,
+  type UniqueMarathonParam,
+} from "#repositories/marathon/MarathonRepository.js";
 import {
   PersonRepository,
   UniquePersonParam,
@@ -77,7 +83,12 @@ export type WideFundraisingEntryWithMeta = FundraisingEntryWithMeta & {
 export type FundraisingEntryUniqueParam = SimpleUniqueParam;
 export type FundraisingAssignmentUniqueParam = SimpleUniqueParam;
 
-@Service([PrismaService, SolicitationCodeRepository, PersonRepository])
+@Service([
+  PrismaService,
+  SolicitationCodeRepository,
+  PersonRepository,
+  MarathonRepository,
+])
 export class FundraisingEntryRepository extends buildDefaultRepository<
   PrismaClient["fundraisingEntryWithMeta"],
   FundraisingEntryUniqueParam,
@@ -126,7 +137,8 @@ export class FundraisingEntryRepository extends buildDefaultRepository<
   constructor(
     protected readonly prisma: PrismaService,
     private readonly solicitationCodeRepository: SolicitationCodeRepository,
-    private readonly personRepository: PersonRepository
+    private readonly personRepository: PersonRepository,
+    private readonly marathonRepository: MarathonRepository
   ) {
     super(prisma);
   }
@@ -474,6 +486,45 @@ export class FundraisingEntryRepository extends buildDefaultRepository<
           .then(() => Ok(entry), Err)
       ).mapErr(unwrapRepositoryError);
     });
+  }
+
+  getGrandTotal({
+    marathon,
+  }: {
+    marathon?: UniqueMarathonParam;
+  }): AsyncRepositoryResult<number> {
+    return (
+      marathon
+        ? new AsyncResult(
+            this.marathonRepository.findMarathonByUnique(marathon)
+          )
+        : Ok(null).toAsyncResult()
+    )
+      .andThen((marathon) => {
+        const fy =
+          marathon &&
+          getFiscalYear(
+            DateTime.fromObject({
+              year: Number.parseInt(`20${marathon.year.substring(2)}`, 10),
+            })
+          );
+        return this.handleQueryError(
+          this.prisma.fundraisingEntryWithMeta.aggregate({
+            _sum: {
+              amount: true,
+            },
+            where: fy
+              ? {
+                  donatedOn: {
+                    gte: fy.start!.toJSDate(),
+                    lt: fy.end!.toJSDate(),
+                  },
+                }
+              : undefined,
+          })
+        );
+      })
+      .map((result) => result._sum.amount?.toNumber() ?? 0);
   }
 
   async addAssignmentToEntry(

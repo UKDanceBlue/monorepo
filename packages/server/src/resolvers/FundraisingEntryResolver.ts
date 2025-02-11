@@ -225,6 +225,25 @@ export class FundraisingEntryResolver
       .map(fundraisingEntryModelToNode);
   }
 
+  @AccessControlAuthorized(
+    "get",
+    ["every", "FundraisingEntryNode"],
+    ".grandTotal"
+  )
+  @Query(() => Number)
+  grandTotal(
+    @Arg("marathonId", () => GlobalIdScalar, { nullable: true })
+    marathonId?: GlobalId
+  ): AsyncRepositoryResult<number> {
+    return this.fundraisingEntryRepository.getGrandTotal({
+      marathon: marathonId?.id
+        ? {
+            uuid: marathonId.id,
+          }
+        : undefined,
+    });
+  }
+
   @FieldResolver(() => DailyDepartmentNotificationNode, { nullable: true })
   async dailyDepartmentNotification(
     @Root()

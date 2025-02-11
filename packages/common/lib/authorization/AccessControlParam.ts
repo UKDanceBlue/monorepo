@@ -40,7 +40,7 @@ export function getArrayFromOverloadedRest<T>(
   return items;
 }
 
-const aclSummary = new Map<string, string[]>();
+export const _aclSummary = new Map<string, string[]>();
 function addAclSummary(
   constructorName: string,
   propertyKey: string,
@@ -53,10 +53,10 @@ function addAclSummary(
     "versions" in globalThis.process &&
     "node" in globalThis.process.versions
   ) {
-    if (!aclSummary.has(constructorName)) {
-      aclSummary.set(constructorName, []);
+    if (!_aclSummary.has(constructorName)) {
+      _aclSummary.set(constructorName, []);
     }
-    aclSummary
+    _aclSummary
       .get(constructorName)!
       .push(`### ${propertyKey}\n**${action}** ${kindStr}${kindSpecifier}`);
   }
@@ -195,11 +195,7 @@ setTimeout(() => {
     if (process.env.NODE_ENV === "development") {
       import("node:fs/promises").then(async ({ writeFile }) => {
         const { fileURLToPath } = await import("node:url");
-        // const summary = aclSummary
-        //   .map((val) => `- ${val}`)
-        //   .sort()
-        //   .join("\n");
-        const summary = Array.from(aclSummary.entries())
+        const summary = Array.from(_aclSummary.entries())
           .map(([key, val]) => `## ${key}\n${val.join("\n")}`)
           .join("\n");
         await writeFile(

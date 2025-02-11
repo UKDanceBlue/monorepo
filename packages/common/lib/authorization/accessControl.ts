@@ -61,7 +61,9 @@ const extraFieldsByResource = {
     [".deliveryError"]: NEVER,
   },
   AuditLogNode: {},
-  FundraisingEntryNode: {},
+  FundraisingEntryNode: {
+    [".grandTotal"]: NEVER,
+  },
   CommitteeNode: {},
   ConfigurationNode: {},
   DailyDepartmentNotificationNode: {},
@@ -258,6 +260,13 @@ function applyCommitteePermissions(
   allow: AbilityBuilder<AppAbility>["can"]
 ) {
   for (const { identifier, role } of effectiveCommitteeRoles) {
+    if (
+      identifier === CommitteeIdentifier.overallCommittee &&
+      role === CommitteeRole.Chair
+    ) {
+      allow("read", "FundraisingEntryNode", ".grandTotal");
+    }
+
     // Members of vice committee may read all members and teams
     // Coords/Chairs of vice committee may manage all members and teams
     if (identifier === CommitteeIdentifier.viceCommittee) {

@@ -1497,6 +1497,7 @@ type Query {
     sortBy: [FundraisingEntryResolverSort!]
   ): ListFundraisingEntriesResponse!
   fundraisingEntry(id: GlobalId!): FundraisingEntryNode!
+  grandTotal(marathonId: GlobalId): Float!
   image(id: GlobalId!): ImageNode!
   images(
     filters: ImageResolverFilterGroup

@@ -49,12 +49,12 @@ This document lists the required permissions for each GraphQL endpoint in the Da
 ### fundraisingAssignment
 **get** custom function (.fundraisingAssignments):
 ```js
-(_, { entryId }) => {
-        if (!isGlobalId(entryId)) {
+(_, { id }) => {
+        if (!isGlobalId(id)) {
             return Err(new InvalidArgumentError("Invalid entryId"));
         }
         return new AsyncResult(Container.get(FundraisingEntryRepository).getMembershipForAssignment({
-            uuid: entryId.id,
+            uuid: id.id,
         })).map(({ team: { uuid } }) => ({
             id: uuid,
             kind: "TeamNode",
@@ -64,12 +64,17 @@ This document lists the required permissions for each GraphQL endpoint in the Da
 ### assignEntryToPerson
 **create** custom function (.fundraisingAssignments):
 ```js
-(_, { entryId }) => {
+(_, { entryId, personId }) => {
         if (!isGlobalId(entryId)) {
             return Err(new InvalidArgumentError("Invalid entryId"));
         }
-        return new AsyncResult(Container.get(FundraisingEntryRepository).getMembershipForAssignment({
+        if (!isGlobalId(personId)) {
+            return Err(new InvalidArgumentError("Invalid personId"));
+        }
+        return new AsyncResult(Container.get(FundraisingEntryRepository).getMembershipForEntryAndPerson({
             uuid: entryId.id,
+        }, {
+            uuid: personId.id,
         })).map(({ team: { uuid } }) => ({
             id: uuid,
             kind: "TeamNode",
@@ -79,12 +84,12 @@ This document lists the required permissions for each GraphQL endpoint in the Da
 ### updateFundraisingAssignment
 **update** custom function (.fundraisingAssignments):
 ```js
-(_, { entryId }) => {
-        if (!isGlobalId(entryId)) {
-            return Err(new InvalidArgumentError("Invalid entryId"));
+(_, { id }) => {
+        if (!isGlobalId(id)) {
+            return Err(new InvalidArgumentError("Invalid id"));
         }
         return new AsyncResult(Container.get(FundraisingEntryRepository).getMembershipForAssignment({
-            uuid: entryId.id,
+            uuid: id.id,
         })).map(({ team: { uuid } }) => ({
             id: uuid,
             kind: "TeamNode",
@@ -94,12 +99,12 @@ This document lists the required permissions for each GraphQL endpoint in the Da
 ### deleteFundraisingAssignment
 **delete** custom function (.fundraisingAssignments):
 ```js
-(_, { entryId }) => {
-        if (!isGlobalId(entryId)) {
-            return Err(new InvalidArgumentError("Invalid entryId"));
+(_, { id }) => {
+        if (!isGlobalId(id)) {
+            return Err(new InvalidArgumentError("Invalid id"));
         }
         return new AsyncResult(Container.get(FundraisingEntryRepository).getMembershipForAssignment({
-            uuid: entryId.id,
+            uuid: id.id,
         })).map(({ team: { uuid } }) => ({
             id: uuid,
             kind: "TeamNode",
@@ -147,6 +152,10 @@ This document lists the required permissions for each GraphQL endpoint in the Da
 **create** every FundraisingEntryNode.
 ### setFundraisingEntry
 **update** FundraisingEntryNode. with an id of _args.id_
+### deleteFundraisingEntry
+**delete** FundraisingEntryNode. with an id of _args.id_
+### grandTotal
+**get** every FundraisingEntryNode.grandTotal
 ## ImageResolver
 ### image
 **get** ImageNode. with an id of _args.id_
