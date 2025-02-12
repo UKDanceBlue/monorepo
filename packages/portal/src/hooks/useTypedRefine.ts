@@ -1,7 +1,6 @@
 import {
   useForm,
   type UseFormProps,
-  type UseFormReturnType,
   useSelect,
   type UseSelectReturnType,
   useTable,
@@ -240,20 +239,24 @@ export function prefetchTypedSelect<
   });
 }
 
+type FormResult<D> = (D extends Record<`create${string}`, infer C>
+  ? C
+  : D extends Record<`set${string}`, infer S>
+    ? S
+    : never) &
+  BaseRecord;
+
 interface TypedFormParams<
   Document extends DocumentNode,
-  TQueryFnData extends ResultOf<Document> & BaseRecord = ResultOf<Document> &
-    BaseRecord,
-  TVariables extends VariablesOf<Document> = VariablesOf<Document>,
-  TData extends BaseRecord = TQueryFnData,
+  FormData extends BaseRecord,
 > {
   mutation: Document;
   props: UseFormProps<
-    TQueryFnData,
+    FormResult<ResultOf<Document>>,
     HttpError,
-    TVariables extends { input: infer T } ? T : never,
-    TData,
-    TData,
+    FormData,
+    FormData,
+    FormResult<ResultOf<Document>>,
     HttpError
   > &
     (
@@ -267,50 +270,64 @@ interface TypedFormParams<
           id: string;
         }
     );
+  formToVariables: (
+    formData: FormData
+  ) => VariablesOf<Document> extends { input: infer T } ? T : never;
+  dataToForm: (data: FormResult<ResultOf<Document>>) => FormData;
 }
 
 export function useTypedForm<
   Document extends DocumentNode,
-  TQueryFnData extends ResultOf<Document> & BaseRecord = ResultOf<Document> &
-    BaseRecord,
-  TVariables extends VariablesOf<Document> = VariablesOf<Document>,
-  TData extends BaseRecord = TQueryFnData,
+  FormData extends BaseRecord,
 >({
   mutation,
   props,
-}: TypedFormParams<
-  Document,
-  TQueryFnData,
-  TVariables,
-  TData
->): UseFormReturnType<
-  TQueryFnData,
-  HttpError,
-  TVariables extends { input: infer T } ? T : never,
-  TData,
-  TData,
-  HttpError
-> {
-  return useForm({
+  formToVariables,
+  dataToForm,
+}: TypedFormParams<Document, FormData>) {
+  const val = useForm<
+    FormResult<ResultOf<Document>>,
+    HttpError,
+    FormData,
+    FormData,
+    FormResult<ResultOf<Document>>,
+    HttpError
+  >({
     ...props,
+    queryOptions: {
+      ...props.queryOptions,
+      select(data) {
+        return {
+          data: dataToForm(data.data),
+        };
+      },
+    },
     meta: {
       ...props.meta,
       gqlMutation: mutation,
     },
   });
+
+  delete val.formProps.onFinish;
+
+  return {
+    ...val,
+    onFinish: (values: FormData) => {
+      // The types on refine's useForm hook don't allow this so we just give it the ol trust me bro
+      console.log(formToVariables(values) as FormData);
+      // return val.onFinish(formToVariables(values) as FormData);
+    },
+  };
 }
 
-export function prefetchTypedForm<
+export async function prefetchTypedForm<
   Document extends DocumentNode,
-  TQueryFnData extends ResultOf<Document> & BaseRecord = ResultOf<Document> &
-    BaseRecord,
-  TVariables extends VariablesOf<Document> = VariablesOf<Document>,
-  TData extends BaseRecord = TQueryFnData,
->(params: TypedFormParams<Document, TQueryFnData, TVariables, TData>) {
+  FormData extends BaseRecord,
+>(params: TypedFormParams<Document, FormData>) {
   if (!params.props.id) {
-    return Promise.resolve(null);
+    return null;
   }
-  return dataProvider.getOne({
+  const data = await dataProvider.getOne<FormResult<ResultOf<Document>>>({
     resource: params.props.resource,
     id: params.props.id,
     meta: {
@@ -318,6 +335,7 @@ export function prefetchTypedForm<
       gqlMutation: params.mutation,
     },
   });
+  return { data: params.dataToForm(data.data) };
 }
 
 interface TypedCreateParams<

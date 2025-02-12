@@ -10,6 +10,9 @@ const CreatePersonMutation = graphql(/* GraphQL */ `
   mutation CreatePersonMutation($input: CreatePersonInput!) {
     createPerson(input: $input) {
       id
+      name
+      linkblue
+      email
     }
   }
 `);
@@ -20,6 +23,12 @@ function CreatePersonPage() {
     props: {
       action: "create",
       resource: "person",
+    },
+    dataToForm(data) {
+      return data;
+    },
+    formToVariables(formData) {
+      return formData;
     },
   });
 

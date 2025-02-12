@@ -1,14 +1,9 @@
 import { DollarOutlined } from "@ant-design/icons";
 import { Create } from "@refinedev/antd";
 import { createFileRoute } from "@tanstack/react-router";
-import {
-  BatchType,
-  type CreateFundraisingEntryInput,
-  localDateFromLuxon,
-  stringifyDDNBatchType,
-} from "@ukdanceblue/common";
+import { BatchType, stringifyDDNBatchType } from "@ukdanceblue/common";
 import { Form, Input, InputNumber, Select } from "antd";
-import type { DateTime } from "luxon";
+import { DateTime } from "luxon";
 
 import { LuxonDatePicker } from "#elements/components/antLuxonComponents.js";
 import { graphql } from "#gql/index.js";
@@ -29,16 +24,57 @@ const CreateFundraisingEntryDocument = graphql(/* GraphQL */ `
   mutation CreateFundraisingEntry($input: CreateFundraisingEntryInput!) {
     createFundraisingEntry(input: $input) {
       id
+      amount
+      donatedByText
+      donatedToText
+      notes
+      solicitationCode {
+        id
+      }
+      batchType
+      donatedOn
     }
   }
 `);
 
 function RouteComponent() {
-  const { formProps, saveButtonProps } = useTypedForm({
+  const { formProps, saveButtonProps, onFinish } = useTypedForm({
     mutation: CreateFundraisingEntryDocument,
     props: {
       resource: "fundraisingEntry",
       action: "create",
+    },
+    dataToForm(data): {
+      amount: number;
+      donatedBy: string | null | undefined;
+      donatedTo: string | null | undefined;
+      notes: string | null | undefined;
+      solicitationCodeId: string | undefined;
+      batchType: BatchType;
+      donatedOn: DateTime | null | undefined;
+    } {
+      return {
+        amount: data.amount,
+        donatedBy: data.donatedByText,
+        donatedTo: data.donatedToText,
+        notes: data.notes,
+        solicitationCodeId: data.solicitationCode.id,
+        batchType: data.batchType,
+        donatedOn: data.donatedOn
+          ? DateTime.fromISO(data.donatedOn)
+          : undefined,
+      };
+    },
+    formToVariables(formData) {
+      return {
+        amount: formData.amount,
+        donatedBy: formData.donatedBy ?? null,
+        donatedTo: formData.donatedTo ?? null,
+        notes: formData.notes ?? null,
+        solicitationCodeId: formData.solicitationCodeId!,
+        batchType: formData.batchType,
+        donatedOn: formData.donatedOn ? formData.donatedOn.toISO() : undefined,
+      };
     },
   });
 
@@ -59,24 +95,7 @@ function RouteComponent() {
       <Form
         {...formProps}
         layout="vertical"
-        onFinish={(data) => {
-          formProps.onFinish?.({
-            amount: data.amount,
-            donatedBy: data.donatedBy ?? undefined,
-            donatedTo: data.donatedTo ?? undefined,
-            notes: data.notes ?? undefined,
-            solicitationCodeId: data.solicitationCodeId,
-            batchType: data.batchType,
-            donatedOn: data.donatedOn
-              ? localDateFromLuxon(data.donatedOn as unknown as DateTime)
-              : undefined,
-          } satisfies Omit<
-            CreateFundraisingEntryInput,
-            "solicitationCodeId"
-          > & {
-            solicitationCodeId: string | undefined;
-          });
-        }}
+        onFinish={(data) => onFinish(data)}
       >
         <Form.Item
           label="Amount"

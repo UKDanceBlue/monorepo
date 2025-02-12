@@ -5,6 +5,12 @@ import { Interval } from "luxon";
 
 import { LuxonDatePicker } from "#elements/components/antLuxonComponents.js";
 
+export interface EventOccurrencePickerValue {
+  id?: string;
+  interval: Interval;
+  fullDay: boolean;
+}
+
 export function EventOccurrencePicker({
   value = {
     interval: Interval.invalid("No input"),
@@ -14,39 +20,32 @@ export function EventOccurrencePicker({
   onDelete,
   id,
 }: {
-  value?: { id?: string; interval: Interval; fullDay: boolean };
-  onChange?: (occurrence: {
-    id?: string;
-    interval: Interval;
-    fullDay: boolean;
-  }) => void;
+  value?: EventOccurrencePickerValue;
+  onChange?: (occurrence: EventOccurrencePickerValue) => void;
   onDelete?: () => void;
   id?: string;
 }) {
   return (
     <Flex align="center" gap="middle" id={id}>
-      {/* {fullDay ? (
-        <LuxonDatePicker.RangePicker
-          value={[start, end]}
-          onChange={(dates) => {
-            setStart(dates?.[0] ?? null);
-            setEnd(dates?.[1] ?? null);
-          }}
-        />
-      ) : (
-        <LuxonDatePicker.RangePicker
-          value={[start, end]}
-          onChange={(dates) => {
-            setStart(dates?.[0] ?? null);
-            setEnd(dates?.[1] ?? null);
-          }}
-          showTime
-          format="YYYY-MM-DD HH:mm"
-        />
-      )} */}
       <LuxonDatePicker.RangePicker
         value={[value.interval.start, value.interval.end]}
         onChange={(dates) => {
+          let [start, end] = dates ?? [
+            DateTime.invalid("No input"),
+            DateTime.invalid("No input"),
+          ];
+          if (!start) {
+            start = DateTime.invalid("No input");
+          }
+          if (!end) {
+            end = DateTime.invalid("No input");
+          }
+
+          if (value.fullDay) {
+            start = start.startOf("day");
+            end = end.endOf("day");
+          }
+
           onChange({
             ...value,
             interval: !dates
@@ -68,6 +67,13 @@ export function EventOccurrencePicker({
         onChange={(e) => {
           onChange({
             ...value,
+            interval:
+              value.interval.start && value.interval.end
+                ? Interval.fromDateTimes(
+                    value.interval.start.startOf("day"),
+                    value.interval.end.endOf("day")
+                  )
+                : value.interval,
             fullDay: e.target.checked,
           });
         }}
