@@ -292,6 +292,13 @@ function applyCommitteePermissions(
       allow("deploy", "NotificationNode", ".");
     }
 
+    if (
+      role === CommitteeRole.Chair &&
+      identifier === CommitteeIdentifier.miniMarathonsCommittee
+    ) {
+      allow("read", "FundraisingEntryNode", ".");
+    }
+
     // Members of dancer relations committee may manage point opportunities, point entries, and team members
     if (identifier === CommitteeIdentifier.dancerRelationsCommittee) {
       allow("manage", ["PointOpportunityNode", "PointEntryNode"], ".");
