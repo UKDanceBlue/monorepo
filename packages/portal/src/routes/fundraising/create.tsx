@@ -1,7 +1,11 @@
 import { DollarOutlined } from "@ant-design/icons";
 import { Create } from "@refinedev/antd";
 import { createFileRoute } from "@tanstack/react-router";
-import { BatchType, stringifyDDNBatchType } from "@ukdanceblue/common";
+import {
+  BatchType,
+  localDateFromLuxon,
+  stringifyDDNBatchType,
+} from "@ukdanceblue/common";
 import { Form, Input, InputNumber, Select } from "antd";
 import { DateTime } from "luxon";
 
@@ -73,7 +77,9 @@ function RouteComponent() {
         notes: formData.notes ?? null,
         solicitationCodeId: formData.solicitationCodeId!,
         batchType: formData.batchType,
-        donatedOn: formData.donatedOn ? formData.donatedOn.toISO() : undefined,
+        donatedOn: formData.donatedOn
+          ? localDateFromLuxon(formData.donatedOn)
+          : undefined,
       };
     },
   });
