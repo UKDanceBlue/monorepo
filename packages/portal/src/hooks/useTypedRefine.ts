@@ -314,8 +314,7 @@ export function useTypedForm<
     ...val,
     onFinish: (values: FormData) => {
       // The types on refine's useForm hook don't allow this so we just give it the ol trust me bro
-      console.log(formToVariables(values) as FormData);
-      // return val.onFinish(formToVariables(values) as FormData);
+      return val.onFinish(formToVariables(values) as FormData);
     },
   };
 }
