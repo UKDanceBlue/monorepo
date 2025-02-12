@@ -251,6 +251,7 @@ erDiagram
   Int code
   String name "nullable"
   String text "nullable"
+  SolicitationCodeTag tags
 }
 "Marathon" {
   Int id PK
@@ -786,6 +787,7 @@ A record of a notification being sent to a device
   - `code`: 
   - `name`: 
   - `text`: An automatically generated string representation of the solicitation code in the format "AA9999 - Name"
+  - `tags`: 
 
 ### `Marathon`
 

@@ -276,6 +276,7 @@ export class FundraisingEntryResolver
         prefix: solicitationCode.prefix,
         code: solicitationCode.code,
         name: solicitationCode.name,
+        tags: solicitationCode.tags,
         createdAt: DateTime.fromJSDate(solicitationCode.createdAt),
         updatedAt: DateTime.fromJSDate(solicitationCode.updatedAt),
       })

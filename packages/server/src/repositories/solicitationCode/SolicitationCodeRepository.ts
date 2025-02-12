@@ -65,6 +65,10 @@ export class SolicitationCodeRepository extends buildDefaultRepository<
     getWhere: (text) => Ok({ name: text }),
     searchable: true,
   },
+  tags: {
+    getOrderBy: (tags) => Ok({ tags }),
+    getWhere: (tags) => Ok({ tags }),
+  },
   createdAt: {
     getOrderBy: (createdAt) => Ok({ createdAt }),
     getWhere: (createdAt) => Ok({ createdAt }),
@@ -89,7 +93,7 @@ export class SolicitationCodeRepository extends buildDefaultRepository<
     tx,
     ...params
   }: FindAndCountParams<
-    "name" | "prefix" | "code" | "text" | "createdAt" | "updatedAt"
+    FieldsOfListQueryArgs<ListSolicitationCodesArgs>
   >): AsyncRepositoryResult<
     FindAndCountResult<
       Prisma.SolicitationCodeDelegate<DefaultArgs, Prisma.PrismaClientOptions>,

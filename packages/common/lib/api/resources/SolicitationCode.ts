@@ -1,11 +1,39 @@
 import { NonNegativeIntResolver } from "graphql-scalars";
 import { DateTime } from "luxon";
-import { Field, ObjectType } from "type-graphql";
+import { Field, ObjectType, registerEnumType } from "type-graphql";
 
 import { Node } from "../relay.js";
 import type { GlobalId } from "../scalars/GlobalId.js";
 import { GlobalIdScalar } from "../scalars/GlobalId.js";
 import { TimestampedResource } from "./Resource.js";
+
+export const SolicitationCodeTag = {
+  MiniMarathon: "MiniMarathon",
+  DancerTeam: "DancerTeam",
+  Active: "Active",
+  General: "General",
+} as const;
+export type SolicitationCodeTag =
+  (typeof SolicitationCodeTag)[keyof typeof SolicitationCodeTag];
+
+export function stringifySolicitationCodeTag(tag: SolicitationCodeTag): string {
+  switch (tag) {
+    case SolicitationCodeTag.MiniMarathon: {
+      return "Mini Marathons";
+    }
+    case SolicitationCodeTag.DancerTeam: {
+      return "Dancer Team";
+    }
+    default: {
+      return tag;
+    }
+  }
+}
+
+registerEnumType(SolicitationCodeTag, {
+  name: "SolicitationCodeTag",
+  description: "The tags for a solicitation code",
+});
 
 @ObjectType({
   implements: [Node],
@@ -22,6 +50,9 @@ export class SolicitationCodeNode extends TimestampedResource implements Node {
 
   @Field(() => String, { nullable: true })
   name?: string | undefined | null;
+
+  @Field(() => [SolicitationCodeTag])
+  tags!: SolicitationCodeTag[];
 
   @Field(() => String)
   text(): string {
@@ -43,6 +74,7 @@ export class SolicitationCodeNode extends TimestampedResource implements Node {
     prefix: string;
     code: number;
     name?: string | undefined | null;
+    tags: SolicitationCodeTag[];
     createdAt: DateTime;
     updatedAt: DateTime;
   }) {

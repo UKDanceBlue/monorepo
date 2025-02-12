@@ -3,13 +3,16 @@ import { GraphQLNonEmptyString, NonNegativeIntResolver } from "graphql-scalars";
 import { ArgsType, Field, InputType, ObjectType } from "type-graphql";
 
 import { FilteredListQueryArgs } from "../filtering/FilteredListQueryArgs.js";
-import { SolicitationCodeNode } from "../resources/SolicitationCode.js";
+import {
+  SolicitationCodeNode,
+  SolicitationCodeTag,
+} from "../resources/SolicitationCode.js";
 import { AbstractGraphQLPaginatedResponse } from "./PaginatedResponse.js";
 
 @ArgsType()
 export class ListSolicitationCodesArgs extends FilteredListQueryArgs(
   "SolicitationCodeResolver",
-  ["name", "prefix", "code", "text", "createdAt", "updatedAt"]
+  ["name", "prefix", "code", "tags", "text", "createdAt", "updatedAt"]
 ) {}
 
 @ObjectType("ListSolicitationCodesResponse", {
@@ -24,6 +27,9 @@ export class ListSolicitationCodesResponse extends AbstractGraphQLPaginatedRespo
 export class SetSolicitationCodeInput {
   @Field(() => GraphQLNonEmptyString, { nullable: true })
   name?: string | null | undefined;
+
+  @Field(() => [SolicitationCodeTag])
+  tags!: SolicitationCodeTag[];
 }
 
 @InputType("CreateSolicitationCodeInput")
@@ -38,4 +44,7 @@ export class CreateSolicitationCodeInput extends SetSolicitationCodeInput {
 
   @Field(() => GraphQLNonEmptyString, { nullable: true })
   name?: string | null | undefined;
+
+  @Field(() => [SolicitationCodeTag])
+  tags!: SolicitationCodeTag[];
 }
