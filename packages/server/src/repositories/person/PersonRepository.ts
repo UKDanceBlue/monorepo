@@ -393,7 +393,12 @@ export class PersonRepository extends buildDefaultRepository<
       function addRole(identifier: CommitteeIdentifier, role: CommitteeRole) {
         const existing = effectiveCommitteeRoles[identifier];
         if (existing) {
-          if (role > existing.role) {
+          if (existing.role === CommitteeRole.Member) {
+            existing.role = role;
+          } else if (
+            existing.role === CommitteeRole.Coordinator &&
+            role === CommitteeRole.Chair
+          ) {
             existing.role = role;
           }
         } else {
