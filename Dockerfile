@@ -2,6 +2,7 @@
 FROM node:22 AS build
 
 ENV NODE_ENV="production"
+ENV SENTRY_LOG_LEVEL="debug"
 
 ADD --link --exclude=packages/mobile . /builddir
 
