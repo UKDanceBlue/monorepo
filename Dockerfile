@@ -4,6 +4,7 @@ FROM node:22 AS build
 ENV NODE_ENV="production"
 ENV SENTRY_LOG_LEVEL="debug"
 ENV SENTRY_ORG="ukdanceblue"
+ENV SENTRY_URL="https://ukdanceblue.sentry.io"
 
 ADD --link --exclude=packages/mobile . /builddir
 
