@@ -3,6 +3,7 @@ FROM node:22 AS build
 
 ENV NODE_ENV="production"
 ENV SENTRY_LOG_LEVEL="debug"
+ENV SENTRY_ORG="ukdanceblue"
 
 ADD --link --exclude=packages/mobile . /builddir
 
@@ -17,8 +18,7 @@ RUN corepack yarn run build
 WORKDIR /builddir/packages/portal
 
 
-RUN --mount=type=secret,id=SENTRY_AUTH_TOKEN,env=SENTRY_AUTH_TOKEN,required \
-  corepack yarn run build
+RUN --mount=type=secret,id=SENTRY_AUTH_TOKEN,env=SENTRY_AUTH_TOKEN,required SENTRY_PROJECT="portal" corepack yarn run build
 
 WORKDIR /builddir/packages/server
 
@@ -29,11 +29,11 @@ RUN corepack yarn build
 RUN date -Iminutes > ./dist/src/BUILD_TIME && git rev-parse --short HEAD > ./dist/src/BUILD_COMMIT
 
 RUN --mount=type=secret,id=SENTRY_AUTH_TOKEN,env=SENTRY_AUTH_TOKEN,required \
-  corepack yarn sentry-cli releases new  --org ukdanceblue --project server $(cat ./dist/src/BUILD_COMMIT) && \
-  corepack yarn sentry-cli releases set-commits --org ukdanceblue --project server $(cat ./dist/src/BUILD_COMMIT) --auto && \
-  corepack yarn sentry-cli releases finalize --org ukdanceblue --project server $(cat ./dist/src/BUILD_COMMIT) && \
-  corepack yarn sentry-cli sourcemaps inject --org ukdanceblue --project server ./dist && \
-  corepack yarn sentry-cli sourcemaps upload --org ukdanceblue --project server ./dist
+  corepack yarn sentry-cli releases new  --project server $(cat ./dist/src/BUILD_COMMIT) && \
+  corepack yarn sentry-cli releases set-commits --project server $(cat ./dist/src/BUILD_COMMIT) --auto && \
+  corepack yarn sentry-cli releases finalize --project server $(cat ./dist/src/BUILD_COMMIT) && \
+  corepack yarn sentry-cli sourcemaps inject --project server ./dist && \
+  corepack yarn sentry-cli sourcemaps upload --project server ./dist
 
 # Server
 FROM node:22 AS server
