@@ -50,7 +50,7 @@ if [ -z "$DIFFERENT" ]; then
   docker image tag ghcr.io/ukdanceblue/app-server:$FROM_BRANCH ghcr.io/ukdanceblue/app-server:$TO_BRANCH
 
   echo ⏫ Pushing tagged image $TO_BRANCH
-  docker image push ghcr.io/ukdanceblue/app-server:$TO_BRANCH
+  docker image push --all-tags ghcr.io/ukdanceblue/app-server
 
   echo ✅ Promoted image $FROM_BRANCH to $TO_BRANCH
 else

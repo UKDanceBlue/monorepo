@@ -56,11 +56,13 @@ jobs:
           labels: ${{ steps.serverMeta.outputs.labels }}
           target: server
           secrets: |
-            SENTRY_AUTH_TOKEN=${{ secrets.SENTRY_AUTH_TOKEN }}
-      # - uses: actions/delete-package-versions@v5
-      #   with:
-      #     token: ${{ secrets.GITHUB_TOKEN }}
-      #     package-name: monorepo/${{ env.SERVER_IMAGE_NAME }}
-      #     package-type: container
-      #     min-versions-to-keep: 10
-      #     delete-only-untagged-versions: "true"
+            SENTRY_AUTH_TOKEN=${{ secrets.SENTRY_AUTH_TOKEN }}:
+      - uses: bots-house/ghcr-delete-image-action@v1.1.0
+        with:
+          # NOTE: at now only orgs is supported
+          owner: ukdanceblue
+          name: server
+          # NOTE: using Personal Access Token
+          token: ${{ secrets.CONTAINER_DELETE_PAT }}
+          # Keep latest N untagged images
+          untagged-keep-latest: 3
