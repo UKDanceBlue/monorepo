@@ -51,6 +51,7 @@ export const graphql = initGraphQLTada<{
     BatchType: BatchType;
     JSONObject: Record<string, Primitive | PrimitiveObject>;
     PositiveFloat: number;
+    SolicitationCodeUpsert: string;
   };
 }>();
 

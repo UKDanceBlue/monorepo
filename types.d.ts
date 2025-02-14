@@ -21,3 +21,11 @@ declare module "eslint-plugin-react-refresh" {
 
   export default Plugin;
 }
+
+declare module "eslint-plugin-react-compiler" {
+  import { ESLint } from "eslint";
+
+  declare const Plugin: ESLint.Plugin;
+
+  export default Plugin;
+}

@@ -207,6 +207,11 @@ export const refineResources = [
 })[];
 
 export type RefineResourceName = (typeof refineResources)[number]["name"];
+export const refineResourceNames = {} as { [K in RefineResourceName]: K };
+for (const { name } of refineResources) {
+  // @ts-expect-error Don't worry about it
+  refineResourceNames[name] = name;
+}
 
 export function findResourceByGlobalId(
   globalId: string | GlobalId

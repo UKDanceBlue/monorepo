@@ -1,23 +1,41 @@
 import { BarsOutlined, SearchOutlined } from "@ant-design/icons";
+import { type HttpError, useUpdate } from "@refinedev/core";
 import { Link } from "@tanstack/react-router";
+import {
+  SolicitationCodeTag,
+  stringifySolicitationCodeTag,
+} from "@ukdanceblue/common";
 import { Button, Input, Select, Table } from "antd";
+import type { DefaultOptionType } from "antd/es/select";
 import { useMemo, useState } from "react";
 import { useMutation, useQuery } from "urql";
 
 import { useMarathon } from "#config/marathonContext";
+import { refineResourceNames } from "#config/refine/resources.tsx";
 import {
   AssignTeamToSolicitationCodeDocument,
   UnassignTeamFromSolicitationCodeDocument,
 } from "#documents/solicitationCode.js";
 import { TeamSelectFragment } from "#documents/team.js";
-import { readFragment } from "#gql/index.js";
+import { readFragment, type ResultOf, type VariablesOf } from "#gql/index.js";
 import { graphql } from "#gql/index.js";
 import { useQueryStatusWatcher } from "#hooks/useQueryStatusWatcher";
 
 const SolicitationCodeTableFragment = graphql(/* GraphQL */ `
   fragment SolicitationCodeTableFragment on SolicitationCodeNode {
     id
+    name
     text
+    tags
+  }
+`);
+
+const SolicitationCodeTableFragmentWithTeams = graphql(/* GraphQL */ `
+  fragment SolicitationCodeTableFragmentWithTeams on SolicitationCodeNode {
+    id
+    name
+    text
+    tags
     teams(marathonId: $marathonId) {
       id
       name
@@ -25,17 +43,31 @@ const SolicitationCodeTableFragment = graphql(/* GraphQL */ `
   }
 `);
 
+const SetSolicitationCodeDocument = graphql(
+  /* GraphQL */ `
+    mutation SetSolicitationCode(
+      $input: SetSolicitationCodeInput!
+      $id: GlobalId!
+    ) {
+      setSolicitationCode(id: $id, input: $input) {
+        ...SolicitationCodeTableFragment
+      }
+    }
+  `,
+  [SolicitationCodeTableFragment]
+);
+
 const SolicitationCodeTableDocument = graphql(
   /* GraphQL */ `
     query SolicitationCodeTable($marathonId: GlobalId!) {
       solicitationCodes(sendAll: true) {
         data {
-          ...SolicitationCodeTableFragment
+          ...SolicitationCodeTableFragmentWithTeams
         }
       }
     }
   `,
-  [SolicitationCodeTableFragment]
+  [SolicitationCodeTableFragmentWithTeams]
 );
 
 const SearchTeamsDocument = graphql(
@@ -89,20 +121,12 @@ export function SolicitationCodeTable() {
   const [teamSearch, setTeamSearch] = useState<string | undefined>();
 
   const data = readFragment(
-    SolicitationCodeTableFragment,
+    SolicitationCodeTableFragmentWithTeams,
     result.data?.solicitationCodes.data ?? []
   );
 
-  const mappedData = useMemo(() => {
-    return data.map((solicitationCode) => ({
-      text: solicitationCode.text,
-      key: solicitationCode.id,
-      teams: solicitationCode.teams,
-    }));
-  }, [data]);
-
   const filteredData = useMemo(() => {
-    return mappedData.filter((solicitationCode) => {
+    return data.filter((solicitationCode) => {
       if (
         solicitationCodeSearch &&
         !solicitationCode.text
@@ -123,13 +147,13 @@ export function SolicitationCodeTable() {
       }
       return true;
     });
-  }, [mappedData, solicitationCodeSearch, teamSearch]);
+  }, [data, solicitationCodeSearch, teamSearch]);
 
   return (
     <Table
       dataSource={filteredData}
       loading={result.fetching}
-      rowKey={(record) => record.key}
+      rowKey="id"
       pagination={false}
       columns={[
         {
@@ -156,10 +180,19 @@ export function SolicitationCodeTable() {
           ),
         },
         {
+          title: "Tags",
+          dataIndex: "tags",
+          key: "tags",
+          width: "25%",
+          render(_, record) {
+            return <TagSelect solicitationCode={record} />;
+          },
+        },
+        {
           title: "Teams",
           dataIndex: "teams",
           key: "teams",
-          width: "40%",
+          width: "25%",
           filterDropdown: () => (
             <Input
               placeholder="Search"
@@ -185,17 +218,58 @@ export function SolicitationCodeTable() {
         {
           title: "Actions",
           key: "actions",
-          width: "10%",
-          render: (_, { key }) => (
+          render: (_, { id }) => (
             <Link
               to="/fundraising/solicitation-code/$solicitationCodeId"
-              params={{ solicitationCodeId: key }}
+              params={{ solicitationCodeId: id }}
             >
               <Button icon={<BarsOutlined />} />
             </Link>
           ),
         },
       ]}
+    />
+  );
+}
+
+function TagSelect({
+  solicitationCode,
+}: {
+  solicitationCode: ResultOf<typeof SolicitationCodeTableFragment>;
+}) {
+  const { mutateAsync } = useUpdate<
+    ResultOf<typeof SolicitationCodeTableFragment>,
+    HttpError,
+    VariablesOf<typeof SetSolicitationCodeDocument>["input"]
+  >({
+    id: solicitationCode.id,
+    resource: refineResourceNames.solicitationCode,
+    meta: {
+      gqlMutation: SetSolicitationCodeDocument,
+    },
+  });
+
+  return (
+    <Select
+      onChange={(vals: SolicitationCodeTag[]) => {
+        console.log(vals);
+        mutateAsync({
+          values: {
+            name: solicitationCode.name,
+            tags: vals,
+          },
+        }).catch(console.error);
+      }}
+      mode="tags"
+      options={Object.values(SolicitationCodeTag).map(
+        (value): DefaultOptionType => ({
+          value,
+          label: stringifySolicitationCodeTag(value),
+        })
+      )}
+      style={{
+        width: "100%",
+      }}
     />
   );
 }
@@ -209,7 +283,7 @@ function TeamSelect({
   marathonYear?: string;
   record: {
     text: string;
-    key: string;
+    id: string;
     teams: {
       id: string;
       name: string;
@@ -272,7 +346,7 @@ function TeamSelect({
       filterOption={false}
       onSelect={(value) => {
         assignTeamToSolicitationCode({
-          solicitationCodeId: record.key,
+          solicitationCodeId: record.id,
           teamId: value,
         })
           .then(() => refetch())

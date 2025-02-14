@@ -10,6 +10,7 @@ import { CommitteeIdentifier, CommitteeRole } from "@ukdanceblue/common";
 import { Button, Collapse, Flex } from "antd";
 
 import { useMarathon } from "#config/marathonContext.ts";
+import { CustomFundraisingEntryUploadButton } from "#elements/forms/fundraising-entry/CustomFundraisingEntryUploadButton.tsx";
 import { FundraisingEntriesTable } from "#elements/tables/fundraising/FundraisingEntriesTable";
 import { graphql } from "#gql/index.ts";
 import {
@@ -72,11 +73,14 @@ function RouteComponent() {
           {useAuthorizationRequirement("create", {
             kind: "DailyDepartmentNotificationNode",
           }) && (
-            <Link from="/fundraising" to="ddn/upload">
-              <Button icon={<UploadOutlined />} size="large">
-                Upload a DDN
-              </Button>
-            </Link>
+            <>
+              <Link from="/fundraising" to="ddn/upload">
+                <Button icon={<UploadOutlined />} size="large">
+                  Upload a DDN
+                </Button>
+              </Link>
+              <CustomFundraisingEntryUploadButton />
+            </>
           )}
           {useAuthorizationRequirement("list", {
             kind: "FundraisingEntryNode",

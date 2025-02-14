@@ -344,7 +344,13 @@ interface TypedCreateParams<
   TVariables extends VariablesOf<Document> = VariablesOf<Document>,
 > {
   document: Document;
-  props: PropsWithRequired<UseCreateProps<TData, HttpError, TVariables>>;
+  props: PropsWithRequired<
+    UseCreateProps<
+      TData,
+      HttpError,
+      TVariables extends { input: infer T } ? T : TVariables
+    >
+  >;
 }
 
 export function useTypedCreate<
@@ -358,7 +364,7 @@ export function useTypedCreate<
 }: TypedCreateParams<Document, TData, TVariables>): UseCreateReturnType<
   TData,
   HttpError,
-  TVariables
+  TVariables extends { input: infer T } ? T : TVariables
 > {
   return useCreate({
     ...props,

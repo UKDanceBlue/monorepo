@@ -52,6 +52,17 @@ export type ArrayOperators =
   (typeof ArrayOperators)[keyof typeof ArrayOperators];
 registerEnumType(ArrayOperators, { name: "ArrayOperators" });
 
+export const ArrayArrayOperators = {
+  EQUALS: "EQUALS",
+  HAS: "HAS",
+  HAS_EVERY: "HAS_EVERY",
+  HAS_SOME: "HAS_SOME",
+  IS_EMPTY: "IS_EMPTY",
+} as const;
+export type ArrayArrayOperators =
+  (typeof ArrayArrayOperators)[keyof typeof ArrayArrayOperators];
+registerEnumType(ArrayArrayOperators, { name: "ArrayArrayOperators" });
+
 @InputType()
 export class NullFilter {
   @Field(() => NoTargetOperators)
@@ -253,6 +264,33 @@ export class ArrayBooleanFilter {
   }
 }
 
+@InputType()
+export class ArrayArrayFilter {
+  @Field(() => [String])
+  value: string[] = [];
+
+  @Field(() => ArrayArrayOperators)
+  comparison!: ArrayArrayOperators;
+
+  static from(
+    value: string[],
+    comparison: ArrayArrayOperators
+  ): ArrayArrayFilter {
+    if (comparison === ArrayArrayOperators.IS_EMPTY && value.length > 0) {
+      throw new TypeError("Value must be empty for IS_EMPTY comparison");
+    }
+    if (comparison !== ArrayArrayOperators.HAS && value.length !== 1) {
+      throw new TypeError(
+        "Value must contain exactly one element for HAS comparison"
+      );
+    }
+    const val = new ArrayArrayFilter();
+    val.value = value;
+    val.comparison = comparison;
+    return val;
+  }
+}
+
 export type SomeFilterType =
   | NullFilter
   | SingleStringFilter
@@ -264,7 +302,8 @@ export type SomeFilterType =
   | ArrayStringFilter
   | ArrayNumberFilter
   | ArrayDateFilter
-  | ArrayBooleanFilter;
+  | ArrayBooleanFilter
+  | ArrayArrayFilter;
 
 @Directive("@oneof")
 @InputType()
@@ -291,6 +330,8 @@ export class SomeFilter {
   arrayDateFilter?: ArrayDateFilter;
   @Field(() => ArrayBooleanFilter, { nullable: true })
   arrayBooleanFilter?: ArrayBooleanFilter;
+  @Field(() => ArrayArrayFilter, { nullable: true })
+  arrayArrayFilter?: ArrayArrayFilter;
 
   static getFilter(some: SomeFilter): SomeFilterType {
     const {
@@ -305,6 +346,7 @@ export class SomeFilter {
       arrayNumberFilter,
       arrayDateFilter,
       arrayBooleanFilter,
+      arrayArrayFilter,
     } = some;
 
     return (nullFilter ??
@@ -317,7 +359,8 @@ export class SomeFilter {
       arrayStringFilter ??
       arrayNumberFilter ??
       arrayDateFilter ??
-      arrayBooleanFilter)!;
+      arrayBooleanFilter ??
+      arrayArrayFilter)!;
   }
 
   static from(filter: SomeFilterType): SomeFilter {
@@ -345,6 +388,8 @@ export class SomeFilter {
       val.arrayDateFilter = filter;
     } else if (filter instanceof ArrayBooleanFilter) {
       val.arrayBooleanFilter = filter;
+    } else if (filter instanceof ArrayArrayFilter) {
+      val.arrayArrayFilter = filter;
     } else {
       throw new TypeError("Invalid filter type");
     }

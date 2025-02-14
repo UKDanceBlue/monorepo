@@ -3,7 +3,7 @@ import { fileURLToPath } from "node:url";
 
 import { sentryVitePlugin } from "@sentry/vite-plugin";
 import { TanStackRouterVite } from "@tanstack/router-plugin/vite";
-import react from "@vitejs/plugin-react-swc";
+import react from "@vitejs/plugin-react";
 import type { UserConfig } from "vite";
 import { defineConfig } from "vite";
 
@@ -41,7 +41,18 @@ export const literalConfig = {
       semicolons: true,
       autoCodeSplitting: true,
     }),
-    react(),
+    react({
+      babel: {
+        plugins: [
+          [
+            "babel-plugin-react-compiler",
+            {
+              target: "18",
+            },
+          ],
+        ],
+      },
+    }),
     sentryVitePlugin({
       org: "ukdanceblue",
       project: "portal",

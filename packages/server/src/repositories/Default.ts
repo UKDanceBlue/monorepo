@@ -6,6 +6,7 @@ import type {
   Result as PrismaResult,
 } from "@prisma/client/runtime/library";
 import type * as runtime from "@prisma/client/runtime/library";
+import { asyncResultAll } from "@ukdanceblue/common";
 import {
   InvariantError,
   NotFoundError,
@@ -91,7 +92,7 @@ export type DeleteResult<T, A> = AliasedPrismaResult<T, A, "delete">;
 export type CreateMultipleResult<T, A> = AliasedPrismaResult<
   T,
   A,
-  "createMany"
+  "createManyAndReturn"
 >;
 export type DeleteMultipleResult<T, A> = AliasedPrismaResult<
   T,
@@ -218,6 +219,34 @@ export function buildDefaultRepository<
           return result;
         })()
       );
+    }
+
+    protected batchMapTransaction<V, R>(
+      data: V[],
+      callback: (tx: Transaction, value: V) => AsyncRepositoryResult<R>,
+      tx?: Transaction,
+      batchSize = 25
+    ): AsyncRepositoryResult<R[]> {
+      return this.handleTransactionError(async (tx) => {
+        const segmented: V[][] = [];
+        for (let i = 0; i < data.length; i++) {
+          if (i % batchSize === 0) {
+            segmented.push([]);
+          }
+          segmented[segmented.length - 1]!.push(data[i]!);
+        }
+        const okResults: R[] = [];
+        for (const batch of segmented) {
+          const results = batch.map((value) => callback(tx, value));
+          // eslint-disable-next-line no-await-in-loop
+          const combined = await asyncResultAll(...results).promise;
+          if (combined.isErr()) {
+            return combined;
+          }
+          okResults.push(...combined.value);
+        }
+        return Ok(okResults);
+      }, tx);
     }
 
     protected promiseToAsyncResult<T>(

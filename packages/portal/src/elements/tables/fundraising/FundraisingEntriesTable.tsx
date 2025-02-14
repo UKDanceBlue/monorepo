@@ -8,11 +8,14 @@ import { Link } from "@tanstack/react-router";
 import {
   BatchType,
   getFiscalYear,
+  SolicitationCodeTag,
   SortDirection,
   stringifyDDNBatchType,
+  stringifySolicitationCodeTag,
 } from "@ukdanceblue/common";
-import { Table } from "antd";
+import { Checkbox, Table } from "antd";
 import { DateTime } from "luxon";
+import { useState } from "react";
 
 import { RefineSearchForm } from "#elements/components/RefineSearchForm.js";
 import { graphql } from "#gql/index.js";
@@ -73,6 +76,10 @@ export function FundraisingEntriesTable<T extends Record<string, unknown>>({
         )
       : undefined;
 
+  const [solicitationCodeTagFilter, setSolicitationCodeTagFilter] = useState<
+    SolicitationCodeTag[]
+  >([]);
+
   const {
     tableProps,
     searchFormProps,
@@ -91,15 +98,26 @@ export function FundraisingEntriesTable<T extends Record<string, unknown>>({
         ],
       },
       filters: {
-        permanent: fiscalYear?.isValid
-          ? [
-              {
-                field: "donatedOn",
-                operator: "between",
-                value: [fiscalYear.start!.toISO(), fiscalYear.end!.toISO()],
-              },
-            ]
-          : undefined,
+        permanent: [
+          ...(fiscalYear?.isValid
+            ? [
+                {
+                  field: "donatedOn",
+                  operator: "between",
+                  value: [fiscalYear.start!.toISO(), fiscalYear.end!.toISO()],
+                } as const,
+              ]
+            : []),
+          ...(solicitationCodeTagFilter.length > 0
+            ? [
+                {
+                  field: "solicitationCodeTags",
+                  operator: "ina",
+                  value: solicitationCodeTagFilter,
+                } as const,
+              ]
+            : []),
+        ],
       },
     },
     fieldTypes: {
@@ -107,6 +125,7 @@ export function FundraisingEntriesTable<T extends Record<string, unknown>>({
       donatedToText: ["donatedTo", "string"],
       donatedOn: "date",
       batchType: ["batchType", "string"],
+      solicitationCodeTags: "array",
     },
     ...extraMeta,
   });
@@ -158,69 +177,6 @@ export function FundraisingEntriesTable<T extends Record<string, unknown>>({
                 }}
               />
             ),
-            // filtered:
-            //   queryOptions.numericFilters.find(({ field }) => field === "amount")
-            //     ?.value != null,
-            // filterIcon() {
-            //   return (
-            //     <FilterFilled
-            //       style={{
-            //         color:
-            //           queryOptions.numericFilters.find(
-            //             ({ field }) => field === "amount"
-            //           )?.value != null
-            //             ? "#1890ff"
-            //             : undefined,
-            //       }}
-            //     />
-            //   );
-            // },
-            // filterDropdown: () => (
-            //   <div
-            //     style={{
-            //       padding: 8,
-            //       display: "flex",
-            //       flexDirection: "column",
-            //     }}
-            //   >
-            //     <InputNumber
-            //       addonBefore=">"
-            //       onChange={(value) => {
-            //         if (value == null) {
-            //           clearFilter("amount");
-            //         } else {
-            //           const numericValue = Number.parseFloat(value.toString());
-            //           if (Number.isNaN(numericValue)) {
-            //             return;
-            //           }
-            //           updateFilter("amount", {
-            //             field: "amount",
-            //             value: numericValue,
-            //             comparison: "GREATER_THAN",
-            //           });
-            //         }
-            //       }}
-            //     />
-            //     <InputNumber
-            //       addonBefore="≤"
-            //       onChange={(value) => {
-            //         if (value == null) {
-            //           clearFilter("amount");
-            //         } else {
-            //           const numericValue = Number.parseFloat(value.toString());
-            //           if (Number.isNaN(numericValue)) {
-            //             return;
-            //           }
-            //           updateFilter("amount", {
-            //             field: "amount",
-            //             value: numericValue,
-            //             comparison: "LESS_THAN_OR_EQUAL_TO",
-            //           });
-            //         }
-            //       }}
-            //     />
-            //   </div>
-            // ),
           },
           {
             title: "Amount Unassigned",
@@ -237,70 +193,6 @@ export function FundraisingEntriesTable<T extends Record<string, unknown>>({
                 }}
               />
             ),
-            // filtered:
-            //   queryOptions.numericFilters.find(
-            //     ({ field }) => field === "amountUnassigned"
-            //   )?.value != null,
-            // filterIcon() {
-            //   return (
-            //     <FilterFilled
-            //       style={{
-            //         color:
-            //           queryOptions.numericFilters.find(
-            //             ({ field }) => field === "amountUnassigned"
-            //           )?.value != null
-            //             ? "#1890ff"
-            //             : undefined,
-            //       }}
-            //     />
-            //   );
-            // },
-            // filterDropdown: () => (
-            //   <div
-            //     style={{
-            //       padding: 8,
-            //       display: "flex",
-            //       flexDirection: "column",
-            //     }}
-            //   >
-            //     <InputNumber
-            //       addonBefore=">"
-            //       onChange={(value) => {
-            //         if (value == null) {
-            //           clearFilter("amountUnassigned");
-            //         } else {
-            //           const numericValue = Number.parseFloat(value.toString());
-            //           if (Number.isNaN(numericValue)) {
-            //             return;
-            //           }
-            //           updateFilter("amountUnassigned", {
-            //             field: "amountUnassigned",
-            //             value: numericValue,
-            //             comparison: "GREATER_THAN",
-            //           });
-            //         }
-            //       }}
-            //     />
-            //     <InputNumber
-            //       addonBefore="≤"
-            //       onChange={(value) => {
-            //         if (value == null) {
-            //           clearFilter("amountUnassigned");
-            //         } else {
-            //           const numericValue = Number.parseFloat(value.toString());
-            //           if (Number.isNaN(numericValue)) {
-            //             return;
-            //           }
-            //           updateFilter("amountUnassigned", {
-            //             field: "amountUnassigned",
-            //             value: numericValue,
-            //             comparison: "LESS_THAN_OR_EQUAL_TO",
-            //           });
-            //         }
-            //       }}
-            //     />
-            //   </div>
-            // ),
           },
           // TODO: replace with a picker to select a new solicitation code
           {
@@ -323,6 +215,27 @@ export function FundraisingEntriesTable<T extends Record<string, unknown>>({
                   {solicitationCode.text}
                 </Link>
               ),
+            filterDropdown() {
+              return (
+                <Checkbox.Group
+                  style={{
+                    width: "100%",
+                    display: "flex",
+                    flexDirection: "column",
+                    justifyContent: "center",
+                    gap: "0.5rem",
+                    margin: "0.5rem",
+                  }}
+                  value={solicitationCodeTagFilter}
+                  onChange={setSolicitationCodeTagFilter}
+                  options={Object.values(SolicitationCodeTag).map((tag) => ({
+                    label: stringifySolicitationCodeTag(tag),
+                    value: tag,
+                  }))}
+                />
+              );
+            },
+            filtered: solicitationCodeTagFilter.length > 0,
           },
           {
             title: "Batch Type",

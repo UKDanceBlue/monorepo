@@ -25,7 +25,7 @@ export function InnerContext({ children }: { children: React.ReactNode }) {
   return (
     <Refine
       dataProvider={dataProvider}
-      notificationProvider={useNotificationProvider}
+      notificationProvider={useNotificationProvider()}
       routerProvider={routerBindings}
       authProvider={authProvider}
       options={{
@@ -34,7 +34,7 @@ export function InnerContext({ children }: { children: React.ReactNode }) {
           icon: <img src={watermark} alt="DanceBlue Logo" />,
           text: "DanceBlue Portal",
         },
-        mutationMode: "undoable",
+        mutationMode: "pessimistic",
         disableTelemetry: true,
         redirect: {
           afterCreate: "show",

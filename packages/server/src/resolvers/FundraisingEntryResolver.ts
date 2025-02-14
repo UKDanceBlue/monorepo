@@ -28,6 +28,7 @@ import { AsyncResult, Err, Ok, Option } from "ts-results-es";
 import {
   Arg,
   Args,
+  Ctx,
   FieldResolver,
   Mutation,
   Query,
@@ -35,6 +36,7 @@ import {
   Root,
 } from "type-graphql";
 
+import type { GraphQLContext } from "#auth/context.js";
 import { WithAuditLogging } from "#lib/logging/auditLogging.js";
 import { dailyDepartmentNotificationModelToResource } from "#repositories/dailyDepartmentNotification/ddnModelToResource.js";
 import { fundraisingAssignmentModelToNode } from "#repositories/fundraising/fundraisingAssignmentModelToNode.js";
@@ -166,7 +168,8 @@ export class FundraisingEntryResolver
   @Mutation(() => FundraisingEntryNode, { name: "createFundraisingEntry" })
   createFundraisingEntry(
     @Arg("input", () => CreateFundraisingEntryInput)
-    input: CreateFundraisingEntryInput
+    input: CreateFundraisingEntryInput,
+    @Ctx() { authenticatedUser }: GraphQLContext
   ): AsyncRepositoryResult<FundraisingEntryNode> {
     return this.fundraisingEntryRepository
       .create({
@@ -177,12 +180,58 @@ export class FundraisingEntryResolver
           donatedOn: input.donatedOn ?? null,
           donatedTo: input.donatedTo ?? null,
           notes: input.notes ?? null,
-          solicitationCode: {
-            uuid: input.solicitationCodeId.id,
-          },
+          solicitationCode:
+            "id" in input.solicitationCodeId
+              ? {
+                  uuid: input.solicitationCodeId.id,
+                }
+              : input.solicitationCodeId,
+          createdBy: authenticatedUser
+            ? {
+                uuid: authenticatedUser.id.id,
+              }
+            : undefined,
         },
       })
       .map(fundraisingEntryModelToNode);
+  }
+
+  @WithAuditLogging()
+  @AccessControlAuthorized("create", ["every", "FundraisingEntryNode"])
+  @Mutation(() => [FundraisingEntryNode], { name: "createFundraisingEntries" })
+  createFundraisingEntries(
+    @Arg("input", () => [CreateFundraisingEntryInput])
+    input: CreateFundraisingEntryInput[],
+    @Ctx() { authenticatedUser }: GraphQLContext
+  ): AsyncRepositoryResult<FundraisingEntryNode[]> {
+    return this.fundraisingEntryRepository
+      .createMultiple({
+        data: input.map((entry) => ({
+          init: {
+            amount: entry.amount,
+            batchType: entry.batchType,
+            donatedBy: entry.donatedBy ?? null,
+            donatedOn: entry.donatedOn ?? null,
+            donatedTo: entry.donatedTo ?? null,
+            notes: entry.notes ?? null,
+            solicitationCode:
+              "id" in entry.solicitationCodeId
+                ? {
+                    uuid: entry.solicitationCodeId.id,
+                  }
+                : {
+                    code: entry.solicitationCodeId.code,
+                    prefix: entry.solicitationCodeId.prefix,
+                  },
+          },
+        })),
+        createdBy: authenticatedUser
+          ? {
+              uuid: authenticatedUser.id.id,
+            }
+          : undefined,
+      })
+      .map((entries) => entries.map(fundraisingEntryModelToNode));
   }
 
   @WithAuditLogging()

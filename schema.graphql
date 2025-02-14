@@ -20,6 +20,19 @@ enum AccessLevel {
   UKY
 }
 
+input ArrayArrayFilter {
+  comparison: ArrayArrayOperators!
+  value: [String!]! = []
+}
+
+enum ArrayArrayOperators {
+  EQUALS
+  HAS
+  HAS_EVERY
+  HAS_SOME
+  IS_EMPTY
+}
+
 input ArrayBooleanFilter {
   comparison: ArrayOperators!
   value: [Boolean!]!
@@ -186,7 +199,7 @@ input CreateFundraisingEntryInput {
   donatedOn: LocalDate
   donatedTo: NonEmptyString
   notes: NonEmptyString
-  solicitationCodeId: GlobalId!
+  solicitationCodeId: SolicitationCodeUpsert!
 }
 
 input CreateImageInput {
@@ -236,6 +249,7 @@ input CreateSolicitationCodeInput {
   code: NonNegativeInt!
   name: NonEmptyString
   prefix: NonEmptyString!
+  tags: [SolicitationCodeTag!]!
 }
 
 input CreateTeamInput {
@@ -623,6 +637,7 @@ enum FundraisingEntryResolverFilterFields {
   donatedOn
   donatedTo
   solicitationCode
+  solicitationCodeTags
   updatedAt
 }
 
@@ -1012,6 +1027,7 @@ type Mutation {
 
   """Add a new item to the feed"""
   createFeedItem(input: CreateFeedInput!): FeedNode!
+  createFundraisingEntries(input: [CreateFundraisingEntryInput!]!): [FundraisingEntryNode!]!
   createFundraisingEntry(input: CreateFundraisingEntryInput!): FundraisingEntryNode!
   createImage(input: CreateImageInput!): ImageNode!
   createMarathon(input: CreateMarathonInput!): MarathonNode!
@@ -1825,6 +1841,7 @@ input SetPointOpportunityInput {
 
 input SetSolicitationCodeInput {
   name: NonEmptyString
+  tags: [SolicitationCodeTag!]!
 }
 
 input SetTeamInput {
@@ -1901,6 +1918,7 @@ type SolicitationCodeNode implements Node {
   id: GlobalId!
   name: String
   prefix: String!
+  tags: [SolicitationCodeTag!]!
   teams(marathonId: GlobalId): [TeamNode!]!
   text: String!
   updatedAt: LuxonDateTime
@@ -1911,6 +1929,7 @@ enum SolicitationCodeResolverFilterFields {
   createdAt
   name
   prefix
+  tags
   text
   updatedAt
 }
@@ -1939,7 +1958,21 @@ input SolicitationCodeResolverSort {
   field: SolicitationCodeResolverFilterFields!
 }
 
+"""The tags for a solicitation code"""
+enum SolicitationCodeTag {
+  Active
+  DancerTeam
+  General
+  MiniMarathon
+}
+
+"""
+Either the global id of a solicitation code or a string to create a new one
+"""
+scalar SolicitationCodeUpsert
+
 input SomeFilter {
+  arrayArrayFilter: ArrayArrayFilter
   arrayBooleanFilter: ArrayBooleanFilter
   arrayDateFilter: ArrayDateFilter
   arrayNumberFilter: ArrayNumberFilter

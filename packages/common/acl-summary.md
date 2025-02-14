@@ -150,6 +150,8 @@ This document lists the required permissions for each GraphQL endpoint in the Da
 ```
 ### createFundraisingEntry
 **create** every FundraisingEntryNode.
+### createFundraisingEntries
+**create** every FundraisingEntryNode.
 ### setFundraisingEntry
 **update** FundraisingEntryNode. with an id of _args.id_
 ### deleteFundraisingEntry

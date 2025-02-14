@@ -6,7 +6,7 @@ import type {
   AbstractSearchFilter,
   AbstractSortItem,
 } from "@ukdanceblue/common";
-import { SortDirection } from "@ukdanceblue/common";
+import { ArrayArrayOperators, SortDirection } from "@ukdanceblue/common";
 import {
   ArrayOperators,
   FilterGroupOperator,
@@ -69,6 +69,7 @@ function getPrismaFilterFor<Field extends string>(
     singleStringFilter,
     twoDateFilter,
     twoNumberFilter,
+    arrayArrayFilter,
   } = filter.filter;
 
   if (nullFilter) {
@@ -491,6 +492,44 @@ function getPrismaFilterFor<Field extends string>(
             `Unsupported two date filter comparison: ${String(twoDateFilter.comparison)}`
           )
         );
+      }
+    }
+  } else if (arrayArrayFilter) {
+    switch (arrayArrayFilter.comparison) {
+      case ArrayArrayOperators.EQUALS: {
+        return Ok({
+          equals: arrayArrayFilter.value,
+        } satisfies Prisma.StringNullableListFilter);
+      }
+      case ArrayArrayOperators.HAS: {
+        if (arrayArrayFilter.value.length !== 1) {
+          return Err(
+            new InvariantError("Array array filter must have exactly one value")
+          );
+        }
+        return Ok({
+          has: arrayArrayFilter.value[0]!,
+        } satisfies Prisma.StringNullableListFilter);
+      }
+      case ArrayArrayOperators.HAS_EVERY: {
+        return Ok({
+          hasEvery: arrayArrayFilter.value,
+        } satisfies Prisma.StringNullableListFilter);
+      }
+      case ArrayArrayOperators.HAS_SOME: {
+        return Ok({
+          hasSome: arrayArrayFilter.value,
+        } satisfies Prisma.StringNullableListFilter);
+      }
+      case ArrayArrayOperators.IS_EMPTY: {
+        if (arrayArrayFilter.value.length > 0) {
+          return Err(
+            new InvariantError("Array array filter must have no values")
+          );
+        }
+        return Ok({
+          isEmpty: true,
+        } satisfies Prisma.StringNullableListFilter);
       }
     }
   } else {

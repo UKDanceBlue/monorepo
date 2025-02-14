@@ -45,6 +45,8 @@ import { logger } from "#lib/logging/standardLogging.js";
 import { PrismaService } from "#lib/prisma.js";
 import {
   buildDefaultRepository,
+  type CreateMultipleParams,
+  type CreateMultipleResult,
   type CreateParams,
   type CreateResult,
   type FindAndCountParams,
@@ -124,6 +126,10 @@ export class FundraisingEntryRepository extends buildDefaultRepository<
   solicitationCode: {
     getOrderBy: (dir) => Ok({ solicitationCodeText: dir }),
     getWhere: (value) => Ok({ solicitationCodeText: value }),
+  },
+  solicitationCodeTags: {
+    getOrderBy: (dir) => Ok({ solicitationCode: { tags: dir } }),
+    getWhere: (value) => Ok({ solicitationCode: { tags: value } }),
   },
   createdAt: {
     getOrderBy: (dir) => Ok({ createdAt: dir }),
@@ -361,10 +367,23 @@ export class FundraisingEntryRepository extends buildDefaultRepository<
               ? localDateToLuxon(donatedOn).unwrap().plus({ day: 1 }).toJSDate()
               : donatedOn,
           donatedToOverride: donatedTo,
-          solicitationCodeOverride: {
-            connect:
-              this.solicitationCodeRepository.uniqueToWhere(solicitationCode),
-          },
+          solicitationCodeOverride:
+            "code" in solicitationCode
+              ? {
+                  connectOrCreate: {
+                    where: { prefix_code: solicitationCode },
+                    create: {
+                      prefix: solicitationCode.prefix,
+                      code: solicitationCode.code,
+                    },
+                  },
+                }
+              : {
+                  connect:
+                    this.solicitationCodeRepository.uniqueToWhere(
+                      solicitationCode
+                    ),
+                },
           enteredByPerson: createdBy && {
             connect: this.personRepository.uniqueToWhere(createdBy),
           },
@@ -375,6 +394,84 @@ export class FundraisingEntryRepository extends buildDefaultRepository<
       .andThen((entry) =>
         this.mapToNotFound(entry, "created FundraisingEntry")
       );
+  }
+
+  createMultiple({
+    tx,
+    data,
+    createdBy,
+  }: CreateMultipleParams<{
+    amount: number;
+    batchType: BatchType;
+    donatedBy?: string | undefined | null;
+    donatedOn?: Date | LocalDate | undefined | null;
+    donatedTo?: string | undefined | null;
+    notes?: string | undefined | null;
+    solicitationCode: SolicitationCodeUniqueParam;
+  }> & {
+    createdBy?: UniquePersonParam;
+  }): AsyncRepositoryResult<
+    CreateMultipleResult<
+      Prisma.FundraisingEntryWithMetaDelegate<
+        DefaultArgs,
+        Prisma.PrismaClientOptions
+      >,
+      { include: typeof wideFundraisingEntryInclude }
+    >
+  > {
+    return this.batchMapTransaction(
+      data,
+      (tx, { init }) =>
+        this.handleQueryError(
+          tx.fundraisingEntry.create({
+            data: {
+              amountOverride: init.amount,
+              batchTypeOverride: init.batchType,
+              donatedByOverride: init.donatedBy,
+              notes: init.notes,
+              donatedOnOverride:
+                typeof init.donatedOn === "string"
+                  ? localDateToLuxon(init.donatedOn)
+                      .unwrap()
+                      .plus({ day: 1 })
+                      .toJSDate()
+                  : init.donatedOn,
+              donatedToOverride: init.donatedTo,
+              solicitationCodeOverride:
+                "code" in init.solicitationCode
+                  ? {
+                      connectOrCreate: {
+                        where: { prefix_code: init.solicitationCode },
+                        create: {
+                          prefix: init.solicitationCode.prefix,
+                          code: init.solicitationCode.code,
+                        },
+                      },
+                    }
+                  : {
+                      connect: this.solicitationCodeRepository.uniqueToWhere(
+                        init.solicitationCode
+                      ),
+                    },
+              enteredByPerson: createdBy && {
+                connect: this.personRepository.uniqueToWhere(createdBy),
+              },
+            },
+          })
+        ),
+      tx
+    ).andThen((entries) =>
+      this.handleQueryError(
+        (tx ?? this.prisma).fundraisingEntryWithMeta.findMany({
+          where: {
+            id: {
+              in: entries.map((e) => e.id),
+            },
+          },
+          include: wideFundraisingEntryInclude,
+        })
+      )
+    );
   }
 
   async setEntry(

@@ -3,37 +3,12 @@ import { useClient } from "urql";
 import { z } from "zod";
 
 import { SpreadsheetUploader } from "#elements/components/SpreadsheetUploader";
+import {
+  defaultDateValidator,
+  defaultFloatValidator,
+  defaultStringValidator,
+} from "#elements/validators.ts";
 import { graphql } from "#gql/index.js";
-
-const defaultStringValidator = z
-  .string()
-  .trim()
-  .optional()
-  .transform((v) => v || undefined);
-
-const defaultDateValidator = z
-  .string()
-  .transform((v) =>
-    v ? localDateFromJs(new Date(v)).unwrapOr(undefined) : undefined
-  )
-  .optional();
-
-const defaultFloatValidator = z
-  .string({ coerce: true })
-  .regex(/^\d*(,\d+)*(\.\d+)?$/)
-  .trim()
-  .default("0")
-  .transform((v) => {
-    if (v === "") {
-      return 0;
-    }
-    v = v.replaceAll(",", "");
-    const parsed = Number.parseFloat(v);
-    if (Number.isNaN(parsed)) {
-      return 0;
-    }
-    return parsed;
-  });
 
 const inputTypeSchema = z.object({
   "Division": z.string().trim(),

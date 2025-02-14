@@ -3,7 +3,7 @@ import type {
   AbstractFilterGroup,
   AbstractFilterItem,
 } from "@ukdanceblue/common";
-import { FilterGroupOperator } from "@ukdanceblue/common";
+import { ArrayArrayOperators, FilterGroupOperator } from "@ukdanceblue/common";
 import {
   ArrayOperators,
   NoTargetOperators,
@@ -93,8 +93,23 @@ export function crudFilterToFilterObject(
                 },
               },
             };
+          } else if (
+            Array.isArray(crudFilter.value) &&
+            crudFilter.operator === "eq"
+          ) {
+            filterItem = {
+              field,
+              filter: {
+                arrayArrayFilter: {
+                  comparison: ArrayArrayOperators.EQUALS,
+                  value: crudFilter.value.map(String),
+                },
+              },
+            };
+          } else {
+            throw new Error("Unsupported filter value type");
           }
-          throw new Error("Unsupported filter value type");
+          break;
         }
         default: {
           throw new Error("Unsupported filter value type");
@@ -175,15 +190,78 @@ export function crudFilterToFilterObject(
     }
     case "in":
     case "nin": {
+      if (fieldType == null) {
+        throw new Error("Field types are required to filter by in or nin");
+      }
+
+      switch (fieldType) {
+        case "string": {
+          filterItem = {
+            field,
+
+            filter: {
+              arrayStringFilter: {
+                comparison:
+                  crudFilter.operator === "in"
+                    ? ArrayOperators.IN
+                    : ArrayOperators.NOT_IN,
+                value: Array.isArray(crudFilter.value)
+                  ? crudFilter.value.map(String)
+                  : [String(crudFilter.value)],
+              },
+            },
+          };
+          break;
+        }
+        case "date": {
+          // filterItem = {
+          //   field,
+
+          //   filter: {
+          //     arrayDateFilter: {
+          //       comparison:
+          //         crudFilter.operator === "in"
+          //           ? ArrayOperators.IN
+          //           : ArrayOperators.NOT_IN,
+          //       value: Array.isArray(crudFilter.value)
+          //         ? crudFilter.value.map(String)
+          //         : [String(crudFilter.value)],
+          //     },
+          //   },
+          // };
+          throw new Error("Unsupported field type");
+        }
+        case "number": {
+          filterItem = {
+            field,
+
+            filter: {
+              arrayNumberFilter: {
+                comparison:
+                  crudFilter.operator === "in"
+                    ? ArrayOperators.IN
+                    : ArrayOperators.NOT_IN,
+                value: Array.isArray(crudFilter.value)
+                  ? crudFilter.value
+                  : [crudFilter.value],
+              },
+            },
+          };
+          break;
+        }
+        default: {
+          throw new Error("Unsupported field type");
+        }
+      }
+      break;
+    }
+    case "ina": {
       filterItem = {
         field,
 
         filter: {
-          arrayStringFilter: {
-            comparison:
-              crudFilter.operator === "in"
-                ? ArrayOperators.IN
-                : ArrayOperators.NOT_IN,
+          arrayArrayFilter: {
+            comparison: ArrayArrayOperators.HAS_EVERY,
             value: Array.isArray(crudFilter.value)
               ? crudFilter.value.map(String)
               : [String(crudFilter.value)],
@@ -192,25 +270,52 @@ export function crudFilterToFilterObject(
       };
       break;
     }
-    case "ina":
     case "nina": {
       throw new Error("Unsupported filter operator (n)ina");
     }
     case "contains":
     case "ncontains": {
-      filterItem = {
-        field,
+      switch (fieldType ?? "string") {
+        case "string": {
+          filterItem = {
+            field,
 
-        filter: {
-          singleStringFilter: {
-            comparison:
-              crudFilter.operator === "ncontains"
-                ? SingleTargetOperators.INSENSITIVE_NOT_CONTAINS
-                : SingleTargetOperators.INSENSITIVE_CONTAINS,
-            value: crudFilter.value,
-          },
-        },
-      };
+            filter: {
+              singleStringFilter: {
+                comparison:
+                  crudFilter.operator === "ncontains"
+                    ? SingleTargetOperators.INSENSITIVE_NOT_CONTAINS
+                    : SingleTargetOperators.INSENSITIVE_CONTAINS,
+                value: crudFilter.value,
+              },
+            },
+          };
+          break;
+        }
+        case "array": {
+          if (crudFilter.operator === "ncontains") {
+            throw new Error("Unsupported filter operator ncontains for array");
+          }
+          filterItem = {
+            field,
+            filter: {
+              arrayArrayFilter: Array.isArray(crudFilter.value)
+                ? {
+                    comparison: ArrayArrayOperators.HAS_SOME,
+                    value: crudFilter.value.map(String),
+                  }
+                : {
+                    comparison: ArrayArrayOperators.HAS,
+                    value: [String(crudFilter.value)],
+                  },
+            },
+          };
+          break;
+        }
+        default: {
+          throw new Error("Unsupported field type");
+        }
+      }
       break;
     }
     case "containss":

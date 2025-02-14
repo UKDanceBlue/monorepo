@@ -7,8 +7,10 @@ import {
 import { useNotification } from "@refinedev/core";
 import {
   Button,
+  Flex,
   Modal,
   Select,
+  Space,
   Table,
   type TableColumnsType,
   Upload,
@@ -136,36 +138,42 @@ export function UploadButton<V extends Record<string, unknown>>({
     return { sheet, header };
   }, [columns, file, open]);
 
-  const errors = columns
-    .map((col) => {
-      const idx = columnMappings[col.id];
-      if (idx == null) {
-        if (col.validator.safeParse(undefined).success) {
-          return null;
-        } else {
-          return {
-            message: "Missing column",
-            columnTitle: col.title,
-          };
-        }
-      }
+  const errors = useMemo(
+    () =>
+      columns
+        .map((col) => {
+          const idx = columnMappings[col.id];
+          if (idx == null) {
+            if (col.validator.safeParse(undefined).success) {
+              return null;
+            } else {
+              return {
+                message: "Missing column",
+                columnTitle: col.title,
+              };
+            }
+          } else {
+            const rows = header?.[idx]?.rows ?? [];
+            for (let i = 0; i < rows.length; i++) {
+              if (ignoredRows.has(i)) {
+                continue;
+              }
+              const result = col.validator.safeParse(rows[i]);
+              if (!result.success) {
+                return {
+                  message: `Error in row ${i + 1}: ${col.validator.description ?? result.error.message}`,
+                  columnTitle: col.title,
+                };
+              }
+            }
+            return null;
+          }
+        })
+        .filter((val) => val != null),
+    [columnMappings, columns, header, ignoredRows]
+  );
 
-      const rows = header?.[idx]?.rows ?? [];
-      for (let i = 0; i < rows.length; i++) {
-        if (ignoredRows.has(i)) {
-          continue;
-        }
-        const result = col.validator.safeParse(rows[i]);
-        if (!result.success) {
-          return {
-            message: `Error in row ${i + 1}: ${col.validator.description ?? result.error.message}`,
-            columnTitle: col.title,
-          };
-        }
-      }
-      return null;
-    })
-    .filter((val) => val != null);
+  const unassignedColumns = columns.filter(({ id }) => !columnMappings[id]);
 
   return (
     <>
@@ -178,46 +186,60 @@ export function UploadButton<V extends Record<string, unknown>>({
         width="100%"
         title={title}
         footer={
-          <>
-            <Button
-              loading={confirmLoading}
-              type="primary"
-              danger
-              disabled={file === undefined || confirmLoading}
-              onClick={() => {
-                reset();
-              }}
-            >
-              Reset
-            </Button>
-            <Button
-              loading={confirmLoading}
-              type="primary"
-              disabled={
-                errors.length > 0 || file === undefined || confirmLoading
-              }
-              onClick={() => {
-                // Use validator to parse
-                const data = sheet?.["!data"]
-                  ?.slice(1)
-                  .filter((_, i) => !ignoredRows.has(i))
-                  .map(
-                    (row) =>
-                      Object.fromEntries(
-                        columns.map((col) => {
-                          const idx = columnMappings[col.id]!;
-                          return [col.id, col.validator.parse(row[idx]?.w)];
-                        })
-                      ) as V
-                  );
-                if (data) {
-                  confirm(data);
+          <Flex justify="space-between">
+            <div>
+              {unassignedColumns.length > 0 && (
+                <p>
+                  Unassigned columns:{" "}
+                  {unassignedColumns
+                    .map(({ title, validator }) =>
+                      validator.isOptional() ? title : `${title} (required)`
+                    )
+                    .join(", ")}
+                </p>
+              )}
+            </div>
+            <Space>
+              <Button
+                loading={confirmLoading}
+                type="primary"
+                danger
+                disabled={file === undefined || confirmLoading}
+                onClick={() => {
+                  reset();
+                }}
+              >
+                Reset
+              </Button>
+              <Button
+                loading={confirmLoading}
+                type="primary"
+                disabled={
+                  errors.length > 0 || file === undefined || confirmLoading
                 }
-              }}
-            >
-              {confirmText}
-            </Button>
-          </>
+                onClick={() => {
+                  // Use validator to parse
+                  const data = sheet?.["!data"]
+                    ?.slice(1)
+                    .filter((_, i) => !ignoredRows.has(i))
+                    .map(
+                      (row) =>
+                        Object.fromEntries(
+                          columns.map((col) => {
+                            const idx = columnMappings[col.id]!;
+                            return [col.id, col.validator.parse(row[idx]?.w)];
+                          })
+                        ) as V
+                    );
+                  if (data) {
+                    confirm(data);
+                  }
+                }}
+              >
+                {confirmText}
+              </Button>
+            </Space>
+          </Flex>
         }
       >
         {file ? (
@@ -389,6 +411,12 @@ function ColumnHeader<V extends Record<string, unknown>>({
         }
         style={{
           width: "100%",
+          minWidth: `${
+            options.reduce(
+              (prev, { label }) => Math.max(prev, label.length),
+              0
+            ) + 4
+          }ch`,
         }}
         onChange={(val?: string) => {
           setColumnMappings((prev) => {

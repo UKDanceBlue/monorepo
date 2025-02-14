@@ -8,6 +8,7 @@ import eslintPluginVitest from "@vitest/eslint-plugin";
 import eslintConfigPrettier from "eslint-config-prettier";
 import eslintPluginNode from "eslint-plugin-n";
 import eslintPluginReact from "eslint-plugin-react";
+import reactCompiler from "eslint-plugin-react-compiler";
 import eslintPluginReactHooks from "eslint-plugin-react-hooks";
 import eslintPluginReactRefresh from "eslint-plugin-react-refresh";
 import eslintPluginSortImports from "eslint-plugin-simple-import-sort";
@@ -201,6 +202,7 @@ export default eslintTs.config(
       },
     },
     plugins: {
+      "react-compiler": reactCompiler,
       "react-refresh": eslintPluginReactRefresh,
       "react-hooks": eslintPluginReactHooks,
       "react": eslintPluginReact,
@@ -211,6 +213,7 @@ export default eslintTs.config(
       },
     },
     rules: {
+      "react-compiler/react-compiler": "error",
       "react-refresh/only-export-components": [
         "warn",
         { allowConstantExport: true },

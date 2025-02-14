@@ -39,7 +39,7 @@ function getOperationName(
   return getCrudOperationNames(resource, pluralize(resource))[operation];
 }
 
-type FieldType = "string" | "number" | "date";
+type FieldType = "string" | "number" | "date" | "array";
 export type FieldTypes = Record<string, FieldType | [string, FieldType]>;
 
 const postgresFtsOperators = /[!&():|]/g;
@@ -106,10 +106,12 @@ export const dataProvider: Required<DataProvider> = {
 
     const response = await urqlClient
       .mutation(gqlOperation, {
-        input: {
-          ...variables,
-          ...meta?.gqlVariables?.input,
-        },
+        input: Array.isArray(variables)
+          ? variables
+          : {
+              ...variables,
+              ...meta?.gqlVariables?.input,
+            },
         ...meta?.gqlVariables,
       })
       .toPromise();
