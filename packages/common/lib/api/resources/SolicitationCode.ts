@@ -16,6 +16,13 @@ export const SolicitationCodeTag = {
 export type SolicitationCodeTag =
   (typeof SolicitationCodeTag)[keyof typeof SolicitationCodeTag];
 
+export const solicitationCodeTagColors = {
+  MiniMarathon: "#90b",
+  DancerTeam: "#33f",
+  Active: "#30d048",
+  General: "#950",
+} as const satisfies Record<SolicitationCodeTag, string>;
+
 export function stringifySolicitationCodeTag(tag: SolicitationCodeTag): string {
   switch (tag) {
     case SolicitationCodeTag.MiniMarathon: {

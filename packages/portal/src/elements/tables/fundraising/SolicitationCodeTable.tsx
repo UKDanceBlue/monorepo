@@ -3,9 +3,10 @@ import { type HttpError, useUpdate } from "@refinedev/core";
 import { Link } from "@tanstack/react-router";
 import {
   SolicitationCodeTag,
+  solicitationCodeTagColors,
   stringifySolicitationCodeTag,
 } from "@ukdanceblue/common";
-import { Button, Input, Select, Table } from "antd";
+import { Button, Input, Select, Table, Tag } from "antd";
 import type { DefaultOptionType } from "antd/es/select";
 import { useMemo, useState } from "react";
 import { useMutation, useQuery } from "urql";
@@ -260,6 +261,15 @@ function TagSelect({
           },
         }).catch(console.error);
       }}
+      tagRender={({ label, value, closable, onClose }) => (
+        <Tag
+          color={solicitationCodeTagColors[value as SolicitationCodeTag]}
+          closable={closable}
+          onClose={onClose}
+        >
+          {label}
+        </Tag>
+      )}
       mode="tags"
       options={Object.values(SolicitationCodeTag).map(
         (value): DefaultOptionType => ({

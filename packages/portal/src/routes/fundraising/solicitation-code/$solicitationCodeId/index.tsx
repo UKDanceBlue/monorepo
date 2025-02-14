@@ -8,11 +8,15 @@ import { Show, useForm } from "@refinedev/antd";
 import { type HttpError, useInvalidate } from "@refinedev/core";
 import { createFileRoute, Link, useParams } from "@tanstack/react-router";
 import {
+  SolicitationCodeTag,
+  solicitationCodeTagColors,
+  stringifySolicitationCodeTag,
   TeamLegacyStatus,
   TeamLegacyStatusValues,
   TeamTypeValues,
 } from "@ukdanceblue/common";
-import { Button, Flex, Form, Input, Space, Table, Tag } from "antd";
+import { Button, Card, Flex, Form, Input, Select, Table, Tag } from "antd";
+import type { DefaultOptionType } from "antd/es/select";
 import { useMutation } from "urql";
 
 import { refineResourceNames } from "#config/refine/resources.tsx";
@@ -181,16 +185,7 @@ function RouteComponent() {
     <Show
       resource={refineResourceNames.solicitationCode}
       recordItemId={solicitationCodeId}
-      title={
-        <Space>
-          {data?.data.text}
-          {data?.data.tags.map((tag) => (
-            <Tag key={tag} color="blue">
-              {tag}
-            </Tag>
-          ))}
-        </Space>
-      }
+      title={data?.data.text}
       headerButtons={
         <>
           <Flex justify="flex-end" align="flex-end" vertical>
@@ -203,6 +198,28 @@ function RouteComponent() {
             >
               <Form.Item label="Name" name="name" style={{ maxWidth: "35ch" }}>
                 <Input />
+              </Form.Item>
+              <Form.Item label="Tags" name="tags" style={{ minWidth: "35ch" }}>
+                <Select
+                  mode="tags"
+                  tagRender={({ label, value, closable, onClose }) => (
+                    <Tag
+                      color={
+                        solicitationCodeTagColors[value as SolicitationCodeTag]
+                      }
+                      closable={closable}
+                      onClose={onClose}
+                    >
+                      {label}
+                    </Tag>
+                  )}
+                  options={Object.values(SolicitationCodeTag).map(
+                    (value): DefaultOptionType => ({
+                      value,
+                      label: stringifySolicitationCodeTag(value),
+                    })
+                  )}
+                />
               </Form.Item>
               <Form.Item>
                 <Button type="primary" htmlType="submit">
@@ -217,153 +234,161 @@ function RouteComponent() {
         </>
       }
     >
-      <div>
-        <Flex justify="space-between" align="center">
-          <h2>Teams</h2>
-          <TeamSelect
-            placeholder="Assign a team to this solicitation code"
-            onSelect={async ({ id }) => {
-              await openConfirmAssignModal(id).catch((error: unknown) => {
-                console.error(error);
-                showErrorMessage(
-                  `Failed to assign team to solicitation code\n${String(error)}`
-                );
-              });
+      <Flex vertical gap="large">
+        <Card
+          type="inner"
+          title="Teams"
+          extra={
+            <TeamSelect
+              placeholder="Assign a team to this solicitation code"
+              onSelect={async ({ id }) => {
+                await openConfirmAssignModal(id).catch((error: unknown) => {
+                  console.error(error);
+                  showErrorMessage(
+                    `Failed to assign team to solicitation code\n${String(error)}`
+                  );
+                });
+              }}
+            />
+          }
+        >
+          <Table
+            dataSource={readFragment(
+              TeamsTableFragment,
+              data?.data.teams ?? []
+            )}
+            pagination={false}
+            columns={[
+              {
+                title: "Name",
+                dataIndex: "name",
+                sorter: true,
+              },
+              {
+                title: "Type",
+                dataIndex: "type",
+                sorter: true,
+                filters: TeamTypeValues.map((key) => ({
+                  text: key,
+                  value: key,
+                })),
+              },
+              {
+                title: "Legacy Status",
+                dataIndex: "legacyStatus",
+                sorter: true,
+                filters: TeamLegacyStatusValues.map((value) => {
+                  let text: string;
+                  switch (value) {
+                    case TeamLegacyStatus.NewTeam: {
+                      text = "New Team";
+                      break;
+                    }
+                    case TeamLegacyStatus.ReturningTeam: {
+                      text = "Returning Team";
+                      break;
+                    }
+                    case TeamLegacyStatus.DemoTeam: {
+                      text = "Demo Team";
+                      break;
+                    }
+                    default: {
+                      value satisfies never;
+                      text = String(value);
+                      break;
+                    }
+                  }
+                  return {
+                    text,
+                    value,
+                  };
+                }),
+                render: (value) => {
+                  switch (value) {
+                    case "NewTeam": {
+                      return "New Team";
+                    }
+                    case "ReturningTeam": {
+                      return "Returning Team";
+                    }
+                    default: {
+                      return String(value);
+                    }
+                  }
+                },
+              },
+              {
+                title: "Total Points",
+                dataIndex: "totalPoints",
+                sorter: true,
+              },
+              {
+                title: "Actions",
+                key: "actions",
+                render: (_text, record) => (
+                  <Flex gap="small" align="center">
+                    <Link
+                      to="/teams/$teamId/points"
+                      params={{ teamId: record.id }}
+                    >
+                      <Button icon={<EyeOutlined />} />
+                    </Link>
+                    <Link
+                      to="/teams/$teamId/fundraising"
+                      params={{ teamId: record.id }}
+                    >
+                      <Button icon={<DollarOutlined />} />
+                    </Link>
+                    <Link
+                      to="/teams/$teamId/edit"
+                      params={{ teamId: record.id }}
+                    >
+                      <Button icon={<EditOutlined />} />
+                    </Link>
+                    <Button
+                      icon={<MinusCircleOutlined />}
+                      onClick={() => {
+                        openConfirmUnassignModal(record.id).catch(
+                          (error: unknown) => {
+                            console.error(error);
+                            showErrorMessage(
+                              `Failed to unassign team from solicitation code\n${String(
+                                error
+                              )}`
+                            );
+                          }
+                        );
+                      }}
+                    />
+                  </Flex>
+                ),
+              },
+            ]}
+          />
+        </Card>
+        <Card title="Entries" type="inner">
+          <FundraisingEntriesTable
+            potentialAssignees={data?.data.teams.reduce<
+              { value: string; label: string }[]
+            >((acc, team) => {
+              acc.push(
+                ...team.members.map(({ person }) => ({
+                  value: person.id,
+                  label: person.name ?? person.linkblue ?? person.email,
+                }))
+              );
+              return acc;
+            }, [])}
+            extraMeta={{
+              gqlQuery: SolicitationCodeFundraisingEntryDocument,
+              gqlVariables: {
+                solicitationCodeId,
+              },
+              targetPath: ["solicitationCode", "entries"],
             }}
           />
-        </Flex>
-        <Table
-          dataSource={readFragment(TeamsTableFragment, data?.data.teams ?? [])}
-          columns={[
-            {
-              title: "Name",
-              dataIndex: "name",
-              sorter: true,
-            },
-            {
-              title: "Type",
-              dataIndex: "type",
-              sorter: true,
-              filters: TeamTypeValues.map((key) => ({
-                text: key,
-                value: key,
-              })),
-            },
-            {
-              title: "Legacy Status",
-              dataIndex: "legacyStatus",
-              sorter: true,
-              filters: TeamLegacyStatusValues.map((value) => {
-                let text: string;
-                switch (value) {
-                  case TeamLegacyStatus.NewTeam: {
-                    text = "New Team";
-                    break;
-                  }
-                  case TeamLegacyStatus.ReturningTeam: {
-                    text = "Returning Team";
-                    break;
-                  }
-                  case TeamLegacyStatus.DemoTeam: {
-                    text = "Demo Team";
-                    break;
-                  }
-                  default: {
-                    value satisfies never;
-                    text = String(value);
-                    break;
-                  }
-                }
-                return {
-                  text,
-                  value,
-                };
-              }),
-              render: (value) => {
-                switch (value) {
-                  case "NewTeam": {
-                    return "New Team";
-                  }
-                  case "ReturningTeam": {
-                    return "Returning Team";
-                  }
-                  default: {
-                    return String(value);
-                  }
-                }
-              },
-            },
-            {
-              title: "Total Points",
-              dataIndex: "totalPoints",
-              sorter: true,
-            },
-            {
-              title: "Actions",
-              key: "actions",
-              render: (_text, record) => (
-                <Flex gap="small" align="center">
-                  <Link
-                    to="/teams/$teamId/points"
-                    params={{ teamId: record.id }}
-                  >
-                    <Button icon={<EyeOutlined />} />
-                  </Link>
-                  <Link
-                    to="/teams/$teamId/fundraising"
-                    params={{ teamId: record.id }}
-                  >
-                    <Button icon={<DollarOutlined />} />
-                  </Link>
-                  <Link to="/teams/$teamId/edit" params={{ teamId: record.id }}>
-                    <Button icon={<EditOutlined />} />
-                  </Link>
-                  <Button
-                    icon={<MinusCircleOutlined />}
-                    onClick={() => {
-                      openConfirmUnassignModal(record.id).catch(
-                        (error: unknown) => {
-                          console.error(error);
-                          showErrorMessage(
-                            `Failed to unassign team from solicitation code\n${String(
-                              error
-                            )}`
-                          );
-                        }
-                      );
-                    }}
-                  />
-                </Flex>
-              ),
-            },
-          ]}
-        />
-      </div>
-      <div>
-        <Flex justify="space-between" align="center">
-          <h2>Entries</h2>
-        </Flex>
-        <FundraisingEntriesTable
-          potentialAssignees={data?.data.teams.reduce<
-            { value: string; label: string }[]
-          >((acc, team) => {
-            acc.push(
-              ...team.members.map(({ person }) => ({
-                value: person.id,
-                label: person.name ?? person.linkblue ?? person.email,
-              }))
-            );
-            return acc;
-          }, [])}
-          extraMeta={{
-            gqlQuery: SolicitationCodeFundraisingEntryDocument,
-            gqlVariables: {
-              solicitationCodeId,
-            },
-            targetPath: ["solicitationCode", "entries"],
-          }}
-        />
-      </div>
+        </Card>
+      </Flex>
     </Show>
   );
 }

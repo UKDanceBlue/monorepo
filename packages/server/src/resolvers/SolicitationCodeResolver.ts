@@ -111,12 +111,12 @@ export class SolicitationCodeResolver
   @WithAuditLogging()
   setSolicitationCode(
     @Arg("id", () => GlobalIdScalar) { id }: GlobalId,
-    @Arg("input") { name }: SetSolicitationCodeInput
+    @Arg("input") { name, tags }: SetSolicitationCodeInput
   ): Promise<ConcreteResult<SolicitationCodeNode>> {
     return new AsyncResult(
       this.solicitationCodeRepository.setSolicitationCode(
         { uuid: id },
-        { name }
+        { name, tags }
       )
     ).map(({ id: _, uuid, ...code }) =>
       SolicitationCodeNode.init({

@@ -10,6 +10,7 @@ import type { DefaultArgs } from "@prisma/client/runtime/library";
 import type {
   FieldsOfListQueryArgs,
   ListSolicitationCodesArgs,
+  SolicitationCodeTag,
 } from "@ukdanceblue/common";
 import type { InvariantError } from "@ukdanceblue/common/error";
 import { ActionDeniedError, NotFoundError } from "@ukdanceblue/common/error";
@@ -148,8 +149,10 @@ export class SolicitationCodeRepository extends buildDefaultRepository<
     solicitationCodeParam: SolicitationCodeUniqueParam,
     {
       name,
+      tags,
     }: {
       name?: string | undefined | null;
+      tags?: SolicitationCodeTag[] | undefined | null;
     }
   ): Promise<Result<SolicitationCode, RepositoryError>> {
     try {
@@ -161,6 +164,9 @@ export class SolicitationCodeRepository extends buildDefaultRepository<
               : solicitationCodeParam,
           data: {
             name: name ?? null,
+            tags: {
+              set: tags ?? [],
+            },
           },
         })
       );

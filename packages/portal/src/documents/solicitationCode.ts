@@ -57,6 +57,7 @@ export const SetSolicitationCodeFragment = graphql(/* GraphQL */ `
     id
     name
     text
+    tags
   }
 `);
 
