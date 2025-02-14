@@ -18,7 +18,7 @@ RUN corepack yarn run build
 WORKDIR /builddir/packages/portal
 
 
-RUN --mount=type=secret,id=SENTRY_AUTH_TOKEN,env=SENTRY_AUTH_TOKEN,required SENTRY_PROJECT="portal" corepack yarn run build
+RUN --mount=type=secret,id=SENTRY_AUTH_TOKEN,env=SENTRY_AUTH_TOKEN,required corepack yarn run build
 
 WORKDIR /builddir/packages/server
 
