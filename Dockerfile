@@ -12,12 +12,18 @@ WORKDIR /builddir
 
 RUN corepack yarn install
 
+WORKDIR /builddir/packages/server
+
+RUN corepack yarn prisma generate
+
+RUN --mount=type=secret,id=SENTRY_AUTH_TOKEN,env=SENTRY_AUTH_TOKEN,required \
+  corepack yarn sentry-cli info
+
 WORKDIR /builddir/packages/common
 
 RUN corepack yarn run build
 
 WORKDIR /builddir/packages/portal
-
 
 RUN --mount=type=secret,id=SENTRY_AUTH_TOKEN,env=SENTRY_AUTH_TOKEN,required corepack yarn run build
 
