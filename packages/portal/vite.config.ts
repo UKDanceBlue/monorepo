@@ -56,7 +56,7 @@ export const literalConfig = {
     sentryVitePlugin({
       org: "ukdanceblue",
       project: "portal",
-      disable: process.env.NODE_ENV !== "production",
+      disable: !process.env.SENTRY_AUTH_TOKEN,
     }),
   ],
   ssr: {
