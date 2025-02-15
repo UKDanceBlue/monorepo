@@ -56,8 +56,9 @@ jobs:
           labels: ${{ steps.serverMeta.outputs.labels }}
           target: server
           secrets: |
-            SENTRY_AUTH_TOKEN=${{ secrets.SENTRY_AUTH_TOKEN }}:
-      - uses: bots-house/ghcr-delete-image-action@v1.1.0
+            SENTRY_AUTH_TOKEN=${{ secrets.SENTRY_AUTH_TOKEN }}
+      - name: Delete old untagged images
+        uses: bots-house/ghcr-delete-image-action@v1.1.0
         with:
           # NOTE: at now only orgs is supported
           owner: ukdanceblue
