@@ -62,7 +62,7 @@ jobs:
         with:
           # NOTE: at now only orgs is supported
           owner: ukdanceblue
-          name: server
+          name: app-server
           # NOTE: using Personal Access Token
           token: ${{ secrets.CONTAINER_DELETE_PAT }}
           # Keep latest N untagged images
