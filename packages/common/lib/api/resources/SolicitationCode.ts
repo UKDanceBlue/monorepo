@@ -23,6 +23,13 @@ export const solicitationCodeTagColors = {
   General: "#950",
 } as const satisfies Record<SolicitationCodeTag, string>;
 
+export const solicitationCodeTagWeight = {
+  MiniMarathon: 101,
+  DancerTeam: 102,
+  Active: 0,
+  General: 50,
+} as const satisfies Record<SolicitationCodeTag, number>;
+
 export function stringifySolicitationCodeTag(tag: SolicitationCodeTag): string {
   switch (tag) {
     case SolicitationCodeTag.MiniMarathon: {
@@ -35,6 +42,14 @@ export function stringifySolicitationCodeTag(tag: SolicitationCodeTag): string {
       return tag;
     }
   }
+}
+
+export function sortSolicitationCodeTags(
+  tags: SolicitationCodeTag[]
+): SolicitationCodeTag[] {
+  return tags.toSorted((a, b) => {
+    return solicitationCodeTagWeight[a] - solicitationCodeTagWeight[b];
+  });
 }
 
 registerEnumType(SolicitationCodeTag, {

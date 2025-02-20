@@ -37,7 +37,7 @@ export class SetSolicitationCodeInput {
 }
 
 @InputType("CreateSolicitationCodeInput")
-export class CreateSolicitationCodeInput extends SetSolicitationCodeInput {
+export class CreateSolicitationCodeInput {
   @IsAlpha()
   @IsUppercase()
   @Field(() => GraphQLNonEmptyString)

@@ -422,7 +422,7 @@ export function createFilterItem<Field extends string>(
   @InputType(`${resolverName}FilterItem`)
   class FilterItem extends AbstractFilterItem<Field> {
     @Field(() => fieldEnum)
-    field!: Field;
+    declare field: Field;
   }
 
   return FilterItem;
@@ -430,11 +430,11 @@ export function createFilterItem<Field extends string>(
 
 @InputType()
 export abstract class AbstractFilterGroup<Field extends string> {
-  filters!: AbstractFilterItem<Field>[];
-  children!: AbstractFilterGroup<Field>[];
+  declare filters: AbstractFilterItem<Field>[];
+  declare children: AbstractFilterGroup<Field>[];
 
   @Field(() => FilterGroupOperator)
-  operator!: FilterGroupOperator;
+  declare operator: FilterGroupOperator;
 }
 
 export function createFilterGroup<Field extends string>(
@@ -446,10 +446,10 @@ export function createFilterGroup<Field extends string>(
   @InputType(`${resolverName}FilterGroup`)
   class FilterGroup extends AbstractFilterGroup<Field> {
     @Field(() => [FilterItem], { defaultValue: [] })
-    filters!: AbstractFilterItem<Field>[];
+    declare filters: AbstractFilterItem<Field>[];
 
     @Field(() => [FilterGroup], { defaultValue: [] })
-    children!: AbstractFilterGroup<Field>[];
+    declare children: AbstractFilterGroup<Field>[];
   }
 
   return FilterGroup;

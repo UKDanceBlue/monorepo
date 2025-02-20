@@ -16,35 +16,15 @@
   "exports": {
     ".": {
       "import": "./dist/index.js",
-      "node": "./dist/index.js",
-      "require": "./dist/index.js",
       "types": "./dist/index.d.ts"
     },
     "./client-parsers": {
-      "default": "./dist/client-parsers/index.js"
+      "import": "./dist/client-parsers/index.js",
+      "types": "./dist/client-parsers/index.d.ts"
     },
     "./error": {
-      "node": "./dist/error/index.js",
+      "import": "./dist/error/index.js",
       "types": "./dist/error/index.d.ts"
-    },
-    "./graphql-client-mobile": {
-      "browser": null,
-      "default": "./dist/graphql-client-mobile/index.js",
-      "node": null,
-      "react-native": "./dist/graphql-client-mobile/index.js",
-      "types": "./dist/graphql-client-mobile/index.d.ts"
-    },
-    "./graphql-client-mobile/raw-types": {
-      "types": "./dist/graphql-client-mobile/graphql.d.ts"
-    },
-    "./graphql-client-portal": {
-      "default": "./dist/graphql-client-portal/index.js",
-      "node": null,
-      "react-native": null,
-      "types": "./dist/graphql-client-portal/index.d.ts"
-    },
-    "./graphql-client-portal/raw-types": {
-      "types": "./dist/graphql-client-portal/graphql.d.ts"
     }
   },
   "main": "./dist/index.js",

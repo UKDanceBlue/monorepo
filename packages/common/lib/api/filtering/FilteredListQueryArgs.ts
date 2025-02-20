@@ -28,7 +28,7 @@ export function SortItem<Fields extends string>(
   @InputType(`${resolverName}Sort`)
   class Sort extends AbstractSortItem<Fields> {
     @Field(() => fieldsEnum)
-    field!: Fields;
+    declare field: Fields;
   }
 
   return Sort;
@@ -39,8 +39,8 @@ export abstract class AbstractSearchFilter<Field extends string> {
   @Field(() => GraphQLNonEmptyString, {
     nullable: false,
   })
-  query!: string;
-  fields?: Field[] | null | undefined;
+  declare query: string;
+  declare fields?: Field[] | null | undefined;
 }
 
 export function SearchFilter<Fields extends string>(
@@ -54,7 +54,7 @@ export function SearchFilter<Fields extends string>(
       description:
         "The fields to search in. If unspecified, searches all searchable fields. Note that searching by a field that does not support it will cause a runtime error",
     })
-    fields?: Fields[] | null;
+    declare fields?: Fields[] | null;
   }
 
   return SearchFilter;
@@ -80,13 +80,13 @@ export abstract class AbstractFilteredListQueryArgs<Fields extends string> {
     )}`,
     defaultValue: DEFAULT_PAGE_SIZE,
   })
-  pageSize!: number;
+  declare pageSize: number;
 
   @Field(() => GraphQLPositiveInt, {
     description: `The page number to return, defaults to ${String(FIRST_PAGE)}`,
     defaultValue: FIRST_PAGE,
   })
-  page!: number;
+  declare page: number;
 
   get offset() {
     if (this.sendAll) {
@@ -121,17 +121,17 @@ export function FilteredListQueryArgs<Fields extends string>(
   @ArgsType()
   abstract class FilteredListQueryArgs extends AbstractFilteredListQueryArgs<Fields> {
     @Field(() => FilterGroup, { nullable: true })
-    filters!: InstanceType<typeof FilterGroup> | null;
+    declare filters: InstanceType<typeof FilterGroup> | null;
 
     @Field(() => [Sort], {
       nullable: true,
       description:
         "The fields to sort by, in order of priority. If unspecified, the sort order is undefined",
     })
-    sortBy!: InstanceType<typeof Sort>[] | null;
+    declare sortBy: InstanceType<typeof Sort>[] | null;
 
     @Field(() => Search, { nullable: true })
-    search!: InstanceType<typeof Search> | null;
+    declare search: InstanceType<typeof Search> | null;
   }
 
   return FilteredListQueryArgs;
