@@ -29,7 +29,7 @@ on:
   workflow_call:
 
 jobs:
-  run-eslint:
+  run-tests:
     name: Test Repository
     runs-on: ubuntu-latest
 
