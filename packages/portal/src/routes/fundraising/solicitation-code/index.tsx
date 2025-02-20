@@ -174,7 +174,6 @@ function RouteComponent() {
       };
     },
     props: {
-      submitOnEnter: true,
       action: "edit",
       resource: "solicitationCode",
       id: editId!,
