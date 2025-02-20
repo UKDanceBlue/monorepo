@@ -217,13 +217,6 @@ function CustomFundraisingEntryUploadButton() {
         {
           id: "batchType",
           title: "Batch",
-          // validator: z.string().or(
-          //   (z.nativeEnum(BatchType),
-          //   z
-          //     .string()
-          //     .regex(/\d[ACDNPTX]\d$/)
-          //     .transform((v) => extractDDNBatchType(v).unwrap()))
-          // ),
           validator: z.string().transform((v, ctx) => {
             if (/\d[ACDNPTX]\d$/.test(v)) {
               const extracted = extractDDNBatchType(v);

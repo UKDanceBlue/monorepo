@@ -13,9 +13,8 @@ import {
   stringifyDDNBatchType,
   stringifySolicitationCodeTag,
 } from "@ukdanceblue/common";
-import { Checkbox, Table } from "antd";
+import { Table } from "antd";
 import { DateTime } from "luxon";
-import { useState } from "react";
 
 import { RefineSearchForm } from "#elements/components/RefineSearchForm.js";
 import { graphql } from "#gql/index.js";
@@ -76,10 +75,6 @@ export function FundraisingEntriesTable<T extends Record<string, unknown>>({
         )
       : undefined;
 
-  const [solicitationCodeTagFilter, setSolicitationCodeTagFilter] = useState<
-    SolicitationCodeTag[]
-  >([]);
-
   const {
     tableProps,
     searchFormProps,
@@ -108,15 +103,6 @@ export function FundraisingEntriesTable<T extends Record<string, unknown>>({
                 } as const,
               ]
             : []),
-          ...(solicitationCodeTagFilter.length > 0
-            ? [
-                {
-                  field: "solicitationCodeTags",
-                  operator: "ina",
-                  value: solicitationCodeTagFilter,
-                } as const,
-              ]
-            : []),
         ],
       },
     },
@@ -125,7 +111,7 @@ export function FundraisingEntriesTable<T extends Record<string, unknown>>({
       donatedToText: ["donatedTo", "string"],
       donatedOn: "date",
       batchType: ["batchType", "string"],
-      solicitationCodeTags: "array",
+      solicitationCode: ["solicitationCodeTags", "array", "every", "one"],
     },
     ...extraMeta,
   });
@@ -215,27 +201,10 @@ export function FundraisingEntriesTable<T extends Record<string, unknown>>({
                   {solicitationCode.text}
                 </Link>
               ),
-            filterDropdown() {
-              return (
-                <Checkbox.Group
-                  style={{
-                    width: "100%",
-                    display: "flex",
-                    flexDirection: "column",
-                    justifyContent: "center",
-                    gap: "0.5rem",
-                    margin: "0.5rem",
-                  }}
-                  value={solicitationCodeTagFilter}
-                  onChange={setSolicitationCodeTagFilter}
-                  options={Object.values(SolicitationCodeTag).map((tag) => ({
-                    label: stringifySolicitationCodeTag(tag),
-                    value: tag,
-                  }))}
-                />
-              );
-            },
-            filtered: solicitationCodeTagFilter.length > 0,
+            filters: Object.values(SolicitationCodeTag).map((value) => ({
+              text: stringifySolicitationCodeTag(value),
+              value,
+            })),
           },
           {
             title: "Batch Type",
