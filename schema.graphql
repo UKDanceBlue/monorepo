@@ -250,7 +250,6 @@ input CreateSolicitationCodeInput {
   name: NonEmptyString
   prefix: NonEmptyString!
   tags: [SolicitationCodeTag!]!
-  teamIds: [GlobalId!]!
 }
 
 input CreateTeamInput {

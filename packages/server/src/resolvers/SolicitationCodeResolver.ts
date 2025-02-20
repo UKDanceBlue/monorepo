@@ -11,6 +11,7 @@ import {
   ListSolicitationCodesResponse,
   SetSolicitationCodeInput,
   SolicitationCodeNode,
+  sortSolicitationCodeTags,
   TeamNode,
   VoidScalar,
 } from "@ukdanceblue/common";
@@ -116,7 +117,11 @@ export class SolicitationCodeResolver
     return new AsyncResult(
       this.solicitationCodeRepository.setSolicitationCode(
         { uuid: id },
-        { name, tags, teams: teamIds.map(({ id }) => ({ uuid: id })) }
+        {
+          name,
+          tags: sortSolicitationCodeTags(tags),
+          teams: teamIds.map(({ id }) => ({ uuid: id })),
+        }
       )
     ).map(({ id: _, uuid, ...code }) =>
       SolicitationCodeNode.init({
