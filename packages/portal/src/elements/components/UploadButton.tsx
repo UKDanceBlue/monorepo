@@ -260,7 +260,6 @@ export function UploadButton<V extends Record<string, unknown>>({
       </Modal>
       <Button
         children={title}
-        size="large"
         icon={<UploadOutlined />}
         {...buttonProps}
         onClick={() => setVisible(true)}

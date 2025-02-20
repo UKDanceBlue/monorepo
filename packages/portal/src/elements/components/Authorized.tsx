@@ -28,5 +28,5 @@ export function Authorized<S extends Exclude<Subject, "all">>({
     return showError ? <Result status="403" title="Unauthorized" /> : null;
   }
 
-  return children;
+  return <>{children}</>;
 }

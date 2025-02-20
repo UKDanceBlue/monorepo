@@ -215,7 +215,7 @@ function RouteComponent() {
           {chart}
         </div>
         <Flex justify="center">
-          <Button onClick={download} type="primary" size="large">
+          <Button onClick={download} type="primary">
             Download Spreadsheet
           </Button>
         </Flex>

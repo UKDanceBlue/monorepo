@@ -13,7 +13,7 @@ import {
 } from "@ant-design/icons";
 import type { Action, ResourceProps } from "@refinedev/core";
 import type { GlobalId, Subject } from "@ukdanceblue/common";
-import { parseGlobalId } from "@ukdanceblue/common";
+import { parseGlobalId, serializeGlobalId } from "@ukdanceblue/common";
 
 export const refineResources = [
   {
@@ -74,7 +74,7 @@ export const refineResources = [
     },
     create: "/fundraising/create",
     edit: "/fundraising/:id/edit",
-    show: "/fundraising/:id",
+    show: "/fundraising/:id/edit",
     list: "/fundraising",
   },
   {
@@ -215,7 +215,7 @@ for (const { name } of refineResources) {
 
 export function findResourceByGlobalId(
   globalId: string | GlobalId
-): ResourceProps | undefined {
+): (typeof refineResources)[number] | undefined {
   let typename: string;
   if (typeof globalId === "string") {
     const parsed = parseGlobalId(globalId);
@@ -227,13 +227,30 @@ export function findResourceByGlobalId(
     typename = globalId.typename;
   }
 
-  for (const resource of refineResources) {
+  for (const resource of refineResources.toReversed()) {
     if (resource.name === typename || resource.meta.modelName === typename) {
       return resource;
     }
   }
 
   return undefined;
+}
+
+export function findViewLinkByGlobalId(
+  globalId: string | GlobalId
+): string | undefined {
+  const resource = findResourceByGlobalId(globalId);
+  console.log(resource);
+  if (!resource || !("show" in resource)) {
+    return undefined;
+  }
+
+  return `${window.location.protocol}//${
+    window.location.host
+  }${resource.show.replace(
+    ":id",
+    typeof globalId === "string" ? globalId : serializeGlobalId(globalId)
+  )}`;
 }
 
 // An array of objects containing pre-split paths for refine resources as well as the index of the resource in refineResources

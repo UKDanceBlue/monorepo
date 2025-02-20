@@ -16,9 +16,7 @@ function RouteComponent() {
       title="DDNs"
       headerButtons={
         <Link from="/fundraising/ddn" to="upload">
-          <Button icon={<UploadOutlined />} size="large">
-            Upload a DDN
-          </Button>
+          <Button icon={<UploadOutlined />}>Upload a DDN</Button>
         </Link>
       }
     >

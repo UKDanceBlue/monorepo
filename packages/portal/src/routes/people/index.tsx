@@ -1,6 +1,5 @@
-import { PlusOutlined } from "@ant-design/icons";
 import { EditOutlined, EyeOutlined } from "@ant-design/icons";
-import { getDefaultSortOrder, List } from "@refinedev/antd";
+import { CreateButton, getDefaultSortOrder, List } from "@refinedev/antd";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import type { CommitteeIdentifier } from "@ukdanceblue/common";
 import {
@@ -8,7 +7,7 @@ import {
   CommitteeRole,
   SortDirection,
 } from "@ukdanceblue/common";
-import { Button, Flex, Table } from "antd";
+import { Button, Flex, Space, Table } from "antd";
 
 import { Authorized } from "#elements/components/Authorized.js";
 import { RefineSearchForm } from "#elements/components/RefineSearchForm.js";
@@ -54,12 +53,10 @@ function ListPeoplePage() {
     <List
       headerButtons={
         <Authorized action="create" subject="PersonNode">
-          <Link from="/people" to="create">
-            <Button icon={<PlusOutlined />} size="large">
-              Add Person
-            </Button>
-          </Link>
-          <UploadPersonButton />
+          <Space.Compact>
+            <CreateButton type="default" />
+            <UploadPersonButton />
+          </Space.Compact>
         </Authorized>
       }
     >

@@ -49,9 +49,7 @@ function ListNotificationsPage() {
       title="Notifications"
       headerButtons={
         <Link from="/notifications" to="create">
-          <Button icon={<PlusOutlined />} size="large">
-            New Notification
-          </Button>
+          <Button icon={<PlusOutlined />}>New Notification</Button>
         </Link>
       }
     >

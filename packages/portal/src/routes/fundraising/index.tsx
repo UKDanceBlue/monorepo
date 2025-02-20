@@ -25,8 +25,8 @@ import {
   useAuthorizationRequirement,
   useLoginState,
 } from "#hooks/useLoginState.js";
-import { useTypedCustomQuery } from "#hooks/useTypedRefine.ts";
-import { useTypedCreate } from "#hooks/useTypedRefine.ts";
+import { useTypedCustomQuery } from "#hooks/useTypedRefine.tsx";
+import { useTypedCreate } from "#hooks/useTypedRefine.tsx";
 
 export const Route = createFileRoute("/fundraising/")({
   component: RouteComponent,
@@ -65,18 +65,14 @@ function RouteComponent() {
             kind: "FundraisingEntryNode",
           }) && (
             <Link from="/fundraising" to="create">
-              <Button icon={<PlusOutlined />} size="large">
-                Create Entry
-              </Button>
+              <Button icon={<PlusOutlined />}>Create Entry</Button>
             </Link>
           )}
           {useAuthorizationRequirement("list", {
             kind: "DailyDepartmentNotificationNode",
           }) && (
             <Link from="/fundraising" to="ddn">
-              <Button icon={<BarsOutlined />} size="large">
-                View Raw DDNs
-              </Button>
+              <Button icon={<BarsOutlined />}>View Raw DDNs</Button>
             </Link>
           )}
           {useAuthorizationRequirement("create", {
@@ -100,18 +96,14 @@ function RouteComponent() {
                 </Flex>
               }
             >
-              <Button icon={<UploadOutlined />} size="large">
-                Upload
-              </Button>
+              <Button icon={<UploadOutlined />}>Upload</Button>
             </Popover>
           )}
           {useAuthorizationRequirement("list", {
             kind: "FundraisingEntryNode",
           }) && (
             <Link from="/fundraising" to="report">
-              <Button icon={<FileOutlined />} size="large">
-                Generate Report
-              </Button>
+              <Button icon={<FileOutlined />}>Generate Report</Button>
             </Link>
           )}
         </>

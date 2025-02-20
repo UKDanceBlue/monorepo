@@ -42,7 +42,7 @@ const CreateFundraisingEntryDocument = graphql(/* GraphQL */ `
 `);
 
 function RouteComponent() {
-  const { formProps, saveButtonProps, onFinish } = useTypedForm({
+  const { formProps, saveButtonProps } = useTypedForm({
     mutation: CreateFundraisingEntryDocument,
     props: {
       resource: "fundraisingEntry",
@@ -98,11 +98,7 @@ function RouteComponent() {
 
   return (
     <Create saveButtonProps={saveButtonProps}>
-      <Form
-        {...formProps}
-        layout="vertical"
-        onFinish={(data) => onFinish(data)}
-      >
+      <Form {...formProps} layout="vertical">
         <Form.Item
           label="Amount"
           name="amount"

@@ -1,7 +1,7 @@
 import { BarsOutlined, PlusOutlined } from "@ant-design/icons";
 import { EditButton, List, SaveButton } from "@refinedev/antd";
 import type { CrudFilter } from "@refinedev/core";
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useLoaderData } from "@tanstack/react-router";
 import {
   SolicitationCodeTag,
   solicitationCodeTagColors,
@@ -11,12 +11,16 @@ import { Button, Form, Input, Select, Space, Table, Tag } from "antd";
 import type { DefaultOptionType } from "antd/es/select";
 import { useState } from "react";
 
-import { useMarathon } from "#config/marathonContext.ts";
-import { PaginationFragment } from "#documents/shared.ts";
-import { RefineSearchForm } from "#elements/components/RefineSearchForm.tsx";
-import { TeamSelect } from "#elements/components/team/TeamSelect.tsx";
-import { graphql, readFragment } from "#gql/index.ts";
-import { useTypedForm, useTypedTable } from "#hooks/useTypedRefine.ts";
+import { useMarathon } from "#config/marathonContext.js";
+import { PaginationFragment } from "#documents/shared.js";
+import { RefineSearchForm } from "#elements/components/RefineSearchForm.js";
+import { TeamSelect } from "#elements/components/team/TeamSelect.js";
+import { graphql, readFragment } from "#gql/index.js";
+import {
+  prefetchTypedTable,
+  useTypedForm,
+  useTypedTable,
+} from "#hooks/useTypedRefine.js";
 
 const SolicitationCodeTableFragment = graphql(/* GraphQL */ `
   fragment SolicitationCodeTableFragment on SolicitationCodeNode {
@@ -28,7 +32,7 @@ const SolicitationCodeTableFragment = graphql(/* GraphQL */ `
     tags
     teams {
       id
-      name
+      text
       marathon {
         id
         year
@@ -90,10 +94,20 @@ const SolicitationCodeTableDocument = graphql(
 
 export const Route = createFileRoute("/fundraising/solicitation-code/")({
   component: RouteComponent,
+  loader() {
+    return prefetchTypedTable({
+      fragment: SolicitationCodeTableFragment,
+      gqlQuery: SolicitationCodeTableDocument,
+      props: {
+        resource: "solicitationCode",
+      },
+    });
+  },
 });
 
 function RouteComponent() {
   const { id: marathonId, year: marathonYear } = useMarathon() ?? {};
+  const tableData = useLoaderData({ from: "/fundraising/solicitation-code/" });
 
   const { tableProps, sorters, searchFormProps } = useTypedTable({
     fragment: SolicitationCodeTableFragment,
@@ -111,6 +125,10 @@ function RouteComponent() {
         return filters;
       },
       resource: "solicitationCode",
+      queryOptions: {
+        // @ts-expect-error Not worried about this rn
+        initialData: tableData,
+      },
     },
     fieldTypes: {
       tags: ["tags", "array", "every", "one"],
@@ -118,7 +136,7 @@ function RouteComponent() {
   });
 
   const [editId, setEditId] = useState<string | null>(null);
-  const { formProps, saveButtonProps, formLoading, onFinish } = useTypedForm<
+  const { formProps, saveButtonProps, formLoading } = useTypedForm<
     typeof SetSolicitationCodeDocument,
     {
       id: string;
@@ -139,20 +157,24 @@ function RouteComponent() {
         name: fragmentData.name,
         text: fragmentData.text,
         tags: fragmentData.tags,
-        teams: fragmentData.teams.map(({ id, name, marathon: { year } }) => ({
-          label: `${name} (${year})`,
+        teams: fragmentData.teams.map(({ id, text, marathon: { year } }) => ({
+          label: `${text} (${year})`,
           value: id,
         })),
       };
     },
     formToVariables(form) {
+      console.log(form);
       return {
         name: form.name,
         tags: form.tags,
-        teamIds: form.teams.map(({ value }) => value),
+        teamIds: form.teams.map((value: string | { value: string }) =>
+          typeof value === "string" ? value : value.value
+        ),
       };
     },
     props: {
+      submitOnEnter: true,
       action: "edit",
       resource: "solicitationCode",
       id: editId!,
@@ -175,14 +197,12 @@ function RouteComponent() {
     <List
       headerButtons={
         <Link to="/fundraising/solicitation-code/create">
-          <Button icon={<PlusOutlined />} size="large">
-            Create Solicitation Code
-          </Button>
+          <Button icon={<PlusOutlined />}>Create Solicitation Code</Button>
         </Link>
       }
     >
       <RefineSearchForm searchFormProps={searchFormProps} />
-      <Form {...formProps} onFinish={onFinish}>
+      <Form {...formProps}>
         <Table
           {...tableProps}
           rowKey="id"
@@ -298,7 +318,7 @@ function RouteComponent() {
                     .filter(
                       ({ marathon: { id } }) => !marathonId || id === marathonId
                     )
-                    .map(({ name }) => name)
+                    .map(({ text }) => text)
                     .join(", ");
                 }
               },

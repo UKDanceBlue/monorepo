@@ -1,6 +1,6 @@
-import { PlusOutlined, UploadOutlined } from "@ant-design/icons";
+import { UploadOutlined } from "@ant-design/icons";
 import { DollarOutlined, EditOutlined, EyeOutlined } from "@ant-design/icons";
-import { getDefaultSortOrder, List } from "@refinedev/antd";
+import { CreateButton, getDefaultSortOrder, List } from "@refinedev/antd";
 import { getDefaultFilter } from "@refinedev/core";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import {
@@ -9,9 +9,10 @@ import {
   TeamType,
   TeamTypeValues,
 } from "@ukdanceblue/common";
-import { Button, Flex, Table } from "antd";
+import { Button, Flex, Space, Table } from "antd";
 
 import { useMarathon } from "#config/marathonContext.js";
+import { Authorized } from "#elements/components/Authorized.tsx";
 import { RefineSearchForm } from "#elements/components/RefineSearchForm.js";
 import { graphql } from "#gql/index.js";
 import { useAuthorizationRequirement } from "#hooks/useLoginState.js";
@@ -69,20 +70,14 @@ export function ListTeamsPage() {
   return (
     <List
       headerButtons={
-        useAuthorizationRequirement("create", "TeamNode") && (
-          <div style={{ display: "flex", gap: 16 }}>
-            <Link from="/teams" to="create">
-              <Button icon={<PlusOutlined />} size="large">
-                Create Team
-              </Button>
-            </Link>
+        <Authorized action="create" subject="TeamNode">
+          <Space.Compact>
+            <CreateButton type="default" />
             <Link from="/teams" to="bulk">
-              <Button icon={<UploadOutlined />} size="large">
-                Bulk Create Teams
-              </Button>
+              <Button icon={<UploadOutlined />}>Import Teams</Button>
             </Link>
-          </div>
-        )
+          </Space.Compact>
+        </Authorized>
       }
     >
       <RefineSearchForm searchFormProps={searchFormProps} />

@@ -9,7 +9,7 @@ import {
   type EventOccurrencePickerValue,
 } from "#elements/components/event/EventOccurrencePicker.tsx";
 import { graphql } from "#gql/index.ts";
-import { useTypedForm } from "#hooks/useTypedRefine.ts";
+import { useTypedForm } from "#hooks/useTypedRefine.tsx";
 
 const eventCreatorDocument = graphql(/* GraphQL */ `
   mutation CreateEvent($input: CreateEventInput!) {
@@ -32,7 +32,7 @@ const eventCreatorDocument = graphql(/* GraphQL */ `
 `);
 
 function EventsCreate() {
-  const { form, onFinish } = useTypedForm({
+  const { form } = useTypedForm({
     mutation: eventCreatorDocument,
     props: {
       action: "create",
@@ -87,7 +87,7 @@ function EventsCreate() {
   return (
     <Create title="Create Event" resource="event">
       <p>Add an event to the DanceBlue app and website.</p>
-      <Form form={form} onFinish={(values) => onFinish(values)}>
+      <Form form={form}>
         <Form.Item label="Title" name="title" rules={[{ required: true }]}>
           <Input />
         </Form.Item>

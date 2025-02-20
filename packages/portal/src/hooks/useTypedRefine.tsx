@@ -1,4 +1,5 @@
 import {
+  ExportButton,
   useForm,
   type UseFormProps,
   useSelect,
@@ -22,6 +23,7 @@ import {
   type UseCustomProps,
   type UseDeleteProps,
   type UseDeleteReturnType,
+  useExport,
   type UseOneProps,
   type UseSelectProps,
 } from "@refinedev/core";
@@ -32,17 +34,20 @@ import {
   useDelete,
   useOne,
 } from "@refinedev/core";
-import type {
-  AbstractSearchFilter,
-  AbstractSortItem,
-  FilterGroupOperator,
+import {
+  type AbstractSearchFilter,
+  type AbstractSortItem,
+  type FilterGroupOperator,
 } from "@ukdanceblue/common";
 import type { ResultOf, TadaDocumentNode, VariablesOf } from "gql.tada";
 import type { DocumentNode } from "graphql";
 import type { AnyVariables, UseQueryResponse } from "urql";
 
 import { dataProvider, type FieldTypes } from "#config/refine/graphql/data.js";
-import type { RefineResourceName } from "#config/refine/resources.js";
+import {
+  findViewLinkByGlobalId,
+  type RefineResourceName,
+} from "#config/refine/resources.js";
 
 export interface UseTypedTableMeta<
   T extends Record<string, unknown>,
@@ -109,20 +114,75 @@ export function useTypedTable<
   TSearchVariables,
   TData,
   TExtraVariables
->): useTableReturnType<TData, HttpError, TSearchVariables> {
-  return useTable({
-    onSearch(data) {
-      const filters: CrudFilter[] = [];
-      for (const [key, value] of Object.entries(data)) {
-        filters.push({
-          field: key,
-          operator: "contains",
-          value: String(value),
-        });
+>): useTableReturnType<TData, HttpError, TSearchVariables> & {
+  isExportLoading: boolean;
+  triggerExport: () => Promise<string | undefined>;
+} {
+  const tableData: useTableReturnType<TData, HttpError, TSearchVariables> =
+    useTable({
+      onSearch(data) {
+        const filters: CrudFilter[] = [];
+        for (const [key, value] of Object.entries(data)) {
+          filters.push({
+            field: key,
+            operator: "contains",
+            value: String(value),
+          });
+        }
+        return filters;
+      },
+      ...props,
+      meta: {
+        ...props.meta,
+        targetPath,
+        gqlQuery,
+        gqlVariables:
+          props.meta?.gqlVariables || gqlVariables
+            ? {
+                ...props.meta?.gqlVariables,
+                ...gqlVariables,
+              }
+            : undefined,
+        gqlFragment: fragment,
+        fieldTypes,
+      },
+    });
+
+  const { isLoading: isExportLoading, triggerExport } = useExport({
+    resource: props.resource,
+    filters: tableData.filters,
+    mapData(record: Record<string, unknown>) {
+      const mapped: Record<string, unknown> = {};
+      for (const key in record) {
+        const value = record[key];
+        if (key === "id") {
+          console.log(value);
+          mapped.Link = findViewLinkByGlobalId(value as string);
+        } else if (value instanceof Date) {
+          mapped[key] = value.toISOString();
+        } else if (value && typeof value === "object" && "text" in value) {
+          mapped[key] = value.text;
+        } else if (Array.isArray(value)) {
+          if (value.some((v) => v && typeof v === "object" && !("text" in v))) {
+            continue;
+          } else {
+            mapped[key] = value
+              .map((v: unknown) => {
+                if (v && typeof v === "object" && "text" in v) {
+                  return String(v.text);
+                }
+                return v;
+              })
+              .join(", ");
+          }
+        } else {
+          mapped[key] = value;
+        }
       }
-      return filters;
+      return mapped;
     },
-    ...props,
+    sorters: tableData.sorters,
+
     meta: {
       ...props.meta,
       targetPath,
@@ -132,12 +192,25 @@ export function useTypedTable<
           ? {
               ...props.meta?.gqlVariables,
               ...gqlVariables,
+              sendAll: true,
             }
           : undefined,
       gqlFragment: fragment,
       fieldTypes,
     },
   });
+
+  return {
+    ...tableData,
+    tableProps: {
+      ...tableData.tableProps,
+      footer: () => (
+        <ExportButton onClick={triggerExport} loading={isExportLoading} />
+      ),
+    },
+    isExportLoading,
+    triggerExport,
+  };
 }
 
 export function prefetchTypedTable<
@@ -303,14 +376,18 @@ export function useTypedForm<
     },
   });
 
-  delete val.formProps.onFinish;
+  const onFinish = (values: FormData) => {
+    // The types on refine's useForm hook don't allow this so we just give it the ol trust me bro
+    return val.onFinish(formToVariables(values) as FormData);
+  };
 
   return {
     ...val,
-    onFinish: (values: FormData) => {
-      // The types on refine's useForm hook don't allow this so we just give it the ol trust me bro
-      return val.onFinish(formToVariables(values) as FormData);
+    formProps: {
+      ...val.formProps,
+      onFinish,
     },
+    onFinish,
   };
 }
 

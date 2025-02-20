@@ -104,7 +104,6 @@ function RouteComponent() {
           type="link"
           icon={<PlusOutlined />}
           onClick={() => setCreateImageOpen(true)}
-          size="large"
         >
           Add Image
         </Button>

@@ -18,6 +18,7 @@ const fragment = graphql(/* GraphQL */ `
     summary
     subject {
       id
+      text
     }
     details
     user {
@@ -146,15 +147,18 @@ function LogsPage() {
               key: "createdAt",
             },
             {
-              title: "Actions",
-              key: "actions",
+              title: "Subject",
+              key: "subject",
               render: (_, { subject }) =>
                 subject && (
                   <ShowButton
                     resource={findResourceByGlobalId(subject.id)?.name}
                     recordItemId={subject.id}
-                    hideText
-                  />
+                    icon={null}
+                    type="link"
+                  >
+                    {subject.text}
+                  </ShowButton>
                 ),
             },
           ]}

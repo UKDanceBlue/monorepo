@@ -39,7 +39,7 @@ function ViewNotificationPage() {
       <Flex justify="space-between" align="center">
         <Typography.Title>Notification</Typography.Title>
         <Link from="/notifications/$notificationId" to="manage">
-          <Button type="link" icon={<SendOutlined />} size="large">
+          <Button type="link" icon={<SendOutlined />}>
             Manage delivery
           </Button>
         </Link>

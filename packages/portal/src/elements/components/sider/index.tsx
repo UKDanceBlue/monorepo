@@ -260,7 +260,6 @@ export const Sider: React.FC<
           </Drawer>
           <Button
             style={drawerButtonStyles}
-            size="large"
             onClick={() => setDrawerOpen(true)}
             icon={<BarsOutlined />}
           />
