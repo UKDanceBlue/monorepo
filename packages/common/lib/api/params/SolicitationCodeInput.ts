@@ -7,6 +7,7 @@ import {
   SolicitationCodeNode,
   SolicitationCodeTag,
 } from "../resources/SolicitationCode.js";
+import { type GlobalId, GlobalIdScalar } from "../scalars/GlobalId.js";
 import { AbstractGraphQLPaginatedResponse } from "./PaginatedResponse.js";
 
 @ArgsType()
@@ -30,6 +31,9 @@ export class SetSolicitationCodeInput {
 
   @Field(() => [SolicitationCodeTag])
   tags!: SolicitationCodeTag[];
+
+  @Field(() => [GlobalIdScalar])
+  teamIds!: GlobalId[];
 }
 
 @InputType("CreateSolicitationCodeInput")

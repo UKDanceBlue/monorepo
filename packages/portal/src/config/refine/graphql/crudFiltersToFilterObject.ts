@@ -23,7 +23,7 @@ export function crudFilterToFilterObject(
 ): FilterItem {
   let filterItem: FilterItem;
   const fieldTypeEntry = fieldTypes?.[crudFilter.field];
-  const [field, fieldType] = fieldTypeEntry
+  const [field, fieldType, arrayType] = fieldTypeEntry
     ? Array.isArray(fieldTypeEntry)
       ? fieldTypeEntry
       : [crudFilter.field, fieldTypeEntry]
@@ -244,6 +244,43 @@ export function crudFilterToFilterObject(
                 value: Array.isArray(crudFilter.value)
                   ? crudFilter.value
                   : [crudFilter.value],
+              },
+            },
+          };
+          break;
+        }
+        case "array": {
+          if (crudFilter.operator === "nin") {
+            throw new Error("Unsupported filter operator nin for array");
+          }
+
+          let comparison: ArrayArrayOperators;
+          switch (arrayType) {
+            case "every": {
+              comparison = ArrayArrayOperators.HAS_EVERY;
+              break;
+            }
+            case "some": {
+              comparison = ArrayArrayOperators.HAS_SOME;
+              break;
+            }
+            case "equals": {
+              comparison = ArrayArrayOperators.EQUALS;
+              break;
+            }
+            default: {
+              throw new Error("Unsupported array type");
+            }
+          }
+          filterItem = {
+            field,
+
+            filter: {
+              arrayArrayFilter: {
+                comparison,
+                value: Array.isArray(crudFilter.value)
+                  ? crudFilter.value.map(String)
+                  : [String(crudFilter.value)],
               },
             },
           };

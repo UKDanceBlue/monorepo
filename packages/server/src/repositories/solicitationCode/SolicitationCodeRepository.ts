@@ -145,34 +145,37 @@ export class SolicitationCodeRepository extends buildDefaultRepository<
     }
   }
 
-  async setSolicitationCode(
+  setSolicitationCode(
     solicitationCodeParam: SolicitationCodeUniqueParam,
     {
       name,
       tags,
+      teams,
     }: {
       name?: string | undefined | null;
       tags?: SolicitationCodeTag[] | undefined | null;
+      teams?: SimpleUniqueParam[] | undefined | null;
     }
   ): Promise<Result<SolicitationCode, RepositoryError>> {
-    try {
-      return Ok(
-        await this.prisma.solicitationCode.update({
-          where:
-            "code" in solicitationCodeParam
-              ? { prefix_code: solicitationCodeParam }
-              : solicitationCodeParam,
-          data: {
-            name: name ?? null,
-            tags: {
-              set: tags ?? [],
-            },
+    return this.handleQueryError(
+      this.prisma.solicitationCode.update({
+        where:
+          "code" in solicitationCodeParam
+            ? { prefix_code: solicitationCodeParam }
+            : solicitationCodeParam,
+        data: {
+          name: name ?? null,
+          tags: {
+            set: tags ?? [],
           },
-        })
-      );
-    } catch (error: unknown) {
-      return handleRepositoryError(error);
-    }
+          teams: teams
+            ? {
+                set: teams,
+              }
+            : undefined,
+        },
+      })
+    ).promise;
   }
 
   async getSolicitationCodeForEntry(

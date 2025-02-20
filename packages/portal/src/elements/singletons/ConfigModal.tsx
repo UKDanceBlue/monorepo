@@ -37,7 +37,11 @@ export const ConfigModal = ({
         buildTimestamp
       }
     `),
-    props: {},
+    props: {
+      queryOptions: {
+        enabled: open,
+      },
+    },
   });
 
   return (

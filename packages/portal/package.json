@@ -61,7 +61,6 @@
     "@uidotdev/usehooks": "^2.4.1",
     "@ukdanceblue/common": "workspace:^",
     "@urql/core": "^5.1.0",
-    "@urql/devtools": "^2.0.3",
     "antd": "^5.23.1",
     "camelcase": "^8.0.0",
     "class-validator": "^0.14.1",

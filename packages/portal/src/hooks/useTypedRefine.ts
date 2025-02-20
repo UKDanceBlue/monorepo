@@ -239,12 +239,7 @@ export function prefetchTypedSelect<
   });
 }
 
-type FormResult<D> = (D extends Record<`create${string}`, infer C>
-  ? C
-  : D extends Record<`set${string}`, infer S>
-    ? S
-    : never) &
-  BaseRecord;
+type FormResult<D> = D[keyof D];
 
 interface TypedFormParams<
   Document extends DocumentNode,
@@ -252,11 +247,11 @@ interface TypedFormParams<
 > {
   mutation: Document;
   props: UseFormProps<
-    FormResult<ResultOf<Document>>,
+    FormResult<ResultOf<Document>> & BaseRecord,
     HttpError,
     FormData,
     FormData,
-    FormResult<ResultOf<Document>>,
+    FormResult<ResultOf<Document>> & BaseRecord,
     HttpError
   > &
     (
@@ -286,11 +281,11 @@ export function useTypedForm<
   dataToForm,
 }: TypedFormParams<Document, FormData>) {
   const val = useForm<
-    FormResult<ResultOf<Document>>,
+    FormResult<ResultOf<Document>> & BaseRecord,
     HttpError,
     FormData,
     FormData,
-    FormResult<ResultOf<Document>>,
+    FormResult<ResultOf<Document>> & BaseRecord,
     HttpError
   >({
     ...props,
@@ -326,7 +321,9 @@ export async function prefetchTypedForm<
   if (!params.props.id) {
     return null;
   }
-  const data = await dataProvider.getOne<FormResult<ResultOf<Document>>>({
+  const data = await dataProvider.getOne<
+    FormResult<ResultOf<Document> & BaseRecord>
+  >({
     resource: params.props.resource,
     id: params.props.id,
     meta: {
@@ -452,29 +449,33 @@ export function prefetchTypedOne<
 
 interface TypedCustomParams<
   Document extends DocumentNode,
-  TQueryFnData extends BaseRecord & ResultOf<Document> = BaseRecord &
-    ResultOf<Document>,
-  TData extends BaseRecord = TQueryFnData,
+  TData extends BaseRecord,
 > {
   document: Document;
   gqlVariables?: Partial<VariablesOf<Document>>;
   props: Omit<
-    UseCustomProps<TQueryFnData, HttpError, never, never, TData>,
+    UseCustomProps<
+      BaseRecord & ResultOf<Document>,
+      HttpError,
+      VariablesOf<Document>,
+      VariablesOf<Document>,
+      TData
+    >,
     "method" | "url"
   >;
 }
 
 export function useTypedCustomQuery<
   Document extends DocumentNode,
-  TQueryFnData extends BaseRecord & ResultOf<Document> = BaseRecord &
-    ResultOf<Document>,
-  TData extends BaseRecord = TQueryFnData,
->({
-  document,
-  props,
-  gqlVariables,
-}: TypedCustomParams<Document, TQueryFnData, TData>) {
-  return useCustom({
+  TData extends BaseRecord = BaseRecord & ResultOf<Document>,
+>({ document, props, gqlVariables }: TypedCustomParams<Document, TData>) {
+  return useCustom<
+    ResultOf<Document> & BaseRecord,
+    HttpError,
+    VariablesOf<Document>,
+    VariablesOf<Document>,
+    TData
+  >({
     method: "get",
     url: "",
     ...props,
@@ -531,14 +532,8 @@ export function useQuery<Document extends DocumentNode>(props: {
 
 export function prefetchTypedCustomQuery<
   Document extends DocumentNode,
-  TQueryFnData extends BaseRecord & ResultOf<Document> = BaseRecord &
-    ResultOf<Document>,
-  TData extends BaseRecord = TQueryFnData,
->({
-  document,
-  props,
-  gqlVariables,
-}: TypedCustomParams<Document, TQueryFnData, TData>) {
+  TData extends BaseRecord = BaseRecord & ResultOf<Document>,
+>({ document, props, gqlVariables }: TypedCustomParams<Document, TData>) {
   return dataProvider.custom({
     method: "get",
     url: "",

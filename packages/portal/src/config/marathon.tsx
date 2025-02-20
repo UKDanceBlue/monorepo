@@ -1,9 +1,10 @@
+import { keys } from "@refinedev/core";
 import { dateTimeFromSomething } from "@ukdanceblue/common";
 import { useMemo } from "react";
 
 import { graphql, readFragment } from "#gql/index.js";
 import { useAuthorizationRequirement } from "#hooks/useLoginState.js";
-import { useQuery, useTypedOne } from "#hooks/useTypedRefine.js";
+import { useTypedCustomQuery, useTypedOne } from "#hooks/useTypedRefine.js";
 
 import type { MarathonContextData } from "./marathonContext.js";
 import { marathonContext } from "./marathonContext.js";
@@ -18,7 +19,7 @@ const MarathonFragment = graphql(/* GraphQL */ `
   }
 `);
 
-const latestMarathonDocument = graphql(
+const activeMarathonDocument = graphql(
   /* GraphQL */ `
     query ActiveMarathon {
       latestMarathon {
@@ -59,13 +60,24 @@ export const MarathonConfigProvider = ({
     StorageManager.keys.selectedMarathon
   );
 
-  const [latestMarathonResult] = useQuery({
-    query: latestMarathonDocument,
-    pause: valueOverride != null,
-  });
-  const [allMarathonsResult] = useQuery({
-    query: allMarathonsDocument,
-    pause: !canSeeMarathonList || valueOverride != null,
+  const { data: activeMarathonResult, isLoading: activeMarathonResultLoading } =
+    useTypedCustomQuery({
+      document: activeMarathonDocument,
+      props: {
+        queryOptions: {
+          enabled: valueOverride == null,
+          queryKey: keys().data().resource("marathon").action("list").get(),
+        },
+      },
+    });
+  const { data: allMarathonsResult } = useTypedCustomQuery({
+    document: allMarathonsDocument,
+    props: {
+      queryOptions: {
+        enabled: canSeeMarathonList && valueOverride == null,
+        queryKey: keys().data().resource("marathon").action("list").get(),
+      },
+    },
   });
 
   const selectedMarathonResult = useTypedOne({
@@ -83,8 +95,8 @@ export const MarathonConfigProvider = ({
     MarathonFragment,
     marathonId != null && selectedMarathonResult.data != null
       ? selectedMarathonResult.data.data
-      : latestMarathonResult.data != null
-        ? latestMarathonResult.data.latestMarathon
+      : activeMarathonResult != null
+        ? activeMarathonResult.data.latestMarathon
         : null
   );
 
@@ -124,18 +136,19 @@ export const MarathonConfigProvider = ({
           : null,
         marathons: readFragment(
           MarathonFragment,
-          allMarathonsResult.data?.marathons.data ??
-            (latestMarathonResult.data?.latestMarathon
-              ? [latestMarathonResult.data.latestMarathon]
+          // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+          allMarathonsResult?.data.marathons?.data ??
+            (activeMarathonResult?.data.latestMarathon
+              ? [activeMarathonResult.data.latestMarathon]
               : [])
         ),
         loading:
-          latestMarathonResult.fetching ||
+          activeMarathonResultLoading ||
           (marathonId != null && selectedMarathonResult.isLoading),
         source:
           marathonId != null && selectedMarathonResult.data != null
             ? "selected"
-            : latestMarathonResult.data != null
+            : activeMarathonResult?.data != null
               ? "latest"
               : undefined,
       }}

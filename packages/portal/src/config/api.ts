@@ -1,4 +1,3 @@
-import { devtoolsExchange } from "@urql/devtools";
 import { Client, fetchExchange } from "urql";
 
 import { StorageManager } from "./storage";
@@ -11,7 +10,7 @@ export const API_BASE_URL =
 
 export const urqlClient = new Client({
   url: `${API_BASE_URL}/graphql`,
-  exchanges: [devtoolsExchange, fetchExchange],
+  exchanges: [fetchExchange],
   fetchOptions: () => {
     // const query = new URLSearchParams(window.location.search).get("masquerade");
     const masquerade = StorageManager.Local.get(StorageManager.keys.masquerade);

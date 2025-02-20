@@ -40,7 +40,12 @@ function getOperationName(
 }
 
 type FieldType = "string" | "number" | "date" | "array";
-export type FieldTypes = Record<string, FieldType | [string, FieldType]>;
+export type FieldTypes = Record<
+  string,
+  | FieldType
+  | [string, FieldType]
+  | [string, FieldType, "some" | "every" | "equals", "one"]
+>;
 
 const postgresFtsOperators = /[!&():|]/g;
 
@@ -143,7 +148,7 @@ export const dataProvider: Required<DataProvider> = {
     const { meta, id, resource } = params;
 
     if (!id) {
-      throw new Error("ID is required.");
+      return { data: undefined };
     }
 
     let query;
@@ -237,7 +242,9 @@ export const dataProvider: Required<DataProvider> = {
           }
         >
       | undefined;
-    if (meta?.gqlQuery) {
+    if (meta?.gqlListQuery) {
+      query = meta.gqlListQuery;
+    } else if (meta?.gqlQuery) {
       query = meta.gqlQuery;
     } else if (meta?.gqlFragment) {
       const gqlDefinitions =
@@ -308,7 +315,7 @@ export const dataProvider: Required<DataProvider> = {
     }
 
     if (typeof val !== "object") {
-      console.error("Invalid response: no data", response.data);
+      console.error("Invalid response: data is not an object", response.data);
       throw new TypeError("Invalid response: data is not an object");
     }
 
@@ -321,7 +328,7 @@ export const dataProvider: Required<DataProvider> = {
       total = val.total;
       data = val.data;
     } else {
-      console.error("Invalid response: no data", response.data);
+      console.error("Invalid response: malformed data", response.data);
       throw new TypeError("Invalid response: malformed data");
     }
     return {

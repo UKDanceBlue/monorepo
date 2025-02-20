@@ -140,33 +140,47 @@ export async function logAuditEvent(
     } else if (typeof args.input.id === "string") {
       id = args.input.id;
     }
-  } else if ("id" in result) {
-    if (isGlobalId(result.id)) {
-      id = serializeGlobalId(result.id);
-    } else if (typeof result.id === "string") {
-      id = result.id;
-    }
-  } else if ("data" in result && "id" in result.data) {
-    if (isGlobalId(result.data.id)) {
-      id = serializeGlobalId(result.data.id);
-    } else if (typeof result.data.id === "string") {
-      id = result.data.id;
-    }
-  } else if ("value" in result && "id" in result.value) {
-    if (isGlobalId(result.value.id)) {
-      id = serializeGlobalId(result.value.id);
-    } else if (typeof result.value.id === "string") {
-      id = result.value.id;
-    }
-  } else if (
-    "value" in result &&
-    "value" in result.value &&
-    "id" in result.value.value
-  ) {
-    if (isGlobalId(result.value.value.id)) {
-      id = serializeGlobalId(result.value.value.id);
-    } else if (typeof result.value.value.id === "string") {
-      id = result.value.value.id;
+  } else if (typeof result === "object" && result != null) {
+    if ("id" in result) {
+      if (isGlobalId(result.id)) {
+        id = serializeGlobalId(result.id);
+      } else if (typeof result.id === "string") {
+        id = result.id;
+      }
+    } else if (
+      "data" in result &&
+      typeof result.data === "object" &&
+      result.data &&
+      "id" in result.data
+    ) {
+      if (isGlobalId(result.data.id)) {
+        id = serializeGlobalId(result.data.id);
+      } else if (typeof result.data.id === "string") {
+        id = result.data.id;
+      }
+    } else if (
+      "value" in result &&
+      typeof result.value === "object" &&
+      result.value != null
+    ) {
+      if ("id" in result.value) {
+        if (isGlobalId(result.value.id)) {
+          id = serializeGlobalId(result.value.id);
+        } else if (typeof result.value.id === "string") {
+          id = result.value.id;
+        }
+      } else if (
+        "value" in result.value &&
+        typeof result.value.value === "object" &&
+        result.value.value != null &&
+        "id" in result.value.value
+      ) {
+        if (isGlobalId(result.value.value.id)) {
+          id = serializeGlobalId(result.value.value.id);
+        } else if (typeof result.value.value.id === "string") {
+          id = result.value.value.id;
+        }
+      }
     }
   }
 

@@ -159,7 +159,7 @@ function RouteComponent() {
         solicitationCodeId,
       });
       await invalidate({
-        invalidates: ["detail"],
+        invalidates: ["all"],
         resource: "solicitationCode",
         id: solicitationCodeId,
       });
@@ -174,7 +174,7 @@ function RouteComponent() {
         teamId: id,
       });
       await invalidate({
-        invalidates: ["detail"],
+        invalidates: ["all"],
         resource: "solicitationCode",
         id: solicitationCodeId,
       });
@@ -240,8 +240,9 @@ function RouteComponent() {
           title="Teams"
           extra={
             <TeamSelect
+              mode={undefined}
               placeholder="Assign a team to this solicitation code"
-              onSelect={async ({ id }) => {
+              onSelect={async (id: string) => {
                 await openConfirmAssignModal(id).catch((error: unknown) => {
                   console.error(error);
                   showErrorMessage(
@@ -257,6 +258,7 @@ function RouteComponent() {
               TeamsTableFragment,
               data?.data.teams ?? []
             )}
+            rowKey="id"
             pagination={false}
             columns={[
               {
