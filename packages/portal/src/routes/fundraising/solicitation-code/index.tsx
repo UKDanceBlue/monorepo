@@ -7,7 +7,7 @@ import {
   solicitationCodeTagColors,
   stringifySolicitationCodeTag,
 } from "@ukdanceblue/common";
-import { Button, Form, Select, Space, Table, Tag } from "antd";
+import { Button, Form, Input, Select, Space, Table, Tag } from "antd";
 import type { DefaultOptionType } from "antd/es/select";
 import { useState } from "react";
 
@@ -23,6 +23,8 @@ const SolicitationCodeTableFragment = graphql(/* GraphQL */ `
     id
     name
     text
+    prefix
+    code
     tags
     teams {
       id
@@ -110,13 +112,17 @@ function RouteComponent() {
       },
       resource: "solicitationCode",
     },
+    fieldTypes: {
+      tags: ["tags", "array", "every", "one"],
+    },
   });
 
   const [editId, setEditId] = useState<string | null>(null);
-  const { formProps, saveButtonProps } = useTypedForm<
+  const { formProps, saveButtonProps, formLoading, onFinish } = useTypedForm<
     typeof SetSolicitationCodeDocument,
     {
       id: string;
+      name: string | null;
       text: string;
       tags: SolicitationCodeTag[];
       teams: {
@@ -130,6 +136,7 @@ function RouteComponent() {
       const fragmentData = readFragment(SolicitationCodeTableFragment, data);
       return {
         id: fragmentData.id,
+        name: fragmentData.name,
         text: fragmentData.text,
         tags: fragmentData.tags,
         teams: fragmentData.teams.map(({ id, name, marathon: { year } }) => ({
@@ -140,8 +147,9 @@ function RouteComponent() {
     },
     formToVariables(form) {
       return {
-        name: form.text,
+        name: form.name,
         tags: form.tags,
+        teamIds: form.teams.map(({ value }) => value),
       };
     },
     props: {
@@ -153,6 +161,12 @@ function RouteComponent() {
       },
       meta: {
         gqlQuery: SolicitationCodeDocument,
+      },
+      redirect: false,
+      onMutationSuccess(_data, _variables, _context, isAutoSave) {
+        if (!isAutoSave) {
+          setEditId(null);
+        }
       },
     },
   });
@@ -168,7 +182,7 @@ function RouteComponent() {
       }
     >
       <RefineSearchForm searchFormProps={searchFormProps} />
-      <Form {...formProps}>
+      <Form {...formProps} onFinish={onFinish}>
         <Table
           {...tableProps}
           rowKey="id"
@@ -191,12 +205,30 @@ function RouteComponent() {
                 "asc"
                   ? "ascend"
                   : "descend",
+              render(_, record) {
+                if (editId === record.id) {
+                  return (
+                    <Form.Item name="name" style={{ margin: 0 }}>
+                      <Input
+                        prefix={`${record.prefix}${record.code}`}
+                        disabled={formLoading}
+                      />
+                    </Form.Item>
+                  );
+                } else {
+                  return record.text;
+                }
+              },
             },
             {
               title: "Tags",
               dataIndex: "tags",
               key: "tags",
               width: "25%",
+              filters: Object.values(SolicitationCodeTag).map((value) => ({
+                text: stringifySolicitationCodeTag(value),
+                value,
+              })),
               render(_, record) {
                 if (editId === record.id) {
                   return (
@@ -225,6 +257,8 @@ function RouteComponent() {
                         style={{
                           width: "100%",
                         }}
+                        loading={formLoading}
+                        disabled={formLoading}
                       />
                     </Form.Item>
                   );
@@ -251,7 +285,12 @@ function RouteComponent() {
                 if (editId === record.id) {
                   return (
                     <Form.Item name="teams" style={{ margin: 0 }}>
-                      <TeamSelect marathonYear={marathonYear} mode="tags" />
+                      <TeamSelect
+                        marathonYear={marathonYear}
+                        mode="tags"
+                        loading={formLoading}
+                        disabled={formLoading}
+                      />
                     </Form.Item>
                   );
                 } else {

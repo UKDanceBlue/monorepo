@@ -22,6 +22,18 @@ export function TeamSelect({
       searchField: "$search",
       optionLabel: "name",
       optionValue: "id",
+      queryOptions: {
+        select(data) {
+          return {
+            total: data.total,
+            data: data.data.map((team) => ({
+              $search: team.name,
+              id: team.id,
+              name: `${team.name} (${team.marathon.year})`,
+            })),
+          };
+        },
+      },
     },
   });
 

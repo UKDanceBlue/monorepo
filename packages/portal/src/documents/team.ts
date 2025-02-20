@@ -63,5 +63,9 @@ export const TeamSelectFragment = graphql(/* GraphQL */ `
     id
     name
     type
+    marathon {
+      id
+      year
+    }
   }
 `);

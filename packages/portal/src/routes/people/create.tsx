@@ -18,7 +18,7 @@ const CreatePersonMutation = graphql(/* GraphQL */ `
 `);
 
 function CreatePersonPage() {
-  const { formProps, saveButtonProps } = useTypedForm({
+  const { formProps, saveButtonProps, onFinish } = useTypedForm({
     mutation: CreatePersonMutation,
     props: {
       action: "create",
@@ -34,7 +34,7 @@ function CreatePersonPage() {
 
   return (
     <Create saveButtonProps={saveButtonProps}>
-      <Form {...formProps}>
+      <Form {...formProps} onFinish={onFinish}>
         <Form.Item label="Name" name="name" rules={[{ required: true }]}>
           <Input />
         </Form.Item>
