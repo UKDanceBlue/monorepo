@@ -47,7 +47,10 @@ export const ProfileFooter = ({
   }
   function checkSequence(s: readonly SequenceMember[]) {
     const sequenceSlice = sequence.slice(-s.length);
-    return sequenceSlice.every((v, i) => v === s[i]);
+    return (
+      sequenceSlice.length === s.length &&
+      sequenceSlice.every((v, i) => v === s[i])
+    );
   }
 
   const [loginLoading, logIn] = useLogin();
