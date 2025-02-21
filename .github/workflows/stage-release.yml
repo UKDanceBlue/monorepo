@@ -10,7 +10,9 @@ env:
 jobs:
   stage-release:
     runs-on: ubuntu-latest
-    environment: staging
+    environment:
+      name: staging
+      url: https://stg.danceblue.org
     permissions:
       packages: write
     steps:
