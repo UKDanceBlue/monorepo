@@ -1,7 +1,5 @@
 import { Alert } from "react-native";
 
-import { log } from "../logging";
-
 /**
  * Show a one button prompt
  */
@@ -16,14 +14,6 @@ export function showMessage(
       ? message
       : JSON.stringify(message, undefined, 2),
     [{ text: "OK", onPress: onAccept }]
-  );
-
-  log(
-    `${title}:\n${
-      typeof message === "string"
-        ? message
-        : JSON.stringify(message, undefined, 2)
-    }`
   );
 }
 
@@ -47,13 +37,5 @@ export function showPrompt(
       { text: negativeText, onPress: negativeAction, style: "cancel" },
       { text: positiveText, onPress: positiveAction },
     ]
-  );
-
-  log(
-    `${title}:\n${
-      typeof message === "string"
-        ? message
-        : JSON.stringify(message, undefined, 2)
-    }`
   );
 }

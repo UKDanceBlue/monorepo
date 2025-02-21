@@ -2,8 +2,9 @@ import { useEffect, useMemo } from "react";
 import { useQuery } from "urql";
 
 import { SimpleConfigFragment } from "@/common/fragments/Configuration";
-import { log, logError } from "@/common/logging";
 import { graphql, readFragment } from "@/graphql/index";
+
+import { Logger } from "../logger/Logger";
 
 const useAllowedLoginTypesQuery = graphql(
   /* GraphQL */ `
@@ -32,7 +33,7 @@ export function useAllowedLoginTypes(): {
 
   useEffect(() => {
     if (error) {
-      logError(error);
+      Logger.error("Error fetching allowed login types", { error });
     }
   }, [error]);
 
@@ -49,21 +50,17 @@ export function useAllowedLoginTypes(): {
             } else if (type === "ms-oath-linkblue") {
               allowedTypes.push("ms-oath-linkblue");
             } else {
-              log(`Unrecognized login type: ${String(type)}`, "warn");
+              Logger.warn(`Unrecognized login type: ${String(type)}`);
             }
           }
         } else {
-          log(
+          Logger.error(
             `Invalid allowed login types configuration: ${configValue.value}`
           );
         }
       }
     } catch (error) {
-      if (error instanceof Error) {
-        logError(error);
-      } else {
-        log(String(error), "error");
-      }
+      Logger.error("Error parsing allowed login types", { error });
     }
 
     return allowedTypes;

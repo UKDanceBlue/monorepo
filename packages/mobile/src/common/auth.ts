@@ -7,7 +7,7 @@ import {
   WebBrowserResultType,
 } from "expo-web-browser";
 
-import { useInvalidateCache } from "@/context/urql";
+import { useUrqlConfig } from "@/context/urql";
 import { useLoading } from "@/context/useLoading";
 
 import { API_BASE_URL } from "./apiUrl";
@@ -43,7 +43,7 @@ function getLoginUrl(source: AuthSource): [string, string] {
 
 export const useLogin = (): [boolean, (source: AuthSource) => void] => {
   const [loading, setLoading] = useLoading("useLinkBlueLogin", 10_000);
-  const invalidateCache = useInvalidateCache();
+  const { invalidate: invalidateCache } = useUrqlConfig();
 
   const trigger = async (source: AuthSource) => {
     if (loading) {
@@ -88,7 +88,7 @@ export const useLogin = (): [boolean, (source: AuthSource) => void] => {
 
 export const useLogOut = (): [boolean, () => void] => {
   const [loading, setLoading] = useLoading("useLogOut", 10_000);
-  const invalidateCache = useInvalidateCache();
+  const { invalidate: invalidateCache } = useUrqlConfig();
 
   const trigger = async () => {
     setLoading(true);

@@ -14,7 +14,6 @@ export function useUpdateChecker() {
     currentlyRunning,
     isUpdateAvailable,
     isUpdatePending,
-    availableUpdate,
     checkError,
     downloadError,
     downloadedUpdate,
@@ -22,7 +21,6 @@ export function useUpdateChecker() {
   } = useUpdates();
 
   const [didNotifyPending, setDidNotifyPending] = useState(false);
-  const [didNotifyAvailable, setDidNotifyAvailable] = useState(false);
 
   useEffect(() => {
     Logger.info("Checking for updates", { context: { currentlyRunning } });
@@ -74,23 +72,10 @@ export function useUpdateChecker() {
   }, [downloadError]);
 
   useEffect(() => {
-    if (isUpdateAvailable && !didNotifyAvailable) {
-      setDidNotifyAvailable(true);
-      Logger.info("Update available", { context: { availableUpdate } });
-      showPrompt(
-        "A new version of the app is available. Would you like to download it now?",
-        "Update Available",
-        () => undefined,
-        async () => {
-          try {
-            await fetchUpdateAsync();
-          } catch (error) {
-            Logger.error("Error fetching update", { error });
-          }
-        }
-      );
+    if (isUpdateAvailable) {
+      void fetchUpdateAsync();
     }
-  }, [availableUpdate, isUpdateAvailable]);
+  }, [isUpdateAvailable]);
 
   useEffect(() => {
     if (isUpdatePending && !didNotifyPending) {

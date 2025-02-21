@@ -1,20 +1,34 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { authExchange } from "@urql/exchange-auth";
 import type { ReactNode } from "react";
-import { createContext, useContext, useMemo, useReducer } from "react";
+import {
+  createContext,
+  useContext,
+  useMemo,
+  useReducer,
+  useState,
+} from "react";
 import { Client, fetchExchange, Provider } from "urql";
 
 import { API_BASE_URL } from "@/common/apiUrl";
 import { Logger } from "@/common/logger/Logger";
 import { DANCEBLUE_TOKEN_KEY } from "@/common/storage-tokens";
 
-const invalidateCacheContext = createContext<() => void>(() => undefined);
+const urqlContext = createContext<{
+  invalidate: () => void;
+  setMasquerade: (masquerade: string | null) => void;
+}>({
+  invalidate: () => undefined,
+  setMasquerade: () => undefined,
+});
 
 export function UrqlContext({ children }: { children: ReactNode }) {
-  const [cacheInvalidation, invalidateCache] = useReducer(
+  const [cacheInvalidation, invalidate] = useReducer(
     (state: number) => state + 1,
     1
   );
+
+  const [masquerade, setMasquerade] = useState<string | null>(null);
 
   const client = useMemo(() => {
     // eslint-disable-next-line @typescript-eslint/no-unused-expressions
@@ -31,13 +45,14 @@ export function UrqlContext({ children }: { children: ReactNode }) {
               if (token) {
                 return appendHeaders(operation, {
                   Authorization: `Bearer ${token}`,
+                  ...(masquerade ? { "x-ukdb-masquerade": masquerade } : {}),
                 });
               }
               return operation;
             },
             refreshAuth: async () => {
               await AsyncStorage.removeItem(DANCEBLUE_TOKEN_KEY);
-              invalidateCache();
+              invalidate();
             },
             didAuthError: (args) => {
               const { message, response, graphQLErrors } = args;
@@ -65,7 +80,7 @@ export function UrqlContext({ children }: { children: ReactNode }) {
                   },
                 });
                 AsyncStorage.removeItem(DANCEBLUE_TOKEN_KEY).then(
-                  () => invalidateCache(),
+                  () => invalidate(),
                   console.error
                 );
                 return true;
@@ -78,16 +93,21 @@ export function UrqlContext({ children }: { children: ReactNode }) {
         fetchExchange,
       ],
     });
-  }, [cacheInvalidation]);
+  }, [cacheInvalidation, masquerade]);
 
   return (
-    <invalidateCacheContext.Provider value={invalidateCache}>
+    <urqlContext.Provider
+      value={{
+        invalidate,
+        setMasquerade,
+      }}
+    >
       <Provider value={client}>{children}</Provider>
-    </invalidateCacheContext.Provider>
+    </urqlContext.Provider>
   );
 }
 
 // eslint-disable-next-line react-refresh/only-export-components
-export function useInvalidateCache() {
-  return useContext(invalidateCacheContext);
+export function useUrqlConfig() {
+  return useContext(urqlContext);
 }
