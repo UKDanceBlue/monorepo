@@ -1,8 +1,9 @@
 import { Container, Service, type ServiceIdentifier } from "@freshgum/typedi";
 import * as Sentry from "@sentry/node";
 import type { AccessControlParam, Action, Subject } from "@ukdanceblue/common";
-import { AccessLevel } from "@ukdanceblue/common";
+import { _aclSummary, AccessLevel } from "@ukdanceblue/common";
 import { ExtendedError, toBasicError } from "@ukdanceblue/common/error";
+import { writeFile } from "fs/promises";
 import { type GraphQLResolveInfo, type GraphQLSchema } from "graphql";
 import type { Path } from "graphql/jsutils/Path.js";
 import { Err } from "ts-results-es";
@@ -55,6 +56,10 @@ export class SchemaService {
       },
       validate: true,
     });
+
+    if (process.env.NODE_ENV === "development") {
+      await this.aclSummary();
+    }
   }
 
   private pathToString(path: Path): string {
@@ -239,5 +244,15 @@ export class SchemaService {
     } else {
       return this.#schema;
     }
+  }
+
+  async aclSummary() {
+    const summary = Array.from(_aclSummary.entries())
+      .map(([key, val]) => `## ${key}\n${val.join("\n")}`)
+      .join("\n");
+    await writeFile(
+      fileURLToPath(import.meta.resolve("../../../acl-summary.md")),
+      `# ACL Summary\nThis document lists the required permissions for each GraphQL endpoint in the DanceBlue Server\n${summary}`
+    );
   }
 }

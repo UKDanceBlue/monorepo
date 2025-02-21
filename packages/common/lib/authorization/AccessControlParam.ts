@@ -185,25 +185,3 @@ export function AccessControlAuthorized<
     });
   };
 }
-
-setTimeout(() => {
-  if (
-    "process" in globalThis &&
-    "versions" in globalThis.process &&
-    "node" in globalThis.process.versions
-  ) {
-    if (process.env.NODE_ENV === "development") {
-      import("node:fs/promises").then(async ({ writeFile }) => {
-        const { fileURLToPath } = await import("node:url");
-        const summary = Array.from(_aclSummary.entries())
-          .map(([key, val]) => `## ${key}\n${val.join("\n")}`)
-          .join("\n");
-        await writeFile(
-          fileURLToPath(import.meta.resolve("../../acl-summary.md")),
-          `# ACL Summary\nThis document lists the required permissions for each GraphQL endpoint in the DanceBlue Server\n${summary}`
-        );
-      }, console.error);
-    }
-  }
-  // We add a delay to ensure that all the decorators have been executed, speed is not important here as this file only needs to get updated every once in a while
-}, 10_000);
