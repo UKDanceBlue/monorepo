@@ -62,7 +62,12 @@ const RootScreen = () => {
     if (error && !shownErrors.has(String(error))) {
       Logger.error("Error fetching data for RootScreen", { error });
       setShownErrors((prev) => new Set([...prev, String(error)]));
-      Alert.alert("Error fetching data for RootScreen", String(error));
+      Alert.alert(
+        "Error fetching data for RootScreen",
+        error.networkError
+          ? "Network error"
+          : error.graphQLErrors.map((e) => e.message).join("\n")
+      );
     }
   }, [error, shownErrors]);
 

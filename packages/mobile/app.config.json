@@ -10,7 +10,7 @@
     "notification": {
       "icon": "./assets/app/20th-appicon.png"
     },
-    "platforms": ["ios", "android", "web"],
+    "platforms": ["ios", "android"],
     "orientation": "portrait",
     "icon": "./assets/app/20th-appicon.png",
     "splash": {

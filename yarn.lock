@@ -4260,6 +4260,18 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@expo/server@npm:^0.5.0":
+  version: 0.5.1
+  resolution: "@expo/server@npm:0.5.1"
+  dependencies:
+    "@remix-run/node": "npm:^2.12.0"
+    abort-controller: "npm:^3.0.0"
+    debug: "npm:^4.3.4"
+    source-map-support: "npm:~0.5.21"
+  checksum: 10/0bef91d59088f7ff9778275e9e4fe320dd5fe109610733e1b39c598b976524ae67807b3790b0b2b36b89a02698221532156a580e6ed7e50c02516d36f5b6a97b
+  languageName: node
+  linkType: hard
+
 "@expo/spawn-async@npm:^1.7.2":
   version: 1.7.2
   resolution: "@expo/spawn-async@npm:1.7.2"
@@ -9527,6 +9539,26 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@remix-run/node@npm:^2.12.0":
+  version: 2.15.3
+  resolution: "@remix-run/node@npm:2.15.3"
+  dependencies:
+    "@remix-run/server-runtime": "npm:2.15.3"
+    "@remix-run/web-fetch": "npm:^4.4.2"
+    "@web3-storage/multipart-parser": "npm:^1.0.0"
+    cookie-signature: "npm:^1.1.0"
+    source-map-support: "npm:^0.5.21"
+    stream-slice: "npm:^0.1.2"
+    undici: "npm:^6.11.1"
+  peerDependencies:
+    typescript: ^5.1.0
+  peerDependenciesMeta:
+    typescript:
+      optional: true
+  checksum: 10/77785547ddc00d075882e7fe466cc4967a77f10edc44b007f10b9398c5665b2b6fffaa114b346f19d45bd8bc09026d4a8605791c6e1c83e49faca04464b5c7b6
+  languageName: node
+  linkType: hard
+
 "@remix-run/node@npm:^2.15.0":
   version: 2.15.2
   resolution: "@remix-run/node@npm:2.15.2"
@@ -9554,6 +9586,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@remix-run/router@npm:1.22.0":
+  version: 1.22.0
+  resolution: "@remix-run/router@npm:1.22.0"
+  checksum: 10/5ee270807bf30529013292e1677681b9c67120846429d32a44b831e736c901504a7273c41da66147587373a0c2aa06baa99722775595130e8f44860600ded241
+  languageName: node
+  linkType: hard
+
 "@remix-run/server-runtime@npm:2.15.2":
   version: 2.15.2
   resolution: "@remix-run/server-runtime@npm:2.15.2"
@@ -9571,6 +9610,26 @@ __metadata:
     typescript:
       optional: true
   checksum: 10/bfd1b27bb47ecf238ea66543fccdb643069fd97175ddb7efb6c5d91701a8ebb9218fa41b62db9396c74e3efa296d8cbdd02e66fb792d4c389cb8e81a34e3722e
+  languageName: node
+  linkType: hard
+
+"@remix-run/server-runtime@npm:2.15.3":
+  version: 2.15.3
+  resolution: "@remix-run/server-runtime@npm:2.15.3"
+  dependencies:
+    "@remix-run/router": "npm:1.22.0"
+    "@types/cookie": "npm:^0.6.0"
+    "@web3-storage/multipart-parser": "npm:^1.0.0"
+    cookie: "npm:^0.6.0"
+    set-cookie-parser: "npm:^2.4.8"
+    source-map: "npm:^0.7.3"
+    turbo-stream: "npm:2.4.0"
+  peerDependencies:
+    typescript: ^5.1.0
+  peerDependenciesMeta:
+    typescript:
+      optional: true
+  checksum: 10/4993697c23a7f4de7a3fa02498e21196e512265989b957f95ea61d825d2a17e62817c73ff39ac54d81ecb8f9e98ebfc95216391e1b4e32c2223903a60b48c4a2
   languageName: node
   linkType: hard
 
@@ -12369,6 +12428,7 @@ __metadata:
     expo: "npm:~52.0.25"
     expo-application: "npm:~6.0.2"
     expo-asset: "npm:~11.0.2"
+    expo-atlas: "npm:^0.4.0"
     expo-auth-session: "npm:~6.0.2"
     expo-av: "npm:~15.0.2"
     expo-blur: "npm:~14.0.2"
@@ -14459,6 +14519,15 @@ __metadata:
     mixin-deep: "npm:^1.2.0"
     pascalcase: "npm:^0.1.1"
   checksum: 10/33b0c5d570840873cf370248e653d43e8d82ce4f03161ad3c58b7da6238583cfc65bf4bbb06b27050d6c2d8f40628777f3933f483c0a7c0274fcef4c51f70a7e
+  languageName: node
+  linkType: hard
+
+"basic-auth@npm:~2.0.1":
+  version: 2.0.1
+  resolution: "basic-auth@npm:2.0.1"
+  dependencies:
+    safe-buffer: "npm:5.1.2"
+  checksum: 10/3419b805d5dfc518f3a05dcf42aa53aa9ce820e50b6df5097f9e186322e1bc733c36722b624802cd37e791035aa73b828ed814d8362333d42d7f5cd04d7a5e48
   languageName: node
   linkType: hard
 
@@ -17026,7 +17095,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"depd@npm:2.0.0":
+"depd@npm:2.0.0, depd@npm:~2.0.0":
   version: 2.0.0
   resolution: "depd@npm:2.0.0"
   checksum: 10/c0c8ff36079ce5ada64f46cc9d6fd47ebcf38241105b6e0c98f412e8ad91f084bcf906ff644cc3a4bd876ca27a62accb8b0fff72ea6ed1a414b89d8506f4a5ca
@@ -18797,6 +18866,30 @@ __metadata:
   languageName: node
   linkType: hard
 
+"expo-atlas@npm:^0.4.0":
+  version: 0.4.0
+  resolution: "expo-atlas@npm:0.4.0"
+  dependencies:
+    "@expo/server": "npm:^0.5.0"
+    arg: "npm:^5.0.2"
+    chalk: "npm:^4.1.2"
+    compression: "npm:^1.7.4"
+    connect: "npm:^3.7.0"
+    express: "npm:^4.19.2"
+    freeport-async: "npm:^2.0.0"
+    getenv: "npm:^1.0.0"
+    morgan: "npm:^1.10.0"
+    open: "npm:^8.4.2"
+    serve-static: "npm:^1.15.0"
+    stream-json: "npm:^1.8.0"
+  peerDependencies:
+    expo: "*"
+  bin:
+    expo-atlas: build/src/cli/bin.js
+  checksum: 10/b37aa40b315487d6d9209e9aeead43bea2e9f70128cffe1638f4810d4d49be84e5d9faeee79895b5ef2925b760f63c2e3c24da4939983f4f12bc2192d83b43a1
+  languageName: node
+  linkType: hard
+
 "expo-auth-session@npm:~6.0.2":
   version: 6.0.2
   resolution: "expo-auth-session@npm:6.0.2"
@@ -19318,7 +19411,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"express@npm:^4.21.0, express@npm:^4.21.1, express@npm:^4.21.2":
+"express@npm:^4.19.2, express@npm:^4.21.0, express@npm:^4.21.1, express@npm:^4.21.2":
   version: 4.21.2
   resolution: "express@npm:4.21.2"
   dependencies:
@@ -25613,6 +25706,19 @@ __metadata:
   languageName: node
   linkType: hard
 
+"morgan@npm:^1.10.0":
+  version: 1.10.0
+  resolution: "morgan@npm:1.10.0"
+  dependencies:
+    basic-auth: "npm:~2.0.1"
+    debug: "npm:2.6.9"
+    depd: "npm:~2.0.0"
+    on-finished: "npm:~2.3.0"
+    on-headers: "npm:~1.0.2"
+  checksum: 10/4497ace00dac65318658595528c1924942c900aae88b7adc5e69e18dd78fb5d1fcccdc2048404ce7d88b5344dc088c492e3aa7cf8023f1e601c6b0f4ff806b93
+  languageName: node
+  linkType: hard
+
 "mrmime@npm:^1.0.0":
   version: 1.0.1
   resolution: "mrmime@npm:1.0.1"
@@ -26551,7 +26657,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"open@npm:^8.0.4, open@npm:^8.4.0":
+"open@npm:^8.0.4, open@npm:^8.4.0, open@npm:^8.4.2":
   version: 8.4.2
   resolution: "open@npm:8.4.2"
   dependencies:
@@ -29935,17 +30041,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"safe-buffer@npm:5.1.2, safe-buffer@npm:~5.1.0, safe-buffer@npm:~5.1.1":
+  version: 5.1.2
+  resolution: "safe-buffer@npm:5.1.2"
+  checksum: 10/7eb5b48f2ed9a594a4795677d5a150faa7eb54483b2318b568dc0c4fc94092a6cce5be02c7288a0500a156282f5276d5688bce7259299568d1053b2150ef374a
+  languageName: node
+  linkType: hard
+
 "safe-buffer@npm:5.2.1, safe-buffer@npm:^5.0.1, safe-buffer@npm:^5.1.0, safe-buffer@npm:^5.1.2, safe-buffer@npm:~5.2.0":
   version: 5.2.1
   resolution: "safe-buffer@npm:5.2.1"
   checksum: 10/32872cd0ff68a3ddade7a7617b8f4c2ae8764d8b7d884c651b74457967a9e0e886267d3ecc781220629c44a865167b61c375d2da6c720c840ecd73f45d5d9451
-  languageName: node
-  linkType: hard
-
-"safe-buffer@npm:~5.1.0, safe-buffer@npm:~5.1.1":
-  version: 5.1.2
-  resolution: "safe-buffer@npm:5.1.2"
-  checksum: 10/7eb5b48f2ed9a594a4795677d5a150faa7eb54483b2318b568dc0c4fc94092a6cce5be02c7288a0500a156282f5276d5688bce7259299568d1053b2150ef374a
   languageName: node
   linkType: hard
 
@@ -31079,6 +31185,22 @@ __metadata:
   version: 2.2.0
   resolution: "stream-buffers@npm:2.2.0"
   checksum: 10/79f897cead810383b4181e4ee56f4855a69b51c9da4c96b91ccca6ee6fe90b908bea9b304225bedd1a5e2c41d72bc88d3ada7f897b51f8ffae3593f7460ecbc8
+  languageName: node
+  linkType: hard
+
+"stream-chain@npm:^2.2.5":
+  version: 2.2.5
+  resolution: "stream-chain@npm:2.2.5"
+  checksum: 10/f9c65fe21251106083ca753d8b36f5a35dc426f5cb12851d9a872b6eb69e30ea2c94d87887bfda8c820503e842183812922532fb2adab18d5878d31a4516b956
+  languageName: node
+  linkType: hard
+
+"stream-json@npm:^1.8.0":
+  version: 1.9.1
+  resolution: "stream-json@npm:1.9.1"
+  dependencies:
+    stream-chain: "npm:^2.2.5"
+  checksum: 10/8c97d3078127aaf70197b0e4b5ca668307f1768a4eb1ac4c2030056e1f862d7a11b83094b87d2b04c3c14f76a8a8657eb87b1760d57781c172e3a513c7e2b5fd
   languageName: node
   linkType: hard
 
