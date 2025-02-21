@@ -42,10 +42,10 @@ export interface ExtraLogArgs<Strict extends boolean = boolean> {
 }
 
 export abstract class LoggerTransport {
-  #level: LogLevel;
+  #level: number;
   #name: string;
 
-  constructor(name: string, level: LogLevel) {
+  constructor(name: string, level: number) {
     this.#level = level;
     this.#name = name;
   }

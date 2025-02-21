@@ -1,11 +1,11 @@
-import { captureException, captureMessage } from "@sentry/react-native";
+import * as Sentry from "@sentry/react-native";
 import { debugStringify } from "@ukdanceblue/common";
 
 import type { ExtraLogArgs, LogLevel } from "./transport";
 import { LoggerTransport, logLevelToString } from "./transport";
 
 export class SentryTransport extends LoggerTransport {
-  constructor(level: LogLevel) {
+  constructor(level: number) {
     super("Sentry", level);
   }
 
@@ -18,37 +18,27 @@ export class SentryTransport extends LoggerTransport {
     messageString: string;
     extra: ExtraLogArgs<true>;
   }) {
-    const levelString = logLevelToString(level);
-    let contextString: string | undefined = undefined;
-    if (extra.context) {
-      contextString = debugStringify(extra.context);
-    }
-    const tagsObject: Record<string, boolean> = {};
-    for (const tag of extra.tags ?? []) {
-      tagsObject[tag] = true;
-    }
-
-    if (!extra.error) {
-      captureMessage(messageString, {
-        level: levelString,
+    if (extra.error) {
+      Sentry.captureException(extra.error, {
         tags: {
-          ...tagsObject,
+          ...Object.fromEntries(extra.tags?.map((tag) => [tag, true]) ?? []),
           source: extra.source,
+          logLevel: logLevelToString(level),
         },
         extra: {
-          context: contextString,
+          message: debugStringify(messageString),
+          ...extra.context,
         },
       });
     } else {
-      captureException(extra.error, {
-        level: levelString,
+      Sentry.captureMessage(debugStringify(messageString), {
         tags: {
-          ...tagsObject,
+          ...Object.fromEntries(extra.tags?.map((tag) => [tag, true]) ?? []),
           source: extra.source,
+          logLevel: logLevelToString(level),
         },
-        extra: {
-          message: messageString,
-          context: contextString,
+        extra: extra.context && {
+          ...extra.context,
         },
       });
     }

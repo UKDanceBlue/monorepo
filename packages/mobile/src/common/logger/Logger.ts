@@ -7,8 +7,8 @@ import { LogLevel } from "./transport";
 
 export class Logger {
   static #instance: Logger = new Logger(
-    new ConsoleTransport(LogLevel.debug),
-    new SentryTransport(LogLevel.warn)
+    new ConsoleTransport(__DEV__ ? LogLevel.debug : LogLevel.error + 1),
+    new SentryTransport(LogLevel.debug)
   );
 
   #transports: LoggerTransport[];

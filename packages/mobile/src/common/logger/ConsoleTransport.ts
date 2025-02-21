@@ -10,7 +10,7 @@ function safeStringify(value: unknown): string {
 }
 
 export class ConsoleTransport extends LoggerTransport {
-  constructor(level: LogLevel) {
+  constructor(level: number) {
     super("Console", level);
   }
 
