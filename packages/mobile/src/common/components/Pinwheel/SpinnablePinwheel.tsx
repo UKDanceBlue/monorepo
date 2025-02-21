@@ -38,6 +38,7 @@ function SpinnablePinwheel<Values>({
     const finalPosition = vanitySpin - targetPosition;
     const spinDuration = Math.abs(finalPosition - spinValue.value) / SPIN_SPEED;
 
+    // eslint-disable-next-line react-compiler/react-compiler
     spinValue.value = withTiming(
       finalPosition,
       {

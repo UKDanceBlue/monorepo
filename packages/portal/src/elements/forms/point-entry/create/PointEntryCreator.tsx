@@ -42,41 +42,41 @@ export function PointEntryCreator({
       title: "Comment",
       description:
         "Enter a comment for the point entry, the comment is not shown anywhere outside of this page and is just for your reference.",
-      target: commentFieldRef.current?.input ?? null,
+      target: () => commentFieldRef.current?.input as HTMLElement,
     },
     {
       title: "Points",
       description: "Enter the number of points to give for the point entry.",
-      target: pointsFieldRef.current ?? null,
+      target: () => pointsFieldRef.current as HTMLElement,
     },
     {
       title: "Name",
       description:
         "If you know the name of the person that the point entry is for, you can search for them here. If they have signed in before their name will appear in the list. Click on their name to select them.",
-      target: nameFieldRef.current,
+      target: () => nameFieldRef.current as HTMLElement,
     },
     {
       title: "Linkblue",
       description:
         "If you know the linkblue of the person that the point entry is for, you can enter it here. Click lookup to check for the person. If they have already been added to the system they will be selected automatically. Otherwise, a create button will appear that will allow you to create a new person with that linkblue.",
-      target: linkblueFieldRef.current?.input ?? null,
+      target: () => linkblueFieldRef.current?.input as HTMLElement,
     },
     {
       title: "Clear",
       description: "Click the clear button to clear the person selection.",
-      target: clearButtonRef.current ?? null,
+      target: () => clearButtonRef.current as HTMLElement,
     },
     {
       title: "Selected person",
       description:
         "Once you have selected a person, their info will appear here.",
-      target: selectedPersonRef.current ?? null,
+      target: () => selectedPersonRef.current as HTMLElement,
     },
     {
       title: "Submit",
       description:
         "Once you have filled out the form, click the submit button to create the point entry.",
-      target: submitButtonRef.current ?? null,
+      target: () => submitButtonRef.current as HTMLElement,
     },
   ];
 

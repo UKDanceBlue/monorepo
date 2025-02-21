@@ -77,6 +77,7 @@ export const DBMomentsScreen = () => {
             style={{ flex: 1 }}
             facing={facing}
             ref={(ref) =>
+              // eslint-disable-next-line react-compiler/react-compiler
               (cameraRef.current = ref?._cameraRef.current ?? undefined)
             }
             onCameraReady={onCameraReady}

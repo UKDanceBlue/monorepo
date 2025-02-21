@@ -56,6 +56,7 @@ export const EventListRenderItem = ({
 
   if (eventDate != null) {
     if (!((dayIndexesRef.current[eventDate] ?? Number.NaN) < index)) {
+      // eslint-disable-next-line react-compiler/react-compiler
       dayIndexesRef.current[eventDate] = index;
     }
   }

@@ -1,5 +1,5 @@
 import { Select } from "antd";
-import { useMemo, useRef, useState } from "react";
+import { useState } from "react";
 
 import { StorageManager, useStorageValue } from "#config/storage.js";
 import { graphql } from "#gql/index.js";
@@ -24,21 +24,6 @@ export function MasqueradeSelector() {
     variables: { search },
     pause: search.length < 3,
   });
-
-  const lastOptions = useRef<{ label: string; value: string }[]>([]);
-  const options = useMemo((): { label: string; value: string }[] => {
-    if (fetching) {
-      return lastOptions.current;
-    } else if (data) {
-      return data.searchPeopleByName.map((person) => ({
-        value: person.id,
-        label: person.name ?? "[ERROR]",
-      }));
-    } else {
-      return [];
-    }
-  }, [data, fetching]);
-  lastOptions.current = options;
 
   if (error) {
     console.error(error);

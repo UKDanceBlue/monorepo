@@ -92,16 +92,19 @@ const AudioPlayer = ({
   if (duration != null) {
     if (duration >= 60_000) {
       currentTimeString = `${Math.floor(
+        // eslint-disable-next-line react-compiler/react-compiler
         (seeking.current ? seekTime : currentTime) / 60_000
       )
         .toString()
         .padStart(2, "0")}:${Math.floor(
+        // eslint-disable-next-line react-compiler/react-compiler
         ((seeking.current ? seekTime : currentTime) % 60_000) / 1000
       )
         .toString()
         .padStart(2, "0")}`;
     } else {
       currentTimeString = Math.floor(
+        // eslint-disable-next-line react-compiler/react-compiler
         (seeking.current ? seekTime : currentTime) / 1000
       )
         .toString()

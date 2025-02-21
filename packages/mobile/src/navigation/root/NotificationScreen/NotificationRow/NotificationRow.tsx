@@ -40,6 +40,7 @@ export const AnimatedNotificationRow: SectionListRenderItem<
     },
     onActive: (event, ctx) => {
       const desiredTransition = ctx.startX + event.translationX;
+      // eslint-disable-next-line react-compiler/react-compiler
       x.value =
         desiredTransition < 0
           ? desiredTransition
