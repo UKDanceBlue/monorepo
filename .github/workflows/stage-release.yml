@@ -38,3 +38,5 @@ jobs:
         run: yarn workspaces focus @ukdanceblue/mobile
       - name: Promote release
         run: ./scripts/promote-branch.sh main staging
+      - name: Update the deployment
+        run: curl -X POST ${{ secrets.DEPLOY_WEBHOOK }}

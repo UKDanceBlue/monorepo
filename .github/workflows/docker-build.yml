@@ -68,3 +68,5 @@ jobs:
           token: ${{ secrets.CONTAINER_DELETE_PAT }}
           # Keep latest N untagged images
           untagged-keep-latest: 3
+      - name: Update the deployment
+        run: curl -X POST ${{ secrets.DEPLOY_WEBHOOK }}
