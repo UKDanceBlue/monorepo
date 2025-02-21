@@ -16,6 +16,7 @@ import { useState } from "react";
 import React from "react";
 import { TextInput } from "react-native";
 
+import { overrideApiBaseUrl } from "@/common/apiUrl";
 import { useLogin, useLogOut } from "@/common/auth";
 import { useColorModeValue } from "@/common/customHooks";
 import { universalCatch } from "@/common/logging";
@@ -24,6 +25,8 @@ import type { FragmentOf } from "@/graphql/index";
 import { readFragment } from "@/graphql/index";
 
 import { ProfileScreenAuthFragment } from "./ProfileScreen";
+
+type SequenceMember = "report" | "suggest" | "donate" | "logout";
 
 export const ProfileFooter = ({
   profileScreenAuthFragment,
@@ -38,14 +41,13 @@ export const ProfileFooter = ({
     profileScreenAuthFragment
   );
 
-  const [sequence, setSequence] = useState<
-    ("report" | "suggest" | "donate" | "logout")[]
-  >([]);
-  function pushSequence(s: (typeof sequence)[number]) {
+  const [sequence, setSequence] = useState<SequenceMember[]>([]);
+  function pushSequence(s: SequenceMember) {
     setSequence([...sequence.filter((s) => s !== "report"), s]);
   }
-  function checkSequence(s: typeof sequence) {
-    return sequence.length === s.length && sequence.every((v, i) => v === s[i]);
+  function checkSequence(s: readonly SequenceMember[]) {
+    const sequenceSlice = sequence.slice(-s.length);
+    return sequenceSlice.every((v, i) => v === s[i]);
   }
 
   const [loginLoading, logIn] = useLogin();
@@ -57,15 +59,37 @@ export const ProfileFooter = ({
 
   const isAnonymous = authData?.authSource === AuthSource.Anonymous;
 
+  const sequenceActions = [
+    {
+      sequence: ["report", "suggest"] as const,
+      action: (str: string) => {
+        if (str === "demo-password") {
+          logIn(AuthSource.Demo);
+        }
+      },
+      text: "Enter the password to log in as a demo user",
+    },
+    {
+      sequence: ["suggest", "logout"] as const,
+      action: (str: string) => {
+        setMasquerade(str || null);
+      },
+      text: "Enter the ID of the user to masquerade as",
+    },
+    {
+      sequence: ["donate", "logout"] as const,
+      action: (str: string) => {
+        overrideApiBaseUrl(str);
+      },
+      text: "Enter the URL to override the API base URL",
+    },
+  ];
+
+  const activeSequence = sequenceActions.find((a) => checkSequence(a.sequence));
+
   return (
     <>
-      <Modal
-        isOpen={
-          checkSequence(["report", "suggest"]) ||
-          checkSequence(["suggest", "logout"])
-        }
-        onClose={() => setSequence([])}
-      >
+      <Modal isOpen={activeSequence != null} onClose={() => setSequence([])}>
         <View
           style={{
             padding: 10,
@@ -73,22 +97,21 @@ export const ProfileFooter = ({
             backgroundColor: "white",
           }}
         >
-          <Text>Demo Mode</Text>
+          <Text
+            style={{
+              textAlign: "center",
+              width: "100%",
+            }}
+          >
+            {activeSequence?.text}
+          </Text>
           <TextInput
             style={{
               borderWidth: 2,
               minWidth: "50%",
             }}
-            returnKeyType="go"
-            secureTextEntry
             onSubmitEditing={(event) => {
-              if (checkSequence(["report", "suggest"])) {
-                if (event.nativeEvent.text === "demo-password") {
-                  logIn(AuthSource.Demo);
-                }
-              } else {
-                setMasquerade(event.nativeEvent.text || null);
-              }
+              activeSequence?.action(event.nativeEvent.text);
             }}
           />
         </View>
