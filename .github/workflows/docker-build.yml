@@ -69,4 +69,4 @@ jobs:
           # Keep latest N untagged images
           untagged-keep-latest: 3
       - name: Update the deployment
-        run: curl -X POST ${{ secrets.DEPLOY_WEBHOOK }}
+        run: curl --data {} ${{ secrets.DEPLOY_WEBHOOK }}
