@@ -182,7 +182,7 @@ export class SolicitationCodeResolver
     return result.map(() => VoidScalar);
   }
 
-  @AccessControlAuthorized("update", ["getId", "SolicitationCodeNode", "id"])
+  @AccessControlAuthorized("update", ["every", "SolicitationCodeNode"])
   @Mutation(() => VoidResolver, { name: "removeSolicitationCodeFromTeam" })
   @WithAuditLogging()
   async removeSolicitationCodeFromTeam(
