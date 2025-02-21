@@ -10,6 +10,7 @@ env:
 jobs:
   stage-release:
     runs-on: ubuntu-latest
+    environment: staging
     permissions:
       packages: write
     steps:
