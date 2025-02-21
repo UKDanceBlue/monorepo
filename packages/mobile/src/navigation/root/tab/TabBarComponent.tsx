@@ -15,7 +15,7 @@ import { useColorModeValue, useThemeColors } from "@/common/customHooks";
 import { colors } from "@/theme/colors";
 
 import BackgroundCutout from "../../../../assets/screens/navigation/background-cutout";
-import DanceBlueRibbon from "../../../../assets/svgs/DBRibbon";
+import DanceBlueRibbon from "../../../common/components/svgs/DBRibbon";
 import { useReactNavigationTheme } from "../../../theme";
 
 // From https://reactnavigation.org/docs/bottom-tab-navigator#tabbar

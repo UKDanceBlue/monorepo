@@ -9,7 +9,7 @@ import { TouchableWithoutFeedback } from "react-native-gesture-handler";
 import CountdownViewNew from "@/common/components/CountdownView";
 import { useThemeColors } from "@/common/customHooks";
 
-import CommitteeHoldingSign from "../../../../../assets/svgs/CommitteeHoldingSign";
+import CommitteeHoldingSign from "../../../../common/components/svgs/CommitteeHoldingSign";
 
 export const MarathonCountdownScreen = ({
   marathonStart,

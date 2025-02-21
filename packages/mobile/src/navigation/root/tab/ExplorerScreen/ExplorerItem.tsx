@@ -13,7 +13,7 @@ import ErrorBoundary from "@/common/components/ErrorBoundary";
 import { universalCatch } from "@/common/logging";
 import { showMessage } from "@/common/util/alertUtils";
 
-import DBRibbon from "../../../../../assets/svgs/DBRibbon";
+import DBRibbon from "../../../../common/components/svgs/DBRibbon";
 import { parseBlogText } from "./parseBlogText";
 import { YoutubeEmbedWebView } from "./YoutubeEmbedWebView";
 

@@ -92,7 +92,7 @@ export function dateDataToLuxonDateTime(
  * @param events The events to split
  * @returns An object keyed by month string, with the values being the events in that month
  */
-export const splitEvents = (
+const splitEvents = (
   events: readonly FragmentOf<typeof EventScreenFragment>[]
 ) => {
   const newEvents: Partial<
@@ -155,7 +155,7 @@ const MULTI_DAY_EVENT_COLOR = "#3d3d80";
  * @param events The full list of events
  * @returns A MarkedDates object for react-native-calendars
  */
-export const markEvents = (
+const markEvents = (
   events: readonly FragmentOf<typeof EventScreenFragment>[]
 ) => {
   const marked: Partial<MarkedDates> = {};
@@ -218,8 +218,7 @@ export const markEvents = (
   return marked;
 };
 
-export const getTodayDateString = () =>
-  luxonDateTimeToDateString(DateTime.now());
+const getTodayDateString = () => luxonDateTimeToDateString(DateTime.now());
 
 export const useEvents = ({
   month,

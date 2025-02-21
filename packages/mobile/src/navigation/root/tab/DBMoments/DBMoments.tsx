@@ -3,7 +3,7 @@ import { CameraView } from "expo-camera";
 import { Box, Button, Fab, Icon, Text, View } from "native-base";
 import { useState } from "react";
 
-import DBMomentsLogo from "@/assets/svgs/DBMomentsLogo";
+import DBMomentsLogo from "@/common/components/svgs/DBMomentsLogo";
 import { Logger } from "@/common/logger/Logger";
 
 import { InfoModal } from "./InfoModal";

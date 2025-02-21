@@ -1,22 +1,21 @@
 import { DateTime, Duration, Interval } from "luxon";
 import { View } from "native-base";
-import { useEffect, useState } from "react";
-import { StyleSheet } from "react-native";
+import React, { useEffect, useState } from "react";
 
 import { useThemeColors } from "../../customHooks";
-import TimeUnit from "../TimeUnit";
+import { CountdownNumber } from "./CountdownNumber";
 
-const CountdownView = ({ endTime }: { endTime: number }) => {
+export const CountdownViewNew = ({ endTime }: { endTime: number }) => {
   const [countdownDisplayDuration, setCountdownDisplayDuration] =
     useState<Duration>(Duration.fromMillis(0));
-  const [showZeros, setShowZeros] = useState(false);
-  const { primary } = useThemeColors();
+  const [_showZeros, setShowZeros] = useState(false);
+  const { primary: _primary } = useThemeColors();
 
   useEffect(() => {
     // 1 second timer
     const timer = setInterval(() => {
       const interval = Interval.fromDateTimes(
-        new Date(),
+        DateTime.now(),
         DateTime.fromMillis(endTime)
       );
       let duration = interval.toDuration();
@@ -32,7 +31,8 @@ const CountdownView = ({ endTime }: { endTime: number }) => {
           "days",
           "hours",
           "minutes",
-          "seconds"
+          "seconds",
+          "milliseconds"
         )
       );
     }, 1000);
@@ -42,97 +42,86 @@ const CountdownView = ({ endTime }: { endTime: number }) => {
     };
   }, [endTime]);
 
+  const countdown =
+    countdownDisplayDuration.months > 0 ? (
+      <>
+        <CountdownNumber
+          value={countdownDisplayDuration.months}
+          unit={"months"}
+          total={31}
+          radius={55}
+          amountInRow={3}
+        />
+        <CountdownNumber
+          value={countdownDisplayDuration.days}
+          unit={"days"}
+          total={31}
+          radius={55}
+          amountInRow={3}
+        />
+        <CountdownNumber
+          value={countdownDisplayDuration.hours}
+          unit={"hours"}
+          total={31}
+          radius={55}
+          amountInRow={3}
+        />
+      </>
+    ) : countdownDisplayDuration.days > 0 ? (
+      <>
+        <CountdownNumber
+          value={countdownDisplayDuration.days}
+          unit={"days"}
+          total={31}
+          radius={55}
+          amountInRow={3}
+        />
+        <CountdownNumber
+          value={countdownDisplayDuration.hours}
+          unit={"hours"}
+          total={31}
+          radius={55}
+          amountInRow={3}
+        />
+        <CountdownNumber
+          value={countdownDisplayDuration.minutes}
+          unit={"min"}
+          total={31}
+          radius={55}
+          amountInRow={3}
+        />
+      </>
+    ) : (
+      <>
+        <CountdownNumber
+          value={countdownDisplayDuration.hours}
+          unit={"hours"}
+          total={31}
+          radius={55}
+          amountInRow={3}
+        />
+        <CountdownNumber
+          value={countdownDisplayDuration.minutes}
+          unit={"min"}
+          total={31}
+          radius={55}
+          amountInRow={3}
+        />
+        <CountdownNumber
+          value={countdownDisplayDuration.seconds}
+          unit={"sec"}
+          total={31}
+          radius={55}
+          amountInRow={3}
+        />
+      </>
+    );
+
   return (
-    <View style={styles.container}>
-      <View style={styles.countdownTimer}>
-        {
-          // Check that this or any previous unit is nonzero
-          Number(!!countdownDisplayDuration.years) > 0 && (
-            <View bgColor={`${primary[700]}BD`} marginX={2} flex={1}>
-              <TimeUnit unit="years" value={countdownDisplayDuration.years} />
-            </View>
-          )
-        }
-        {
-          // Check that this or any previous unit is nonzero
-          Number(!!countdownDisplayDuration.years) +
-            Number(!!countdownDisplayDuration.months) >
-            0 && (
-            <View bgColor={`${primary[700]}BD`} marginX={2} flex={1}>
-              <TimeUnit unit="months" value={countdownDisplayDuration.months} />
-            </View>
-          )
-        }
-        {
-          // Check that this or any previous unit is nonzero
-          Number(!!countdownDisplayDuration.years) +
-            Number(!!countdownDisplayDuration.months) +
-            Number(!!countdownDisplayDuration.days) >
-            0 && (
-            <View bgColor={`${primary[700]}BD`} marginX={2} flex={1}>
-              <TimeUnit unit="days" value={countdownDisplayDuration.days} />
-            </View>
-          )
-        }
-        {
-          // Check that this or any previous unit is nonzero
-          (Number(!!countdownDisplayDuration.years) +
-            Number(!!countdownDisplayDuration.months) +
-            Number(!!countdownDisplayDuration.days) +
-            Number(!!countdownDisplayDuration.hours) >
-            0 ||
-            showZeros) && (
-            <TimeUnit unit="hours" value={countdownDisplayDuration.hours} />
-          )
-        }
-        {
-          // Check that this or any previous unit is nonzero
-          (Number(!!countdownDisplayDuration.years) +
-            Number(!!countdownDisplayDuration.months) +
-            Number(!!countdownDisplayDuration.days) +
-            Number(!!countdownDisplayDuration.hours) +
-            Number(!!countdownDisplayDuration.minutes) >
-            0 ||
-            showZeros) && (
-            <View bgColor={`${primary[700]}BD`} marginX={2} flex={1}>
-              <TimeUnit unit="min" value={countdownDisplayDuration.minutes} />
-            </View>
-          )
-        }
-        {
-          // Check that this or any previous unit is nonzero
-          (Number(!!countdownDisplayDuration.years) +
-            Number(!!countdownDisplayDuration.months) +
-            Number(!!countdownDisplayDuration.days) +
-            Number(!!countdownDisplayDuration.hours) +
-            Number(!!countdownDisplayDuration.minutes) +
-            Number(!!countdownDisplayDuration.seconds) >
-            0 ||
-            showZeros) && (
-            <View bgColor={`${primary[700]}BD`} marginX={2} flex={1}>
-              <TimeUnit
-                unit="sec"
-                value={Math.trunc(countdownDisplayDuration.seconds)}
-              />
-            </View>
-          )
-        }
+    <View style={{ alignItems: "center", justifyContent: "center" }}>
+      <View style={{ flex: 1, flexDirection: "row", justifyContent: "center" }}>
+        {countdown}
       </View>
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    alignItems: "center",
-    flex: 1,
-    justifyContent: "center",
-  },
-  countdownTimer: {
-    alignItems: "center",
-    flexDirection: "row",
-    flex: 1,
-  },
-});
-
-export default CountdownView;

@@ -10,7 +10,7 @@ import { StyleSheet } from "react-native";
 
 import { CustomImageRenderer } from "./components/CustomImageRenderer";
 
-export interface MarkdownRuleStyle {
+interface MarkdownRuleStyle {
   flexDirection: "column" | "row" | "column-reverse" | "row-reverse";
   fontSize: number;
   backgroundColor: string;
@@ -110,7 +110,7 @@ const styleRuleKeys = [
   "inline",
   "span",
 ] as const;
-export type StyleRuleKeysType =
+type StyleRuleKeysType =
   | (typeof styleRuleKeys)[number]
   | `_VIEW_SAFE_${(typeof styleRuleKeys)[number]}`;
 

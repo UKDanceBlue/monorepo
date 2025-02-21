@@ -28,7 +28,7 @@ const serverFeedDocument = graphql(/* GraphQL */ `
   }
 `);
 
-export interface ParsedServerFeedItem {
+interface ParsedServerFeedItem {
   uuid: string;
   title: string;
   textContent?: string | undefined;

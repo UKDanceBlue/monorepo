@@ -32,7 +32,7 @@ export const logLevelToString = (
   }
 };
 
-export type LoggerTags = "graphql" | "navigation" | "global" | "critical";
+type LoggerTags = "graphql" | "navigation" | "global" | "critical";
 
 export interface ExtraLogArgs<Strict extends boolean = boolean> {
   error?: Strict extends true ? Error : unknown;

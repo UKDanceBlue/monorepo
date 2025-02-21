@@ -7,7 +7,7 @@ import { useQuery } from "urql";
 import { Logger } from "@/common/logger/Logger";
 import { graphql } from "@/graphql/index";
 
-export interface AuthState {
+interface AuthState {
   personUuid: string | null;
   loggedIn: boolean;
   authSource: AuthSource;

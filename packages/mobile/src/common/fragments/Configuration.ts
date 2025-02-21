@@ -7,15 +7,3 @@ export const SimpleConfigFragment = graphql(/* GraphQL */ `
     value
   }
 `);
-
-export const FullConfigFragment = graphql(
-  /* GraphQL */ `
-    fragment FullConfig on ConfigurationNode {
-      ...SimpleConfig
-      validAfter
-      validUntil
-      createdAt
-    }
-  `,
-  [SimpleConfigFragment]
-);

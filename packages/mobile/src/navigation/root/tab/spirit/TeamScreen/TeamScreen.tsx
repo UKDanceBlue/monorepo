@@ -27,20 +27,6 @@ export const MyTeamFragment = graphql(/* GraphQL */ `
   }
 `);
 
-export const MyFundraisingFragment = graphql(/* GraphQL */ `
-  fragment MyFundraisingFragment on PersonNode {
-    fundraisingTotalAmount
-    fundraisingAssignments {
-      amount
-      entry {
-        donatedToText
-        donatedByText
-        donatedOn
-      }
-    }
-  }
-`);
-
 const TeamScreen = ({
   myTeamFragment,
   userUuid,

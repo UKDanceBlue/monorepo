@@ -12473,6 +12473,7 @@ __metadata:
     prettier: "npm:^3.4.2"
     sort-package-json: "npm:^2.14.0"
     ts-node: "npm:^10.9.2"
+    ts-unused-exports: "npm:^11.0.1"
     typedoc: "npm:^0.27.6"
     typedoc-plugin-dt-links: "npm:^1.1.7"
     typedoc-plugin-mdn-links: "npm:^4.0.8"
@@ -32186,7 +32187,24 @@ __metadata:
   languageName: node
   linkType: hard
 
-"tsconfig-paths@npm:^3.15.0":
+"ts-unused-exports@npm:^11.0.1":
+  version: 11.0.1
+  resolution: "ts-unused-exports@npm:11.0.1"
+  dependencies:
+    chalk: "npm:^4.0.0"
+    tsconfig-paths: "npm:^3.9.0"
+  peerDependencies:
+    typescript: ">=3.8.3"
+  peerDependenciesMeta:
+    typescript:
+      optional: false
+  bin:
+    ts-unused-exports: bin/ts-unused-exports
+  checksum: 10/1859501c7cdd5302971890b8d3ddbabece84b166b88fc36b0c221fa3f4baf3226f3d0ee95f00c1c20ec1556296483fcbdf17b82a344f861b41b8b2b2d31eb05d
+  languageName: node
+  linkType: hard
+
+"tsconfig-paths@npm:^3.15.0, tsconfig-paths@npm:^3.9.0":
   version: 3.15.0
   resolution: "tsconfig-paths@npm:3.15.0"
   dependencies:

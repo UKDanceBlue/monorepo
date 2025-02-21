@@ -4,7 +4,7 @@ import { useWindowDimensions } from "react-native";
 
 import { useThemeColors } from "@/common/customHooks";
 
-import DanceBlueRibbon from "../../../../../../../assets/svgs/DBRibbon";
+import DanceBlueRibbon from "../../../../../../common/components/svgs/DBRibbon";
 import FirstPlaceMedal from "./1stPlace";
 import SecondPlaceMedal from "./2ndPlace";
 import ThirdPlaceMedal from "./3rdPlace";

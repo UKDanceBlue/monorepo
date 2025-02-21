@@ -23,7 +23,7 @@ import { Logger } from "@/common/logger/Logger";
 import type { FragmentOf } from "@/graphql/index";
 import { readFragment } from "@/graphql/index";
 
-import DanceBlueRibbon from "../../../../../assets/svgs/DBRibbon";
+import DanceBlueRibbon from "../../../../common/components/svgs/DBRibbon";
 
 const NonMemoizedNotificationRowContent = ({
   loading,

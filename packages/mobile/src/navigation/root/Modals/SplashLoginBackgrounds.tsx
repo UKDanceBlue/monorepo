@@ -51,5 +51,3 @@ export function getRandomSplashLoginBackground(): ImageSourcePropType {
   const index = random(0, splashLoginBackgrounds.length - 1);
   return splashLoginBackgrounds[index];
 }
-
-export default splashLoginBackgrounds;

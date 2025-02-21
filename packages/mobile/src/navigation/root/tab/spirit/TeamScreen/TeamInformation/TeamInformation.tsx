@@ -10,8 +10,8 @@ import { useThemeFonts } from "@/common/customHooks";
 import { universalCatch } from "@/common/logging";
 import type { SpiritStackScreenProps } from "@/common-types/navigationTypes";
 
-import CommitteeHoldingSign from "../../../../../../../assets/svgs/CommitteeHoldingSign";
-import DanceBlueRibbon from "../../../../../../../assets/svgs/DBRibbon";
+import CommitteeHoldingSign from "../../../../../../common/components/svgs/CommitteeHoldingSign";
+import DanceBlueRibbon from "../../../../../../common/components/svgs/DBRibbon";
 import type { StandingType } from "../../../../../../types/StandingType";
 import Scoreboard from "../../ScoreBoardScreen/Scoreboard";
 

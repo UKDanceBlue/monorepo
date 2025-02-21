@@ -10,7 +10,7 @@ import { useThemeColors, useThemeFonts } from "@/common/customHooks";
 import type { FragmentOf } from "@/graphql/index";
 import { graphql, readFragment } from "@/graphql/index";
 
-import DanceBlueRibbon from "../../../../../../assets/svgs/DBRibbon";
+import DanceBlueRibbon from "../../../../../common/components/svgs/DBRibbon";
 import ScoreboardItem from "../ScoreBoardScreen/ScoreboardItem";
 import { MyTeamFragment } from "../TeamScreen/TeamScreen";
 

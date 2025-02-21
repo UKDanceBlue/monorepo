@@ -13,7 +13,7 @@ import { graphql } from "@/graphql/index";
 const NOTIFICATION_PAGE_SIZE = 8;
 const INCOMPLETE_PAGE_TIMEOUT = 10_000;
 
-export const deviceNotificationsQuery = graphql(
+const deviceNotificationsQuery = graphql(
   /* GraphQL */ `
     query DeviceNotifications(
       $deviceUuid: String!
