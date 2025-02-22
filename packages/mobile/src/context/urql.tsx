@@ -58,20 +58,14 @@ export function UrqlContext({ children }: { children: ReactNode }) {
               const { message, response, graphQLErrors } = args;
 
               if (
-                (response as { status?: unknown } | undefined)?.status ===
-                  401 ||
-                message ===
-                  "Access denied! You don't have permission for this action!" ||
                 message === "Context creation failed: Invalid JWT payload" ||
                 message ===
                   "[GraphQL] Context creation failed: invalid signature" ||
                 graphQLErrors.some(
-                  (error) =>
-                    error.extensions.code === "UNAUTHENTICATED" ||
-                    error.extensions.code === "UNAUTHORIZED"
+                  (error) => error.extensions.code === "UNAUTHENTICATED"
                 )
               ) {
-                Logger.error("Auth  error", {
+                Logger.info("Auth error", {
                   context: {
                     message,
                     response: {
@@ -83,6 +77,24 @@ export function UrqlContext({ children }: { children: ReactNode }) {
                   () => invalidate(),
                   console.error
                 );
+                return true;
+              } else if (
+                (response as { status?: unknown } | undefined)?.status ===
+                  401 ||
+                message ===
+                  "Access denied! You don't have permission for this action!" ||
+                graphQLErrors.some(
+                  (error) => error.extensions.code === "UNAUTHORIZED"
+                )
+              ) {
+                Logger.info("Auth error", {
+                  context: {
+                    message,
+                    response: {
+                      status: (response as { status?: unknown }).status,
+                    },
+                  },
+                });
                 return true;
               }
 
