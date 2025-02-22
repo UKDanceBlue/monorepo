@@ -92,7 +92,7 @@ if (isDevelopmentBuild()) {
     {
       name: "Clear AsyncStorage",
       callback: () => {
-        Logger.log("Clearing AsyncStorage");
+        Logger.info("Clearing AsyncStorage");
         AsyncStorage.clear()
           .then(() => {
             Alert.alert("AsyncStorage cleared successfully");
@@ -106,11 +106,11 @@ if (isDevelopmentBuild()) {
     {
       name: "Print AsyncStorage",
       callback: () => {
-        Logger.log("Printing AsyncStorage");
+        Logger.info("Printing AsyncStorage");
         AsyncStorage.getAllKeys()
           .then((keys) => AsyncStorage.multiGet(keys))
           .then((values) => {
-            Logger.log(
+            Logger.info(
               `AsyncStorage values:\n${JSON.stringify(values, null, 2)}`
             );
           })
@@ -122,7 +122,7 @@ if (isDevelopmentBuild()) {
     {
       name: "Override url",
       callback: () => {
-        Logger.log("Overriding url");
+        Logger.info("Overriding url");
         Alert.prompt(
           "Enter the url to override or blank for default",
           "",

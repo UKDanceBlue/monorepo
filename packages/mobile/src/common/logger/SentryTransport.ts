@@ -38,7 +38,6 @@ export class SentryTransport extends LoggerTransport {
         tags: {
           ...Object.fromEntries(tags?.map((tag) => [tag, true]) ?? []),
           ...(source ? { source } : {}),
-          logLevel: logLevelToString(level),
           ...(status !== undefined ? { status } : {}),
         },
         extra: {
@@ -47,16 +46,22 @@ export class SentryTransport extends LoggerTransport {
         },
       });
     } else {
-      Sentry.captureMessage(debugStringify(messageString), {
-        tags: {
-          ...Object.fromEntries(extra.tags?.map((tag) => [tag, true]) ?? []),
-          source: extra.source,
-          logLevel: logLevelToString(level),
+      Sentry.addBreadcrumb(
+        {
+          message: debugStringify(messageString),
+          category: "log",
+          level: logLevelToString(level),
         },
-        extra: extra.context && {
-          ...extra.context,
-        },
-      });
+        {
+          tags: {
+            ...Object.fromEntries(extra.tags?.map((tag) => [tag, true]) ?? []),
+            source: extra.source,
+          },
+          extra: extra.context && {
+            ...extra.context,
+          },
+        }
+      );
     }
   }
 }

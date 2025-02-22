@@ -185,7 +185,7 @@ const EventScreen = () => {
               onPress={(e) => {
                 e.preventDefault();
                 e.stopPropagation();
-                Logger.log(
+                Logger.info(
                   `Opening ${eventData.location} in os-default maps app`
                 );
                 openMaps({

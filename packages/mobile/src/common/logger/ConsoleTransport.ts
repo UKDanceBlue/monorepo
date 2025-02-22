@@ -45,10 +45,6 @@ export class ConsoleTransport extends LoggerTransport {
           console.debug(...args);
           break;
         }
-        case LogLevel.log: {
-          console.log(...args);
-          break;
-        }
         case LogLevel.info: {
           console.info(...args);
           break;

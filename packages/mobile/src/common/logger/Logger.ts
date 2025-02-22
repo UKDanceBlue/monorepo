@@ -49,13 +49,6 @@ export class Logger {
     Logger.instance.log(LogLevel.debug, message, extra);
   }
 
-  static log(
-    message: string | boolean | bigint | number | object,
-    extra: ExtraLogArgs = {}
-  ) {
-    Logger.instance.log(LogLevel.log, message, extra);
-  }
-
   static info(
     message: string | boolean | bigint | number | object,
     extra: ExtraLogArgs = {}
