@@ -54,3 +54,12 @@ jobs:
 
       - name: Create update
         run: ./scripts/native-expo-build.sh ios dev-client
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ios-dev-client-${{ github.run_id}}
+          path: packages/mobile/eas-build
+          retention-days: 30
+          compression-level: 2
+          overwrite: true
