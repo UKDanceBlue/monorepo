@@ -52,14 +52,15 @@ jobs:
       - name: Build common
         run: yarn workspace @ukdanceblue/common run build
 
-      - name: Create update
+      - name: Run Build Script
         run: ./scripts/native-expo-build.sh ios dev-client
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
           name: ios-dev-client-${{ github.run_id}}
-          path: packages/mobile/eas-build
+          path: packages/mobile/builds/ios/dev-client.ipa
+          if-no-files-found: warn
           retention-days: 30
           compression-level: 2
           overwrite: true
