@@ -44,6 +44,7 @@ jobs:
         with:
           eas-version: latest
           token: ${{ secrets.EXPO_TOKEN }}
+        timeout-minutes: 1
 
       - name: Install dependencies
         run: yarn install
@@ -52,4 +53,4 @@ jobs:
         run: yarn workspace @ukdanceblue/common run build
 
       - name: Create update
-        run: ./scripts/native-expo-build.sh
+        run: ./scripts/native-expo-build.sh ios dev-client
