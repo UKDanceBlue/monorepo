@@ -20,6 +20,8 @@ on:
       - "packages/mobile/tsconfig.json"
       - "yarn.lock"
       - ".yarnrc.yml"
+      - ".github/workflows/eas-build.yml"
+      - "scripts/native-expo-build.sh"
 
 jobs:
   update:
