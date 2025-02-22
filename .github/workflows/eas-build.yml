@@ -3,25 +3,46 @@
 name: EAS Build
 
 on:
-  push:
-    # Release is a special branch that is kept in sync with the production app
-    # We also want to keep the development build in sync with the main branch
-    branches: ["main"]
-    paths:
-      - "packages/common/lib/**"
-      - "packages/common/tsconfig.json"
-      - "packages/mobile/src/**"
-      - "packages/mobile/App.tsx"
-      - "packages/mobile/index.js"
-      - "packages/mobile/app.json"
-      - "packages/mobile/app.config.ts"
-      - "packages/mobile/app.config.json"
-      - "packages/mobile/metro.config.js"
-      - "packages/mobile/tsconfig.json"
-      - "yarn.lock"
-      - ".yarnrc.yml"
-      - ".github/workflows/eas-build.yml"
-      - "scripts/native-expo-build.sh"
+  # push:
+  #   # Release is a special branch that is kept in sync with the production app
+  #   # We also want to keep the development build in sync with the main branch
+  #   branches: ["main"]
+  #   paths:
+  #     - "packages/common/lib/**"
+  #     - "packages/common/tsconfig.json"
+  #     - "packages/mobile/src/**"
+  #     - "packages/mobile/App.tsx"
+  #     - "packages/mobile/index.js"
+  #     - "packages/mobile/app.json"
+  #     - "packages/mobile/app.config.ts"
+  #     - "packages/mobile/app.config.json"
+  #     - "packages/mobile/metro.config.js"
+  #     - "packages/mobile/tsconfig.json"
+  #     - "yarn.lock"
+  #     - ".yarnrc.yml"
+  #     - ".github/workflows/eas-build.yml"
+  #     - "scripts/native-expo-build.sh"
+  workflow_dispatch:
+    inputs:
+      platform:
+        description: 'Platform to build for'
+        required: true
+        default: 'ios'
+        type: choice
+        options:
+          - ios
+          - android
+      buildType:
+        description: 'Type of build to create'
+        required: true
+        default: 'dev-client'
+        type: choice
+        options:
+          - dev-client
+          - production
+          - dev-client-simulator
+          - simulator
+      
 
 jobs:
   update:
@@ -53,13 +74,13 @@ jobs:
         run: yarn workspace @ukdanceblue/common run build
 
       - name: Run Build Script
-        run: ./scripts/native-expo-build.sh ios dev-client
+        run: ./scripts/native-expo-build.sh ${{ github.event.inputs.platform }} ${{ github.event.inputs.buildType }}
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
           name: ios-dev-client-${{ github.run_id}}
-          path: packages/mobile/builds/ios/dev-client.ipa
+          path: packages/mobile/builds/${{github.event.inputs.platform }}/${{ github.event.inputs.buildType }}.${{github.event.inputs.platform == 'ios' && 'ipa' || 'apk'}}
           if-no-files-found: warn
           retention-days: 30
           compression-level: 2
