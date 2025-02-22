@@ -1,0 +1,53 @@
+# This workflow follows EAS's Persistent staging flow - https://docs.expo.dev/eas-update/deployment-patterns/#persistent-staging-flow
+
+name: EAS Update
+
+on:
+  push:
+    # Release is a special branch that is kept in sync with the production app
+    # We also want to keep the development build in sync with the main branch
+    branches: ["main"]
+    paths:
+      - "packages/common/lib/**"
+      - "packages/common/tsconfig.json"
+      - "packages/mobile/src/**"
+      - "packages/mobile/App.tsx"
+      - "packages/mobile/index.js"
+      - "packages/mobile/app.json"
+      - "packages/mobile/app.config.ts"
+      - "packages/mobile/app.config.json"
+      - "packages/mobile/metro.config.js"
+      - "packages/mobile/tsconfig.json"
+      - "yarn.lock"
+      - ".yarnrc.yml"
+
+jobs:
+  update:
+    runs-on: macos-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Enable Corepack before setting up Node
+        run: corepack enable
+
+      - name: Set up node 22.x
+        uses: actions/setup-node@v4.1.0
+        with:
+          node-version: 22
+          cache: yarn
+
+      - name: 🏗 Setup EAS
+        uses: expo/expo-github-action@v8
+        with:
+          eas-version: latest
+          token: ${{ secrets.EXPO_TOKEN }}
+
+      - name: Install dependencies
+        run: yarn install
+
+      - name: Build common
+        run: yarn workspace @ukdanceblue/common run build
+
+      - name: Create update
+        run: ./scripts/native-expo-build.sh

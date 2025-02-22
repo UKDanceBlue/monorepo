@@ -41,7 +41,6 @@
         }
       ],
       "expo-av",
-      "expo-font",
       "expo-secure-store",
       "expo-file-system",
       [
@@ -76,7 +75,8 @@
           ]
         }
       ],
-      "expo-build-properties"
+      "expo-build-properties",
+      "expo-router"
     ],
     "updates": {
       "enabled": true,
