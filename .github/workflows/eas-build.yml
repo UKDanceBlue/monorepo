@@ -1,6 +1,6 @@
 # This workflow follows EAS's Persistent staging flow - https://docs.expo.dev/eas-update/deployment-patterns/#persistent-staging-flow
 
-name: EAS Update
+name: EAS Build
 
 on:
   push:
