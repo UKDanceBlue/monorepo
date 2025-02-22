@@ -10,7 +10,10 @@
     "notification": {
       "icon": "./assets/app/20th-appicon.png"
     },
-    "platforms": ["ios", "android"],
+    "experiments": {
+      "typedRoutes": true
+    },
+    "platforms": ["ios", "android", "web"],
     "orientation": "portrait",
     "icon": "./assets/app/20th-appicon.png",
     "splash": {
@@ -84,6 +87,9 @@
       "url": "https://u.expo.dev/86042d7a-cd35-415c-87ed-f53c008b3827"
     },
     "assetBundlePatterns": ["assets/**"],
+    "web": {
+      "bundler": "metro"
+    },
     "ios": {
       "supportsTablet": true,
       "config": {

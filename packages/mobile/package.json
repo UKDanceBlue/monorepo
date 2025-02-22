@@ -14,7 +14,7 @@
     "url": "https://danceblue.org"
   },
   "type": "commonjs",
-  "main": "./index.js",
+  "main": "./index.ts",
   "scripts": {
     "android": "expo run:android",
     "check": "tsc --noEmit",
