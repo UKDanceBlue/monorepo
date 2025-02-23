@@ -1,25 +1,23 @@
 import { useEffect, useMemo } from "react";
 import { useQuery } from "urql";
 
-import { SimpleConfigFragment } from "@/common/fragments/Configuration";
-import { Logger } from "@/common/logger/Logger";
-import { graphql, readFragment } from "@/graphql/index";
+import { graphql } from "@/graphql/index";
+import { Logger } from "@/util/logger/Logger";
 
-const useTabBarConfigQuery = graphql(
-  /* GraphQL */ `
-    query useTabBarConfig {
-      activeConfiguration(key: "TAB_BAR_CONFIG") {
-        data {
-          ...SimpleConfig
-        }
-      }
-      me {
-        linkblue
+const useTabBarConfigQuery = graphql(/* GraphQL */ `
+  query useTabBarConfig {
+    activeConfiguration(key: "TAB_BAR_CONFIG") {
+      data {
+        id
+        key
+        value
       }
     }
-  `,
-  [SimpleConfigFragment]
-);
+    me {
+      linkblue
+    }
+  }
+`);
 
 export function useTabBarConfig(): {
   tabConfigLoading: boolean;
@@ -30,10 +28,7 @@ export function useTabBarConfig(): {
   const [{ data, fetching, error }] = useQuery({
     query: useTabBarConfigQuery,
   });
-  const tabBarConfig = readFragment(
-    SimpleConfigFragment,
-    data?.activeConfiguration.data
-  );
+  const tabBarConfig = data?.activeConfiguration.data;
 
   useEffect(() => {
     if (error) {

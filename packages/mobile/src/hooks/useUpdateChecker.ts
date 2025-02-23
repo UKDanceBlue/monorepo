@@ -1,13 +1,11 @@
 import {
   checkForUpdateAsync,
   fetchUpdateAsync,
-  reloadAsync,
   useUpdates,
 } from "expo-updates";
 import { useEffect, useState } from "react";
 
-import { Logger } from "@/common/logger/Logger";
-import { showPrompt } from "@/common/util/alertUtils";
+import { Logger } from "@/util/logger/Logger";
 
 export function useUpdateChecker() {
   const {
@@ -81,18 +79,18 @@ export function useUpdateChecker() {
     if (isUpdatePending && !didNotifyPending) {
       setDidNotifyPending(true);
       Logger.info("Update pending", { context: { downloadedUpdate } });
-      showPrompt(
-        "A new version of the app has been downloaded. Would you like to reload the app to apply it?",
-        "Update Pending",
-        () => undefined,
-        async () => {
-          try {
-            await reloadAsync();
-          } catch (error) {
-            Logger.error("Error reloading app", { error });
-          }
-        }
-      );
+      // showPrompt(
+      //   "A new version of the app has been downloaded. Would you like to reload the app to apply it?",
+      //   "Update Pending",
+      //   () => undefined,
+      //   async () => {
+      //     try {
+      //       await reloadAsync();
+      //     } catch (error) {
+      //       Logger.error("Error reloading app", { error });
+      //     }
+      //   }
+      // );
     }
   }, [downloadedUpdate, isUpdatePending]);
 }

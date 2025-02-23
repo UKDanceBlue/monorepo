@@ -1,5 +1,7 @@
-import { Alert } from "react-native";
+// import { Alert } from "react-native";
 
-import { feedbackContext } from "./feedbackContext";
+// import { feedbackContext } from "./feedbackContext";
 
-export function FeedbackProvider() {}
+export function FeedbackProvider() {
+  return null;
+}

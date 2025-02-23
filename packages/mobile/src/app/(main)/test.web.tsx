@@ -1,9 +1,7 @@
-import { useTheme } from "@rneui/themed";
 import type { ReactNode } from "react";
-import { View } from "react-native";
+import { Text, View } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
 
-import { Text } from "@/components/core/Text";
 import { useColors } from "@/theme/color-mode";
 // import { useSetColorMode } from "@/theme/color-mode";
 
@@ -13,8 +11,6 @@ export default function Test() {
   const colorPairs = Object.entries(colors).filter(
     ([name]) => name !== "platform"
   );
-
-  const setColorMode = useSetColorMode();
 
   const components: ReactNode[] = [];
 
@@ -37,12 +33,8 @@ export default function Test() {
         >
           <View style={{ flexDirection: "row", gap: 4 }}>
             <Text style={{ color: value2 }}>{name2}</Text>
-            <Text style={{ color: value2 }} bold>
-              on
-            </Text>
-            <Text style={{ color: value2 }} italic>
-              {name1}
-            </Text>
+            <Text style={{ color: value2 }} /*bold*/>on</Text>
+            <Text style={{ color: value2 }} /*italic*/>{name1}</Text>
           </View>
         </View>
       );
@@ -52,8 +44,8 @@ export default function Test() {
   return (
     <ScrollView>
       <select
-        onChange={(event) => {
-          setColorMode((event.target.value as "" | "dark" | "light") || null);
+        onChange={() => {
+          // setColorMode((event.target.value as "" | "dark" | "light") || null);
         }}
       >
         <option value="light">Light</option>

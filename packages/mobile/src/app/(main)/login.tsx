@@ -1,40 +1,47 @@
-import { Button } from "@rneui/base";
 import { AuthSource } from "@ukdanceblue/common";
 import { ImageBackground } from "expo-image";
 import { useEffect, useState } from "react";
 import React from "react";
-import type { ImageSourcePropType } from "react-native";
-import { ActivityIndicator, Dimensions, StatusBar, View } from "react-native";
+// import type { ImageSourcePropType } from "react-native";
+import {
+  ActivityIndicator,
+  // ActivityIndicator,
+  // Dimensions,
+  Pressable,
+  StatusBar,
+  Text,
+  View,
+} from "react-native";
 
 import WelcomeBackOverlay from "@/assets/screens/login-modal/welcome-back-overlay.png";
 import { getLoginBackground } from "@/components/background/login";
-import { Text } from "@/components/core/Text";
+import { useAllowedLoginTypes } from "@/hooks/useAllowedLoginTypes";
+import { useLogin } from "@/hooks/useLogin";
 
 export default function SplashLoginScreen() {
-  const { allowedLoginTypes, allowedLoginTypesLoading } =
-    useAllowedLoginTypes();
+  const { allowedLoginTypesLoading } = useAllowedLoginTypes();
 
   const [loginLoading, trigger] = useLogin();
 
   const loading = allowedLoginTypesLoading || loginLoading;
 
-  const heightOfBackground = Dimensions.get("window").height * 0.6;
-  const heightOfContent = Dimensions.get("window").height * 0.4;
+  // const heightOfBackground = Dimensions.get("window").height * 0.6;
+  // const heightOfContent = Dimensions.get("window").height * 0.4;
 
   // TODO: FIX INTERVAL
   const [bgImage, setBgImage] = useState(getLoginBackground());
   useEffect(() => {
     const unsub = setInterval(() => {
       setBgImage(getLoginBackground());
-    }, 1000);
+    }, 5000);
     return () => clearInterval(unsub);
   }, []);
 
   return (
     <>
       <StatusBar hidden />
-      <ImageBackground source={bgImage}>
-        <ImageBackground source={WelcomeBackOverlay}>
+      <ImageBackground source={bgImage} style={{ height: "100%" }}>
+        <ImageBackground source={WelcomeBackOverlay} style={{ height: "100%" }}>
           <View
           // justifyContent="center"
           // height={heightOfContent}
@@ -45,7 +52,7 @@ export default function SplashLoginScreen() {
           // marginTop={15}
           >
             <View>
-              <Button
+              <Pressable
                 onPress={() => trigger(AuthSource.LinkBlue)}
                 // width={Dimensions.get("window").width - 50}
                 // backgroundColor="secondary.400"
@@ -61,10 +68,10 @@ export default function SplashLoginScreen() {
                 >
                   Login with Linkblue
                 </Text>
-              </Button>
+              </Pressable>
             </View>
             <View>
-              <Button
+              <Pressable
                 onPress={() => trigger(AuthSource.Anonymous)}
                 // width={Dimensions.get("window").width - 50}
                 // backgroundColor="primary.600"
@@ -80,14 +87,14 @@ export default function SplashLoginScreen() {
                 >
                   Continue as Guest
                 </Text>
-              </Button>
+              </Pressable>
             </View>
           </View>
-          {/* {loading && (
-            <Center position="absolute" width="full" height="full">
-              <ActivityIndicator size="large" />
-            </Center>
-          )} */}
+          {loading && (
+            // <Center position="absolute" width="full" height="full">
+            <ActivityIndicator size="large" />
+            // </Center>
+          )}
         </ImageBackground>
       </ImageBackground>
     </>

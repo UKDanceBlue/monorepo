@@ -1,11 +1,7 @@
 import type { ReactNode } from "react";
 import { useCallback, useReducer } from "react";
-import { Animated, Modal } from "react-native";
-
-import LoadingRibbon from "@/svgs/LoadingRibbon";
 
 import { loadingContext } from "./loadingContext";
-import { LoadingOverlay } from "./LoadingOverlay";
 
 /**
  * Provides a loading context for the app, accessed via the useLoading hook. If any loading state is true, a spinner will be displayed.
@@ -33,12 +29,12 @@ export const LoadingProvider = ({ children }: { children: ReactNode }) => {
 
   return (
     <loadingContext.Provider value={[loadingReasons, setLoading]}>
-      <LoadingOverlay
+      {/* <LoadingOverlay
         fullScreen
         isVisible={Object.values(loadingReasons).some(Boolean)}
-      >
-        {children}
-      </LoadingOverlay>
+      > */}
+      {children}
+      {/* </LoadingOverlay> */}
     </loadingContext.Provider>
   );
 };

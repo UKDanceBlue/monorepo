@@ -10,7 +10,6 @@
     "exactOptionalPropertyTypes": false,
     "resolvePackageJsonExports": true,
     "target": "es2019",
-    "rootDir": "./src",
     "lib": [
       "es2019",
       "es2020.bigint",
@@ -38,10 +37,14 @@
   },
   "extends": ["../../tsconfig.json", "./node_modules/expo/tsconfig.base.json"],
   "include": [
-    "src",
-    "assets",
-    "app.config.ts",
+    "./src",
+    "./assets",
+    "./app.config.ts",
+    "./.expo/types/**/*.ts",
+    "./expo-env.d.ts",
+    "nativewind-env.d.ts",
     ".expo/types/**/*.ts",
-    "expo-env.d.ts"
+    "expo-env.d.ts",
+    "tailwind.config.ts"
   ]
 }

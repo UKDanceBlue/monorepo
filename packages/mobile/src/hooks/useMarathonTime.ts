@@ -3,8 +3,8 @@ import { DateTime } from "luxon";
 import { useEffect, useMemo } from "react";
 import { useQuery } from "urql";
 
-import { Logger } from "@/common/logger/Logger";
 import { graphql } from "@/graphql/index";
+import { Logger } from "@/util/logger/Logger";
 
 export interface MarathonTime {
   startTime: DateTime;

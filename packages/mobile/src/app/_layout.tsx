@@ -4,10 +4,10 @@ import { useAsyncStorageDevTools } from "@dev-plugins/async-storage";
 import { Stack } from "expo-router/stack";
 import { useEffect } from "react";
 
+import { UrqlContext } from "@/components/api/urql";
 import { AuthProvider } from "@/components/auth/AuthProvider";
 import { SplashScreen } from "@/components/loading/SplashScreen";
 import useLoadFonts from "@/hooks/useLoadFonts";
-import { RneThemeProvider } from "@/theme/rne";
 import { Logger } from "@/util/logger/Logger";
 
 export default function Layout() {
@@ -23,13 +23,13 @@ export default function Layout() {
 
   return (
     <SplashScreen show={fontsLoaded}>
-      <RneThemeProvider>
+      <UrqlContext>
         <AuthProvider>
           <Stack>
             <Stack.Screen name="(main)" options={{ headerShown: false }} />
           </Stack>
         </AuthProvider>
-      </RneThemeProvider>
+      </UrqlContext>
     </SplashScreen>
   );
 }

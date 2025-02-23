@@ -26,6 +26,8 @@ export function AuthProvider({ children }: PropsWithChildren) {
     })
   );
 
+  const [masquerade, setMasquerade] = useState<string | null>(null);
+
   return (
     <authContext.Provider
       value={{
@@ -53,6 +55,8 @@ export function AuthProvider({ children }: PropsWithChildren) {
             }
           },
         }),
+        masquerade,
+        setMasquerade,
       }}
     >
       {children}
