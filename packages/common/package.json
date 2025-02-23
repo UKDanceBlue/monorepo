@@ -15,16 +15,16 @@
   "type": "module",
   "exports": {
     ".": {
-      "import": "./dist/index.js",
-      "types": "./dist/index.d.ts"
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
     },
     "./client-parsers": {
-      "import": "./dist/client-parsers/index.js",
-      "types": "./dist/client-parsers/index.d.ts"
+      "types": "./dist/client-parsers/index.d.ts",
+      "default": "./dist/client-parsers/index.js"
     },
     "./error": {
-      "import": "./dist/error/index.js",
-      "types": "./dist/error/index.d.ts"
+      "types": "./dist/error/index.d.ts",
+      "default": "./dist/error/index.js"
     }
   },
   "main": "./dist/index.js",

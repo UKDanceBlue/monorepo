@@ -1,8 +1,4 @@
-import type { Theme } from "native-base";
-
-export const colors: Partial<
-  Record<keyof Theme["colors"], Record<number, string>>
-> = {
+export const colors = {
   primary: {
     // BASE COLOR: #0032A0 (level 600), Dark Blue
     50: "#e0edff",
@@ -28,68 +24,6 @@ export const colors: Partial<
     700: "#805e00",
     800: "#4e3800",
     900: "#1d1300",
-  },
-  tertiary: {
-    // TERTIARY COLOR: #F0740C (level 500), Orange
-    50: "#ffefdd",
-    100: "#fed5b1",
-    200: "#faba84",
-    300: "#f79f54",
-    400: "#f48324",
-    500: "#F0740C",
-    600: "#ab5206",
-    700: "#7a3a03",
-    800: "#4b2200",
-    900: "#1e0900",
-  },
-  danger: {
-    // 600 default?
-    50: "#fff1f2",
-    100: "#ffe4e6",
-    200: "#fecdd3",
-    300: "#fda4af",
-    400: "#fb7185",
-    500: "#f43f5e",
-    600: "#e11d48",
-    700: "#be123c",
-    800: "#9f1239",
-    900: "#881337",
-  },
-  error: {
-    50: "#fef2f2",
-    100: "#fee2e2",
-    200: "#fecaca",
-    300: "#fca5a5",
-    400: "#f87171",
-    500: "#ef4444",
-    600: "#dc2626",
-    700: "#b91c1c",
-    800: "#991b1b",
-    900: "#7f1d1d",
-  },
-  success: {
-    50: "#f0fdf4",
-    100: "#dcfce7",
-    200: "#bbf7d0",
-    300: "#86efac",
-    400: "#4ade80",
-    500: "#22c55e",
-    600: "#16a34a",
-    700: "#15803d",
-    800: "#166534",
-    900: "#14532d",
-  },
-  warning: {
-    50: "#fff7ed",
-    100: "#ffedd5",
-    200: "#fed7aa",
-    300: "#fdba74",
-    400: "#fb923c",
-    500: "#f97316",
-    600: "#ea580c",
-    700: "#c2410c",
-    800: "#9a3412",
-    900: "#7c2d12",
   },
   red: {
     50: "#ffe1e1",
@@ -174,5 +108,29 @@ export const colors: Partial<
     700: "#343e4b",
     800: "#1e2530",
     900: "#070c18",
+  },
+  light: {
+    50: "#ffffff",
+    100: "#f9f9f9",
+    200: "#f3f3f3",
+    300: "#ececec",
+    400: "#e5e5e5",
+    500: "#dedede",
+    600: "#d6d6d6",
+    700: "#cecece",
+    800: "#c5c5c5",
+    900: "#b9b9b9",
+  },
+  dark: {
+    50: "#8f8f8f",
+    100: "#7f7f7f",
+    200: "#6f6f6f",
+    300: "#5f5f5f",
+    400: "#4f4f4f",
+    500: "#3f3f3f",
+    600: "#2d2d2d",
+    700: "#1c1c1c",
+    800: "#101010",
+    900: "#000000",
   },
 } as const;
