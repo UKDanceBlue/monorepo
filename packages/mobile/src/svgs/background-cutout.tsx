@@ -1,5 +1,4 @@
-import { Box, HStack } from "native-base";
-import { useWindowDimensions } from "react-native";
+import { useWindowDimensions, View } from "react-native";
 import type { SvgProps } from "react-native-svg";
 import Svg, { G, Path } from "react-native-svg";
 
@@ -36,7 +35,7 @@ const BackgroundCutout = ({
   color,
   svgProps,
 }: {
-  svgProps?: SvgProps;
+  svgProps?: SvgProps & { height: number };
   color: string;
 }) => {
   const { width: screenWidth } = useWindowDimensions();
@@ -45,22 +44,25 @@ const BackgroundCutout = ({
       "BackgroundCutout requires a height to be passed in svgProps"
     );
   }
-  const svgWidth = Number(svgProps.height) * (ratio.x / ratio.y);
+  const svgWidth = svgProps.height;
   const sideWidth = (screenWidth - svgWidth) / 2;
+
   return (
-    <HStack>
-      <Box
-        position="absolute"
-        left={0}
-        minWidth={sideWidth * 1.1}
-        minHeight={svgProps.height}
-        bg={color}
-        margin={0}
+    <View style={{ display: "flex", flexDirection: "row" }}>
+      <View
+        style={{
+          position: "absolute",
+          left: 0,
+          minWidth: sideWidth,
+          minHeight: svgProps.height,
+          backgroundColor: color,
+          margin: 0,
+        }}
       />
       <BackgroundCutoutBase
         svgProps={{
           ...svgProps,
-          width: svgWidth,
+          width: svgProps.height,
           height: svgProps.height,
           style: {
             // @ts-expect-error This is fine
@@ -70,15 +72,25 @@ const BackgroundCutout = ({
         }}
         color={color}
       />
-      <Box
+      {/* <Box
         position="absolute"
         right={0}
         minWidth={sideWidth * 1.1}
         minHeight={svgProps.height}
         bg={color}
         margin={0}
+      /> */}
+      <View
+        style={{
+          position: "absolute",
+          right: 0,
+          minWidth: sideWidth,
+          minHeight: svgProps.height,
+          backgroundColor: color,
+          margin: 0,
+        }}
       />
-    </HStack>
+    </View>
   );
 };
 

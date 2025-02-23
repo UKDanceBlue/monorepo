@@ -4,12 +4,11 @@ import { View } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
 
 import { Text } from "@/components/core/Text";
-import { useSetColorMode } from "@/theme/color-mode";
+import { useColors } from "@/theme/color-mode";
+// import { useSetColorMode } from "@/theme/color-mode";
 
 export default function Test() {
-  const {
-    theme: { colors },
-  } = useTheme();
+  const colors = useColors();
 
   const colorPairs = Object.entries(colors).filter(
     ([name]) => name !== "platform"

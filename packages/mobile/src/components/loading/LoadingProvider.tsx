@@ -30,12 +30,15 @@ export const LoadingProvider = ({ children }: { children: ReactNode }) => {
   const setLoading = useCallback((state: boolean, id: string) => {
     updateLoadingReasons([id, state]);
   }, []);
-  
 
   return (
     <loadingContext.Provider value={[loadingReasons, setLoading]}>
-      <LoadingOverlay fullScreen isVisible={Object.values(loadingReasons).some(Boolean)} 
-      {children}
+      <LoadingOverlay
+        fullScreen
+        isVisible={Object.values(loadingReasons).some(Boolean)}
+      >
+        {children}
+      </LoadingOverlay>
     </loadingContext.Provider>
   );
 };

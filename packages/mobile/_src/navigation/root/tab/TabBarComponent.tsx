@@ -14,7 +14,7 @@ import { Text, TouchableOpacity, useWindowDimensions } from "react-native";
 import { useColorModeValue, useThemeColors } from "@/common/customHooks";
 import { colors } from "@/theme/colors";
 
-import BackgroundCutout from "../../../../assets/screens/navigation/background-cutout";
+import BackgroundCutout from "../../../../src/svgs/background-cutout";
 import DanceBlueRibbon from "../../../common/components/svgs/DBRibbon";
 import { useReactNavigationTheme } from "../../../theme";
 
