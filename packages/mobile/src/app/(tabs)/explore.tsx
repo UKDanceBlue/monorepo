@@ -1,3 +1,3 @@
-export function Explore() {
+export default function Explore() {
   return null;
 }

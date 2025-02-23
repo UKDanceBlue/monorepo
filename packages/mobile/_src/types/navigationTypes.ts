@@ -54,10 +54,10 @@ export type RootStackParamList = {
 export type RootStackScreenProps<T extends keyof RootStackParamList> =
   NativeStackScreenProps<RootStackParamList, T>;
 
-declare global {
-  // eslint-disable-next-line @typescript-eslint/no-namespace
-  namespace ReactNavigation {
-    // eslint-disable-next-line @typescript-eslint/no-empty-object-type
-    interface RootParamList extends RootStackParamList {}
-  }
-}
+// declare global {
+//   // eslint-disable-next-line @typescript-eslint/no-namespace
+//   namespace ReactNavigation {
+//     // eslint-disable-next-line @typescript-eslint/no-empty-object-type
+//     interface RootParamList extends RootStackParamList {}
+//   }
+// }

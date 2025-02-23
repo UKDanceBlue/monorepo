@@ -1,3 +1,3 @@
-export function Team() {
+export default function Team() {
   return null;
 }

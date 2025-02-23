@@ -1,3 +1,3 @@
-export function Event() {
+export default function Event() {
   return null;
 }

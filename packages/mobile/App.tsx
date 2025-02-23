@@ -29,6 +29,9 @@ import { LoadingWrapper } from "@/context/loading";
 import { UrqlContext } from "@/context/urql";
 import { navigationIntegration } from "@/navigation/routingInstrumentation";
 
+import { overrideApiBaseUrl } from "./_src/common/apiUrl";
+import { FilledNavigationContainer } from "./_src/navigation/NavigationContainer";
+import { getCustomTheme } from "./_src/theme";
 import BoldoniFlfBoldFont from "./assets/fonts/bodoni-flf-font/Bodoni-FLF-Bold.ttf";
 import BoldoniFlfBoldItalicFont from "./assets/fonts/bodoni-flf-font/Bodoni-FLF-Bold-Italic.ttf";
 import BoldoniFlfItalicFont from "./assets/fonts/bodoni-flf-font/Bodoni-FLF-Italic.ttf";
@@ -36,9 +39,6 @@ import BoldoniFlfRomanFont from "./assets/fonts/bodoni-flf-font/Bodoni-FLF-Roman
 import OpenSansCondensedBoldFont from "./assets/fonts/opensans-condensed/OpenSans-Condensed-Bold.ttf";
 import OpenSansCondensedLightFont from "./assets/fonts/opensans-condensed/OpenSans-Condensed-Light.ttf";
 import OpenSansCondensedLightItalicFont from "./assets/fonts/opensans-condensed/OpenSans-Condensed-Light-Italic.ttf";
-import { overrideApiBaseUrl } from "./src/common/apiUrl";
-import { FilledNavigationContainer } from "./src/navigation/NavigationContainer";
-import { getCustomTheme } from "./src/theme";
 
 const metadata = "metadata" in manifest ? manifest.metadata : undefined;
 const extra = "extra" in manifest ? manifest.extra : undefined;

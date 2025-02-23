@@ -1,3 +1,5 @@
-export function DbMoments() {
-  return null;
+import { Text } from "react-native";
+
+export default function DbMoments() {
+  return <Text>DB Moments</Text>;
 }

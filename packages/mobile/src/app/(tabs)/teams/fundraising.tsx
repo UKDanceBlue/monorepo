@@ -1,3 +1,3 @@
-export function Fundraising() {
+export default function Fundraising() {
   return null;
 }

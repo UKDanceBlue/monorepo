@@ -1,25 +1,17 @@
 import { FontAwesome, FontAwesome5 } from "@expo/vector-icons";
-import { useNavigation } from "@react-navigation/core";
-import { View } from "native-base";
-import {
-  PixelRatio,
-  TouchableOpacity,
-  useWindowDimensions,
-} from "react-native";
+import { useRouter } from "expo-router";
+import { TouchableOpacity, View } from "react-native";
 
 const HeaderIcons = () => {
-  const { width } = useWindowDimensions();
-
-  const navigation = useNavigation();
+  const { navigate } = useRouter();
 
   return (
     <View
       style={{
         flexDirection: "row",
-        width: Math.round(width * 0.15),
-        justifyContent: "space-between",
-        marginRight: Math.round(width * 0.025),
+        gap: 10,
         alignItems: "center",
+        marginRight: 10,
       }}
     >
       {/* <TouchableOpacity>
@@ -43,27 +35,21 @@ const HeaderIcons = () => {
           style={{ textAlignVertical: "center", fontSize: PixelRatio.get() * 8 }}
         />
       </TouchableOpacity> */}
-      <View>
-        <TouchableOpacity
-          onPress={() => navigation.navigate("Notifications", {})}
-        >
-          <FontAwesome
-            name="bell"
-            color="#0032A0"
-            style={{
-              textAlignVertical: "center",
-              fontSize: PixelRatio.get() * 8,
-            }}
-          />
-        </TouchableOpacity>
-      </View>
-      <TouchableOpacity onPress={() => navigation.navigate("Profile", {})}>
+      <TouchableOpacity onPress={() => navigate("/notifications", {})}>
+        <FontAwesome
+          name="bell"
+          color="#0032A0"
+          style={{
+            textAlignVertical: "center",
+          }}
+        />
+      </TouchableOpacity>
+      <TouchableOpacity onPress={() => navigate("/profile", {})}>
         <FontAwesome5
           name="user-alt"
           color="#0032A0"
           style={{
             textAlignVertical: "center",
-            fontSize: PixelRatio.get() * 8,
           }}
         />
       </TouchableOpacity>

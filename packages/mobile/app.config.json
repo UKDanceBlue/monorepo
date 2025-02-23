@@ -11,7 +11,8 @@
       "icon": "./assets/app/20th-appicon.png"
     },
     "experiments": {
-      "typedRoutes": true
+      "typedRoutes": true,
+      "reactCompiler": true
     },
     "platforms": ["ios", "android", "web"],
     "orientation": "portrait",

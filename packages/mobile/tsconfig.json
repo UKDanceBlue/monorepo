@@ -4,12 +4,7 @@
     "moduleResolution": "bundler",
     "paths": {
       "@/assets/*": ["./assets/*"],
-      "@/graphql/*": ["./_src/graphql/*"],
-      "@/common/*": ["./_src/common/*"],
-      "@/context/*": ["./_src/context/*"],
-      "@/navigation/*": ["./_src/navigation/*"],
-      "@/theme/*": ["./_src/theme/*"],
-      "@/common-types/*": ["./_src/types/*"]
+      "@/*": ["./src/*"]
     },
     "noUncheckedIndexedAccess": false,
     "exactOptionalPropertyTypes": false,

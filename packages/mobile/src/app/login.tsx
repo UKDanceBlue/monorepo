@@ -1,3 +1,3 @@
-export function Login() {
+export default function Login() {
   return null;
 }
