@@ -7,9 +7,7 @@ const { withNativeWind } = require("nativewind/metro");
 // eslint-disable-next-line no-undef
 const projectRoot = __dirname;
 
-const config = withNativeWind(withSentryConfig(getDefaultConfig(projectRoot)), {
-  input: "./src/css/global.css",
-});
+const config = getDefaultConfig(projectRoot);
 
 /** @type {Partial<Record<string, string>>} */
 const ALIASES = {
@@ -29,5 +27,8 @@ config.resolver.resolveRequest =
   };
 
 config.resolver.unstable_enablePackageExports = true;
+config.resolver.unstable_conditionNames = ["require", "react-native"];
 
-module.exports = config;
+module.exports = withNativeWind(withSentryConfig(config), {
+  input: "./src/css/global.css",
+});

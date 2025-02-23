@@ -19,6 +19,7 @@
     "GitHub.vscode-pull-request-github",
     "fill-labs.dependi",
     "yoavbls.pretty-ts-errors",
-    "nicoespeon.abracadabra"
+    "nicoespeon.abracadabra",
+    "bradlc.vscode-tailwindcss"
   ]
 }

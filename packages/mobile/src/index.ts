@@ -1,5 +1,6 @@
+import "./css/global.css";
+
 import * as Sentry from "@sentry/react-native";
-import { isRunningInExpoGo } from "expo";
 import { isDevelopmentBuild } from "expo-dev-client";
 import { setNotificationHandler } from "expo-notifications";
 import { preventAutoHideAsync } from "expo-splash-screen";
@@ -27,7 +28,7 @@ Sentry.init({
   },
   debug: false,
   integrations: [navigationIntegration],
-  enableNativeFramesTracking: !isRunningInExpoGo(),
+  // enableNativeFramesTracking: !isRunningInExpoGo(),
   environment: channel ?? (isDevelopmentBuild() ? "dev-client" : "unknown"),
   enabled: !__DEV__,
   initialScope: {},

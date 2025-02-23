@@ -4,10 +4,8 @@ import { useEffect, useState } from "react";
 import React from "react";
 // import type { ImageSourcePropType } from "react-native";
 import {
-  ActivityIndicator,
   // ActivityIndicator,
   // Dimensions,
-  Pressable,
   StatusBar,
   Text,
   View,
@@ -15,6 +13,7 @@ import {
 
 import WelcomeBackOverlay from "@/assets/screens/login-modal/welcome-back-overlay.png";
 import { getLoginBackground } from "@/components/background/login";
+import Button from "@/components/ui/button/Button";
 import { useAllowedLoginTypes } from "@/hooks/useAllowedLoginTypes";
 import { useLogin } from "@/hooks/useLogin";
 
@@ -42,59 +41,28 @@ export default function SplashLoginScreen() {
       <StatusBar hidden />
       <ImageBackground source={bgImage} style={{ height: "100%" }}>
         <ImageBackground source={WelcomeBackOverlay} style={{ height: "100%" }}>
-          <View
-          // justifyContent="center"
-          // height={heightOfContent}
-          // top={heightOfBackground}
-          // zIndex={100}
-          // position="absolute"
-          // width={Dimensions.get("window").width}
-          // marginTop={15}
-          >
-            <View>
-              <Pressable
-                onPress={() => trigger(AuthSource.LinkBlue)}
-                // width={Dimensions.get("window").width - 50}
-                // backgroundColor="secondary.400"
-                // _pressed={{ backgroundColor: "primary.600" }}
-                // alignSelf="center"
-                // margin={5}
-              >
-                <Text
-                // color="primary.600"
-                // textAlign="center"
-                // fontFamily="body"
-                // fontSize="xl"
-                >
-                  Login with Linkblue
-                </Text>
-              </Pressable>
-            </View>
-            <View>
-              <Pressable
-                onPress={() => trigger(AuthSource.Anonymous)}
-                // width={Dimensions.get("window").width - 50}
-                // backgroundColor="primary.600"
-                // _pressed={{ backgroundColor: "secondary.400" }}
-                // alignSelf="center"
-                // margin={5}
-              >
-                <Text
-                // color="#ffffff"
-                // textAlign="center"
-                // fontFamily="body"
-                // fontSize="xl"
-                >
-                  Continue as Guest
-                </Text>
-              </Pressable>
-            </View>
+          <View className="h- flex flex-col justify-end align-center">
+            <Button
+              loading={loading}
+              onPress={() => trigger(AuthSource.LinkBlue)}
+              // width={Dimensions.get("window").width - 50}
+              // backgroundColor="secondary.400"
+              // _pressed={{ backgroundColor: "primary.600" }}
+              // alignSelf="center"
+              // margin={5}
+              text="Login with LinkBlue"
+            />
+            <Button
+              loading={loading}
+              onPress={() => trigger(AuthSource.Anonymous)}
+              text="Continue as Guest"
+              // width={Dimensions.get("window").width - 50}
+              // backgroundColor="primary.600"
+              // _pressed={{ backgroundColor: "secondary.400" }}
+              // alignSelf="center"
+              // margin={5}
+            />
           </View>
-          {loading && (
-            // <Center position="absolute" width="full" height="full">
-            <ActivityIndicator size="large" />
-            // </Center>
-          )}
         </ImageBackground>
       </ImageBackground>
     </>
