@@ -1,4 +1,3 @@
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { AuthSource } from "@ukdanceblue/common";
 import { createURL } from "expo-linking";
 import {
@@ -7,7 +6,10 @@ import {
   WebBrowserResultType,
 } from "expo-web-browser";
 
+import { useAuthContext } from "@/components/auth/AuthContext";
+import { useLoading } from "@/components/loading/loadingContext";
 import { API_BASE_URL } from "@/util/apiUrl";
+import { Logger } from "@/util/logger/Logger";
 
 function getLoginUrl(source: AuthSource): [string, string] {
   let urlComponent = "";
@@ -38,7 +40,8 @@ function getLoginUrl(source: AuthSource): [string, string] {
 
 export const useLogin = (): [boolean, (source: AuthSource) => void] => {
   const [loading, setLoading] = useLoading("useLinkBlueLogin", 10_000);
-  const { invalidate: invalidateCache } = useUrqlConfig();
+
+  const { setToken } = useAuthContext();
 
   const trigger = async (source: AuthSource) => {
     if (loading) {
@@ -53,7 +56,7 @@ export const useLogin = (): [boolean, (source: AuthSource) => void] => {
           const url = new URL(result.url);
           const token = url.searchParams.get("token");
           if (token) {
-            await AsyncStorage.setItem(DANCEBLUE_TOKEN_KEY, token);
+            setToken(token);
           }
           break;
         }
@@ -70,7 +73,6 @@ export const useLogin = (): [boolean, (source: AuthSource) => void] => {
           result satisfies never;
         }
       }
-      invalidateCache();
     } catch (error) {
       Logger.error("Error logging in", { error });
     } finally {
@@ -83,13 +85,13 @@ export const useLogin = (): [boolean, (source: AuthSource) => void] => {
 
 export const useLogOut = (): [boolean, () => void] => {
   const [loading, setLoading] = useLoading("useLogOut", 10_000);
-  const { invalidate: invalidateCache } = useUrqlConfig();
 
-  const trigger = async () => {
+  const { setToken } = useAuthContext();
+
+  const trigger = () => {
     setLoading(true);
     try {
-      await AsyncStorage.removeItem(DANCEBLUE_TOKEN_KEY);
-      invalidateCache();
+      setToken(null);
     } catch (error) {
       console.error(error);
     } finally {

@@ -38,15 +38,8 @@
   },
   "extends": ["../../tsconfig.json", "./node_modules/expo/tsconfig.base.json"],
   "include": [
-    "index.ts",
-    "App.tsx",
-    "global.d.ts",
-    "app",
     "src",
-    "_src",
     "assets",
-    "config-plugins",
-    "test-helpers",
     "app.config.ts",
     ".expo/types/**/*.ts",
     "expo-env.d.ts"

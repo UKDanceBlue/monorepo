@@ -3,7 +3,7 @@ import {
   deleteItemAsync,
   getItem,
   type SecureStoreOptions,
-  setItemAsync,
+  setItem,
 } from "expo-secure-store";
 import { type PropsWithChildren, useState } from "react";
 import { Platform } from "react-native";
@@ -22,7 +22,7 @@ export function AuthProvider({ children }: PropsWithChildren) {
   const [token, setToken] = useState(
     Platform.select({
       web: () => window.localStorage.getItem(DANCEBLUE_TOKEN_KEY),
-      default: () => getItem(DANCEBLUE_TOKEN_KEY, SECURE_STORE_OPTIONS),
+      default: () => getItem(DANCEBLUE_TOKEN_KEY, SECURE_STORE_OPTIONS) || null,
     })
   );
 
@@ -44,12 +44,9 @@ export function AuthProvider({ children }: PropsWithChildren) {
             setToken(token);
 
             if (token) {
-              setItemAsync(
-                DANCEBLUE_TOKEN_KEY,
-                token,
-                SECURE_STORE_OPTIONS
-              ).catch(universalCatch);
+              setItem(DANCEBLUE_TOKEN_KEY, token, SECURE_STORE_OPTIONS);
             } else {
+              setItem(DANCEBLUE_TOKEN_KEY, "", SECURE_STORE_OPTIONS);
               deleteItemAsync(DANCEBLUE_TOKEN_KEY, SECURE_STORE_OPTIONS).catch(
                 universalCatch
               );
