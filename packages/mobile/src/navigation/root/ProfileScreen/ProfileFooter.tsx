@@ -42,8 +42,8 @@ export const ProfileFooter = ({
   );
 
   const [sequence, setSequence] = useState<SequenceMember[]>([]);
-  function pushSequence(s: SequenceMember) {
-    setSequence([...sequence.filter((s) => s !== "report"), s]);
+  function pushSequence(n: SequenceMember) {
+    setSequence([...sequence.filter((s) => s !== n), n]);
   }
   function checkSequence(s: readonly SequenceMember[]) {
     const sequenceSlice = sequence.slice(-s.length);
