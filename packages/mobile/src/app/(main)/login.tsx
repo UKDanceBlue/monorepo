@@ -43,7 +43,7 @@ export default function SplashLoginScreen() {
   }, [token, setToken]);
 
   if (loggedIn) {
-    return <Redirect href="/(main)/(tabs)" />;
+    return <Redirect href="/(main)/(tabs)/explore" />;
   }
 
   return (
