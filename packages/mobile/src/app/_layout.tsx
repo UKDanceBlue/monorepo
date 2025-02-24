@@ -13,8 +13,8 @@ import { useEffect } from "react";
 import * as React from "react";
 import { Platform } from "react-native";
 
+import { AuthProvider } from "~/auth/context/AuthProvider";
 import { UrqlContext } from "~/components/api/urql";
-import { AuthProvider } from "~/components/auth/AuthProvider";
 import { SplashScreen } from "~/components/loading/SplashScreen";
 import useLoadFonts from "~/hooks/useLoadFonts";
 import { NAV_THEME } from "~/lib/constants";

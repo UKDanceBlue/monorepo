@@ -7,8 +7,8 @@ import React from "react";
 import { StatusBar, View } from "react-native";
 
 import WelcomeBackOverlay from "~/assets/screens/login-modal/welcome-back-overlay.png";
+import { getLoginBackground } from "~/auth/login-page/background";
 import { useAuthContext } from "~/components/auth/AuthContext";
-import { getLoginBackground } from "~/components/background/login";
 import { Button } from "~/components/ui/button";
 import { useAllowedLoginTypes } from "~/hooks/useAllowedLoginTypes";
 import { useLogin } from "~/hooks/useLogin";
