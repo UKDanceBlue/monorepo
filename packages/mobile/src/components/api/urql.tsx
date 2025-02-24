@@ -3,8 +3,8 @@ import type { ReactNode } from "react";
 import { useMemo } from "react";
 import { Client, fetchExchange, Provider } from "urql";
 
-import { API_BASE_URL } from "@/util/apiUrl";
-import { Logger } from "@/util/logger/Logger";
+import { API_BASE_URL } from "~/util/apiUrl";
+import { Logger } from "~/util/logger/Logger";
 
 import { useAuthContext } from "../auth/AuthContext";
 

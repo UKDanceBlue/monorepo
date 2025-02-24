@@ -7371,6 +7371,25 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@radix-ui/react-label@npm:^2.1.0":
+  version: 2.1.2
+  resolution: "@radix-ui/react-label@npm:2.1.2"
+  dependencies:
+    "@radix-ui/react-primitive": "npm:2.0.2"
+  peerDependencies:
+    "@types/react": "*"
+    "@types/react-dom": "*"
+    react: ^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc
+    react-dom: ^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc
+  peerDependenciesMeta:
+    "@types/react":
+      optional: true
+    "@types/react-dom":
+      optional: true
+  checksum: 10/e3d159dcbf41e46aaada532ff04c792791912216eba3c41ef21fab882ea51e0c3ef495d8fa13cf09bb4fb3599afbf3fb31fd187323ce78531859537bc2f7d096
+  languageName: node
+  linkType: hard
+
 "@radix-ui/react-popover@npm:^1.0.7":
   version: 1.1.2
   resolution: "@radix-ui/react-popover@npm:1.1.2"
@@ -7632,6 +7651,25 @@ __metadata:
     "@types/react-dom":
       optional: true
   checksum: 10/a7c3445603a45075dcf3559eb8f2f2e8545afeae253e67d0bde736c66b293c601974a1d6f9d7be1802d83869933dc120a7389ab98189ceb9a24659737dde0162
+  languageName: node
+  linkType: hard
+
+"@radix-ui/react-separator@npm:^1.1.0":
+  version: 1.1.2
+  resolution: "@radix-ui/react-separator@npm:1.1.2"
+  dependencies:
+    "@radix-ui/react-primitive": "npm:2.0.2"
+  peerDependencies:
+    "@types/react": "*"
+    "@types/react-dom": "*"
+    react: ^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc
+    react-dom: ^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc
+  peerDependenciesMeta:
+    "@types/react":
+      optional: true
+    "@types/react-dom":
+      optional: true
+  checksum: 10/83a2429171c3dcad1e33e43c843def6b4535d7ce7940fc46d3916c65abaebe5c3b19ca9a8882363c4057dce898e95beb90e97dee012feb02b42d43912c7b4120
   languageName: node
   linkType: hard
 
@@ -9041,6 +9079,26 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@rn-primitives/label@npm:^1.1.0":
+  version: 1.1.0
+  resolution: "@rn-primitives/label@npm:1.1.0"
+  dependencies:
+    "@radix-ui/react-label": "npm:^2.1.0"
+    "@rn-primitives/slot": "npm:1.1.0"
+    "@rn-primitives/types": "npm:1.1.0"
+  peerDependencies:
+    react: "*"
+    react-native: "*"
+    react-native-web: "*"
+  peerDependenciesMeta:
+    react-native:
+      optional: true
+    react-native-web:
+      optional: true
+  checksum: 10/cbd84819a75659c8f4ce1bfaaf67a0c73e8ecbc6dfd7f8a119a54138723897bc0373fbbf3d030386c98b4b61fc89f0e812ab6e8670340182fa68c1ef7fb59efd
+  languageName: node
+  linkType: hard
+
 "@rn-primitives/portal@npm:^1.1.0":
   version: 1.1.0
   resolution: "@rn-primitives/portal@npm:1.1.0"
@@ -9056,6 +9114,26 @@ __metadata:
     react-native-web:
       optional: true
   checksum: 10/6e41811a081e62ce9a0613424f9b4497796f588920653d5fa726dcbf979c98122eea3ea2a9656b83f212b660a26ac2c128d6f85b2f379916cb5875d5f1854216
+  languageName: node
+  linkType: hard
+
+"@rn-primitives/separator@npm:^1.1.0":
+  version: 1.1.0
+  resolution: "@rn-primitives/separator@npm:1.1.0"
+  dependencies:
+    "@radix-ui/react-separator": "npm:^1.1.0"
+    "@rn-primitives/slot": "npm:1.1.0"
+    "@rn-primitives/types": "npm:1.1.0"
+  peerDependencies:
+    react: "*"
+    react-native: "*"
+    react-native-web: "*"
+  peerDependenciesMeta:
+    react-native:
+      optional: true
+    react-native-web:
+      optional: true
+  checksum: 10/904a579a184c0644443dd44d4bf38bdbec9976aaac51fb2d422c383555b4af12fd1f2b7d951830779f92dfe9034b7b87ae93ffbbbeda1724268345e84dfc3510
   languageName: node
   linkType: hard
 
@@ -9079,7 +9157,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rn-primitives/slot@npm:1.1.0":
+"@rn-primitives/slot@npm:1.1.0, @rn-primitives/slot@npm:^1.1.0":
   version: 1.1.0
   resolution: "@rn-primitives/slot@npm:1.1.0"
   peerDependencies:
@@ -9114,7 +9192,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rn-primitives/types@npm:1.1.0":
+"@rn-primitives/types@npm:1.1.0, @rn-primitives/types@npm:^1.1.0":
   version: 1.1.0
   resolution: "@rn-primitives/types@npm:1.1.0"
   peerDependencies:
@@ -11838,9 +11916,13 @@ __metadata:
     "@rn-primitives/aspect-ratio": "npm:^1.1.0"
     "@rn-primitives/avatar": "npm:^1.1.0"
     "@rn-primitives/dialog": "npm:^1.1.0"
+    "@rn-primitives/label": "npm:^1.1.0"
     "@rn-primitives/portal": "npm:^1.1.0"
+    "@rn-primitives/separator": "npm:^1.1.0"
     "@rn-primitives/slider": "npm:^1.1.0"
+    "@rn-primitives/slot": "npm:^1.1.0"
     "@rn-primitives/toast": "npm:^1.1.0"
+    "@rn-primitives/types": "npm:^1.1.0"
     "@sentry/react-native": "npm:~6.5.0"
     "@shopify/react-native-skia": "npm:1.10.2"
     "@testing-library/react-native": "npm:^13.0.1"
@@ -11862,6 +11944,8 @@ __metadata:
     babel-plugin-module-resolver: "npm:^5.0.2"
     babel-plugin-react-compiler: "npm:19.0.0-beta-21e868a-20250216"
     class-validator: "npm:^0.14.1"
+    class-variance-authority: "npm:^0.7.1"
+    clsx: "npm:^2.1.1"
     expo: "npm:~52.0.25"
     expo-application: "npm:~6.0.2"
     expo-asset: "npm:~11.0.2"
@@ -11923,7 +12007,9 @@ __metadata:
     react-native-webview: "npm:13.13.1"
     react-test-renderer: "npm:^18.3.1"
     reflect-metadata: "npm:^0.2.2"
+    tailwind-merge: "npm:^3.0.2"
     tailwindcss: "npm:^3.4.17"
+    tailwindcss-animate: "npm:^1.0.7"
     type-graphql: "npm:^2.0.0-rc.2"
     typedi: "npm:^0.10.0"
     typescript: "npm:^5.7.3"
@@ -14990,6 +15076,15 @@ __metadata:
     libphonenumber-js: "npm:^1.10.53"
     validator: "npm:^13.9.0"
   checksum: 10/0c34592a1cbdd5e9c35cd02f4babd94120339e875fc7627aa2bf5dffb45ecc373275e854389c6ff3d39781cddb85a18193b4e9e8f4d77d6d90e445fd0b8b8e11
+  languageName: node
+  linkType: hard
+
+"class-variance-authority@npm:^0.7.1":
+  version: 0.7.1
+  resolution: "class-variance-authority@npm:0.7.1"
+  dependencies:
+    clsx: "npm:^2.1.1"
+  checksum: 10/27a1face3f5ee88caa7813743461977aef5110830dc8e8960e7c9570598b37ffb8b2760b4e5d738dc827b0eb9058ddd204e9002e9af0ef39b6851f6ea9aa82c1
   languageName: node
   linkType: hard
 
@@ -31490,6 +31585,22 @@ __metadata:
   version: 0.1.0
   resolution: "system-architecture@npm:0.1.0"
   checksum: 10/ca0dd793c45c354ab57dd7fc8ce7dc9923a6e07382bd3b22eb5b08f55ddb0217c390d00767549c5155fd4ce7ef23ffdd8cfb33dd4344cbbd37837d085a50f6f0
+  languageName: node
+  linkType: hard
+
+"tailwind-merge@npm:^3.0.2":
+  version: 3.0.2
+  resolution: "tailwind-merge@npm:3.0.2"
+  checksum: 10/f5142ddd670018f4816b8510b0464e703be369018544c35eeb8bbba48b9dc320b5f86561ed9c84602b66d367213ee1508cd28b7c9c572420cfa5ecfc848f28c7
+  languageName: node
+  linkType: hard
+
+"tailwindcss-animate@npm:^1.0.7":
+  version: 1.0.7
+  resolution: "tailwindcss-animate@npm:1.0.7"
+  peerDependencies:
+    tailwindcss: "*"
+  checksum: 10/ef176fbb0bf9dca84178b35b6a9615cd756358ea80be9c575456d12ecd7f3c431e9e571915c7df72959dc798a730959e9a4739d59eab55d8cc6db390870ff0d2
   languageName: node
   linkType: hard
 

@@ -1,8 +1,8 @@
 import { useEffect, useMemo } from "react";
 import { useQuery } from "urql";
 
-import { graphql } from "@/graphql";
-import { Logger } from "@/util/logger/Logger";
+import { graphql } from "~/graphql";
+import { Logger } from "~/util/logger/Logger";
 
 const useAllowedLoginTypesQuery = graphql(/* GraphQL */ `
   query useAllowedLoginTypes {

@@ -6,10 +6,10 @@ import {
   WebBrowserResultType,
 } from "expo-web-browser";
 
-import { useAuthContext } from "@/components/auth/AuthContext";
-import { useLoading } from "@/components/loading/loadingContext";
-import { API_BASE_URL } from "@/util/apiUrl";
-import { Logger } from "@/util/logger/Logger";
+import { useAuthContext } from "~/components/auth/AuthContext";
+import { useLoading } from "~/components/loading/loadingContext";
+import { API_BASE_URL } from "~/util/apiUrl";
+import { Logger } from "~/util/logger/Logger";
 
 function getLoginUrl(source: AuthSource): [string, string] {
   let urlComponent = "";
@@ -31,7 +31,7 @@ function getLoginUrl(source: AuthSource): [string, string] {
     }
   }
 
-  const redirectUrl = createURL("/auth/login");
+  const redirectUrl = createURL("/login");
   const urlString = `${API_BASE_URL}/api/auth/${urlComponent}?returning=token&redirectTo=${encodeURIComponent(
     redirectUrl
   )}`;

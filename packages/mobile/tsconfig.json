@@ -3,8 +3,8 @@
     "module": "preserve",
     "moduleResolution": "bundler",
     "paths": {
-      "@/assets/*": ["./assets/*"],
-      "@/*": ["./src/*"]
+      "~/assets/*": ["./assets/*"],
+      "~/*": ["./src/*"]
     },
     "noUncheckedIndexedAccess": false,
     "exactOptionalPropertyTypes": false,

@@ -5,7 +5,7 @@ import {
 } from "expo-updates";
 import { useEffect, useState } from "react";
 
-import { Logger } from "@/util/logger/Logger";
+import { Logger } from "~/util/logger/Logger";
 
 export function useUpdateChecker() {
   const {

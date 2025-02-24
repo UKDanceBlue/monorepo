@@ -2,8 +2,8 @@ import type { ReactNode } from "react";
 import { Text, View } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
 
-import { useColors } from "@/theme/color-mode";
-// import { useSetColorMode } from "@/theme/color-mode";
+import { useColors } from "~/theme/color-mode";
+// import { useSetColorMode } from "~/theme/color-mode";
 
 export default function Test() {
   const colors = useColors();

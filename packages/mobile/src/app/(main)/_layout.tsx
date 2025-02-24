@@ -1,8 +1,7 @@
 import { Stack } from "expo-router/stack";
 import { verifyInstallation } from "nativewind";
-import { Text } from "react-native";
 
-import { useAuthContext } from "@/components/auth/AuthContext";
+import { useAuthContext } from "~/components/auth/AuthContext";
 
 export default function Layout() {
   const showLogin = useAuthContext().token == null;

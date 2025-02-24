@@ -8,7 +8,7 @@ import {
 import { type PropsWithChildren, useState } from "react";
 import { Platform } from "react-native";
 
-import { universalCatch } from "@/util/logger/Logger";
+import { universalCatch } from "~/util/logger/Logger";
 
 import { authContext } from "./AuthContext";
 

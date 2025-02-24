@@ -1,8 +1,9 @@
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import { Tabs } from "expo-router";
 
-import { DBHeaderText } from "@/components/navigation/header/DBHeaderText";
-import HeaderIcons from "@/components/navigation/header/HeaderIcons";
+import { DBHeaderText } from "~/components/navigation/header/DBHeaderText";
+import HeaderIcons from "~/components/navigation/header/HeaderIcons";
+import TabBarComponent from "~/components/navigation/tab/TabBarComponent";
 
 export default function TabLayout() {
   return (
@@ -13,6 +14,7 @@ export default function TabLayout() {
         headerLeft: DBHeaderText,
         headerTitle: () => null,
       }}
+      tabBar={(props) => <TabBarComponent {...props} fancyTab="explore" />}
     >
       <Tabs.Screen
         name="index"

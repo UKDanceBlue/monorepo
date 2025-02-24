@@ -1,45 +1,33 @@
+import type { ReactNode } from "react";
 import { useWindowDimensions, View } from "react-native";
 import type { SvgProps } from "react-native-svg";
-import Svg, { G, Path } from "react-native-svg";
+import Svg, { Path } from "react-native-svg";
 
-const ratio = { x: 1920, y: 440 };
 /**
  * This can never not be the full width of the screen
  */
 const BackgroundCutoutBase = ({
-  svgProps,
   color,
-}: {
-  svgProps?: SvgProps;
+  ...svgProps
+}: SvgProps & {
   color?: string;
 }) => (
-  <Svg
-    viewBox={`0 0 ${ratio.x} ${ratio.y}`}
-    // @ts-expect-error This is fine
-
-    style={{ padding: 0, margin: 0, ...(svgProps?.style ?? {}) }}
-    {...svgProps}
-  >
-    <G data-name="Layer 2">
-      <Path
-        d="M 0 0 H 700 C 700 0 700 280 960 280 C 1220 280 1220 0 1220 0 H 1920 V 440 H 0 Z"
-        // @ts-expect-error This is fine
-        style={{ fill: color ?? "#ededed" }}
-        data-name="Layer 1"
-      />
-    </G>
+  <Svg viewBox={`0 0 520 520`} {...svgProps}>
+    <Path
+      d="M0,0 C0,0,0,260,260,260 C520,260,520,0,520,0 H520 V520 H0 Z"
+      // @ts-expect-error This is fine
+      style={{ fill: color ?? "#ededed" }}
+    />
   </Svg>
 );
 
 const BackgroundCutout = ({
   color,
-  svgProps,
-}: {
-  svgProps?: SvgProps & { height: number };
-  color: string;
-}) => {
+  children,
+  ...svgProps
+}: SvgProps & { height: number; color: string; children: ReactNode }) => {
   const { width: screenWidth } = useWindowDimensions();
-  if (!svgProps?.height || Number.isNaN(Number(svgProps.height))) {
+  if (!svgProps.height || Number.isNaN(Number(svgProps.height))) {
     throw new Error(
       "BackgroundCutout requires a height to be passed in svgProps"
     );
@@ -51,24 +39,20 @@ const BackgroundCutout = ({
     <View style={{ display: "flex", flexDirection: "row" }}>
       <View
         style={{
-          position: "absolute",
-          left: 0,
-          minWidth: sideWidth,
-          minHeight: svgProps.height,
+          // minWidth: sideWidth,
+          // minHeight: svgProps.height,
           backgroundColor: color,
-          margin: 0,
+          width: sideWidth,
+          height: svgWidth,
         }}
       />
       <BackgroundCutoutBase
-        svgProps={{
-          ...svgProps,
-          width: svgProps.height,
-          height: svgProps.height,
-          style: {
-            // @ts-expect-error This is fine
-            ...(svgProps.style ?? {}),
-            marginLeft: sideWidth,
-          },
+        {...svgProps}
+        style={{
+          // @ts-expect-error This is fine
+          ...(svgProps.style ?? {}),
+          width: svgWidth,
+          height: svgWidth,
         }}
         color={color}
       />
@@ -83,11 +67,22 @@ const BackgroundCutout = ({
       <View
         style={{
           position: "absolute",
-          right: 0,
-          minWidth: sideWidth,
-          minHeight: svgProps.height,
+          bottom: svgWidth / 2,
+          left: sideWidth,
+          right: sideWidth,
+          width: svgWidth,
+          height: svgWidth,
+        }}
+      >
+        {children}
+      </View>
+      <View
+        style={{
+          // minWidth: sideWidth,
+          // minHeight: svgProps.height,
           backgroundColor: color,
-          margin: 0,
+          width: sideWidth,
+          height: svgWidth,
         }}
       />
     </View>

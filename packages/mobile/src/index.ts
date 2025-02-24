@@ -1,4 +1,4 @@
-import "./css/global.css";
+import "./global.css";
 
 import * as Sentry from "@sentry/react-native";
 import { isDevelopmentBuild } from "expo-dev-client";

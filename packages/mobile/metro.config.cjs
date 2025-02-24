@@ -30,5 +30,5 @@ config.resolver.unstable_enablePackageExports = true;
 config.resolver.unstable_conditionNames = ["require", "react-native"];
 
 module.exports = withNativeWind(withSentryConfig(config), {
-  input: "./src/css/global.css",
+  input: "./src/global.css",
 });
