@@ -14,7 +14,7 @@ export default function TabLayout() {
         headerLeft: DBHeaderText,
         headerTitle: () => null,
       }}
-      tabBar={(props) => <TabBarComponent {...props} fancyTab="explore" />}
+      tabBar={(props) => <TabBarComponent {...props} />}
     >
       <Tabs.Screen
         name="index"

@@ -9,8 +9,7 @@ export function iconWithClassName<G extends string, FN extends string>(
       target: "style",
       nativeStyleToProp: {
         color: true,
-        width: "size",
-        height: "size",
+        fontSize: "size",
       },
     },
   });

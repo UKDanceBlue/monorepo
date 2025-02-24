@@ -6,6 +6,7 @@ import type {
   ParamListBase,
   TabNavigationState,
 } from "@react-navigation/native";
+import _ from "lodash";
 import React from "react";
 import {
   Text,
@@ -14,7 +15,8 @@ import {
   View,
 } from "react-native";
 
-import { FontAwesome } from "~/lib/icons/FontAwesome";
+import { useTabBarConfig } from "~/hooks/useTabBarConfig";
+import { FontAwesome5 } from "~/lib/icons/FontAwesome5";
 import BackgroundCutout from "~/svgs/background-cutout";
 import DanceBlueRibbon from "~/svgs/DBRibbon";
 
@@ -23,21 +25,14 @@ import DanceBlueRibbon from "~/svgs/DBRibbon";
 const iconMap = {
   // https://icons.expo.fyi/
   // Key: Screen   Value: Icon ID
-  "Home": "home",
-  "Events": "calendar",
-  "Explore": "compass",
-  "Store": "store",
-  "More": "ellipsis-h",
-  "Scoreboard": "list-ol",
-  "Teams": "users",
-  "Donate": "hand-holding-heart",
-  "Marathon": "people-arrows",
-  "Scavenger Hunt": "search",
-  "Logo": null,
-  "Morale Cup": "trophy",
-  "Info": "info-circle",
-  "DB Moments": "camera-retro",
-};
+  index: "home",
+  events: "calendar",
+  explore: "compass",
+  teams: "users",
+  marathon: "people-arrows",
+  Logo: null,
+  dbmoments: "camera-retro",
+} as const;
 
 function TabBarIcon({
   isFocused,
@@ -45,6 +40,7 @@ function TabBarIcon({
   onPress,
   onLongPress,
   isFancy: isMiddle,
+  focusedClass,
   iconSize,
   label,
   iconKey,
@@ -54,6 +50,7 @@ function TabBarIcon({
   onPress: () => void;
   onLongPress: () => void;
   isFancy?: boolean;
+  focusedClass: string;
   iconSize: number;
   label?: string;
   iconKey: keyof typeof iconMap;
@@ -71,15 +68,15 @@ function TabBarIcon({
         {iconKey === "Logo" ? (
           <DanceBlueRibbon svgProps={{ width: iconSize, height: iconSize }} />
         ) : (
-          <FontAwesome
+          <FontAwesome5
             name={iconMap[iconKey]}
             size={iconSize}
-            className={`${isFocused ? "color-white" : "color-gray-400"} text-xs`}
+            className={isFocused ? focusedClass : "color-gray-400"}
           />
         )}
         {label && (
           <Text
-            className={`${isFocused ? "color-white" : "color-gray-400"} text-xs`}
+            className={`${isFocused ? focusedClass : "color-gray-400"} text-xs`}
           >
             {label}
           </Text>
@@ -92,6 +89,7 @@ function TabBarIcon({
 function TabBarEntry({
   label,
   isFocused,
+  focusedClass,
   route,
   options,
   navigation,
@@ -100,6 +98,7 @@ function TabBarEntry({
 }: {
   label: string;
   isFocused: boolean;
+  focusedClass: string;
   route: TabNavigationState<ParamListBase>["routes"][number];
   options: BottomTabNavigationOptions;
   navigation: BottomTabBarProps["navigation"];
@@ -133,6 +132,7 @@ function TabBarEntry({
     <TabBarIcon
       key={route.key}
       isFocused={isFocused}
+      focusedClass={focusedClass}
       options={options}
       onPress={onPress}
       onLongPress={onLongPress}
@@ -149,15 +149,55 @@ function TabBarComponent({
   descriptors,
   navigation,
   insets,
-  fancyTab,
-}: BottomTabBarProps & { fancyTab: string | undefined }) {
+}: BottomTabBarProps) {
+  const { shownTabs, fancyTab, tabConfigLoading } = useTabBarConfig();
+
   const { width: screenWidth } = useWindowDimensions();
 
-  const tabBarHeight = screenWidth / 8;
+  const tabBarHeight = screenWidth / 6;
 
-  const fancyTabIdx = fancyTab
-    ? state.routes.findIndex(({ name }) => name === fancyTab)
-    : null;
+  if (tabConfigLoading) {
+    return null;
+  }
+
+  const fancyTabIdx = state.routes.findIndex(
+    (r) => r.name === fancyTab || descriptors[r.key].options.title === fancyTab
+  );
+
+  const tabs = state.routes
+    .map((route, index) => {
+      const { options } = descriptors[route.key];
+      return [
+        route,
+        <TabBarEntry
+          key={route.key}
+          route={route}
+          label={
+            typeof options.tabBarLabel === "string"
+              ? options.tabBarLabel
+              : (options.title ?? route.name)
+          }
+          isFocused={state.index === index}
+          focusedClass={fancyTabIdx !== -1 ? "color-white" : "color-primary"}
+          options={options}
+          navigation={navigation}
+          tabBarHeight={tabBarHeight}
+          screenWidth={screenWidth}
+          isFancyTab={false}
+        />,
+      ] as const;
+    })
+    .filter(
+      ([route], idx) =>
+        idx !== fancyTabIdx &&
+        shownTabs.includes(descriptors[route.key].options.title!)
+    )
+    .map(([, tab]) => tab);
+
+  if (fancyTab) {
+    const middle = Math.floor(tabs.length / 2);
+    tabs.splice(middle, 0, <View key="placeholder" className="flex-1" />);
+  }
 
   return (
     <View
@@ -182,18 +222,17 @@ function TabBarComponent({
             height={tabBarHeight}
             color="#0032A0"
           >
-            {fancyTabIdx !== null && (
-              <TabBarEntry
-                label="DanceBlue"
-                isFocused={state.index === fancyTabIdx}
-                route={state.routes[fancyTabIdx]}
-                options={descriptors[state.routes[fancyTabIdx].key].options}
-                navigation={navigation}
-                tabBarHeight={tabBarHeight}
-                screenWidth={screenWidth}
-                isFancyTab
-              />
-            )}
+            <TabBarEntry
+              label="DanceBlue"
+              isFocused={state.index === fancyTabIdx}
+              focusedClass=""
+              route={state.routes[fancyTabIdx]}
+              options={descriptors[state.routes[fancyTabIdx].key].options}
+              navigation={navigation}
+              tabBarHeight={tabBarHeight}
+              screenWidth={screenWidth}
+              isFancyTab
+            />
           </BackgroundCutout>
         )}
       </View>
@@ -205,29 +244,7 @@ function TabBarComponent({
             height: tabBarHeight,
           }}
         >
-          {state.routes.map((route, index) => {
-            const { options } = descriptors[route.key];
-            if (index === fancyTabIdx) {
-              return <View key={route.key} />;
-            }
-            return (
-              <TabBarEntry
-                key={route.key}
-                route={route}
-                label={
-                  typeof options.tabBarLabel === "string"
-                    ? options.tabBarLabel
-                    : (options.title ?? route.name)
-                }
-                isFocused={state.index === index}
-                options={options}
-                navigation={navigation}
-                tabBarHeight={tabBarHeight}
-                screenWidth={screenWidth}
-                isFancyTab={false}
-              />
-            );
-          })}
+          {tabs}
         </View>
       </View>
     </View>
