@@ -1,7 +1,7 @@
 import { createContext, useCallback, useContext, useId, useState } from "react";
 
-import { useTimeout } from "~/hooks/useTimeout";
-import { Logger } from "~/util/logger/Logger";
+import { useTimeout } from "~/lib/hooks/useTimeout";
+import { Logger } from "~/lib/logger/Logger";
 
 export type LoadingContextType = [
   Partial<Record<string, boolean>>,

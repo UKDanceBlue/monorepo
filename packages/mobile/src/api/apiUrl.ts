@@ -12,7 +12,7 @@
 
 import { reloadAsync } from "expo-updates";
 
-import { Logger } from "./logger/Logger";
+import { Logger } from "../lib/logger/Logger";
 
 export let API_BASE_URL = "https://app.danceblue.org";
 

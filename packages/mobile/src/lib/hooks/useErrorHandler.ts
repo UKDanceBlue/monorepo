@@ -1,7 +1,7 @@
 import { Alert } from "react-native";
 
-import { Logger } from "~/util/logger/Logger";
-import type { ExtraLogArgs } from "~/util/logger/transport";
+import { Logger } from "~/lib/logger/Logger";
+import type { ExtraLogArgs } from "~/lib/logger/transport";
 
 import { useOnce } from "./useOnce";
 

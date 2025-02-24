@@ -6,12 +6,12 @@ import { useEffect, useState } from "react";
 import React from "react";
 import { StatusBar, View } from "react-native";
 
+import { useAllowedLoginTypes } from "~/api/hooks/useAllowedLoginTypes";
 import WelcomeBackOverlay from "~/assets/screens/login-modal/welcome-back-overlay.png";
+import { useAuthContext } from "~/auth/context/AuthContext";
 import { getLoginBackground } from "~/auth/login-page/background";
-import { useAuthContext } from "~/components/auth/AuthContext";
 import { Button } from "~/components/ui/button";
-import { useAllowedLoginTypes } from "~/hooks/useAllowedLoginTypes";
-import { useLogin } from "~/hooks/useLogin";
+import { useLogin } from "~/lib/hooks/useLogin";
 
 export default function SplashLoginScreen() {
   const { token: existingToken, setToken } = useAuthContext();

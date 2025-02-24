@@ -15,7 +15,7 @@ import {
   View,
 } from "react-native";
 
-import { useTabBarConfig } from "~/hooks/useTabBarConfig";
+import { useTabBarConfig } from "~/api/hooks/useTabBarConfig";
 import { FontAwesome5 } from "~/lib/icons/FontAwesome5";
 import BackgroundCutout from "~/svgs/background-cutout";
 import DanceBlueRibbon from "~/svgs/DBRibbon";

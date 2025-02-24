@@ -6,10 +6,10 @@ import {
   WebBrowserResultType,
 } from "expo-web-browser";
 
-import { useAuthContext } from "~/components/auth/AuthContext";
+import { API_BASE_URL } from "~/api/apiUrl";
+import { useAuthContext } from "~/auth/context/AuthContext";
 import { useLoading } from "~/components/loading/loadingContext";
-import { API_BASE_URL } from "~/util/apiUrl";
-import { Logger } from "~/util/logger/Logger";
+import { Logger } from "~/lib/logger/Logger";
 
 function getLoginUrl(source: AuthSource): [string, string] {
   let urlComponent = "";

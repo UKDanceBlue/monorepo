@@ -8,8 +8,8 @@ import { emergencyLaunchReason, isEmergencyLaunch } from "expo-updates";
 import { channel, isEmbeddedLaunch, manifest, updateId } from "expo-updates";
 import { Alert } from "react-native";
 
-import { navigationIntegration } from "./util/instrumentation/routingInstrumentation";
-import { Logger } from "./util/logger/Logger";
+import { navigationIntegration } from "./lib/instrumentation/routingInstrumentation";
+import { Logger } from "./lib/logger/Logger";
 
 const metadata = "metadata" in manifest ? manifest.metadata : undefined;
 const extra = "extra" in manifest ? manifest.extra : undefined;

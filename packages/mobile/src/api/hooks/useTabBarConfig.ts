@@ -1,8 +1,8 @@
 import { useEffect, useMemo } from "react";
 import { useQuery } from "urql";
 
-import { graphql } from "~/graphql/index";
-import { Logger } from "~/util/logger/Logger";
+import { graphql } from "~/api/index";
+import { Logger } from "~/lib/logger/Logger";
 
 const useTabBarConfigQuery = graphql(/* GraphQL */ `
   query useTabBarConfig {

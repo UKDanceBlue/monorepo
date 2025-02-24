@@ -3,10 +3,9 @@ import type { ReactNode } from "react";
 import { useMemo } from "react";
 import { Client, fetchExchange, Provider } from "urql";
 
-import { API_BASE_URL } from "~/util/apiUrl";
-import { Logger } from "~/util/logger/Logger";
-
-import { useAuthContext } from "../auth/AuthContext";
+import { API_BASE_URL } from "~/api/apiUrl";
+import { useAuthContext } from "~/auth/context/AuthContext";
+import { Logger } from "~/lib/logger/Logger";
 
 export function UrqlContext({ children }: { children: ReactNode }) {
   const { token, setToken, masquerade } = useAuthContext();

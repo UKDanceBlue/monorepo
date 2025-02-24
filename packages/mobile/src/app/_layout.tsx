@@ -13,13 +13,13 @@ import { useEffect } from "react";
 import * as React from "react";
 import { Platform } from "react-native";
 
+import { UrqlContext } from "~/api/context/urql";
 import { AuthProvider } from "~/auth/context/AuthProvider";
-import { UrqlContext } from "~/components/api/urql";
 import { SplashScreen } from "~/components/loading/SplashScreen";
-import useLoadFonts from "~/hooks/useLoadFonts";
 import { NAV_THEME } from "~/lib/constants";
+import useLoadFonts from "~/lib/hooks/useLoadFonts";
+import { Logger } from "~/lib/logger/Logger";
 import { useColorScheme } from "~/lib/useColorScheme";
-import { Logger } from "~/util/logger/Logger";
 
 const LIGHT_THEME: Theme = {
   ...DefaultTheme,

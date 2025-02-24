@@ -1,7 +1,7 @@
 import { Linking, Pressable } from "react-native";
 
 import { H1 } from "~/components/ui/typography";
-import { universalCatch } from "~/util/logger/Logger";
+import { universalCatch } from "~/lib/logger/Logger";
 
 export function DBHeaderText() {
   return (
