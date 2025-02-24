@@ -8,7 +8,6 @@ import {
 } from "@react-navigation/native";
 import { PortalHost } from "@rn-primitives/portal";
 import { Slot } from "expo-router";
-import { Stack } from "expo-router/stack";
 import { StatusBar } from "expo-status-bar";
 import { useEffect } from "react";
 import * as React from "react";

@@ -29,7 +29,6 @@ export default function Layout() {
         name="login"
         options={{ headerShown: false, presentation: "modal" }}
       />
-      <Stack.Screen name="test" options={{ title: "Test" }} />
     </Stack>
   );
 }
