@@ -45,7 +45,6 @@
           "cameraPermission": "Allow DanceBlue to access your microphone."
         }
       ],
-      "expo-av",
       "expo-secure-store",
       "expo-file-system",
       [
@@ -81,7 +80,8 @@
         }
       ],
       "expo-build-properties",
-      "expo-router"
+      "expo-router",
+      "expo-audio"
     ],
     "updates": {
       "enabled": true,

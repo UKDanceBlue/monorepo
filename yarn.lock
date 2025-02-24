@@ -8123,7 +8123,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@react-native-community/netinfo@npm:11.4.1":
+"@react-native-community/netinfo@npm:^11.4.1":
   version: 11.4.1
   resolution: "@react-native-community/netinfo@npm:11.4.1"
   peerDependencies:
@@ -11906,7 +11906,7 @@ __metadata:
     "@faker-js/faker": "npm:^9.4.0"
     "@openspacelabs/react-native-zoomable-view": "npm:2.3.1"
     "@react-native-async-storage/async-storage": "npm:1.24.0"
-    "@react-native-community/netinfo": "npm:11.4.1"
+    "@react-native-community/netinfo": "npm:^11.4.1"
     "@react-navigation/bottom-tabs": "npm:7.2.0"
     "@react-navigation/core": "npm:7.3.1"
     "@react-navigation/native": "npm:7.0.14"
@@ -11950,6 +11950,7 @@ __metadata:
     expo-application: "npm:~6.0.2"
     expo-asset: "npm:~11.0.2"
     expo-atlas: "npm:^0.4.0"
+    expo-audio: "npm:~0.3.5"
     expo-auth-session: "npm:~6.0.2"
     expo-av: "npm:~15.0.2"
     expo-blur: "npm:~14.0.2"
@@ -18462,6 +18463,17 @@ __metadata:
   bin:
     expo-atlas: build/src/cli/bin.js
   checksum: 10/b37aa40b315487d6d9209e9aeead43bea2e9f70128cffe1638f4810d4d49be84e5d9faeee79895b5ef2925b760f63c2e3c24da4939983f4f12bc2192d83b43a1
+  languageName: node
+  linkType: hard
+
+"expo-audio@npm:~0.3.5":
+  version: 0.3.5
+  resolution: "expo-audio@npm:0.3.5"
+  peerDependencies:
+    expo: "*"
+    react: "*"
+    react-native: "*"
+  checksum: 10/1bef9ff49b67b69748db204425feca2c08be046677d1791e14fa90db4e909537e03a60ca99217d35e3756874d3eecb345f69f8beca6f204d4ffb9cc6b46dc190
   languageName: node
   linkType: hard
 

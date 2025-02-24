@@ -4,4 +4,6 @@ import { iconWithClassName } from "./iconWithClassName";
 
 iconWithClassName(FontAwesome);
 
-export { FontAwesome } from "@expo/vector-icons";
+const FA = FontAwesome;
+
+export { FA as FontAwesome };
