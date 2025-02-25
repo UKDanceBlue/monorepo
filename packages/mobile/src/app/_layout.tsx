@@ -9,6 +9,7 @@ import {
 import { PortalHost } from "@rn-primitives/portal";
 import { Slot } from "expo-router";
 import { StatusBar } from "expo-status-bar";
+import { NativeBaseProvider } from "native-base";
 import { useEffect } from "react";
 import * as React from "react";
 import { Platform } from "react-native";
@@ -69,7 +70,9 @@ export default function Layout() {
         <ThemeProvider value={isDarkColorScheme ? DARK_THEME : LIGHT_THEME}>
           <UrqlContext>
             <AuthProvider>
-              <Slot />
+              <NativeBaseProvider>
+                <Slot />
+              </NativeBaseProvider>
             </AuthProvider>
           </UrqlContext>
         </ThemeProvider>
