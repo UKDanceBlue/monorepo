@@ -1,6 +1,8 @@
-import { Image } from "expo-image";
+import { Image, type ImageSource, useImage } from "expo-image";
+import { openURL } from "expo-linking";
+import type { DateTime } from "luxon";
 import { type ReactNode, useState } from "react";
-import WebView from "react-native-webview";
+import { View } from "react-native";
 
 import { FontAwesome } from "~/lib/icons/FontAwesome";
 import { FontAwesome5 } from "~/lib/icons/FontAwesome5";
@@ -46,20 +48,57 @@ const feedItemTypes = {
   },
 } as const satisfies Record<string, FeedItemType>;
 
-export interface FeedItemButton {
+export type FeedItemButton = {
   title: string;
-  onPress: () => void;
-}
+} & (
+  | {
+      onPress: () => void;
+    }
+  | {
+      url: string;
+    }
+);
 
 export interface FeedItemData {
+  key: string;
   title: string;
   type: keyof typeof feedItemTypes;
-  date: Date;
+  date: DateTime;
   imageUrl?: string;
   youtubeUrl?: string;
   audioUrl?: string;
   textContent?: string;
   buttons: FeedItemButton[];
+}
+
+function FeedImage({
+  source,
+  className,
+}: {
+  source: ImageSource;
+  className?: string;
+}) {
+  const image = useImage(source);
+  const [layout, setLayout] = useState({ width: 0, height: 0 });
+
+  const calculatedHeight = image
+    ? (layout.width / image.width) * image.height
+    : 0;
+
+  return (
+    <View
+      onLayout={(event) => {
+        const { width, height } = event.nativeEvent.layout;
+        setLayout({ width, height });
+      }}
+      className={className}
+    >
+      <Image
+        source={image}
+        style={{ width: layout.width, height: calculatedHeight }}
+      />
+    </View>
+  );
 }
 
 export function FeedItem({
@@ -79,11 +118,11 @@ export function FeedItem({
   const [hidden, setHidden] = useState(false);
 
   const cardContent: ReactNode[] = [
-    <CardDescription key="date">{date.toLocaleDateString()}</CardDescription>,
+    <CardDescription key="date">{date.toLocaleString()}</CardDescription>,
   ];
   if (imageUrl) {
     cardContent.push(
-      <Image key="image" source={{ uri: imageUrl }} style={{ width: "100%" }} />
+      <FeedImage key="image" source={{ uri: imageUrl }} className="flex-1" />
     );
   }
   if (youtubeUrl) {
@@ -114,16 +153,28 @@ export function FeedItem({
   return (
     <Card>
       <CardHeader>
-        {feedItemTypes[type].icon}
-        <CardTitle>{title}</CardTitle>
+        <CardTitle className="flex flex-row gap-2">
+          {feedItemTypes[type].icon}
+          {title}
+        </CardTitle>
       </CardHeader>
       <CardContent>{cardContent}</CardContent>
       <CardFooter>
-        {buttons.map((button) => (
-          <Button key={button.title} onPress={button.onPress}>
-            {button.title}
-          </Button>
-        ))}
+        {buttons.map((button) =>
+          "url" in button ? (
+            <Button
+              key={button.title}
+              onPress={() => openURL(button.url)}
+              href={button.url}
+            >
+              {button.title}
+            </Button>
+          ) : (
+            <Button key={button.title} onPress={button.onPress}>
+              {button.title}
+            </Button>
+          )
+        )}
       </CardFooter>
     </Card>
   );

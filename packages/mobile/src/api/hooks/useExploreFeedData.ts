@@ -18,6 +18,7 @@ const serverFeedDocument = graphql(/* GraphQL */ `
       title
       createdAt
       textContent
+      link
       image {
         url
         alt
@@ -34,6 +35,7 @@ interface ParsedServerFeedItem {
   title: string;
   textContent?: string | undefined;
   sortByDate: DateTime;
+  link?: string | undefined;
   image?:
     | {
         url: string;
@@ -45,7 +47,7 @@ interface ParsedServerFeedItem {
     | undefined;
 }
 
-export function useExplorerFeed(): {
+export function useExploreFeedData(): {
   blogPosts: FeedItem[] | undefined;
   podcasts: FeedItem[] | undefined;
   youtubeVideos: FeedItem[] | undefined;
@@ -57,8 +59,6 @@ export function useExplorerFeed(): {
   const [loading, setLoading] = useState(true);
   const [blogPosts, setBlogPosts] = useState<FeedItem[] | undefined>();
   const [podcasts, setPodcasts] = useState<FeedItem[] | undefined>();
-  // const [instagramPosts, setInstagramPosts] = useState();
-  // const [tiktokPosts, setTikTokPosts] = useState();
   const [youtubeVideos, setYoutubeVideos] = useState<FeedItem[] | undefined>();
 
   const [serverFeedResult, refreshServerFeed] = useQuery({
@@ -75,6 +75,7 @@ export function useExplorerFeed(): {
         textContent,
         createdAt,
         image,
+        link,
       } of serverFeedResult.data.feed) {
         if (!createdAt) {
           continue;
@@ -99,6 +100,7 @@ export function useExplorerFeed(): {
           title,
           textContent: textContent ?? undefined,
           sortByDate: dateTimeFromSomething(createdAt),
+          link: link ?? undefined,
           image:
             imageUrl && image
               ? {

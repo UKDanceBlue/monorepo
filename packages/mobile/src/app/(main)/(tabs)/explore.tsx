@@ -1,17 +1,17 @@
-import { AudioPlayer } from "~/components/controls/AudioPlayer";
+import { FlatList } from "react-native-gesture-handler";
+
 import { FeedItem } from "~/components/feed/FeedItem";
+import { useFeed } from "~/lib/feed/useFeed";
 
 export default function Explore() {
+  const { feed, loading, refresh } = useFeed();
+
   return (
-    <FeedItem
-      data={{
-        title: "DanceBlue Behind the Scenes",
-        date: new Date(),
-        type: "podcast",
-        buttons: [],
-        audioUrl:
-          "https://danceblue.org/wp-content/uploads/2025/02/DBehind-The-Scenes-FR.mp3",
-      }}
+    <FlatList
+      onRefresh={refresh}
+      refreshing={loading}
+      data={feed}
+      renderItem={({ item }) => <FeedItem data={item} key={item.key} />}
     />
   );
 }
