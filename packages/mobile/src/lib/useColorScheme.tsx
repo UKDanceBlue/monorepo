@@ -11,3 +11,8 @@ export function useColorScheme() {
     toggleColorScheme,
   };
 }
+
+export function useColorSchemeValues<A, B>(lightValue: A, darkValue: B): A | B {
+  const { colorScheme } = useColorScheme();
+  return colorScheme === "dark" ? darkValue : lightValue;
+}

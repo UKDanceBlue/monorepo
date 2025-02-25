@@ -1,3 +1,2 @@
-export default function Profile() {
-  return null;
-}
+// TODO: Re-implement ProfileScreen in NativeWind
+export { default } from "~/components/profile/ProfileScreen";

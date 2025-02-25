@@ -154,7 +154,7 @@ function TabBarComponent({
 
   const { width: screenWidth } = useWindowDimensions();
 
-  const tabBarHeight = screenWidth / 6;
+  const tabBarHeight = Math.min(screenWidth / 6, 120);
 
   if (tabConfigLoading) {
     return null;

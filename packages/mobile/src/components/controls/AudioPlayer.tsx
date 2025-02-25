@@ -1,6 +1,6 @@
 import * as Slider from "@rn-primitives/slider";
 import { useAudioPlayer, useAudioPlayerStatus } from "expo-audio";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import type { LayoutRectangle } from "react-native";
 import { ActivityIndicator, Text, View } from "react-native";
 import {
@@ -17,18 +17,11 @@ export function AudioPlayer({ url }: { url: string }) {
   const status = useAudioPlayerStatus(player);
 
   const [trackLayout, setTrackLayout] = useState<LayoutRectangle>();
-  const [knobLayout, setKnobLayout] = useState<LayoutRectangle>();
   const [seekPos, setSeekPos] = useState<number | null>(null);
 
-  useEffect(() => {
-    console.log(trackLayout, knobLayout);
-  }, [knobLayout, trackLayout]);
   const panGesture = Gesture.Pan()
     .runOnJS(true)
     .activeCursor("grabbing")
-    .onBegin((e) => {
-      console.log("begin", e);
-    })
     .onStart(() => {
       player.pause();
     })
@@ -107,7 +100,6 @@ export function AudioPlayer({ url }: { url: string }) {
           />
           <GestureDetector gesture={panGesture}>
             <Slider.Thumb
-              onLayout={(e) => setKnobLayout(e.nativeEvent.layout)}
               style={{ left: `${percentage}%`, cursor: "grab" as "auto" }}
               className="w-4 h-4 rounded-full  bg-slate-800 relative"
             />

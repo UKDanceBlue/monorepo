@@ -17,17 +17,29 @@ export default function Layout() {
       />
       <Stack.Screen
         name="profile"
-        options={{ title: "Profile" }}
+        options={{
+          title: "Profile",
+          presentation: "fullScreenModal",
+          animation: "slide_from_right",
+        }}
         redirect={showLogin}
       />
       <Stack.Screen
         name="notifications"
-        options={{ title: "Notifications" }}
+        options={{
+          title: "Notifications",
+          presentation: "fullScreenModal",
+          animation: "slide_from_right",
+        }}
         redirect={showLogin}
       />
       <Stack.Screen
         name="login"
-        options={{ headerShown: false, presentation: "modal" }}
+        options={{
+          headerShown: false,
+          presentation: "fullScreenModal",
+          animation: "slide_from_bottom",
+        }}
       />
     </Stack>
   );
