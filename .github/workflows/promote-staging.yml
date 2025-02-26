@@ -17,6 +17,8 @@ jobs:
       name: release
       url: https://app.danceblue.org
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
       - name: Promote
         uses: ./promote.yml
         with:
