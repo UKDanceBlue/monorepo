@@ -12,15 +12,7 @@ env:
 
 jobs:
   do-release:
-    runs-on: ubuntu-latest
-    environment:
-      name: release
-      url: https://app.danceblue.org
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-      - name: Promote
-        uses: ./.github/workflows/promote.yml
-        with:
-          from: staging
-          to: release
+    uses: ./.github/workflows/promote.yml
+    with:
+      from: staging
+      to: release
