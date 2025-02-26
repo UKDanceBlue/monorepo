@@ -17,7 +17,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
       - name: Promote
-        uses: ./promote.yml
+        uses: ./.github/workflows/promote.yml
         with:
           from: main
           to: staging
