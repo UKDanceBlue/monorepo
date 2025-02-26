@@ -307,6 +307,13 @@ function applyCommitteePermissions(
         ],
         "."
       );
+
+      allow("read", "TeamNode", [
+        ".fundraisingAssignments",
+        ".solicitationCode",
+        ".fundraisingEntries",
+      ]);
+      allow("read", "TeamNode", ".fundraisingTotal");
     }
 
     // Members of dancer relations committee may manage point opportunities, point entries, and team members
@@ -320,7 +327,7 @@ function applyCommitteePermissions(
       allow("manage", "MarathonHourNode", ".");
     }
 
-    // Members of fundraising committee may manage fundraising entries, daily department notifications, solicitation codes, and fundraising assignments
+    // Members of fundraising and dancer relations committee may manage fundraising entries, daily department notifications, solicitation codes, and fundraising assignments
     if (
       identifier === CommitteeIdentifier.dancerRelationsCommittee ||
       identifier === CommitteeIdentifier.fundraisingCommittee

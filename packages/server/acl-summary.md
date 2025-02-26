@@ -373,9 +373,9 @@ This document lists the required permissions for each GraphQL endpoint in the Da
 ### teams
 **list** every TeamNode.
 ### assignSolicitationCodeToTeam
-**update** SolicitationCodeNode. with an id of _args.id_
+**update** TeamNode.solicitationCode with an id of _args.teamId_
 ### removeSolicitationCodeFromTeam
-**update** every SolicitationCodeNode.
+**update** TeamNode.solicitationCode with an id of _args.teamId_
 ## NodeResolver
 ### node
 **get** custom function (.):

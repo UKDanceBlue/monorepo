@@ -17,7 +17,7 @@ import { getAccessControlProvider } from "#config/refine/authorization.js";
 import { useNotificationProvider } from "#config/refine/feedback.js";
 import { dataProvider } from "#config/refine/graphql/data.js";
 import { refineResources } from "#config/refine/resources.js";
-import { useRouterBindings } from "#config/refine/router.js";
+import { routerBindings } from "#config/refine/router.js";
 import { useLoginState } from "#hooks/useLoginState.js";
 
 export function InnerContext({ children }: { children: React.ReactNode }) {
@@ -26,7 +26,7 @@ export function InnerContext({ children }: { children: React.ReactNode }) {
     <Refine
       dataProvider={dataProvider}
       notificationProvider={useNotificationProvider()}
-      routerProvider={useRouterBindings()}
+      routerProvider={routerBindings}
       authProvider={authProvider}
       options={{
         projectId: "DqkUbD-wpgLRK-UO3SFV",

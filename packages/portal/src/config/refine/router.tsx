@@ -26,7 +26,7 @@ const stringifyConfig = {
   encodeValuesOnly: true,
 };
 
-export function useRouterBindings(): RouterBindings {
+function useGo(): GoFunction {
   const { searchStr: existingSearch, hash: existingHash } = useLocation();
   const navigate = useNavigate();
 
@@ -41,7 +41,7 @@ export function useRouterBindings(): RouterBindings {
       /** Construct query params */
       const urlQuery = {
         ...(keepQuery &&
-          (existingSearch as string | undefined) &&
+          (existingSearch as string | undefined) && // TODO: Fix this
           qs.parse(existingSearch, { ignoreQueryPrefix: true })),
         ...query,
       };
@@ -85,12 +85,22 @@ export function useRouterBindings(): RouterBindings {
     [existingHash, existingSearch, navigate]
   );
 
+  return goFn;
+}
+
+function useBack(): () => void {
   const {
     history: { back },
   } = useRouter();
 
-  const params: Record<string, string> = useParams({ strict: false });
+  return back;
+}
+
+function useParse(): () => ParseResponse {
   const { pathname, search } = useLocation();
+  const params: Record<string, string> = useParams({
+    strict: false,
+  });
 
   const { resource, action } = React.useMemo(() => {
     return findResourceAction(pathname);
@@ -108,7 +118,6 @@ export function useRouterBindings(): RouterBindings {
       ...(resource && { resource }),
       ...(action && { action }),
       ...(params.id && { id: decodeURIComponent(params.id) }),
-      // ...(params?.action && { action: params.action }), // lets see if there is a need for this
       pathname,
       params: {
         ...combinedParams,
@@ -127,24 +136,20 @@ export function useRouterBindings(): RouterBindings {
     return response;
   }, [pathname, search, params, resource, action]);
 
-  return {
-    go: (): GoFunction => {
-      return goFn;
-    },
-    back: () => {
-      return back;
-    },
-    parse: () => {
-      return parseFn;
-    },
-    Link: React.forwardRef<
-      HTMLAnchorElement,
-      ComponentProps<NonNullable<RouterBindings["Link"]>>
-    >((props: LinkProps, ref) => {
-      return <Link {...props} ref={ref} />;
-    }),
-  };
+  return parseFn;
 }
+
+export const routerBindings: RouterBindings = {
+  go: useGo,
+  back: useBack,
+  parse: useParse,
+  Link: React.forwardRef<
+    HTMLAnchorElement,
+    ComponentProps<NonNullable<RouterBindings["Link"]>>
+  >((props: LinkProps, ref) => {
+    return <Link {...props} ref={ref} />;
+  }),
+};
 
 const convertToNumberIfPossible = (value: string | undefined) => {
   if (value === undefined) {
