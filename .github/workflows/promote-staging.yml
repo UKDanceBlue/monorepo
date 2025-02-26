@@ -16,32 +16,9 @@ jobs:
     environment:
       name: release
       url: https://app.danceblue.org
-    permissions:
-      packages: write
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-      - name: Log in to the Container registry
-        uses: docker/login-action@v3
+      - name: Promote
+        uses: ./promote.yml
         with:
-          registry: ${{ env.REGISTRY }}
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-      - name: Enable Corepack before setting up Node
-        run: corepack enable
-      - name: Set up node 22.x
-        uses: actions/setup-node@v4.1.0
-        with:
-          node-version: 22
-          cache: yarn
-      - name: Setup EAS
-        uses: expo/expo-github-action@v8
-        with:
-          eas-version: latest
-          token: ${{ secrets.EXPO_TOKEN }}
-      - name: Install dependencies
-        run: yarn workspaces focus @ukdanceblue/mobile
-      - name: Promote release
-        run: ./scripts/promote-branch.sh staging release
-      - name: Update the deployment
-        run: curl --data {} ${{ secrets.DEPLOY_WEBHOOK }}
+          from: staging
+          to: release
