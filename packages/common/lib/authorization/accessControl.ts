@@ -296,7 +296,17 @@ function applyCommitteePermissions(
       role === CommitteeRole.Chair &&
       identifier === CommitteeIdentifier.miniMarathonsCommittee
     ) {
-      allow("read", "FundraisingEntryNode", ".");
+      allow(
+        "read",
+        [
+          "FundraisingEntryNode",
+          "FundraisingAssignmentNode",
+          "DailyDepartmentNotificationNode",
+          "SolicitationCodeNode",
+          "DailyDepartmentNotificationBatchNode",
+        ],
+        "."
+      );
     }
 
     // Members of dancer relations committee may manage point opportunities, point entries, and team members
@@ -311,22 +321,22 @@ function applyCommitteePermissions(
     }
 
     // Members of fundraising committee may manage fundraising entries, daily department notifications, solicitation codes, and fundraising assignments
-    if (identifier === CommitteeIdentifier.fundraisingCommittee) {
+    if (
+      identifier === CommitteeIdentifier.dancerRelationsCommittee ||
+      identifier === CommitteeIdentifier.fundraisingCommittee
+    ) {
       allow(
-        "manage",
+        role === CommitteeRole.Member ? "read" : "manage",
         [
           "DailyDepartmentNotificationNode",
           "SolicitationCodeNode",
           "FundraisingAssignmentNode",
+          "FundraisingEntryNode",
         ],
         "."
       );
 
-      if (role !== CommitteeRole.Member) {
-        allow("manage", "FundraisingEntryNode", ".");
-      }
-
-      allow("manage", "TeamNode", [
+      allow(role === CommitteeRole.Member ? "read" : "manage", "TeamNode", [
         ".fundraisingAssignments",
         ".solicitationCode",
         ".fundraisingEntries",

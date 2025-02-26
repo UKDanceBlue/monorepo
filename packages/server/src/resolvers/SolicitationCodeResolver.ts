@@ -163,7 +163,11 @@ export class SolicitationCodeResolver
       .promise;
   }
 
-  @AccessControlAuthorized("update", ["getId", "SolicitationCodeNode", "id"])
+  @AccessControlAuthorized(
+    "update",
+    ["getId", "TeamNode", "teamId"],
+    ".solicitationCode"
+  )
   @Mutation(() => VoidResolver, { name: "assignSolicitationCodeToTeam" })
   @WithAuditLogging()
   async assignSolicitationCodeToTeam(
@@ -182,7 +186,11 @@ export class SolicitationCodeResolver
     return result.map(() => VoidScalar);
   }
 
-  @AccessControlAuthorized("update", ["every", "SolicitationCodeNode"])
+  @AccessControlAuthorized(
+    "update",
+    ["getId", "TeamNode", "teamId"],
+    ".solicitationCode"
+  )
   @Mutation(() => VoidResolver, { name: "removeSolicitationCodeFromTeam" })
   @WithAuditLogging()
   async removeSolicitationCodeFromTeam(
