@@ -8,7 +8,6 @@ import { LoadingRibbon } from "#elements/components/design/RibbonSpinner.js";
 import { InnerContext, OuterContext } from "#elements/Context.js";
 
 import { routeTree } from "./routeTree.gen.js";
-import { transformer } from "./transformer.js";
 
 if (typeof window !== "undefined") {
   // @ts-expect-error Avoid an annoying log message from a library
@@ -18,20 +17,6 @@ if (typeof window !== "undefined") {
 export function createRouter() {
   return createTanstackRouter({
     routeTree,
-    transformer: {
-      stringify(obj) {
-        return transformer.stringify(obj);
-      },
-      parse(str) {
-        return transformer.parse(str);
-      },
-      encode(value) {
-        return value;
-      },
-      decode(value) {
-        return value;
-      },
-    },
     Wrap: OuterContext,
     InnerWrap: InnerContext,
     defaultPendingComponent: () => (
