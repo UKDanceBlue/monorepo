@@ -14,6 +14,7 @@ env:
 
 jobs:
   promote-eas-update:
+    name: Promote EAS Update
     environment:
       name: ${{ inputs.to }}
     runs-on: ubuntu-latest
@@ -39,6 +40,7 @@ jobs:
       - name: Promote release
         run: ./scripts/promote-eas-update.sh ${{ inputs.from }} ${{ inputs.to }}
   promote-docker:
+    name: Promote Docker
     environment:
       name: ${{ inputs.to }}
     runs-on: ubuntu-latest
@@ -51,8 +53,6 @@ jobs:
           registry: ${{ env.REGISTRY }}
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
-      - name: Install dependencies
-        run: yarn workspaces focus @ukdanceblue/mobile
       - name: Promote release
         run: ./scripts/promote-docker.sh ${{ inputs.from }} ${{ inputs.to }}
       - name: Update the deployment
