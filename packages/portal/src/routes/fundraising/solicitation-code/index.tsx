@@ -16,6 +16,7 @@ import { PaginationFragment } from "#documents/shared.js";
 import { RefineSearchForm } from "#elements/components/RefineSearchForm.js";
 import { TeamSelect } from "#elements/components/team/TeamSelect.js";
 import { graphql, readFragment } from "#gql/index.js";
+import { useAuthorizationRequirement } from "#hooks/useLoginState.tsx";
 import {
   prefetchTypedTable,
   useTypedForm,
@@ -135,7 +136,16 @@ function RouteComponent() {
     },
   });
 
-  const [editId, setEditId] = useState<string | null>(null);
+  const [editId, setEditIdState] = useState<string | null>(null);
+
+  const canEdit = useAuthorizationRequirement("update", "SolicitationCodeNode");
+
+  function setEditId(id: string | null) {
+    if (canEdit) {
+      setEditIdState(id);
+    }
+  }
+
   const { formProps, saveButtonProps, formLoading } = useTypedForm<
     typeof SetSolicitationCodeDocument,
     {
@@ -325,6 +335,7 @@ function RouteComponent() {
             {
               title: "Actions",
               key: "actions",
+              hidden: !canEdit,
               render: (_, record) => {
                 if (editId === record.id) {
                   return (
