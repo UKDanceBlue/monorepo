@@ -4,7 +4,7 @@ import { pipeline } from "node:stream/promises";
 import {
   createRequestHandler,
   defaultStreamHandler,
-} from "@tanstack/start/server";
+} from "@tanstack/react-start/server";
 // import { ConfigProvider } from "antd";
 import type * as express from "express";
 
@@ -64,6 +64,7 @@ export async function render({
   });
 
   // Let's use the default stream handler to create the response
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
   const response = await handler(defaultStreamHandler);
 
   // Convert the fetch response back to an express response
