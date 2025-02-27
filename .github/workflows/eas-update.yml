@@ -21,6 +21,9 @@ on:
       - "yarn.lock"
       - ".yarnrc.yml"
 
+env:
+  EXPO_PUBLIC_API_BASE_URL: https://dev.danceblue.org
+
 jobs:
   update:
     runs-on: ubuntu-latest
