@@ -9,7 +9,6 @@ on:
 env:
   REGISTRY: ghcr.io
   SERVER_IMAGE_NAME: ukdanceblue/app-server
-  EXPO_PUBLIC_API_BASE_URL: https://stg.danceblue.org
 
 jobs:
   promote-eas-update:
@@ -40,7 +39,7 @@ jobs:
     name: Promote Docker
     environment:
       name: staging
-      url: ${{ env.EXPO_PUBLIC_API_BASE_URL}}
+      url: https://stg.danceblue.org
     runs-on: ubuntu-latest
     permissions:
       packages: write
