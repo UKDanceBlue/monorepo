@@ -2,6 +2,7 @@ import { setStringAsync } from "expo-clipboard";
 import { Button, Text, View } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
 
+import { LogLevel, logLevelToString } from "@/common/logger/transport";
 import { useLogMemory } from "@/common/logger/useLogMemory";
 
 export function LogView() {
@@ -10,8 +11,23 @@ export function LogView() {
   return (
     <View style={{ flex: 1, padding: 8 }}>
       <ScrollView style={{ flex: 1 }}>
-        {memory.map((log, index) => (
-          <Text key={index} style={{ margin: 4 }}>
+        {memory.map(([level, log], index) => (
+          <Text
+            key={index}
+            style={{ margin: 4, paddingBottom: 1, borderBottomWidth: 1 }}
+          >
+            <Text
+              style={{
+                color:
+                  level === LogLevel.error
+                    ? "red"
+                    : level === LogLevel.warn
+                      ? "orange"
+                      : "black",
+              }}
+            >
+              {logLevelToString(level)}
+            </Text>
             {log}
           </Text>
         ))}

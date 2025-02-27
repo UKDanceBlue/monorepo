@@ -1,7 +1,7 @@
 import { debugStringify } from "@ukdanceblue/common";
 
-import type { ExtraLogArgs } from "./transport";
-import { LoggerTransport, LogLevel } from "./transport";
+import type { ExtraLogArgs, LogLevel } from "./transport";
+import { LoggerTransport } from "./transport";
 
 export class MemoryTransport extends LoggerTransport {
   constructor(level: number) {
@@ -9,17 +9,18 @@ export class MemoryTransport extends LoggerTransport {
   }
 
   private readonly BUFFER_SIZE = 1000;
-  private buffer: string[] = [];
-  private listeners = new Set<(buffer: readonly string[]) => void>();
+  private buffer: [LogLevel, string][] = [];
+  private listeners = new Set<() => void>();
 
-  private writeLine(line: string) {
-    this.buffer.push(line);
+  private writeLine(level: LogLevel, line: string) {
+    this.buffer.push([level, line]);
     if (this.buffer.length > this.BUFFER_SIZE) {
       this.buffer.shift();
     }
+    this.listeners.forEach((listener) => listener());
   }
-  public getBuffer(): readonly string[] {
-    return this.buffer;
+  public getBuffer(): [LogLevel, string][] {
+    return [...this.buffer];
   }
   public subscribe(listener: () => void) {
     this.listeners.add(listener);
@@ -54,28 +55,7 @@ export class MemoryTransport extends LoggerTransport {
         args.push(debugStringify({ error, context }));
       }
 
-      switch (level) {
-        case LogLevel.debug: {
-          this.writeLine(`DEBUG: ${args.join(" ")}`);
-          break;
-        }
-        case LogLevel.info: {
-          this.writeLine(`INFO: ${args.join(" ")}`);
-          break;
-        }
-        case LogLevel.warn: {
-          this.writeLine(`WARN: ${args.join(" ")}`);
-          break;
-        }
-        case LogLevel.error: {
-          this.writeLine(`ERROR: ${args.join(" ")}`);
-          break;
-        }
-        default: {
-          level satisfies never;
-          throw new Error(`Unknown log level: ${String(level)}`);
-        }
-      }
+      this.writeLine(level, args.join(" "));
     } catch (error) {
       console.error("Error when trying to write a log message", {
         level,
