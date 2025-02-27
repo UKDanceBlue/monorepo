@@ -1,6 +1,7 @@
 import { debugStringify } from "@ukdanceblue/common";
 
 import { ConsoleTransport } from "./ConsoleTransport";
+import { MemoryTransport } from "./MemoryTransport";
 import { SentryTransport } from "./SentryTransport";
 import type { ExtraLogArgs, LoggerTransport } from "./transport";
 import { LogLevel } from "./transport";
@@ -8,7 +9,8 @@ import { LogLevel } from "./transport";
 export class Logger {
   static #instance: Logger = new Logger(
     new ConsoleTransport(__DEV__ ? LogLevel.debug : LogLevel.error + 1),
-    new SentryTransport(LogLevel.debug)
+    new SentryTransport(LogLevel.debug),
+    new MemoryTransport(LogLevel.info)
   );
 
   #transports: LoggerTransport[];
@@ -36,6 +38,17 @@ export class Logger {
         );
       }
     }
+  }
+
+  public get memoryTransport(): MemoryTransport {
+    const memory = this.#transports.find(
+      (transport) => transport instanceof MemoryTransport
+    );
+    if (!memory) {
+      // Return a no-op transport if none is found
+      return new MemoryTransport(LogLevel.info);
+    }
+    return memory;
   }
 
   static get instance(): Logger {

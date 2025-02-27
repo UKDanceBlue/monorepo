@@ -24,6 +24,7 @@ import { useUrqlConfig } from "@/context/urql";
 import type { FragmentOf } from "@/graphql/index";
 import { readFragment } from "@/graphql/index";
 
+import { LogView } from "./LogView";
 import { ProfileScreenAuthFragment } from "./ProfileScreen";
 
 type SequenceMember = "report" | "suggest" | "donate" | "logout";
@@ -71,6 +72,7 @@ export const ProfileFooter = ({
         }
       },
       text: "Enter the password to log in as a demo user",
+      Component: null,
     },
     {
       sequence: ["suggest", "logout"] as const,
@@ -78,6 +80,7 @@ export const ProfileFooter = ({
         setMasquerade(str || null);
       },
       text: "Enter the ID of the user to masquerade as",
+      Component: null,
     },
     {
       sequence: ["donate", "logout"] as const,
@@ -85,6 +88,15 @@ export const ProfileFooter = ({
         overrideApiBaseUrl(str);
       },
       text: "Enter the URL to override the API base URL",
+      Component: null,
+    },
+    {
+      sequence: ["logout", "donate"] as const,
+      action: (str: string) => {
+        openURL(str).catch(universalCatch);
+      },
+      text: "Enter the URL to open when logging out",
+      Component: () => <LogView />,
     },
   ];
 
@@ -100,23 +112,29 @@ export const ProfileFooter = ({
             backgroundColor: "white",
           }}
         >
-          <Text
-            style={{
-              textAlign: "center",
-              width: "100%",
-            }}
-          >
-            {activeSequence?.text}
-          </Text>
-          <TextInput
-            style={{
-              borderWidth: 2,
-              minWidth: "50%",
-            }}
-            onSubmitEditing={(event) => {
-              activeSequence?.action(event.nativeEvent.text);
-            }}
-          />
+          {activeSequence?.Component ? (
+            <activeSequence.Component />
+          ) : (
+            <>
+              <Text
+                style={{
+                  textAlign: "center",
+                  width: "100%",
+                }}
+              >
+                {activeSequence?.text}
+              </Text>
+              <TextInput
+                style={{
+                  borderWidth: 2,
+                  minWidth: "50%",
+                }}
+                onSubmitEditing={(event) => {
+                  activeSequence?.action(event.nativeEvent.text);
+                }}
+              />
+            </>
+          )}
         </View>
       </Modal>
 
