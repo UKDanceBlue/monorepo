@@ -9,13 +9,13 @@ import { TimestampedResource } from "./Resource.js";
 
 @ObjectType({ implements: [Node] })
 export class CommitteeNode extends TimestampedResource implements Node {
-  @Field(() => GlobalIdScalar)
+  @Field(() => GlobalIdScalar, { nullable: false })
   id!: GlobalId;
 
-  @Field(() => CommitteeIdentifier)
+  @Field(() => CommitteeIdentifier, { nullable: false })
   identifier!: CommitteeIdentifier;
 
-  @Field(() => String)
+  @Field(() => String, { nullable: false })
   text(): string {
     return this.identifier;
   }

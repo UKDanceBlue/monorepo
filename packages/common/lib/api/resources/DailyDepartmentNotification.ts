@@ -134,7 +134,7 @@ export function stringifyDDNBatchType(batchType: BatchType): string {
 
 @ObjectType()
 export class DailyDepartmentNotificationNode extends Resource implements Node {
-  @Field(() => GlobalIdScalar)
+  @Field(() => GlobalIdScalar, { nullable: false })
   id!: GlobalId;
 
   @Field(() => String, { nullable: true })
@@ -155,7 +155,7 @@ export class DailyDepartmentNotificationNode extends Resource implements Node {
   @Field(() => GraphQLLocalDate, { nullable: true })
   transactionDate?: string;
 
-  @Field(() => String)
+  @Field(() => String, { nullable: false })
   transactionType!: string;
 
   @Field(() => Number, { nullable: true })
@@ -164,16 +164,16 @@ export class DailyDepartmentNotificationNode extends Resource implements Node {
   @Field(() => Number, { nullable: true })
   donor2Amount?: number;
 
-  @Field(() => Number)
+  @Field(() => Number, { nullable: false })
   combinedAmount!: number;
 
-  @Field(() => Number)
+  @Field(() => Number, { nullable: false })
   pledgedAmount!: number;
 
-  @Field(() => String)
+  @Field(() => String, { nullable: false })
   accountNumber!: string;
 
-  @Field(() => String)
+  @Field(() => String, { nullable: false })
   accountName!: string;
 
   @Field(() => String, { nullable: true })
@@ -194,10 +194,10 @@ export class DailyDepartmentNotificationNode extends Resource implements Node {
   @Field(() => String, { nullable: true })
   gikDescription?: string;
 
-  @Field(() => Boolean)
+  @Field(() => Boolean, { nullable: false })
   onlineGift!: boolean;
 
-  @Field(() => SolicitationCodeNode)
+  @Field(() => SolicitationCodeNode, { nullable: false })
   solicitationCode!: SolicitationCodeNode;
 
   @Field(() => String, { nullable: true })
@@ -209,19 +209,19 @@ export class DailyDepartmentNotificationNode extends Resource implements Node {
   @Field(() => String, { nullable: true })
   matchingGift?: string;
 
-  @Field(() => Boolean)
+  @Field(() => Boolean, { nullable: false })
   ukFirstGift!: boolean;
 
-  @Field(() => Boolean)
+  @Field(() => Boolean, { nullable: false })
   divFirstGift!: boolean;
 
-  @Field(() => String)
+  @Field(() => String, { nullable: false })
   idSorter!: string;
 
-  @Field(() => String)
+  @Field(() => String, { nullable: false })
   combinedDonorName!: string;
 
-  @Field(() => String)
+  @Field(() => String, { nullable: false })
   combinedDonorSalutation!: string;
 
   @Field(() => String, { nullable: true })
@@ -314,10 +314,10 @@ export class DailyDepartmentNotificationNode extends Resource implements Node {
   @Field(() => String, { nullable: true })
   hcUnit?: string;
 
-  @Field(() => DateTimeScalar)
+  @Field(() => DateTimeScalar, { nullable: false })
   createdAt!: DateTime;
 
-  @Field(() => String)
+  @Field(() => String, { nullable: false })
   text(): string {
     return `${this.combinedAmount} from ${this.combinedDonorName} to ${this.comment ?? "Unknown"}`;
   }
@@ -398,13 +398,13 @@ export class DailyDepartmentNotificationBatchNode
   extends Resource
   implements Node
 {
-  @Field(() => GlobalIdScalar)
+  @Field(() => GlobalIdScalar, { nullable: false })
   id!: GlobalId;
 
-  @Field(() => String)
+  @Field(() => String, { nullable: false })
   batchNumber!: string;
 
-  @Field(() => BatchType)
+  @Field(() => BatchType, { nullable: false })
   batchType(): BatchType {
     return extractDDNBatchType(this.batchNumber).unwrap();
   }
@@ -413,7 +413,7 @@ export class DailyDepartmentNotificationBatchNode
     return this.id.id;
   }
 
-  @Field(() => String)
+  @Field(() => String, { nullable: false })
   text(): string {
     return `Batch ${this.batchNumber}`;
   }

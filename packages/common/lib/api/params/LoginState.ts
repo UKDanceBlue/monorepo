@@ -13,21 +13,21 @@ import { EffectiveCommitteeRole } from "../types/EffectiveCommitteeRole.js";
 
 @ObjectType("LoginState")
 export class LoginState implements Authorization {
-  @Field(() => Boolean)
+  @Field(() => Boolean, { nullable: false })
   loggedIn!: boolean;
 
-  @Field(() => DbRole)
+  @Field(() => DbRole, { nullable: false })
   dbRole!: DbRole;
 
-  @Field(() => AuthSource)
+  @Field(() => AuthSource, { nullable: false })
   authSource!: AuthSource;
 
-  @Field(() => AccessLevel)
+  @Field(() => AccessLevel, { nullable: false })
   accessLevel!: AccessLevel;
 
-  @Field(() => [EffectiveCommitteeRole])
+  @Field(() => [EffectiveCommitteeRole], { nullable: false })
   effectiveCommitteeRoles!: EffectiveCommitteeRole[];
 
-  @Field(() => [[JSONResolver]])
+  @Field(() => [[JSONResolver]], { nullable: false })
   abilityRules!: PackRule<AppAbility["rules"][number]>[];
 }

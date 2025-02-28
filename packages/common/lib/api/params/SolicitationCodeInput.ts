@@ -20,7 +20,7 @@ export class ListSolicitationCodesArgs extends FilteredListQueryArgs(
   implements: AbstractGraphQLPaginatedResponse<SolicitationCodeNode[]>,
 })
 export class ListSolicitationCodesResponse extends AbstractGraphQLPaginatedResponse<SolicitationCodeNode> {
-  @Field(() => [SolicitationCodeNode])
+  @Field(() => [SolicitationCodeNode], { nullable: false })
   data!: SolicitationCodeNode[];
 }
 
@@ -29,10 +29,10 @@ export class SetSolicitationCodeInput {
   @Field(() => GraphQLNonEmptyString, { nullable: true })
   name?: string | null | undefined;
 
-  @Field(() => [SolicitationCodeTag])
+  @Field(() => [SolicitationCodeTag], { nullable: false })
   tags!: SolicitationCodeTag[];
 
-  @Field(() => [GlobalIdScalar])
+  @Field(() => [GlobalIdScalar], { nullable: false })
   teamIds!: GlobalId[];
 }
 
@@ -40,15 +40,15 @@ export class SetSolicitationCodeInput {
 export class CreateSolicitationCodeInput {
   @IsAlpha()
   @IsUppercase()
-  @Field(() => GraphQLNonEmptyString)
+  @Field(() => GraphQLNonEmptyString, { nullable: false })
   prefix!: string;
 
-  @Field(() => NonNegativeIntResolver)
+  @Field(() => NonNegativeIntResolver, { nullable: false })
   code!: number;
 
   @Field(() => GraphQLNonEmptyString, { nullable: true })
   name?: string | null | undefined;
 
-  @Field(() => [SolicitationCodeTag])
+  @Field(() => [SolicitationCodeTag], { nullable: false })
   tags!: SolicitationCodeTag[];
 }

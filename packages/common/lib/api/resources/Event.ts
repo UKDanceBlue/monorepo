@@ -11,11 +11,11 @@ import { Resource, TimestampedResource } from "./Resource.js";
   implements: [Node],
 })
 export class EventNode extends TimestampedResource implements Node {
-  @Field(() => GlobalIdScalar)
+  @Field(() => GlobalIdScalar, { nullable: false })
   id!: GlobalId;
-  @Field(() => [EventOccurrenceNode])
+  @Field(() => [EventOccurrenceNode], { nullable: false })
   occurrences!: EventOccurrenceNode[];
-  @Field(() => String)
+  @Field(() => String, { nullable: false })
   title!: string;
   @Field(() => String, { nullable: true })
   summary!: string | null;
@@ -24,7 +24,7 @@ export class EventNode extends TimestampedResource implements Node {
   @Field(() => String, { nullable: true })
   location!: string | null;
 
-  @Field(() => String)
+  @Field(() => String, { nullable: false })
   text(): string {
     return this.title;
   }
@@ -51,11 +51,11 @@ export class EventNode extends TimestampedResource implements Node {
   implements: [],
 })
 export class EventOccurrenceNode extends Resource {
-  @Field(() => GlobalIdScalar)
+  @Field(() => GlobalIdScalar, { nullable: false })
   id!: GlobalId;
-  @Field(() => IntervalISO)
+  @Field(() => IntervalISO, { nullable: false })
   interval!: IntervalISO;
-  @Field(() => Boolean)
+  @Field(() => Boolean, { nullable: false })
   fullDay!: boolean;
 
   public static init(init: {

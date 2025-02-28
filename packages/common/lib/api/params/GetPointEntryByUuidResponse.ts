@@ -10,7 +10,7 @@ import { AbstractGraphQLPaginatedResponse } from "./PaginatedResponse.js";
   implements: AbstractGraphQLPaginatedResponse<PointEntryNode>,
 })
 export class ListPointEntriesResponse extends AbstractGraphQLPaginatedResponse<PointEntryNode> {
-  @Field(() => [PointEntryNode])
+  @Field(() => [PointEntryNode], { nullable: false })
   data!: PointEntryNode[];
 }
 
@@ -19,7 +19,7 @@ export class CreatePointEntryInput implements Partial<PointEntryNode> {
   @Field(() => GraphQLNonEmptyString, { nullable: true })
   comment!: string | null;
 
-  @Field(() => Int)
+  @Field(() => Int, { nullable: false })
   points!: number;
 
   @Field(() => GlobalIdScalar, { nullable: true })
@@ -28,7 +28,7 @@ export class CreatePointEntryInput implements Partial<PointEntryNode> {
   @Field(() => GlobalIdScalar, { nullable: true })
   opportunityUuid!: GlobalId | null;
 
-  @Field(() => GlobalIdScalar)
+  @Field(() => GlobalIdScalar, { nullable: false })
   teamUuid!: GlobalId;
 }
 

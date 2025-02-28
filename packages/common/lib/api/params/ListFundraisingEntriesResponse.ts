@@ -36,7 +36,7 @@ export class ListFundraisingEntriesArgs extends FilteredListQueryArgs(
   implements: AbstractGraphQLPaginatedResponse<FundraisingEntryNode[]>,
 })
 export class ListFundraisingEntriesResponse extends AbstractGraphQLPaginatedResponse<FundraisingEntryNode> {
-  @Field(() => [FundraisingEntryNode])
+  @Field(() => [FundraisingEntryNode], { nullable: false })
   data!: FundraisingEntryNode[];
 }
 
@@ -104,10 +104,10 @@ const SolicitationCodeUpsertScalar = new GraphQLScalarType<
 
 @InputType("CreateFundraisingEntryInput")
 export class CreateFundraisingEntryInput {
-  @Field(() => SolicitationCodeUpsertScalar)
+  @Field(() => SolicitationCodeUpsertScalar, { nullable: false })
   solicitationCodeId!: GlobalId | { code: number; prefix: string };
 
-  @Field(() => Float)
+  @Field(() => Float, { nullable: false })
   amount!: number;
 
   @Field(() => GraphQLLocalDate, { nullable: true })
@@ -119,7 +119,7 @@ export class CreateFundraisingEntryInput {
   @Field(() => GraphQLNonEmptyString, { nullable: true })
   donatedBy?: string;
 
-  @Field(() => BatchType)
+  @Field(() => BatchType, { nullable: false })
   batchType!: BatchType;
 
   @Field(() => GraphQLNonEmptyString, { nullable: true })

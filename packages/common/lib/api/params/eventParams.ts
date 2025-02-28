@@ -11,22 +11,22 @@ import { AbstractGraphQLPaginatedResponse } from "./PaginatedResponse.js";
   implements: AbstractGraphQLPaginatedResponse<EventNode[]>,
 })
 export class ListEventsResponse extends AbstractGraphQLPaginatedResponse<EventNode> {
-  @Field(() => [EventNode])
+  @Field(() => [EventNode], { nullable: false })
   data!: EventNode[];
 }
 
 @InputType()
 export class CreateEventOccurrenceInput {
-  @Field(() => IntervalISO)
+  @Field(() => IntervalISO, { nullable: false })
   interval!: IntervalISO;
 
-  @Field(() => Boolean)
+  @Field(() => Boolean, { nullable: false })
   fullDay!: boolean;
 }
 
 @InputType()
 export class CreateEventInput {
-  @Field(() => GraphQLNonEmptyString)
+  @Field(() => GraphQLNonEmptyString, { nullable: false })
   title!: string;
 
   @Field(() => GraphQLNonEmptyString, { nullable: true })
@@ -35,7 +35,7 @@ export class CreateEventInput {
   @Field(() => GraphQLNonEmptyString, { nullable: true })
   location!: string | null;
 
-  @Field(() => [CreateEventOccurrenceInput])
+  @Field(() => [CreateEventOccurrenceInput], { nullable: false })
   occurrences!: CreateEventOccurrenceInput[];
 
   @Field(() => GraphQLNonEmptyString, { nullable: true })
@@ -51,9 +51,9 @@ export class SetEventOccurrenceInput {
   })
   id!: GlobalId | null;
 
-  @Field(() => IntervalISO)
+  @Field(() => IntervalISO, { nullable: false })
   interval!: IntervalISO;
-  @Field(() => Boolean)
+  @Field(() => Boolean, { nullable: false })
   fullDay!: boolean;
 }
 
@@ -68,7 +68,7 @@ export class SetEventInput {
   @Field(() => GraphQLNonEmptyString, { nullable: true })
   location!: string | null;
 
-  @Field(() => [SetEventOccurrenceInput])
+  @Field(() => [SetEventOccurrenceInput], { nullable: false })
   occurrences!: SetEventOccurrenceInput[];
 
   @Field(() => GraphQLNonEmptyString, { nullable: true })

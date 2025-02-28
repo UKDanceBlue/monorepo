@@ -11,37 +11,37 @@ import { AbstractGraphQLPaginatedResponse } from "./PaginatedResponse.js";
   implements: AbstractGraphQLPaginatedResponse<MarathonHourNode[]>,
 })
 export class ListMarathonHoursResponse extends AbstractGraphQLPaginatedResponse<MarathonHourNode> {
-  @Field(() => [MarathonHourNode])
+  @Field(() => [MarathonHourNode], { nullable: false })
   data!: MarathonHourNode[];
 }
 
 @InputType()
 export class CreateMarathonHourInput {
-  @Field(() => GraphQLNonEmptyString)
+  @Field(() => GraphQLNonEmptyString, { nullable: false })
   title!: string;
 
   @Field(() => GraphQLNonEmptyString, { nullable: true })
   details?: string | undefined | null;
 
-  @Field(() => GraphQLNonEmptyString)
+  @Field(() => GraphQLNonEmptyString, { nullable: false })
   durationInfo!: string;
 
-  @Field(() => DateTimeScalar)
+  @Field(() => DateTimeScalar, { nullable: false })
   shownStartingAt!: DateTime;
 }
 
 @InputType()
 export class SetMarathonHourInput {
-  @Field(() => GraphQLNonEmptyString)
+  @Field(() => GraphQLNonEmptyString, { nullable: false })
   title!: string;
 
   @Field(() => GraphQLNonEmptyString, { nullable: true })
   details?: string | undefined | null;
 
-  @Field(() => GraphQLNonEmptyString)
+  @Field(() => GraphQLNonEmptyString, { nullable: false })
   durationInfo!: string;
 
-  @Field(() => DateTimeScalar)
+  @Field(() => DateTimeScalar, { nullable: false })
   shownStartingAt!: DateTime;
 }
 

@@ -2,12 +2,12 @@ import { Field, InputType } from "type-graphql";
 
 @InputType()
 export class AssignEntryToPersonInput {
-  @Field()
+  @Field(() => Number, { nullable: false })
   amount!: number;
 }
 
 @InputType()
 export class UpdateFundraisingAssignmentInput {
-  @Field()
+  @Field(() => Number, { nullable: false })
   amount!: number;
 }

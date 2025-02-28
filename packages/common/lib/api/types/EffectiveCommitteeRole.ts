@@ -7,10 +7,10 @@ import {
 
 @ObjectType("EffectiveCommitteeRole")
 export class EffectiveCommitteeRole {
-  @Field(() => CommitteeIdentifier)
+  @Field(() => CommitteeIdentifier, { nullable: false })
   identifier!: CommitteeIdentifier;
 
-  @Field(() => CommitteeRole)
+  @Field(() => CommitteeRole, { nullable: false })
   role!: CommitteeRole;
 
   public static init(

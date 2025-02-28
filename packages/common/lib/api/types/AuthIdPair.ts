@@ -7,10 +7,10 @@ import { Resource } from "../resources/Resource.js";
 export class AuthIdPairResource<
   AllowedSources extends AuthSource = AuthSource,
 > extends Resource {
-  @Field(() => AuthSource)
+  @Field(() => AuthSource, { nullable: false })
   source!: AllowedSources;
 
-  @Field(() => String)
+  @Field(() => String, { nullable: false })
   value!: string;
 
   init(init: { source: AllowedSources; value: string }) {

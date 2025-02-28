@@ -16,13 +16,13 @@ import { AbstractGraphQLPaginatedResponse } from "./PaginatedResponse.js";
   implements: AbstractGraphQLPaginatedResponse<MarathonNode[]>,
 })
 export class ListMarathonsResponse extends AbstractGraphQLPaginatedResponse<MarathonNode> {
-  @Field(() => [MarathonNode])
+  @Field(() => [MarathonNode], { nullable: false })
   data!: MarathonNode[];
 }
 
 @InputType()
 export class CreateMarathonInput {
-  @Field(() => MarathonYearScalar)
+  @Field(() => MarathonYearScalar, { nullable: false })
   year!: MarathonYearString;
 
   @IsBeforeDateTime("endDate")
@@ -36,7 +36,7 @@ export class CreateMarathonInput {
 
 @InputType()
 export class SetMarathonInput {
-  @Field(() => MarathonYearScalar)
+  @Field(() => MarathonYearScalar, { nullable: false })
   year!: MarathonYearString;
 
   @IsBeforeDateTime("endDate")

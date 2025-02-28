@@ -10,14 +10,14 @@ import { TimestampedResource } from "./Resource.js";
   implements: [Node],
 })
 export class PointEntryNode extends TimestampedResource implements Node {
-  @Field(() => GlobalIdScalar)
+  @Field(() => GlobalIdScalar, { nullable: false })
   id!: GlobalId;
   @Field(() => String, { nullable: true })
   comment!: string | null;
-  @Field(() => Int)
+  @Field(() => Int, { nullable: false })
   points!: number;
 
-  @Field(() => String)
+  @Field(() => String, { nullable: false })
   text(): string {
     return `${this.points} points${this.comment ? `: ${this.comment}` : ""}`;
   }

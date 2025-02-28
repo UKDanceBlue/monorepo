@@ -8,28 +8,29 @@ import { AbstractGraphQLPaginatedResponse } from "./PaginatedResponse.js";
 
 @ObjectType("GetDeviceByUuidResponse")
 export class GetDeviceByUuidResponse {
-  @Field(() => DeviceNode)
+  @Field(() => DeviceNode, { nullable: false })
   data!: DeviceNode;
 }
 @ObjectType("ListDevicesResponse", {
   implements: AbstractGraphQLPaginatedResponse<DeviceNode>,
 })
 export class ListDevicesResponse extends AbstractGraphQLPaginatedResponse<DeviceNode> {
-  @Field(() => [DeviceNode])
+  @Field(() => [DeviceNode], { nullable: false })
   data!: DeviceNode[];
 }
 @ObjectType("RegisterDeviceResponse")
 export class RegisterDeviceResponse {
-  @Field(() => Boolean)
+  @Field(() => Boolean, { nullable: false })
   ok!: true;
 
-  @Field(() => DeviceNode)
+  @Field(() => DeviceNode, { nullable: false })
   data!: DeviceNode;
 }
 @InputType()
 export class RegisterDeviceInput {
   @Field(() => String, {
     description: "For legacy reasons, this can be a GlobalId or a raw UUID",
+    nullable: false,
   })
   deviceId!: string;
 
@@ -41,6 +42,7 @@ export class RegisterDeviceInput {
 
   @Field(() => String, {
     description: "base64 encoded SHA-256 hash of a secret known to the device",
+    nullable: false,
   })
   verifier!: string;
 

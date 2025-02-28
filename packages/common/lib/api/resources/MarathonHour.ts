@@ -11,18 +11,18 @@ import { TimestampedResource } from "./Resource.js";
   implements: [Node],
 })
 export class MarathonHourNode extends TimestampedResource implements Node {
-  @Field(() => GlobalIdScalar)
+  @Field(() => GlobalIdScalar, { nullable: false })
   id!: GlobalId;
-  @Field(() => String)
+  @Field(() => String, { nullable: false })
   title!: string;
   @Field(() => String, { nullable: true })
   details?: string | undefined | null;
-  @Field(() => DateTimeScalar)
+  @Field(() => DateTimeScalar, { nullable: false })
   shownStartingAt!: DateTime;
-  @Field(() => String)
+  @Field(() => String, { nullable: false })
   durationInfo!: string;
 
-  @Field(() => String)
+  @Field(() => String, { nullable: false })
   text(): string {
     return this.title;
   }

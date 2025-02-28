@@ -22,13 +22,13 @@ to have additional validation logic in the future.
   implements: [Node],
 })
 export class ConfigurationNode extends TimestampedResource implements Node {
-  @Field(() => GlobalIdScalar)
+  @Field(() => GlobalIdScalar, { nullable: false })
   id!: GlobalId;
 
-  @Field(() => String)
+  @Field(() => String, { nullable: false })
   key!: string;
 
-  @Field(() => String)
+  @Field(() => String, { nullable: false })
   value!: string;
 
   @Field(() => DateTimeScalar, { nullable: true })
@@ -37,7 +37,7 @@ export class ConfigurationNode extends TimestampedResource implements Node {
   @Field(() => DateTimeScalar, { nullable: true })
   validUntil?: DateTime | undefined | null;
 
-  @Field(() => String)
+  @Field(() => String, { nullable: false })
   text(): string {
     return this.key;
   }

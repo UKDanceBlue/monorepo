@@ -17,7 +17,7 @@ export class ImageNode extends TimestampedResource implements Node {
   @Field(() => GraphQLURL, { nullable: true })
   url!: URL | null;
 
-  @Field(() => String)
+  @Field(() => String, { nullable: false })
   mimeType!: string;
 
   @Field(() => String, { nullable: true })
@@ -26,17 +26,17 @@ export class ImageNode extends TimestampedResource implements Node {
   @Field(() => String, { nullable: true })
   alt!: string | null;
 
-  @Field(() => Int)
+  @Field(() => Int, { nullable: false })
   width!: number;
 
-  @Field(() => Int)
+  @Field(() => Int, { nullable: false })
   height!: number;
 
   public getUniqueId(): string {
     return this.id.id;
   }
 
-  @Field(() => String)
+  @Field(() => String, { nullable: false })
   text(): string {
     return this.alt || this.url?.toString() || this.id.id;
   }

@@ -27,6 +27,6 @@ export class ListImagesArgs extends FilteredListQueryArgs("ImageResolver", [
   implements: AbstractGraphQLPaginatedResponse<ImageNode[]>,
 })
 export class ListImagesResponse extends AbstractGraphQLPaginatedResponse<ImageNode> {
-  @Field(() => [ImageNode])
+  @Field(() => [ImageNode], { nullable: false })
   data!: ImageNode[];
 }

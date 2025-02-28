@@ -2,7 +2,7 @@ import { GraphQLURL } from "graphql-scalars";
 import { DateTime } from "luxon";
 import { Field, ObjectType } from "type-graphql";
 
-import { AccessControlAuthorized } from "../../authorization/AccessControlParam.js";
+import { AccessControlAuthorized } from "../../authorization/AccessControlAuthorized.js";
 import { Node } from "../relay.js";
 import { DateTimeScalar } from "../scalars/DateTimeISO.js";
 import type { GlobalId } from "../scalars/GlobalId.js";
@@ -13,13 +13,13 @@ import { TimestampedResource } from "./Resource.js";
   implements: [Node],
 })
 export class NotificationNode extends TimestampedResource implements Node {
-  @Field(() => GlobalIdScalar)
+  @Field(() => GlobalIdScalar, { nullable: false })
   id!: GlobalId;
 
-  @Field(() => String)
+  @Field(() => String, { nullable: false })
   title!: string;
 
-  @Field(() => String)
+  @Field(() => String, { nullable: false })
   body!: string;
 
   @Field(() => GraphQLURL, { nullable: true })
@@ -55,7 +55,7 @@ export class NotificationNode extends TimestampedResource implements Node {
   })
   startedSendingAt?: DateTime | undefined | null;
 
-  @Field(() => String)
+  @Field(() => String, { nullable: false })
   text(): string {
     return `${this.title} (${this.sendAt?.toLocaleString(DateTime.DATETIME_SHORT) ?? this.startedSendingAt?.toLocaleString(DateTime.DATETIME_SHORT) ?? "unscheduled"})`;
   }
@@ -87,7 +87,7 @@ export class NotificationDeliveryNode
   extends TimestampedResource
   implements Node
 {
-  @Field(() => GlobalIdScalar)
+  @Field(() => GlobalIdScalar, { nullable: false })
   id!: GlobalId;
 
   @Field(() => DateTimeScalar, {
@@ -133,7 +133,7 @@ export class NotificationDeliveryNode
   )
   deliveryError?: string | undefined | null;
 
-  @Field(() => String)
+  @Field(() => String, { nullable: false })
   text(): string {
     return this.id.id;
   }

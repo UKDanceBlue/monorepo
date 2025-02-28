@@ -14,7 +14,7 @@ import { AbstractGraphQLPaginatedResponse } from "./PaginatedResponse.js";
   implements: AbstractGraphQLPaginatedResponse<NotificationNode>,
 })
 export class ListNotificationsResponse extends AbstractGraphQLPaginatedResponse<NotificationNode> {
-  @Field(() => [NotificationNode])
+  @Field(() => [NotificationNode], { nullable: false })
   data!: NotificationNode[];
 }
 
@@ -35,16 +35,16 @@ class NotificationAudienceInput {
 
 @ArgsType()
 export class StageNotificationArgs {
-  @Field(() => GraphQLNonEmptyString)
+  @Field(() => GraphQLNonEmptyString, { nullable: false })
   title!: string;
 
-  @Field(() => GraphQLNonEmptyString)
+  @Field(() => GraphQLNonEmptyString, { nullable: false })
   body!: string;
 
   @Field(() => GraphQLURL, { nullable: true })
   url?: string | undefined | null;
 
-  @Field(() => NotificationAudienceInput)
+  @Field(() => NotificationAudienceInput, { nullable: false })
   audience!: NotificationAudienceInput;
 }
 
@@ -68,7 +68,7 @@ export class ListNotificationDeliveriesArgs extends FilteredListQueryArgs(
   "NotificationDeliveryResolver",
   ["createdAt", "updatedAt", "sentAt", "receiptCheckedAt", "deliveryError"]
 ) {
-  @Field(() => GlobalIdScalar)
+  @Field(() => GlobalIdScalar, { nullable: false })
   notificationUuid!: GlobalId;
 }
 
@@ -76,7 +76,7 @@ export class ListNotificationDeliveriesArgs extends FilteredListQueryArgs(
   implements: AbstractGraphQLPaginatedResponse<NotificationDeliveryNode>,
 })
 export class ListNotificationDeliveriesResponse extends AbstractGraphQLPaginatedResponse<NotificationDeliveryNode> {
-  @Field(() => [NotificationDeliveryNode])
+  @Field(() => [NotificationDeliveryNode], { nullable: false })
   data!: NotificationDeliveryNode[];
 }
 
@@ -86,16 +86,16 @@ export class ListNotificationDeliveriesResponse extends AbstractGraphQLPaginated
 })
 //implements Record<NotificationError, number>
 export class NotificationDeliveryIssueCount {
-  @Field(() => Int)
+  @Field(() => Int, { nullable: false })
   DeviceNotRegistered!: number;
-  @Field(() => Int)
+  @Field(() => Int, { nullable: false })
   InvalidCredentials!: number;
-  @Field(() => Int)
+  @Field(() => Int, { nullable: false })
   MessageTooBig!: number;
-  @Field(() => Int)
+  @Field(() => Int, { nullable: false })
   MessageRateExceeded!: number;
-  @Field(() => Int)
+  @Field(() => Int, { nullable: false })
   MismatchSenderId!: number;
-  @Field(() => Int)
+  @Field(() => Int, { nullable: false })
   Unknown!: number;
 }
