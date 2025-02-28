@@ -2,6 +2,7 @@ import { Err, Ok, type Option, type Result } from "ts-results-es";
 
 import { ExtendedError } from "./error.js";
 import * as ErrorCode from "./errorCode.js";
+import { ErrorType } from "./errorrType.js";
 import { optionOf } from "./option.js";
 
 export class NotFoundError extends ExtendedError {
@@ -25,6 +26,10 @@ export class NotFoundError extends ExtendedError {
 
   get tag(): ErrorCode.NotFound {
     return ErrorCode.NotFound;
+  }
+
+  get type() {
+    return ErrorType.NotFound;
   }
 
   static fromOption<T>(
@@ -59,6 +64,10 @@ export class InvalidOperationError extends ExtendedError {
   get tag(): ErrorCode.InvalidOperation {
     return ErrorCode.InvalidOperation;
   }
+
+  get type() {
+    return ErrorType.BadRequest;
+  }
 }
 
 export class InvalidArgumentError extends ExtendedError {
@@ -70,6 +79,10 @@ export class InvalidArgumentError extends ExtendedError {
 
   get tag(): ErrorCode.InvalidArgument {
     return ErrorCode.InvalidArgument;
+  }
+
+  get type() {
+    return ErrorType.BadRequest;
   }
 }
 

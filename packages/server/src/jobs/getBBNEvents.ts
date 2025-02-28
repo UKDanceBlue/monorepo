@@ -3,6 +3,7 @@ import { AsyncResult } from "ts-results-es";
 import TurndownService from "turndown";
 
 import { getBbnvolvedEvents } from "#lib/external-apis/event/bbnvolvedApi.js";
+import { logError } from "#lib/logging/logger.js";
 import { logger } from "#logging/standardLogging.js";
 import type { ForeignEvent } from "#repositories/event/EventRepository.js";
 import { EventRepository } from "#repositories/event/EventRepository.js";
@@ -25,15 +26,15 @@ export class GetBBNEventsJob extends Job {
     super("0 2 * * *", "get-bbnvolved-events");
   }
 
-  protected async run(): Promise<void> {
-    const turndownService = new TurndownService();
+  private turndownService = new TurndownService();
 
+  protected async run(): Promise<void> {
     const createdEvents = await new AsyncResult(getBbnvolvedEvents(15))
       .map((events): ForeignEvent[] =>
         events.map((event) => ({
           id: event.id,
           title: event.name,
-          description: turndownService.turndown(event.description),
+          description: this.turndownService.turndown(event.description),
           imageUrls: event.imagePath
             ? [
                 new URL(
@@ -51,9 +52,7 @@ export class GetBBNEventsJob extends Job {
       .promise;
 
     if (createdEvents.isErr()) {
-      logger.error("Failed to create new events", {
-        error: createdEvents.error,
-      });
+      logError(createdEvents.error, "Failed to load events from BBNvolved");
     } else {
       logger.info(`Created ${createdEvents.value.length} new events`);
     }

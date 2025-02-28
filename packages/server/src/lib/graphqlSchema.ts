@@ -13,7 +13,7 @@ import { buildSchema } from "type-graphql";
 import { fileURLToPath } from "url";
 
 import type { GraphQLContext } from "#lib/auth/context.js";
-import { logger } from "#logging/logger.js";
+import { logError, logger } from "#logging/logger.js";
 
 const schemaPath = fileURLToPath(
   import.meta.resolve("../../../../../schema.graphql")
@@ -72,8 +72,12 @@ export class SchemaService {
     { info }: ResolverData<GraphQLContext>,
     next: NextFn
   ) {
+    const path = this.pathToString(info.path);
     return Sentry.withScope((scope) => {
-      scope.setExtra("path", this.pathToString(info.path));
+      scope.setExtra("path", path);
+      scope.setTransactionName(
+        `${info.operation.name?.value ?? info.operation.operation} [${path}]`
+      );
       return next();
     });
   }
@@ -202,7 +206,7 @@ export class SchemaService {
         let value;
         if (Result.isResult(result)) {
           if (result.isErr()) {
-            logger.error("Failed to get subject", { error: result.error });
+            logError(result.error, "Failed to get subject");
             return false;
           } else {
             value = result.value;
@@ -225,6 +229,16 @@ export class SchemaService {
       const ok = ability.can(...canParameters);
 
       if (!ok) {
+        Sentry.addBreadcrumb({
+          message: "Access Denied",
+          category: "graphql.authorization",
+          level: "error",
+          data: {
+            action,
+            subject,
+            field,
+          },
+        });
         logger.trace("Failed access control", {
           authorized: ok,
           canParameters,

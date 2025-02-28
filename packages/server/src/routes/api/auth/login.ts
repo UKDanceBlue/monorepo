@@ -32,6 +32,15 @@ export const login = async (
   res: Response,
   next: NextFunction
 ): Promise<void> => {
+  if (!oidcConfiguration) {
+    res.status(503).json({
+      error: {
+        message: "OIDC configuration not available",
+      },
+    });
+    return;
+  }
+
   try {
     const loginFlowSessionRepository = req.getService(LoginFlowRepository);
 

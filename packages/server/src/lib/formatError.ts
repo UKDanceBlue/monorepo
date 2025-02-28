@@ -19,7 +19,7 @@ export function formatError(
   const error = unwrapResolverError(maybeWrappedError);
 
   if (error instanceof ExtendedError) {
-    return error.toJSON();
+    return error.toJSON(shouldIncludeSensitiveInfo);
   } else if (error instanceof GraphQLError) {
     return error.toJSON();
   }

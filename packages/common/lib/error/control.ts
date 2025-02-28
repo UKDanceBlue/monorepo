@@ -1,5 +1,6 @@
 import { ExtendedError } from "./error.js";
 import * as ErrorCode from "./errorCode.js";
+import { ErrorType } from "./errorrType.js";
 
 /**
  * These errors are caused when the server can do something, but doesn't want to. For example
@@ -26,6 +27,10 @@ export class UnauthenticatedError extends ControlError {
   get tag(): ErrorCode.Unauthenticated {
     return ErrorCode.Unauthenticated;
   }
+
+  get type() {
+    return ErrorType.Unauthenticated;
+  }
 }
 
 export class UnauthorizedError extends ControlError {
@@ -39,6 +44,10 @@ export class UnauthorizedError extends ControlError {
   get tag(): ErrorCode.Unauthenticated {
     return ErrorCode.Unauthenticated;
   }
+
+  get type() {
+    return ErrorType.Unauthorized;
+  }
 }
 
 export class ActionDeniedError extends ControlError {
@@ -48,5 +57,9 @@ export class ActionDeniedError extends ControlError {
 
   get tag(): ErrorCode.ActionDenied {
     return ErrorCode.ActionDenied;
+  }
+
+  get type() {
+    return ErrorType.BadRequest;
   }
 }

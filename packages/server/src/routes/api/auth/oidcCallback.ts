@@ -21,6 +21,15 @@ export const oidcCallback = async (
   res: Response,
   next: NextFunction
 ): Promise<void> => {
+  if (!oidcConfiguration) {
+    res.status(503).json({
+      error: {
+        message: "OIDC configuration not available",
+      },
+    });
+    return;
+  }
+
   let sessionDeleted = true;
 
   const personRepository = req.getService(PersonRepository);

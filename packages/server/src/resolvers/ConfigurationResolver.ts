@@ -12,8 +12,13 @@ import {
   CreateConfigurationInput,
   GetConfigurationResponse,
 } from "@ukdanceblue/common";
-import { ConcreteResult, NotFoundError } from "@ukdanceblue/common/error";
+import {
+  ActionDeniedError,
+  ConcreteResult,
+  NotFoundError,
+} from "@ukdanceblue/common/error";
 import { readFile } from "fs/promises";
+import { VoidResolver } from "graphql-scalars";
 import { DateTime } from "luxon";
 import { Err, None, Ok, type Option, Some } from "ts-results-es";
 import { Arg, Mutation, Query, Resolver } from "type-graphql";
@@ -176,5 +181,10 @@ export class ConfigurationResolver
     }
 
     return Ok(configurationModelToResource(row));
+  }
+
+  @Query(() => VoidResolver)
+  error() {
+    return Err(new ActionDeniedError("This is a test error"));
   }
 }

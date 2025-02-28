@@ -1,9 +1,10 @@
 import { Service } from "@freshgum/typedi";
 import { Event, Prisma, PrismaClient } from "@prisma/client";
 import type { DefaultArgs } from "@prisma/client/runtime/library";
-import type {
-  FieldsOfListQueryArgs,
-  ListEventsArgs,
+import {
+  asyncResultAll,
+  type FieldsOfListQueryArgs,
+  type ListEventsArgs,
 } from "@ukdanceblue/common";
 import {
   type FetchError,
@@ -357,52 +358,80 @@ export class EventRepository extends buildDefaultRepository<
       ).then((results) => Result.all(results))
     ).andThen((results) =>
       this.handleQueryError(
-        this.prisma.event.createManyAndReturn({
-          data: results.map(({ images, event }) => ({
-            title: event.title,
-            description: `${event.description}\n\n[More info](${event.url.href})`,
-            location: event.location,
-            eventOccurrences:
-              event.startsOn && event.endsOn
-                ? {
-                    create: {
-                      date: event.startsOn,
-                      endDate: event.endsOn,
-                    },
-                  }
-                : undefined,
-            eventImages: {
-              create: images.map(
-                ({ height, mimeType, thumbHash, url, width }) => ({
-                  image: {
-                    create: {
-                      height,
-                      width,
-                      thumbHash,
-                      file: {
-                        create: {
-                          filename: url.pathname.split("/").at(-1) ?? "",
-                          locationUrl: url.href,
-                          mimeSubtypeName: mimeType.subtype,
-                          mimeTypeName: mimeType.type,
-                          mimeParameters:
-                            mimeType.params.keys.length > 0
-                              ? {
-                                  set: [...mimeType.params.entries()].map(
-                                    ([k, v]) => `${k}=${v}`
-                                  ),
-                                }
-                              : undefined,
-                        },
-                      },
-                    },
-                  },
-                })
-              ),
+        this.prisma.event.findMany({
+          where: {
+            remoteId: {
+              in: results.map(({ event }) => event.id),
             },
-          })),
+          },
+          select: {
+            remoteId: true,
+          },
         })
       )
+        .map((alreadyLoaded) =>
+          results.filter(
+            ({ event }) =>
+              !alreadyLoaded.some(({ remoteId }) => remoteId === event.id)
+          )
+        )
+        .andThen((toLoad) => {
+          return this.handleTransactionError((tx) =>
+            asyncResultAll(
+              ...toLoad.map(({ images, event }) =>
+                this.handleQueryError(
+                  tx.event.create({
+                    data: {
+                      title: event.title,
+                      description: `${event.description}\n\n[More info](${event.url.href})`,
+                      location: event.location,
+                      eventOccurrences:
+                        event.startsOn && event.endsOn
+                          ? {
+                              create: {
+                                date: event.startsOn,
+                                endDate: event.endsOn,
+                              },
+                            }
+                          : undefined,
+                      remoteId: event.id,
+                      eventImages: {
+                        create: images.map(
+                          ({ height, mimeType, thumbHash, url, width }) => ({
+                            image: {
+                              create: {
+                                height,
+                                width,
+                                thumbHash,
+                                file: {
+                                  create: {
+                                    filename:
+                                      url.pathname.split("/").at(-1) ?? "",
+                                    locationUrl: url.href,
+                                    mimeSubtypeName: mimeType.subtype,
+                                    mimeTypeName: mimeType.type,
+                                    mimeParameters:
+                                      mimeType.params.keys.length > 0
+                                        ? {
+                                            set: [
+                                              ...mimeType.params.entries(),
+                                            ].map(([k, v]) => `${k}=${v}`),
+                                          }
+                                        : undefined,
+                                  },
+                                },
+                              },
+                            },
+                          })
+                        ),
+                      },
+                    },
+                  })
+                )
+              )
+            )
+          );
+        })
     );
   }
 

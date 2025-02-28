@@ -1,8 +1,10 @@
 import type { GraphQLFormattedError } from "graphql";
 import { GraphQLError } from "graphql";
+import type { Mutable } from "utility-types";
 
 import { debugStringify } from "../utility/errors/debugStringify.js";
 import * as ErrorCode from "./errorCode.js";
+import { ErrorType } from "./errorrType.js";
 import type { ErrorCodeType } from "./index.js";
 
 /**
@@ -19,6 +21,8 @@ export abstract class ExtendedError extends GraphQLError {
       },
     });
   }
+
+  public readonly timestamp = new Date();
 
   /**
    * A debugging-oriented string representation of the error, defaults to the message.
@@ -40,6 +44,13 @@ export abstract class ExtendedError extends GraphQLError {
   abstract get tag(): ErrorCodeType;
 
   /**
+   * Gets the type of the error. Used for error handling and categorization.
+   */
+  get type(): ErrorType {
+    return ErrorType.Internal;
+  }
+
+  /**
    * Converts the error to a string representation, by default this is based on the message and (if different) the detailed message.
    */
   toString() {
@@ -51,16 +62,29 @@ export abstract class ExtendedError extends GraphQLError {
   /**
    * Converts the error to a plain JSON representation.
    */
-  toJSON(): GraphQLFormattedError & {
-    details: string;
-  } {
-    return {
+  toJSON(shouldIncludeSensitiveInfo = false): Readonly<
+    GraphQLFormattedError & {
+      details?: string;
+    }
+  > {
+    const object: Mutable<GraphQLFormattedError> & {
+      details?: string;
+    } = {
       message: this.message,
-      details: this.detailedMessage,
-      extensions: this.extensions,
-      locations: this.locations,
-      path: this.path,
     };
+    if (shouldIncludeSensitiveInfo || this.expose) {
+      object.extensions = this.extensions;
+      if (this.detailedMessage && this.detailedMessage !== this.message) {
+        object.details = this.detailedMessage;
+      }
+      if (this.locations) {
+        object.locations = this.locations;
+      }
+      if (this.path) {
+        object.path = this.path;
+      }
+    }
+    return object;
   }
 
   /**
@@ -77,11 +101,11 @@ export abstract class ExtendedError extends GraphQLError {
  * properties and methods for error handling.
  */
 export class JsError extends ExtendedError {
-  readonly error: Error;
+  declare readonly cause: Error;
 
   constructor(error: Error) {
     super(error.message, ErrorCode.JsError.description);
-    this.error = error;
+    this.cause = error;
     this.stack = error.stack;
   }
 
@@ -125,4 +149,15 @@ export type BasicError = JsError | UnknownError;
  */
 export function toBasicError(error: unknown): BasicError {
   return error instanceof Error ? new JsError(error) : new UnknownError(error);
+}
+
+/**
+ * Converts an unknown error into an ExtendedError.
+ *
+ * If the provided error is an instance of ExtendedError, it will be returned as is.
+ *
+ * Any other error will be passed to `toBasicError`.
+ */
+export function toSomeExtendedError(error: unknown): ExtendedError {
+  return error instanceof ExtendedError ? error : toBasicError(error);
 }
