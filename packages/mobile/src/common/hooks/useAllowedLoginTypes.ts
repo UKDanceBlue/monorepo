@@ -28,7 +28,7 @@ export function useAllowedLoginTypes(): {
   });
   const configValue = readFragment(
     SimpleConfigFragment,
-    data?.activeConfiguration.data
+    data?.activeConfiguration?.data
   );
 
   useEffect(() => {

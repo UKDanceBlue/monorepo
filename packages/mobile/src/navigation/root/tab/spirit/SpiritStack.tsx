@@ -154,7 +154,7 @@ const SpiritScreen = () => {
         {() => (
           <ScoreboardScreen
             highlightedTeamFragment={query.data?.me?.primaryTeam?.team ?? null}
-            scoreBoardFragment={query.data?.teams.data ?? null}
+            scoreBoardFragment={query.data?.teams?.data ?? null}
             loading={!spiritMode || query.fetching}
             refresh={() => refresh({ requestPolicy: "network-only" })}
             mode={spiritMode}

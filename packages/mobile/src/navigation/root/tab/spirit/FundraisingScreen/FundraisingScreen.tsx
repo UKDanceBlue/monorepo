@@ -137,7 +137,8 @@ const FundraisingScreen = ({
           </HStack>
         </View>
         <View borderColor="primary.600" flex={1} marginTop={6}>
-          {fundraising && fundraising.fundraisingAssignments.length > 0 ? (
+          {fundraising?.fundraisingAssignments &&
+          fundraising.fundraisingAssignments.length > 0 ? (
             <View>
               {fundraising.fundraisingAssignments.map((assignment, index) => (
                 <View

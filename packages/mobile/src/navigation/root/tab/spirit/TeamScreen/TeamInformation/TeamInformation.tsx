@@ -23,8 +23,7 @@ const TeamInformation = ({
   showFundraisingButton,
 }: {
   name: string;
-  captains: readonly string[];
-  members: readonly string[];
+  captains?: readonly string[];
   scoreboardData: readonly StandingType[];
   teamTotal: number;
   showFundraisingButton: boolean;
@@ -35,7 +34,7 @@ const TeamInformation = ({
   const { navigate } =
     useNavigation<SpiritStackScreenProps<"MyTeam">["navigation"]>();
 
-  const captainString = captains.join(", ");
+  const captainString = captains?.join(", ");
 
   return (
     <View overflow="scroll" flex={1}>
@@ -65,7 +64,7 @@ const TeamInformation = ({
               {name}
             </Text>
           </Text>
-          {captains.length > 0 && (
+          {captains && captains.length > 0 && (
             <Text color="primary.600" flexDirection="row">
               <Text font={body} fontSize="lg" bold>{`Captain${
                 captains.length > 1 ? "s" : ""
