@@ -37,7 +37,7 @@ import type { ResultOf, VariablesOf } from "#gql/index.js";
 import { graphql, readFragment } from "#gql/index.js";
 import { useAntFeedback, useAskConfirm } from "#hooks/useAntFeedback";
 import { useQueryStatusWatcher } from "#hooks/useQueryStatusWatcher";
-import { useTypedOne } from "#hooks/useTypedRefine.js";
+import { useTypedOne } from "#hooks/refine/one.js";
 
 export const Route = createFileRoute(
   "/fundraising/solicitation-code/$solicitationCodeId/"
@@ -370,15 +370,17 @@ function RouteComponent() {
         </Card>
         <Card title="Entries" type="inner">
           <FundraisingEntriesTable
-            potentialAssignees={data?.data.teams.reduce<
+            potentialAssignees={data?.data.teams?.reduce<
               { value: string; label: string }[]
             >((acc, team) => {
-              acc.push(
-                ...team.members.map(({ person }) => ({
-                  value: person.id,
-                  label: person.name ?? person.linkblue ?? person.email,
-                }))
-              );
+              if (team.members) {
+                acc.push(
+                  ...team.members.map(({ person }) => ({
+                    value: person.id,
+                    label: person.name ?? person.linkblue ?? person.email,
+                  }))
+                );
+              }
               return acc;
             }, [])}
             extraMeta={{

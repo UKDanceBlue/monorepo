@@ -4,7 +4,7 @@ import { Form, Input } from "antd";
 
 import { graphql } from "#gql/index.js";
 import { withAuthorized } from "#hooks/useLoginState.js";
-import { useTypedForm } from "#hooks/useTypedRefine.js";
+import { useTypedForm } from "#hooks/refine/form.js";
 
 const CreatePersonMutation = graphql(/* GraphQL */ `
   mutation CreatePersonMutation($input: CreatePersonInput!) {

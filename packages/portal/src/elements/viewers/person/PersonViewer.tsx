@@ -30,16 +30,19 @@ export function PersonViewer({
     email: string;
     primarySpiritTeam: { team: { id: string } } | null;
     primaryMoraleTeam: { team: { id: string } } | null;
-    teams: {
-      position: MembershipPositionType;
-      team: {
-        marathon: { year: string };
-        id: string;
-        name: string;
-        committeeIdentifier: CommitteeIdentifier | null;
-      };
-      committeeRole: CommitteeRole | null;
-    }[];
+    teams:
+      | {
+          position: MembershipPositionType;
+          team: {
+            marathon: { year: string };
+            id: string;
+            name: string;
+            committeeIdentifier: CommitteeIdentifier | null;
+          };
+          committeeRole: CommitteeRole | null;
+        }[]
+      | null
+      | undefined;
   };
   personAuthorization?: Authorization;
 }) {
@@ -49,7 +52,7 @@ export function PersonViewer({
     year: string;
   }[] = [];
 
-  for (const team of teams) {
+  for (const team of teams ?? []) {
     if (team.team.committeeIdentifier && team.committeeRole) {
       committees.push({
         identifier: team.team.committeeIdentifier,
@@ -101,52 +104,57 @@ export function PersonViewer({
           label: `${committeeNames[committee.identifier]} (${committee.year})`,
           children: committee.role,
         })),
-        {
-          label: "Teams",
-          children:
-            teams.length === 0 ? (
-              "Not a member of any teams"
-            ) : (
-              <dl style={{ marginTop: "0" }}>
-                {teams.map((team) => {
-                  const isCaptain =
-                    personAuthorization &&
-                    (personAuthorization.accessLevel >= AccessLevel.Committee ||
-                      team.position === MembershipPositionType.Captain);
+        ...(teams
+          ? [
+              {
+                label: "Teams",
+                children:
+                  teams.length === 0 ? (
+                    "Not a member of any teams"
+                  ) : (
+                    <dl style={{ marginTop: "0" }}>
+                      {teams.map((team) => {
+                        const isCaptain =
+                          personAuthorization &&
+                          (personAuthorization.accessLevel >=
+                            AccessLevel.Committee ||
+                            team.position === MembershipPositionType.Captain);
 
-                  return (
-                    <div key={team.team.id}>
-                      <dt
-                        style={{
-                          fontWeight:
-                            primarySpiritTeam?.team.id === team.team.id ||
-                            primaryMoraleTeam?.team.id === team.team.id
-                              ? "bold"
-                              : "normal",
-                        }}
-                      >
-                        {team.team.name} {team.position} (
-                        {team.team.marathon.year})
-                      </dt>
-                      <dd>
-                        <br />
-                        {isCaptain ? (
-                          <Link
-                            to="/teams/$teamId"
-                            params={{ teamId: team.team.id }}
-                          >
-                            Click here to view
-                          </Link>
-                        ) : (
-                          ""
-                        )}
-                      </dd>
-                    </div>
-                  );
-                })}
-              </dl>
-            ),
-        },
+                        return (
+                          <div key={team.team.id}>
+                            <dt
+                              style={{
+                                fontWeight:
+                                  primarySpiritTeam?.team.id === team.team.id ||
+                                  primaryMoraleTeam?.team.id === team.team.id
+                                    ? "bold"
+                                    : "normal",
+                              }}
+                            >
+                              {team.team.name} {team.position} (
+                              {team.team.marathon.year})
+                            </dt>
+                            <dd>
+                              <br />
+                              {isCaptain ? (
+                                <Link
+                                  to="/teams/$teamId"
+                                  params={{ teamId: team.team.id }}
+                                >
+                                  Click here to view
+                                </Link>
+                              ) : (
+                                ""
+                              )}
+                            </dd>
+                          </div>
+                        );
+                      })}
+                    </dl>
+                  ),
+              },
+            ]
+          : []),
       ]}
     />
   );

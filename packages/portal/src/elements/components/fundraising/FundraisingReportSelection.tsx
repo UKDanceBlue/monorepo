@@ -6,8 +6,9 @@ import type { ColInfo, WorkBook, WorkSheet } from "xlsx";
 import { utils } from "xlsx";
 
 import { graphql } from "#gql/index.js";
+import { useQuery } from "#hooks/refine/custom.tsx";
+import { useTypedSelect } from "#hooks/refine/select.tsx";
 import { useQueryStatusWatcher } from "#hooks/useQueryStatusWatcher.js";
-import { useQuery, useTypedSelect } from "#hooks/useTypedRefine.js";
 
 import { LuxonDatePicker } from "../antLuxonComponents";
 
@@ -211,6 +212,10 @@ export function FundraisingReportSelection({
   useEffect(() => {
     if (result.data) {
       const wb = utils.book_new();
+
+      if (!result.data.report) {
+        throw new Error("No data returned from report");
+      }
 
       if (result.data.report.pages.length > 1 && format === "csv") {
         throw new Error("Cannot generate CSV for reports with multiple sheets");

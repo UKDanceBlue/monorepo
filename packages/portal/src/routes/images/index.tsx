@@ -13,7 +13,7 @@ import { CreateImagePopup } from "#elements/components/image/CreateImagePopup.js
 import { RefineSearchForm } from "#elements/components/RefineSearchForm.js";
 import { graphql } from "#gql/index.js";
 import { useAntFeedback } from "#hooks/useAntFeedback.js";
-import { useTypedTable } from "#hooks/useTypedRefine.js";
+import { useTypedTable } from "#hooks/refine/table.js";
 
 import { imageIconDataUrl } from "../../elements/imageIconDataUrl.js";
 

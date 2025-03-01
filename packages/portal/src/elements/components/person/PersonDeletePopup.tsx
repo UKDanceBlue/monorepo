@@ -34,10 +34,10 @@ export const usePersonDeletePopup = ({
   };
 
   useEffect(() => {
-    if (data?.deletePerson.id) {
+    if (data?.deletePerson?.id) {
       setOpen(false);
     }
-  }, [data?.deletePerson.id]);
+  }, [data?.deletePerson?.id]);
 
   const PersonDeletePopup = (
     <>
@@ -47,7 +47,7 @@ export const usePersonDeletePopup = ({
         open={open}
         onOk={() =>
           deletePerson({ id: uuid }).then((value) => {
-            if (value.data?.deletePerson.id) {
+            if (value.data?.deletePerson?.id) {
               showInfoMessage({
                 message: "Person successfully deleted",
               });

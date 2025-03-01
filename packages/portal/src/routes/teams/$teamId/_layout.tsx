@@ -6,7 +6,7 @@ import { teamPageDocument } from "#documents/team.js";
 import { TeamViewer } from "#elements/viewers/team/TeamViewer.js";
 import { useAuthorizationRequirement } from "#hooks/useLoginState.js";
 import { useQueryStatusWatcher } from "#hooks/useQueryStatusWatcher.js";
-import { useQuery } from "#hooks/useTypedRefine.js";
+import { useQuery } from "#hooks/refine/custom.js";
 
 function ViewTeamPage() {
   const { teamId: teamUuid } = Route.useParams();
@@ -27,7 +27,7 @@ function ViewTeamPage() {
       <h1>View Team</h1>
       <Flex gap="1em" vertical>
         <h2>Team Details</h2>
-        <TeamViewer teamFragment={data?.team} />
+        <TeamViewer teamFragment={data?.team ?? undefined} />
         <Outlet />
       </Flex>
     </div>

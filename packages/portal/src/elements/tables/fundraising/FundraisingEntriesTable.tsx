@@ -16,13 +16,9 @@ import {
 import { Table } from "antd";
 import { DateTime } from "luxon";
 
-import { RefineSearchForm } from "#elements/components/RefineSearchForm.js";
 import { graphql } from "#gql/index.js";
+import { useTypedTable, type UseTypedTableMeta } from "#hooks/refine/table.js";
 import { useAuthorizationRequirement } from "#hooks/useLoginState.js";
-import {
-  useTypedTable,
-  type UseTypedTableMeta,
-} from "#hooks/useTypedRefine.js";
 
 import {
   FundraisingAssignmentsTable,
@@ -77,7 +73,7 @@ export function FundraisingEntriesTable<T extends Record<string, unknown>>({
 
   const {
     tableProps,
-    searchFormProps,
+    TableWrapper,
     tableQuery: { refetch },
     sorters,
   } = useTypedTable({
@@ -117,8 +113,7 @@ export function FundraisingEntriesTable<T extends Record<string, unknown>>({
   });
 
   return (
-    <>
-      <RefineSearchForm searchFormProps={searchFormProps} />
+    <TableWrapper>
       {fiscalYear && (
         <p>
           Showing entries for {fiscalYear.end!.toFormat("yyyy")} fiscal year
@@ -248,6 +243,6 @@ export function FundraisingEntriesTable<T extends Record<string, unknown>>({
           ),
         }}
       />
-    </>
+    </TableWrapper>
   );
 }

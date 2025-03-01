@@ -3,8 +3,8 @@ import { DateTime, Interval } from "luxon";
 import { useMemo } from "react";
 
 import { graphql, readFragment } from "#gql/index.js";
+import { useQuery } from "#hooks/refine/custom.js";
 import { useQueryStatusWatcher } from "#hooks/useQueryStatusWatcher.js";
-import { useQuery } from "#hooks/useTypedRefine.js";
 
 export const ConfigFragment = graphql(/* GraphQL */ `
   fragment ConfigFragment on ConfigurationNode {
@@ -58,7 +58,7 @@ export function useConfig(): {
     const configs: ConfigValueCollection[] = [];
     const activeValues: Record<string, ConfigValue> = {};
 
-    const data = readFragment(ConfigFragment, response.allConfigurations);
+    const data = readFragment(ConfigFragment, response.allConfigurations ?? []);
 
     for (const config of data) {
       // Add the config key if it doesn't exist

@@ -16,12 +16,9 @@ import { PaginationFragment } from "#documents/shared.js";
 import { RefineSearchForm } from "#elements/components/RefineSearchForm.js";
 import { TeamSelect } from "#elements/components/team/TeamSelect.js";
 import { graphql, readFragment } from "#gql/index.js";
+import { useTypedForm } from "#hooks/refine/form.tsx";
+import { prefetchTypedTable, useTypedTable } from "#hooks/refine/table.tsx";
 import { useAuthorizationRequirement } from "#hooks/useLoginState.tsx";
-import {
-  prefetchTypedTable,
-  useTypedForm,
-  useTypedTable,
-} from "#hooks/useTypedRefine.js";
 
 const SolicitationCodeTableFragment = graphql(/* GraphQL */ `
   fragment SolicitationCodeTableFragment on SolicitationCodeNode {
@@ -162,6 +159,11 @@ function RouteComponent() {
     mutation: SetSolicitationCodeDocument,
     dataToForm(data) {
       const fragmentData = readFragment(SolicitationCodeTableFragment, data);
+
+      if (!fragmentData.teams) {
+        throw new Error("Teams are required");
+      }
+
       return {
         id: fragmentData.id,
         name: fragmentData.name,
@@ -324,7 +326,7 @@ function RouteComponent() {
                   );
                 } else {
                   return record.teams
-                    .filter(
+                    ?.filter(
                       ({ marathon: { id } }) => !marathonId || id === marathonId
                     )
                     .map(({ text }) => text)

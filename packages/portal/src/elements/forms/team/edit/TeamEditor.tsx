@@ -10,7 +10,7 @@ import { useTeamEditorForm } from "./useTeamEditorForm.js";
 export function TeamEditor({
   teamFragment,
 }: {
-  teamFragment?: FragmentOf<typeof TeamEditorFragment> | undefined;
+  teamFragment?: FragmentOf<typeof TeamEditorFragment> | null | undefined;
 }) {
   const { message } = App.useApp();
 

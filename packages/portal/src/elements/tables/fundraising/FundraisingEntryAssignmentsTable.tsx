@@ -1,4 +1,4 @@
-import { Button, Empty, Form, InputNumber, Select, Table } from "antd";
+import { Button, Empty, Form, InputNumber, Result, Select, Table } from "antd";
 import { useForm } from "antd/es/form/Form.js";
 import { useEffect } from "react";
 import { useMutation } from "urql";
@@ -85,6 +85,10 @@ export function FundraisingAssignmentsTable({
   const { id, assignments, amountUnassigned } =
     readFragment(FundraisingEntryAssignmentTableFragment, fragment) ?? {};
 
+  if (!assignments) {
+    return <Result status="403" title="Access Denied" />;
+  }
+
   return (
     <Table
       dataSource={assignments}
@@ -119,15 +123,25 @@ export function FundraisingAssignmentsTable({
         {
           title: "Person",
           dataIndex: ["person"],
-          render: ({
-            id,
-            name,
-            linkblue,
-          }: {
-            id: string;
-            name?: string;
-            linkblue?: string;
-          }) => name ?? (linkblue ? <i>{linkblue}</i> : <pre>{id}</pre>),
+          render: (
+            person:
+              | {
+                  id: string;
+                  name?: string;
+                  linkblue?: string;
+                }
+              | undefined
+          ) => {
+            if (person?.name) {
+              return person.name;
+            } else if (person?.linkblue) {
+              return <i>{person.linkblue}</i>;
+            } else if (person) {
+              return <pre>{person.id}</pre>;
+            } else {
+              return <i>Unknown</i>;
+            }
+          },
           key: "person",
           width: "60%",
         },

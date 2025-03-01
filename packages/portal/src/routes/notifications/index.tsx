@@ -7,7 +7,7 @@ import { DateTime } from "luxon";
 
 import { RefineSearchForm } from "#elements/components/RefineSearchForm.js";
 import { graphql } from "#gql/index.js";
-import { useTypedTable } from "#hooks/useTypedRefine.js";
+import { useTypedTable } from "#hooks/refine/table.js";
 
 const NotificationsTableFragment = graphql(/* GraphQL */ `
   fragment NotificationsTableFragment on NotificationNode {

@@ -34,10 +34,10 @@ export const useTeamDeletePopup = ({
   };
 
   useEffect(() => {
-    if (data?.deleteTeam.id) {
+    if (data?.deleteTeam?.id) {
       setOpen(false);
     }
-  }, [data?.deleteTeam.id]);
+  }, [data?.deleteTeam?.id]);
 
   const TeamDeletePopup = (
     <>
@@ -47,7 +47,7 @@ export const useTeamDeletePopup = ({
         open={open}
         onOk={() =>
           deleteTeam({ id: uuid }).then((value) => {
-            if (value.data?.deleteTeam.id) {
+            if (value.data?.deleteTeam?.id) {
               showInfoMessage({
                 message: "Team successfully deleted",
               });

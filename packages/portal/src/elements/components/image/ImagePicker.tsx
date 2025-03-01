@@ -3,8 +3,8 @@ import { Button, Flex, Image, Input } from "antd";
 import { useState } from "react";
 
 import { graphql } from "#gql/index.js";
+import { useQuery } from "#hooks/refine/custom.js";
 import { useQueryStatusWatcher } from "#hooks/useQueryStatusWatcher.js";
-import { useQuery } from "#hooks/useTypedRefine.js";
 
 const imagePickerDocument = graphql(/* GraphQL */ `
   query ImagePicker($filters: ImageResolverFilterGroup) {
@@ -52,17 +52,16 @@ export function ImagePicker({
   useQueryStatusWatcher({ ...result, loadingMessage: "Loading images..." });
 
   // Group images by 3
-  type ImageData = Exclude<
-    typeof result.data,
-    undefined | null
-  >["images"]["data"][number];
+  type ImageData = NonNullable<
+    Exclude<typeof result.data, undefined | null>["images"]
+  >["data"][number];
   type ImageGroup = [
     ImageData | undefined,
     ImageData | undefined,
     ImageData | undefined,
   ];
   const imageGroups: ImageGroup[] = [];
-  if (result.data) {
+  if (result.data?.images) {
     for (let i = 0; i < result.data.images.data.length; i += 3) {
       imageGroups.push([
         result.data.images.data[i],

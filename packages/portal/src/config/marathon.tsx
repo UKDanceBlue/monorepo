@@ -3,8 +3,9 @@ import { dateTimeFromSomething } from "@ukdanceblue/common";
 import { useMemo } from "react";
 
 import { graphql, readFragment } from "#gql/index.js";
+import { useTypedCustomQuery } from "#hooks/refine/custom.js";
+import { useTypedOne } from "#hooks/refine/one.js";
 import { useAuthorizationRequirement } from "#hooks/useLoginState.js";
-import { useTypedCustomQuery, useTypedOne } from "#hooks/useTypedRefine.js";
 
 import type { MarathonContextData } from "./marathonContext.js";
 import { marathonContext } from "./marathonContext.js";
@@ -136,7 +137,7 @@ export const MarathonConfigProvider = ({
           : null,
         marathons: readFragment(
           MarathonFragment,
-          // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+
           allMarathonsResult?.data.marathons?.data ??
             (activeMarathonResult?.data.latestMarathon
               ? [activeMarathonResult.data.latestMarathon]

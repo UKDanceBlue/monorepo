@@ -21,7 +21,7 @@ import Markdown from "react-markdown";
 import { thumbHashToDataURL } from "thumbhash";
 
 import { graphql } from "#gql/index.js";
-import { useTypedOne } from "#hooks/useTypedRefine.js";
+import { useTypedOne } from "#hooks/refine/one.js";
 
 export const EventViewerFragment = graphql(/* GraphQL */ `
   fragment EventViewerFragment on EventNode {

@@ -25,7 +25,9 @@ import { useAuthorizationRequirement } from "#hooks/useLoginState.js";
 
 export function FundraisingEntryEditor({ id }: { id: string }) {
   const { formProps, saveButtonProps, query } = useForm<
-    ResultOf<typeof getFundraisingEntryDocument>["fundraisingEntry"],
+    NonNullable<
+      ResultOf<typeof getFundraisingEntryDocument>["fundraisingEntry"]
+    >,
     HttpError,
     VariablesOf<typeof setFundraisingEntryDocument>["input"],
     Omit<
@@ -35,7 +37,9 @@ export function FundraisingEntryEditor({ id }: { id: string }) {
       donatedOn: DateTime | undefined;
       donatedOnOverride: DateTime | undefined;
     },
-    ResultOf<typeof setFundraisingEntryDocument>["setFundraisingEntry"]
+    NonNullable<
+      ResultOf<typeof setFundraisingEntryDocument>["setFundraisingEntry"]
+    >
   >({
     redirect: "edit",
     id,

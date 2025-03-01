@@ -37,11 +37,11 @@ export const usePointEntryDeletePopup = ({
   };
 
   useEffect(() => {
-    if (data?.deletePointEntry.id) {
+    if (data?.deletePointEntry?.id) {
       setUuid(null);
       setOpen(false);
     }
-  }, [data?.deletePointEntry.id]);
+  }, [data?.deletePointEntry?.id]);
 
   const PointEntryDeletePopup = (
     <>
@@ -53,7 +53,7 @@ export const usePointEntryDeletePopup = ({
           if (uuid) {
             deletePointEntry({ id: uuid })
               .then((value) => {
-                if (value.data?.deletePointEntry.id) {
+                if (value.data?.deletePointEntry?.id) {
                   showInfoMessage({
                     message: "Point entry successfully deleted",
                   });

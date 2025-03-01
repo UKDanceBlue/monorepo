@@ -35,7 +35,7 @@ export const NotificationViewer = ({
   }
 
   const totalDeliveryIssues = Object.values(
-    notification.deliveryIssueCount
+    notification.deliveryIssueCount ?? {}
   ).reduce<number>(
     (acc, val) =>
       (val as unknown) === "NotificationDeliveryIssueCount"
@@ -100,7 +100,7 @@ export const NotificationViewer = ({
               ) : (
                 <Descriptions
                   size="small"
-                  items={Object.entries(notification.deliveryIssueCount)
+                  items={Object.entries(notification.deliveryIssueCount ?? {})
                     .filter(([, val]) => typeof val === "number")
                     .map(([key, value]) => ({
                       label: key,

@@ -11,7 +11,7 @@ import type { ReactNode } from "react";
 import { useMarathon } from "#config/marathonContext.js";
 import { RefineSearchForm } from "#elements/components/RefineSearchForm.js";
 import { graphql } from "#gql/index.js";
-import { useTypedTable } from "#hooks/useTypedRefine.js";
+import { useTypedTable } from "#hooks/refine/table.js";
 
 export const TeamsTableFragment = graphql(/* GraphQL */ `
   fragment TeamsTableFragment on TeamNode {

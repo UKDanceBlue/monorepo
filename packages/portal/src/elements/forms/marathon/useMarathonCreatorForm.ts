@@ -68,7 +68,7 @@ export function useMarathonCreatorForm() {
         resetWatcher();
         await navigate({
           to: "/marathon/$marathonId",
-          params: { marathonId: data.createMarathon.id },
+          params: { marathonId: data.createMarathon?.id ?? "" },
         });
       }
     },

@@ -165,7 +165,7 @@ export function TeamViewer({
           <Descriptions.Item label="Captains">
             <ul>
               {teamData.members
-                .filter(
+                ?.filter(
                   ({ position }) => position === MembershipPositionType.Captain
                 )
                 .map((captain) =>
@@ -209,7 +209,7 @@ export function TeamViewer({
           <Descriptions.Item label="Members">
             <div style={{ maxHeight: "10rem", overflowY: "scroll" }}>
               <ul>
-                {teamData.members.map((member) =>
+                {teamData.members?.map((member) =>
                   canViewPeople ? (
                     <li key={member.person.id}>
                       <Link
