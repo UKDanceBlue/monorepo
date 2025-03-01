@@ -34,10 +34,7 @@ jobs:
       - name: Install dependencies
         run: yarn workspaces focus @ukdanceblue/mobile
       - name: Promote release
-        uses: ./.github/actions/promote-eas
-        with:
-          from-branch: staging
-          to-branch: release
+        run: ./scripts/promote-eas-update.sh main staging
   promote-docker:
     name: Promote Docker
     environment:
