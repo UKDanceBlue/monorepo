@@ -17,8 +17,6 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-        with:
-          ref: staging
       - name: Enable Corepack before setting up Node
         run: corepack enable
       - name: Set up node 22.x
@@ -46,8 +44,6 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-        with:
-          ref: staging
       - name: Log in to the Container registry
         uses: docker/login-action@v3
         with:
