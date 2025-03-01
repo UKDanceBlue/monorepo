@@ -13,7 +13,7 @@ import { Button, Flex, Table } from "antd";
 
 import { RefineSearchForm } from "#elements/components/RefineSearchForm.js";
 import { graphql } from "#gql/index.js";
-import { useTypedTable } from "#hooks/useTypedRefine.js";
+import { useTypedTable } from "#hooks/refine/table.js";
 
 const DDNsTableFragment = graphql(/* GraphQL */ `
   fragment DDNsTableFragment on DailyDepartmentNotificationNode {

@@ -61,7 +61,7 @@ export function TriviaCrack() {
   const [spins, setSpins] = useState<number[] | null>(null);
   const option = readFragment(
     SimpleConfigFragment,
-    data?.activeConfiguration.data
+    data?.activeConfiguration?.data
   );
 
   const { stationOrder, moraleTeamNumber } = useMemo(() => {
@@ -70,9 +70,9 @@ export function TriviaCrack() {
       null;
     let moraleTeamNumber: number | undefined;
     if (typeof value === "object" && value !== null) {
-      if ((data?.me?.teams.length ?? 0) > 0) {
+      if ((data?.me?.teams?.length ?? 0) > 0) {
         const moraleTeams =
-          data?.me?.teams.filter(
+          data?.me?.teams?.filter(
             (team) => team.team.type === TeamType.Morale
           ) ?? [];
         if (moraleTeams[0]?.team.name.startsWith("Morale Team")) {

@@ -310,8 +310,16 @@ export const dataProvider: Required<DataProvider> = {
     );
 
     if (!val) {
-      console.error("Invalid response: no data", response.data);
-      throw new TypeError("Invalid response: no data");
+      if (val === null) {
+        // If we got null explicitly, this is probably an auth issue
+        throw {
+          message: "Access denied",
+          statusCode: 403,
+        } satisfies HttpError;
+      } else {
+        // Otherwise, it's an error in the server
+        throw new TypeError("Invalid response: data is null");
+      }
     }
 
     if (typeof val !== "object") {

@@ -9,7 +9,7 @@ import { TimestampedResource } from "./Resource.js";
 
 @ObjectType({ implements: [Node] })
 export class DeviceNode extends TimestampedResource implements Node {
-  @Field(() => GlobalIdScalar)
+  @Field(() => GlobalIdScalar, { nullable: false })
   id!: GlobalId;
 
   @Field(() => DateTimeScalar, { nullable: true })
@@ -19,7 +19,7 @@ export class DeviceNode extends TimestampedResource implements Node {
     return this.id.id;
   }
 
-  @Field(() => String)
+  @Field(() => String, { nullable: false })
   public text(): string {
     return this.id.id;
   }

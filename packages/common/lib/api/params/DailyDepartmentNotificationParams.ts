@@ -91,7 +91,7 @@ export class DailyDepartmentNotificationInput implements DDNInit {
   @Field(() => GraphQLLocalDate, { nullable: true })
   effectiveDate?: LocalDate | undefined;
 
-  @Field(() => GraphQLLocalDate)
+  @Field(() => GraphQLLocalDate, { nullable: false })
   processDate!: LocalDate;
 
   @Field(() => GraphQLLocalDate, { nullable: true })
@@ -100,7 +100,7 @@ export class DailyDepartmentNotificationInput implements DDNInit {
   @Field(() => GraphQLLocalDate, { nullable: true })
   transactionDate?: LocalDate | undefined;
 
-  @Field(() => GraphQLNonEmptyString)
+  @Field(() => GraphQLNonEmptyString, { nullable: false })
   transactionType!: string;
 
   @Field(() => Number, { nullable: true })
@@ -109,16 +109,16 @@ export class DailyDepartmentNotificationInput implements DDNInit {
   @Field(() => Number, { nullable: true })
   donor2Amount?: number | undefined;
 
-  @Field(() => Number)
+  @Field(() => Number, { nullable: false })
   combinedAmount!: number;
 
-  @Field(() => Number)
+  @Field(() => Number, { nullable: false })
   pledgedAmount!: number;
 
-  @Field(() => GraphQLNonEmptyString)
+  @Field(() => GraphQLNonEmptyString, { nullable: false })
   accountNumber!: string;
 
-  @Field(() => GraphQLNonEmptyString)
+  @Field(() => GraphQLNonEmptyString, { nullable: false })
   accountName!: string;
 
   @Field(() => GraphQLNonEmptyString, { nullable: true })
@@ -139,10 +139,10 @@ export class DailyDepartmentNotificationInput implements DDNInit {
   @Field(() => GraphQLNonEmptyString, { nullable: true })
   gikDescription?: string | undefined;
 
-  @Field(() => Boolean)
+  @Field(() => Boolean, { nullable: false })
   onlineGift!: boolean;
 
-  @Field(() => GraphQLNonEmptyString)
+  @Field(() => GraphQLNonEmptyString, { nullable: false })
   solicitationCode!: string;
 
   @Field(() => GraphQLNonEmptyString, { nullable: true })
@@ -154,22 +154,22 @@ export class DailyDepartmentNotificationInput implements DDNInit {
   @Field(() => GraphQLNonEmptyString, { nullable: true })
   matchingGift?: string | undefined;
 
-  @Field(() => GraphQLNonEmptyString)
+  @Field(() => GraphQLNonEmptyString, { nullable: false })
   batchId!: string;
 
-  @Field(() => Boolean)
+  @Field(() => Boolean, { nullable: false })
   ukFirstGift!: boolean;
 
-  @Field(() => Boolean)
+  @Field(() => Boolean, { nullable: false })
   divFirstGift!: boolean;
 
-  @Field(() => GraphQLNonEmptyString)
+  @Field(() => GraphQLNonEmptyString, { nullable: false })
   idSorter!: string;
 
-  @Field(() => GraphQLNonEmptyString)
+  @Field(() => GraphQLNonEmptyString, { nullable: false })
   combinedDonorName!: string;
 
-  @Field(() => GraphQLNonEmptyString)
+  @Field(() => GraphQLNonEmptyString, { nullable: false })
   combinedDonorSalutation!: string;
 
   @Field(() => GraphQLNonEmptyString, { nullable: true })

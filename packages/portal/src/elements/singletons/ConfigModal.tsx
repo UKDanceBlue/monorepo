@@ -6,8 +6,8 @@ import { useContext } from "react";
 import { marathonContext } from "#config/marathonContext.js";
 import { StorageManager, useStorageValue } from "#config/storage.js";
 import { graphql } from "#gql/index.js";
+import { useTypedCustomQuery } from "#hooks/refine/custom.js";
 import { useAuthorizationRequirement } from "#hooks/useLoginState.js";
-import { useTypedCustomQuery } from "#hooks/useTypedRefine.js";
 
 import { MasqueradeSelector } from "./MasqueradeSelector.js";
 

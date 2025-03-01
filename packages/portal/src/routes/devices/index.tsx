@@ -4,7 +4,7 @@ import { Table } from "antd";
 
 import { RefineSearchForm } from "#elements/components/RefineSearchForm.js";
 import { graphql } from "#gql/index.js";
-import { useTypedTable } from "#hooks/useTypedRefine.js";
+import { useTypedTable } from "#hooks/refine/table.js";
 
 export const Route = createFileRoute("/devices/")({
   component: RouteComponent,

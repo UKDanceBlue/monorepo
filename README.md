@@ -13,6 +13,14 @@
 
 <h3 align="center">DanceBlue App Monorepo</h3>
 
+[![Docker build](https://github.com/UKDanceBlue/monorepo/actions/workflows/docker-build.yml/badge.svg?branch=main)](https://github.com/UKDanceBlue/monorepo/actions/workflows/docker-build.yml)
+[![EAS Update](https://github.com/UKDanceBlue/monorepo/actions/workflows/eas-update.yml/badge.svg?branch=main)](https://github.com/UKDanceBlue/monorepo/actions/workflows/eas-update.yml)
+[![Check](https://github.com/UKDanceBlue/monorepo/actions/workflows/check.yml/badge.svg?branch=main)](https://github.com/UKDanceBlue/monorepo/actions/workflows/check.yml)
+[![Test](https://github.com/UKDanceBlue/monorepo/actions/workflows/test.yml/badge.svg)](https://github.com/UKDanceBlue/monorepo/actions/workflows/test.yml)
+
+[![Stage a Release](https://github.com/UKDanceBlue/monorepo/actions/workflows/stage-release.yml/badge.svg)](https://github.com/UKDanceBlue/monorepo/actions/workflows/stage-release.yml)
+[![Promote Staging To Release](https://github.com/UKDanceBlue/monorepo/actions/workflows/promote-staging.yml/badge.svg)](https://github.com/UKDanceBlue/monorepo/actions/workflows/promote-staging.yml)
+
   <p align="center">
     DanceBlue's mobile app is a great way to interact with DanceBlue year round from the comfort of your phone
     <br />

@@ -41,16 +41,16 @@ registerEnumType(TeamLegacyStatus, {
   implements: [Node],
 })
 export class TeamNode extends TimestampedResource implements Node {
-  @Field(() => GlobalIdScalar)
+  @Field(() => GlobalIdScalar, { nullable: false })
   id!: GlobalId;
-  @Field(() => String)
+  @Field(() => String, { nullable: false })
   name!: string;
-  @Field(() => TeamType)
+  @Field(() => TeamType, { nullable: false })
   type!: TeamType;
-  @Field(() => TeamLegacyStatus)
+  @Field(() => TeamLegacyStatus, { nullable: false })
   legacyStatus!: TeamLegacyStatus;
 
-  @Field(() => String)
+  @Field(() => String, { nullable: false })
   text(): string {
     return this.name;
   }

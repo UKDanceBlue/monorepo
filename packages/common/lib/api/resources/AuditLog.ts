@@ -14,7 +14,7 @@ export class AuditLogNode extends Resource implements Node {
   userId?: number | null | undefined;
   subjectGlobalId?: string | null;
 
-  @Field(() => GlobalIdScalar)
+  @Field(() => GlobalIdScalar, { nullable: false })
   id!: GlobalId;
 
   @Field(() => String)
@@ -26,7 +26,7 @@ export class AuditLogNode extends Resource implements Node {
   @Field(() => DateTimeScalar, { nullable: true })
   createdAt!: DateTime;
 
-  @Field(() => String)
+  @Field(() => String, { nullable: false })
   text(): string {
     return this.summary;
   }

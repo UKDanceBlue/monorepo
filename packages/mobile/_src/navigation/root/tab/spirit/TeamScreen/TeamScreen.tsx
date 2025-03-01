@@ -19,8 +19,7 @@ export const MyTeamFragment = graphql(/* GraphQL */ `
       position
       person {
         id
-        name
-        linkblue
+        text
       }
       points
     }
@@ -46,7 +45,7 @@ const TeamScreen = ({
   for (const member of team?.members ?? []) {
     teamStandings.push({
       id: member.person.id,
-      name: member.person.name ?? member.person.linkblue ?? "Unknown",
+      name: member.person.text,
       highlighted: member.person.id === userUuid,
       points: member.points,
     });
@@ -80,25 +79,12 @@ const TeamScreen = ({
       <TeamInformation
         showFundraisingButton={showFundraisingButton}
         captains={members
-          .filter(
+          ?.filter(
             (member) =>
               member.position === MembershipPositionType.Captain &&
-              (member.person.name ?? member.person.linkblue)
+              member.person.text
           )
-          .map(
-            (captain) =>
-              captain.person.name ?? captain.person.linkblue ?? "Unknown"
-          )}
-        members={members
-          .filter(
-            (member) =>
-              member.position === MembershipPositionType.Member &&
-              (member.person.name ?? member.person.linkblue)
-          )
-          .map(
-            (member) =>
-              member.person.name ?? member.person.linkblue ?? "Unknown"
-          )}
+          .map((captain) => captain.person.text)}
         name={name}
         scoreboardData={teamStandings}
         teamTotal={totalPoints}

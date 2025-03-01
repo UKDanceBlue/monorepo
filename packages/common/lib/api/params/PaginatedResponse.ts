@@ -10,6 +10,7 @@ export abstract class AbstractGraphQLPaginatedResponse<T> {
 
   @Field(() => NonNegativeIntResolver, {
     description: "The total number of items",
+    nullable: false,
   })
   total!: number;
 

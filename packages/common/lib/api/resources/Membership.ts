@@ -26,17 +26,17 @@ registerEnumType(MembershipPositionType, {
   implements: [Node],
 })
 export class MembershipNode extends TimestampedResource implements Node {
-  @Field(() => GlobalIdScalar)
+  @Field(() => GlobalIdScalar, { nullable: false })
   id!: GlobalId;
 
-  @Field(() => MembershipPositionType)
+  @Field(() => MembershipPositionType, { nullable: false })
   position!: MembershipPositionType;
 
   public getUniqueId(): string {
     return this.id.id;
   }
 
-  @Field(() => String)
+  @Field(() => String, { nullable: false })
   text(): string {
     return this.position;
   }
@@ -55,13 +55,13 @@ export class MembershipNode extends TimestampedResource implements Node {
   implements: [Node],
 })
 export class CommitteeMembershipNode extends MembershipNode implements Node {
-  @Field(() => CommitteeRole)
+  @Field(() => CommitteeRole, { nullable: false })
   role!: CommitteeRole;
 
-  @Field(() => CommitteeIdentifier)
+  @Field(() => CommitteeIdentifier, { nullable: false })
   identifier!: CommitteeIdentifier;
 
-  @Field(() => String)
+  @Field(() => String, { nullable: false })
   text(): string {
     return `${this.role} of ${this.identifier}`;
   }

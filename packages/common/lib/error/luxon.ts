@@ -4,6 +4,7 @@ import { Err, Ok } from "ts-results-es";
 
 import { ExtendedError } from "./error.js";
 import { LuxonError as ErrorCodeLuxonError } from "./errorCode.js";
+import { ErrorType } from "./errorrType.js";
 
 export class LuxonError extends ExtendedError {
   constructor(
@@ -38,5 +39,9 @@ export class LuxonError extends ExtendedError {
     val: DateTime | Interval | Duration
   ): Result<DateTime<true> | Interval<true> | Duration<true>, LuxonError> {
     return val.isValid ? Ok(val) : Err(new LuxonError(val));
+  }
+
+  get type() {
+    return ErrorType.BadRequest;
   }
 }

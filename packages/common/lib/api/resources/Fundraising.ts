@@ -25,7 +25,7 @@ registerEnumType(FundraisingEntrySource, {
   implements: [Node],
 })
 export class FundraisingEntryNode extends TimestampedResource implements Node {
-  @Field(() => GlobalIdScalar)
+  @Field(() => GlobalIdScalar, { nullable: false })
   id!: GlobalId;
 
   @Field(() => String, { nullable: true, name: "donatedByText" })
@@ -49,13 +49,13 @@ export class FundraisingEntryNode extends TimestampedResource implements Node {
   })
   donatedOnOverride!: DateTime | null | undefined;
 
-  @Field(() => Float)
+  @Field(() => Float, { nullable: false })
   amount!: number;
 
   @Field(() => Float, { nullable: true })
   amountOverride!: number | null | undefined;
 
-  @Field(() => Float)
+  @Field(() => Float, { nullable: false })
   amountUnassigned!: number;
 
   @Field(() => String, { nullable: true })
@@ -64,16 +64,16 @@ export class FundraisingEntryNode extends TimestampedResource implements Node {
   @Field(() => SolicitationCodeNode, { nullable: true })
   solicitationCodeOverride?: SolicitationCodeNode | null | undefined;
 
-  @Field(() => BatchType)
+  @Field(() => BatchType, { nullable: false })
   batchType!: BatchType;
 
   @Field(() => BatchType, { nullable: true })
   batchTypeOverride!: BatchType | null | undefined;
 
-  @Field(() => FundraisingEntrySource)
+  @Field(() => FundraisingEntrySource, { nullable: false })
   source!: FundraisingEntrySource;
 
-  @Field(() => String)
+  @Field(() => String, { nullable: false })
   text(): string {
     return `Donation of $${this.amount} via ${this.source} from ${
       this.donatedByText || "Unknown"
@@ -116,16 +116,16 @@ export class FundraisingAssignmentNode
   extends TimestampedResource
   implements Node
 {
-  @Field(() => GlobalIdScalar)
+  @Field(() => GlobalIdScalar, { nullable: false })
   id!: GlobalId;
-  @Field(() => Float)
+  @Field(() => Float, { nullable: false })
   amount!: number;
 
   public getUniqueId(): string {
     return this.id.id;
   }
 
-  @Field(() => String)
+  @Field(() => String, { nullable: false })
   text(): string {
     return `Assignment of $${this.amount}`;
   }

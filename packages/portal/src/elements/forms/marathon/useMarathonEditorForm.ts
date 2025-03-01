@@ -58,11 +58,11 @@ export function useMarathonCreatorForm({ marathonId }: { marathonId: string }) {
     endDate: DateTime | undefined;
   }>({
     defaultValues: {
-      year: existingData?.marathon.year,
+      year: existingData?.marathon?.year,
       startDate:
-        dateTimeFromSomething(existingData?.marathon.startDate) ?? undefined,
+        dateTimeFromSomething(existingData?.marathon?.startDate) ?? undefined,
       endDate:
-        dateTimeFromSomething(existingData?.marathon.endDate) ?? undefined,
+        dateTimeFromSomething(existingData?.marathon?.endDate) ?? undefined,
     },
     validators: {
       onChange: ({ value: { startDate, endDate } }) => {
@@ -102,7 +102,7 @@ export function useMarathonCreatorForm({ marathonId }: { marathonId: string }) {
         resetExistingWatcher();
         await navigate({
           to: "/marathon/$marathonId",
-          params: { marathonId: data.setMarathon.id },
+          params: { marathonId: data.setMarathon?.id ?? "" },
         });
       }
     },

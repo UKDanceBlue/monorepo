@@ -11,11 +11,11 @@ import {
 @InputType("IntervalISOInput")
 export class IntervalISO {
   @IsBeforeDateTime("end", true)
-  @Field(() => DateTimeScalar)
+  @Field(() => DateTimeScalar, { nullable: false })
   start!: DateTime;
 
   @IsAfterDateTime("start", true)
-  @Field(() => DateTimeScalar)
+  @Field(() => DateTimeScalar, { nullable: false })
   end!: DateTime;
 
   get interval(): Interval {

@@ -4,7 +4,7 @@ import { PersonEditorFragment, TeamNameFragment } from "#documents/person.js";
 import { PersonEditor } from "#elements/forms/person/edit/PersonEditor.js";
 import { graphql } from "#gql/index.js";
 import { useQueryStatusWatcher } from "#hooks/useQueryStatusWatcher.js";
-import { useQuery } from "#hooks/useTypedRefine.js";
+import { useQuery } from "#hooks/refine/custom.js";
 
 const viewPersonPageDocument = graphql(
   /* GraphQL */ `
@@ -40,7 +40,7 @@ export function EditPersonPage() {
     <div>
       <PersonEditor
         personFragment={data?.person}
-        teamNamesFragment={data?.teams.data}
+        teamNamesFragment={data?.teams?.data}
       />
     </div>
   );

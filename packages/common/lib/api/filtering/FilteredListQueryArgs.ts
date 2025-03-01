@@ -17,7 +17,10 @@ import {
 export abstract class AbstractSortItem<Field extends string> {
   field!: Field;
 
-  @Field(() => SortDirection, { defaultValue: SortDirection.asc })
+  @Field(() => SortDirection, {
+    defaultValue: SortDirection.asc,
+    nullable: false,
+  })
   direction!: SortDirection;
 }
 
@@ -27,7 +30,7 @@ export function SortItem<Fields extends string>(
 ) {
   @InputType(`${resolverName}Sort`)
   class Sort extends AbstractSortItem<Fields> {
-    @Field(() => fieldsEnum)
+    @Field(() => fieldsEnum, { nullable: false })
     declare field: Fields;
   }
 
@@ -75,6 +78,7 @@ export abstract class AbstractFilteredListQueryArgs<Fields extends string> {
   sendAll = false;
 
   @Field(() => GraphQLNonNegativeInt, {
+    nullable: true,
     description: `The number of items to return per page, defaults to ${String(
       DEFAULT_PAGE_SIZE
     )}`,
@@ -83,6 +87,7 @@ export abstract class AbstractFilteredListQueryArgs<Fields extends string> {
   declare pageSize: number;
 
   @Field(() => GraphQLPositiveInt, {
+    nullable: true,
     description: `The page number to return, defaults to ${String(FIRST_PAGE)}`,
     defaultValue: FIRST_PAGE,
   })

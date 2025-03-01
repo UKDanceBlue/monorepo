@@ -3,7 +3,7 @@ import { useState } from "react";
 
 import { StorageManager, useStorageValue } from "#config/storage.js";
 import { graphql } from "#gql/index.js";
-import { useQuery } from "#hooks/useTypedRefine.js";
+import { useQuery } from "#hooks/refine/custom.js";
 
 export function MasqueradeSelector() {
   const [search, setSearch] = useState("");
@@ -44,7 +44,7 @@ export function MasqueradeSelector() {
             : undefined
       }
       options={
-        data?.searchPeopleByName.map((person) => ({
+        data?.searchPeopleByName?.map((person) => ({
           value: person.id,
           label: person.name,
         })) ?? []

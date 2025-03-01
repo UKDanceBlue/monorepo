@@ -9,7 +9,7 @@ import {
   type EventOccurrencePickerValue,
 } from "#elements/components/event/EventOccurrencePicker.tsx";
 import { graphql } from "#gql/index.ts";
-import { useTypedForm } from "#hooks/useTypedRefine.tsx";
+import { useTypedForm } from "#hooks/refine/form.tsx";
 
 const eventCreatorDocument = graphql(/* GraphQL */ `
   mutation CreateEvent($input: CreateEventInput!) {

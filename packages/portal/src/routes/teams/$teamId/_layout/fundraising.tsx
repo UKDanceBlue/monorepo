@@ -12,7 +12,7 @@ import {
 import { graphql } from "#gql/index.js";
 import { useAuthorizationRequirement } from "#hooks/useLoginState.js";
 import { useQueryStatusWatcher } from "#hooks/useQueryStatusWatcher.js";
-import { useTypedOne } from "#hooks/useTypedRefine.js";
+import { useTypedOne } from "#hooks/refine/one.js";
 
 const TeamFundraisingEntriesDocument = graphql(
   /* GraphQL */ `
@@ -126,7 +126,7 @@ function ViewTeamFundraising() {
   useQueryStatusWatcher(clearSolicitationCodeState);
 
   const [solCodeSearch, setSolCodeSearch] = useState("");
-  const solCodeOptions = solicitationCodesData?.solicitationCodes.data.map(
+  const solCodeOptions = solicitationCodesData?.solicitationCodes?.data.map(
     ({ code, prefix, name, id }) => ({
       label: `${prefix}${code.toString().padStart(4, "0")} - ${name}`,
       value: id,
@@ -259,7 +259,7 @@ function ViewTeamFundraising() {
         </Form.Item>
         <FundraisingEntriesTable
           potentialAssignees={
-            data?.data.members.map(({ person: { id, linkblue, name } }) => ({
+            data?.data.members?.map(({ person: { id, linkblue, name } }) => ({
               value: id,
               label: name ?? linkblue ?? id,
             })) ?? []

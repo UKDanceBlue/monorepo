@@ -4,7 +4,7 @@ import { AutoComplete, type AutoCompleteProps } from "antd";
 import { useRef, useState } from "react";
 
 import { graphql } from "#gql/index.js";
-import { useQuery } from "#hooks/useTypedRefine.js";
+import { useQuery } from "#hooks/refine/custom.js";
 
 const personSearchDocument = graphql(/* GraphQL */ `
   query PersonSearch($search: String!) {
@@ -47,7 +47,7 @@ export function PersonSearch({
   const autocompleteRef = useRef<GetRef<typeof AutoComplete>>(null);
 
   const options =
-    data?.searchPeopleByName.map((person) => ({
+    data?.searchPeopleByName?.map((person) => ({
       value: person.name,
       label: person.name,
       person,

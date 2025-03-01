@@ -15,13 +15,13 @@ export class ListTeamsResponse extends AbstractGraphQLPaginatedResponse<TeamNode
 
 @InputType()
 export class CreateTeamInput implements OptionalToNullable<Partial<TeamNode>> {
-  @Field(() => GraphQLNonEmptyString)
+  @Field(() => GraphQLNonEmptyString, { nullable: false })
   name!: string;
 
-  @Field(() => TeamType)
+  @Field(() => TeamType, { nullable: false })
   type!: TeamType;
 
-  @Field(() => TeamLegacyStatus)
+  @Field(() => TeamLegacyStatus, { nullable: false })
   legacyStatus!: TeamLegacyStatus;
 }
 
@@ -42,13 +42,13 @@ export class SetTeamInput implements OptionalToNullable<Partial<TeamNode>> {
 
 @InputType()
 export class BulkTeamInput {
-  @Field(() => GraphQLNonEmptyString)
+  @Field(() => GraphQLNonEmptyString, { nullable: false })
   name!: string;
 
-  @Field(() => TeamType)
+  @Field(() => TeamType, { nullable: false })
   type!: TeamType;
 
-  @Field(() => TeamLegacyStatus)
+  @Field(() => TeamLegacyStatus, { nullable: false })
   legacyStatus!: TeamLegacyStatus;
 
   @Field(() => [GraphQLNonEmptyString], { nullable: true })
@@ -69,9 +69,9 @@ export class ListTeamsArgs extends FilteredListQueryArgs("TeamResolver", [
 
 @ObjectType("DbFundsTeamInfo")
 export class DbFundsTeamInfo {
-  @Field(() => Int)
+  @Field(() => Int, { nullable: false })
   dbNum!: number;
 
-  @Field(() => String)
+  @Field(() => String, { nullable: false })
   name!: string;
 }

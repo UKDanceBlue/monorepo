@@ -4,7 +4,7 @@ import { SingleNotificationFragment } from "#documents/notification.js";
 import { ManageNotificationForm } from "#elements/forms/notification/manage/ManageNotificationForm.js";
 import { graphql } from "#gql/index.js";
 import { useQueryStatusWatcher } from "#hooks/useQueryStatusWatcher.js";
-import { useQuery } from "#hooks/useTypedRefine.js";
+import { useQuery } from "#hooks/refine/custom.js";
 
 const notificationManagerDocument = graphql(
   /* GraphQL */ `

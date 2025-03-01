@@ -65,7 +65,7 @@ registerEnumType(ArrayArrayOperators, { name: "ArrayArrayOperators" });
 
 @InputType()
 export class NullFilter {
-  @Field(() => NoTargetOperators)
+  @Field(() => NoTargetOperators, { nullable: false })
   comparison!: NoTargetOperators;
 
   static from(comparison: NoTargetOperators): NullFilter {
@@ -76,10 +76,10 @@ export class NullFilter {
 }
 @InputType()
 export class SingleStringFilter {
-  @Field(() => String)
+  @Field(() => String, { nullable: false })
   value!: string;
 
-  @Field(() => SingleTargetOperators)
+  @Field(() => SingleTargetOperators, { nullable: false })
   comparison!: SingleTargetOperators;
 
   static from(
@@ -94,10 +94,10 @@ export class SingleStringFilter {
 }
 @InputType()
 export class SingleNumberFilter {
-  @Field(() => Number)
+  @Field(() => Number, { nullable: false })
   value!: number;
 
-  @Field(() => SingleTargetOperators)
+  @Field(() => SingleTargetOperators, { nullable: false })
   comparison!: SingleTargetOperators;
 
   static from(
@@ -113,10 +113,10 @@ export class SingleNumberFilter {
 
 @InputType()
 export class SingleDateFilter {
-  @Field(() => DateTimeScalar)
+  @Field(() => DateTimeScalar, { nullable: false })
   value!: DateTime;
 
-  @Field(() => SingleTargetOperators)
+  @Field(() => SingleTargetOperators, { nullable: false })
   comparison!: SingleTargetOperators;
 
   static from(
@@ -132,10 +132,10 @@ export class SingleDateFilter {
 
 @InputType()
 export class SingleBooleanFilter {
-  @Field(() => Boolean)
+  @Field(() => Boolean, { nullable: false })
   value!: boolean;
 
-  @Field(() => SingleTargetOperators)
+  @Field(() => SingleTargetOperators, { nullable: false })
   comparison!: SingleTargetOperators;
 
   static from(
@@ -151,13 +151,13 @@ export class SingleBooleanFilter {
 
 @InputType()
 export class TwoNumberFilter {
-  @Field(() => Number)
+  @Field(() => Number, { nullable: false })
   lower!: number;
 
-  @Field(() => Number)
+  @Field(() => Number, { nullable: false })
   upper!: number;
 
-  @Field(() => TwoTargetOperators)
+  @Field(() => TwoTargetOperators, { nullable: false })
   comparison!: TwoTargetOperators;
 
   static from(
@@ -175,13 +175,13 @@ export class TwoNumberFilter {
 
 @InputType()
 export class TwoDateFilter {
-  @Field(() => DateTimeScalar)
+  @Field(() => DateTimeScalar, { nullable: false })
   lower!: DateTime;
 
-  @Field(() => DateTimeScalar)
+  @Field(() => DateTimeScalar, { nullable: false })
   upper!: DateTime;
 
-  @Field(() => TwoTargetOperators)
+  @Field(() => TwoTargetOperators, { nullable: false })
   comparison!: TwoTargetOperators;
 
   static from(
@@ -199,10 +199,10 @@ export class TwoDateFilter {
 
 @InputType()
 export class ArrayStringFilter {
-  @Field(() => [String])
+  @Field(() => [String], { nullable: false })
   value!: string[];
 
-  @Field(() => ArrayOperators)
+  @Field(() => ArrayOperators, { nullable: false })
   comparison!: ArrayOperators;
 
   static from(value: string[], comparison: ArrayOperators): ArrayStringFilter {
@@ -215,10 +215,10 @@ export class ArrayStringFilter {
 
 @InputType()
 export class ArrayNumberFilter {
-  @Field(() => [Number])
+  @Field(() => [Number], { nullable: false })
   value!: number[];
 
-  @Field(() => ArrayOperators)
+  @Field(() => ArrayOperators, { nullable: false })
   comparison!: ArrayOperators;
 
   static from(value: number[], comparison: ArrayOperators): ArrayNumberFilter {
@@ -231,10 +231,10 @@ export class ArrayNumberFilter {
 
 @InputType()
 export class ArrayDateFilter {
-  @Field(() => [DateTimeScalar])
+  @Field(() => [DateTimeScalar], { nullable: false })
   value!: DateTime[];
 
-  @Field(() => ArrayOperators)
+  @Field(() => ArrayOperators, { nullable: false })
   comparison!: ArrayOperators;
 
   static from(value: DateTime[], comparison: ArrayOperators): ArrayDateFilter {
@@ -247,10 +247,10 @@ export class ArrayDateFilter {
 
 @InputType()
 export class ArrayBooleanFilter {
-  @Field(() => [Boolean])
+  @Field(() => [Boolean], { nullable: false })
   value!: boolean[];
 
-  @Field(() => ArrayOperators)
+  @Field(() => ArrayOperators, { nullable: false })
   comparison!: ArrayOperators;
 
   static from(
@@ -266,10 +266,10 @@ export class ArrayBooleanFilter {
 
 @InputType()
 export class ArrayArrayFilter {
-  @Field(() => [String])
+  @Field(() => [String], { nullable: false })
   value: string[] = [];
 
-  @Field(() => ArrayArrayOperators)
+  @Field(() => ArrayArrayOperators, { nullable: false })
   comparison!: ArrayArrayOperators;
 
   static from(
@@ -411,7 +411,7 @@ registerEnumType(FilterGroupOperator, { name: "FilterGroupOperator" });
 export abstract class AbstractFilterItem<Field extends string> {
   field!: Field;
 
-  @Field(() => SomeFilter)
+  @Field(() => SomeFilter, { nullable: false })
   filter!: SomeFilter;
 }
 
@@ -421,7 +421,7 @@ export function createFilterItem<Field extends string>(
 ) {
   @InputType(`${resolverName}FilterItem`)
   class FilterItem extends AbstractFilterItem<Field> {
-    @Field(() => fieldEnum)
+    @Field(() => fieldEnum, { nullable: false })
     declare field: Field;
   }
 
@@ -433,7 +433,7 @@ export abstract class AbstractFilterGroup<Field extends string> {
   declare filters: AbstractFilterItem<Field>[];
   declare children: AbstractFilterGroup<Field>[];
 
-  @Field(() => FilterGroupOperator)
+  @Field(() => FilterGroupOperator, { nullable: false })
   declare operator: FilterGroupOperator;
 }
 
@@ -445,11 +445,11 @@ export function createFilterGroup<Field extends string>(
 
   @InputType(`${resolverName}FilterGroup`)
   class FilterGroup extends AbstractFilterGroup<Field> {
-    @Field(() => [FilterItem], { defaultValue: [] })
-    declare filters: AbstractFilterItem<Field>[];
+    @Field(() => [FilterItem], { nullable: false })
+    filters: AbstractFilterItem<Field>[] = [];
 
-    @Field(() => [FilterGroup], { defaultValue: [] })
-    declare children: AbstractFilterGroup<Field>[];
+    @Field(() => [FilterGroup], { nullable: false })
+    children: AbstractFilterGroup<Field>[] = [];
   }
 
   return FilterGroup;

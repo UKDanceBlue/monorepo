@@ -19,19 +19,19 @@ export class ListPointOpportunitiesResponse extends AbstractGraphQLPaginatedResp
 
 @InputType()
 export class CreatePointOpportunityInput {
-  @Field(() => GraphQLNonEmptyString)
+  @Field(() => GraphQLNonEmptyString, { nullable: false })
   name!: string;
 
   @Field(() => DateTimeScalar, { nullable: true })
   opportunityDate!: DateTime | null;
 
-  @Field(() => TeamType)
+  @Field(() => TeamType, { nullable: false })
   type!: TeamType;
 
   @Field(() => GlobalIdScalar, { nullable: true })
   eventUuid!: GlobalId | null;
 
-  @Field(() => GlobalIdScalar)
+  @Field(() => GlobalIdScalar, { nullable: false })
   marathonUuid!: GlobalId;
 }
 

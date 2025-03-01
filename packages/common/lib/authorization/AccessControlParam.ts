@@ -1,11 +1,6 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable @typescript-eslint/no-unsafe-function-type */
 import type { GraphQLResolveInfo } from "graphql";
-import { type AsyncResult, Err, type Result } from "ts-results-es";
-import * as TypeGraphql from "type-graphql";
+import { type AsyncResult, type Result } from "ts-results-es";
 
-import { assertGlobalId } from "../api/scalars/GlobalId.js";
-import { InvalidArgumentError } from "../error/direct.js";
 import type { ExtendedError } from "../error/error.js";
 import type { Action, Subject, SubjectObject } from "./accessControl.js";
 
@@ -41,7 +36,7 @@ export function getArrayFromOverloadedRest<T>(
 }
 
 export const _aclSummary = new Map<string, string[]>();
-function addAclSummary(
+export function addAclSummary(
   constructorName: string,
   propertyKey: string,
   action: string,
@@ -60,128 +55,4 @@ function addAclSummary(
       .get(constructorName)!
       .push(`### ${propertyKey}\n**${action}** ${kindStr}${kindSpecifier}`);
   }
-}
-
-export function AccessControlAuthorized<
-  S extends Exclude<Extract<Subject, string>, "all">,
->(
-  action: AccessControlParam<S>[0],
-  subjectOrMacro:
-    | AccessControlParam<S>[1]
-    | ["all"]
-    | ["getId", S, string]
-    | ["getIdFromRoot", S, string]
-    | ["every", S],
-  field: AccessControlParam<S>[2] = "."
-): PropertyDecorator & MethodDecorator & ClassDecorator {
-  // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-  if (!TypeGraphql.getMetadataStorage) {
-    return () => undefined;
-  }
-
-  return (
-    target: Function | object,
-    propertyKey?: string | symbol,
-    _descriptor?: TypedPropertyDescriptor<any>
-  ) => {
-    let subject: AccessControlParam<S>[1];
-    if (Array.isArray(subjectOrMacro)) {
-      // We need to add a util handler
-      switch (subjectOrMacro[0]) {
-        case "getId": {
-          const kind = subjectOrMacro[1];
-          const idField = subjectOrMacro[2];
-          subject = (_: unknown, args: Record<string, unknown>) => {
-            const id = assertGlobalId(args[idField]);
-            return id.map(({ id }) => ({ id, kind }));
-          };
-          addAclSummary(
-            target.constructor.name,
-            String(propertyKey),
-            action,
-            `${kind}${field}`,
-            ` with an id of _args.${idField}_`
-          );
-          break;
-        }
-        case "getIdFromRoot": {
-          const kind = subjectOrMacro[1];
-          const idField = subjectOrMacro[2];
-          subject = (
-            _1: unknown,
-            _2: unknown,
-            root?: Record<string, unknown>
-          ) => {
-            if (root == null) {
-              return Err(new InvalidArgumentError("Root is missing"));
-            }
-            const id = assertGlobalId(root[idField]);
-            return id.map(({ id }) => ({ id, kind }));
-          };
-          addAclSummary(
-            target.constructor.name,
-            String(propertyKey),
-            action,
-            `${kind}${field}`,
-            ` with an id of _root.${idField}_`
-          );
-          break;
-        }
-        case "every": {
-          const kind = subjectOrMacro[1];
-          subject = { kind };
-          addAclSummary(
-            target.constructor.name,
-            String(propertyKey),
-            action,
-            `every ${kind}${field}`
-          );
-          break;
-        }
-        case "all": {
-          subject = "all";
-          addAclSummary(
-            target.constructor.name,
-            String(propertyKey),
-            action,
-            "all subjects"
-          );
-          break;
-        }
-        default: {
-          subjectOrMacro[0] satisfies never;
-          throw new Error("Invalid macro");
-        }
-      }
-    } else {
-      subject = subjectOrMacro === "all" ? "all" : subjectOrMacro;
-      addAclSummary(
-        target.constructor.name,
-        String(propertyKey),
-        action,
-        typeof subjectOrMacro === "function"
-          ? `custom function (${field}):\n\`\`\`js\n${String(subjectOrMacro)}\n\`\`\``
-          : String(subjectOrMacro)
-      );
-    }
-
-    const role: AccessControlParam<S> = [action, subject, field];
-    if (propertyKey == null) {
-      TypeGraphql.getMetadataStorage().collectAuthorizedResolverMetadata({
-        target: target as Function,
-        roles: [role],
-      });
-      return;
-    }
-
-    if (typeof propertyKey === "symbol") {
-      throw new TypeGraphql.SymbolKeysNotSupportedError();
-    }
-
-    TypeGraphql.getMetadataStorage().collectAuthorizedFieldMetadata({
-      target: target.constructor,
-      fieldName: propertyKey,
-      roles: [role],
-    });
-  };
 }

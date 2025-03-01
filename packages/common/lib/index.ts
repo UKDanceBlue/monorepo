@@ -7,6 +7,7 @@ export * from "./api/params/index.js";
 export * from "./api/resources/index.js";
 export * from "./api/standardResolver.js";
 export * from "./authorization/accessControl.js";
+export * from "./authorization/AccessControlAuthorized.js";
 export * from "./authorization/AccessControlParam.js";
 export * from "./authorization/role.js";
 export * from "./authorization/structures.js";

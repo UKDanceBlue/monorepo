@@ -1,4 +1,5 @@
 import { MinDate } from "class-validator";
+import { GraphQLNonEmptyString } from "graphql-scalars";
 import { DateTime } from "luxon";
 import { Field, InputType, ObjectType } from "type-graphql";
 
@@ -7,16 +8,16 @@ import { DateTimeScalar } from "../scalars/DateTimeISO.js";
 
 @ObjectType("GetConfigurationByUuidResponse")
 export class GetConfigurationResponse {
-  @Field(() => ConfigurationNode)
+  @Field(() => ConfigurationNode, { nullable: false })
   data!: ConfigurationNode;
 }
 
 @InputType()
 export class CreateConfigurationInput implements Partial<ConfigurationNode> {
-  @Field()
+  @Field(() => GraphQLNonEmptyString, { nullable: false })
   key!: string;
 
-  @Field()
+  @Field(() => GraphQLNonEmptyString, { nullable: false })
   value!: string;
 
   @Field(() => DateTimeScalar, { nullable: true })

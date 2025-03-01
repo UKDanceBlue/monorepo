@@ -44,7 +44,7 @@ export function usePersonEditorForm(
       email: personData?.email ?? "",
       captainOf:
         personData?.teams
-          .filter(
+          ?.filter(
             (membership) =>
               membership.position === MembershipPositionType.Captain
           )
@@ -54,7 +54,7 @@ export function usePersonEditorForm(
           })) ?? [],
       memberOf:
         personData?.teams
-          .filter(
+          ?.filter(
             (membership) =>
               membership.position === MembershipPositionType.Member
           )

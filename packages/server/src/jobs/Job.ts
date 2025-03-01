@@ -1,6 +1,7 @@
 import * as Sentry from "@sentry/node";
 import { Cron } from "croner";
 
+import { logError } from "#lib/logging/logger.js";
 import { logger } from "#lib/logging/standardLogging.js";
 import type { JobStateRepository } from "#repositories/JobState.js";
 
@@ -51,5 +52,15 @@ export abstract class Job {
     this.cron.options.startAt = startAt;
     this.cron.resume();
     logger.debug(`Job ${this.name} started`);
+
+    if (process.env.NODE_ENV === "development") {
+      logger.debug(`Running job ${this.name} immediately`);
+      this.cron
+        .trigger()
+        .then(() => {
+          logger.debug(`Initial ${this.name} job run completed`);
+        })
+        .catch(logError);
+    }
   }
 }

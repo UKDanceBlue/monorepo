@@ -2,7 +2,7 @@ import type { SelectProps } from "antd";
 import { Select } from "antd";
 
 import { TeamSelectFragment } from "#documents/team.js";
-import { useTypedSelect } from "#hooks/useTypedRefine.js";
+import { useTypedSelect } from "#hooks/refine/select.tsx";
 
 export function TeamSelect({
   defaultValue,

@@ -10,7 +10,7 @@ import { Button, Flex, Table } from "antd";
 
 import { RefineSearchForm } from "#elements/components/RefineSearchForm.js";
 import { graphql } from "#gql/index.js";
-import { useTypedTable } from "#hooks/useTypedRefine.js";
+import { useTypedTable } from "#hooks/refine/table.js";
 
 export const EventsTableFragment = graphql(/* GraphQL */ `
   fragment EventsTableFragment on EventNode {

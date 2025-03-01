@@ -23,7 +23,7 @@ import { usePointEntryCreatorForm } from "./usePointEntryCreatorForm.js";
 export function PointEntryCreator({
   team,
 }: {
-  team?: FragmentOf<typeof PointEntryCreatorFragment>;
+  team?: FragmentOf<typeof PointEntryCreatorFragment> | null | undefined;
 }) {
   const { message } = App.useApp();
 

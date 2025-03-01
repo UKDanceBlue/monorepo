@@ -7,6 +7,7 @@ import {
 } from "@prisma/client/runtime/library";
 import {
   ErrorCode,
+  ErrorType,
   ExtendedError,
   NotFoundError,
 } from "@ukdanceblue/common/error";
@@ -30,7 +31,10 @@ export abstract class PrismaError extends ExtendedError {
     this.cause = prismaError;
   }
 
-  readonly expose = false;
+  // eslint-disable-next-line @typescript-eslint/class-literal-property-style
+  get expose() {
+    return false;
+  }
 
   get tag(): ErrorCode.PrismaError {
     return ErrorCode.PrismaError;
@@ -38,15 +42,43 @@ export abstract class PrismaError extends ExtendedError {
 }
 
 export class PrismaKnownRequestError extends PrismaError {
-  readonly error: PrismaClientKnownRequestError;
+  declare cause: PrismaClientKnownRequestError;
+
+  private readonly isClientError: boolean;
 
   constructor(error: PrismaClientKnownRequestError) {
     super(error, error.meta?.message ? String(error.meta.message) : undefined);
-    this.error = error;
+    this.cause = error;
+
+    switch (error.code) {
+      case "P2000":
+      case "P2001":
+      case "P2002":
+      case "P2003":
+      case "P2004":
+      case "P2019":
+      case "P2020":
+      case "P2025": {
+        this.isClientError = true;
+        break;
+      }
+      default: {
+        this.isClientError = false;
+        break;
+      }
+    }
+  }
+
+  get expose() {
+    return this.isClientError;
+  }
+
+  get type() {
+    return this.isClientError ? ErrorType.BadRequest : ErrorType.Internal;
   }
 
   get detailedMessage(): string {
-    return this.error.message;
+    return this.cause.message;
   }
 }
 

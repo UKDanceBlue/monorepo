@@ -32,7 +32,7 @@ export function useTabBarConfig(): {
   });
   const tabBarConfig = readFragment(
     SimpleConfigFragment,
-    data?.activeConfiguration.data
+    data?.activeConfiguration?.data
   );
 
   useEffect(() => {

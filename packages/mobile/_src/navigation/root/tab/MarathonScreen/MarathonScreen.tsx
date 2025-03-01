@@ -97,7 +97,7 @@ export const MarathonScreen = () => {
             showSecretMenu={() => setShowSecretMenu(true)}
           />
         );
-      } else {
+      } else if (lastGoodData.latestMarathon.hours) {
         return (
           <HourScreenComponent
             hourScreenFragment={lastGoodData.latestMarathon.hours[hourOverride]}
@@ -105,6 +105,12 @@ export const MarathonScreen = () => {
             refresh={() => refresh({ requestPolicy: "network-only" })}
             showSecretMenu={() => setShowSecretMenu(true)}
           />
+        );
+      } else {
+        return (
+          <Text width="full" height="full" textAlign="center">
+            Something went Wrong!
+          </Text>
         );
       }
     } else if (lastGoodData?.currentMarathonHour) {
@@ -192,7 +198,7 @@ export const MarathonScreen = () => {
             if (
               (!Number.isNaN(parsedText) && parsedText === -1) ||
               (parsedText >= 0 &&
-                data?.latestMarathon &&
+                data?.latestMarathon?.hours &&
                 parsedText <= data.latestMarathon.hours.length)
             ) {
               setHourOverride(parsedText);

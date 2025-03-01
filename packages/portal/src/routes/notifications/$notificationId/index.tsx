@@ -7,7 +7,7 @@ import { NotificationDeliveriesTable } from "#elements/tables/notification/Notif
 import { NotificationViewer } from "#elements/viewers/notification/NotificationViewer.js";
 import { graphql } from "#gql/index.js";
 import { useQueryStatusWatcher } from "#hooks/useQueryStatusWatcher.js";
-import { useQuery } from "#hooks/useTypedRefine.js";
+import { useQuery } from "#hooks/refine/custom.js";
 
 const notificationViewerDocument = graphql(
   /* GraphQL */ `

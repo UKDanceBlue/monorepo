@@ -1,4 +1,4 @@
-name: Promote Staging
+name: Promote Staging To Release
 
 on:
   workflow_dispatch:
@@ -11,22 +11,14 @@ env:
   SERVER_IMAGE_NAME: ukdanceblue/app-server
 
 jobs:
-  do-release:
+  promote-eas-update:
+    name: Promote EAS Update
     runs-on: ubuntu-latest
-    environment:
-      name: release
-      url: https://app.danceblue.org
-    permissions:
-      packages: write
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-      - name: Log in to the Container registry
-        uses: docker/login-action@v3
         with:
-          registry: ${{ env.REGISTRY }}
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
+          ref: staging
       - name: Enable Corepack before setting up Node
         run: corepack enable
       - name: Set up node 22.x
@@ -42,6 +34,27 @@ jobs:
       - name: Install dependencies
         run: yarn workspaces focus @ukdanceblue/mobile
       - name: Promote release
-        run: ./scripts/promote-branch.sh staging release
+        run: ./scripts/promote-eas-update.sh staging release
+  promote-docker:
+    name: Promote Docker
+    environment:
+      name: release
+      url: https://app.danceblue.org
+    runs-on: ubuntu-latest
+    permissions:
+      packages: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          ref: staging
+      - name: Log in to the Container registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Promote release
+        run: ./scripts/promote-docker.sh staging release
       - name: Update the deployment
         run: curl --data {} ${{ secrets.DEPLOY_WEBHOOK }}

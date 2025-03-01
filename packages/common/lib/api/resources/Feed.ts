@@ -22,10 +22,10 @@ import { TimestampedResource } from "./Resource.js";
 
 @InterfaceType()
 export class FeedItem {
-  @Field(() => GlobalIdScalar)
+  @Field(() => GlobalIdScalar, { nullable: false })
   id!: GlobalId;
 
-  @Field(() => String)
+  @Field(() => String, { nullable: false })
   title!: string;
 
   @Field(() => String, { nullable: true })
@@ -48,10 +48,10 @@ export class InstagramFeedNode
   extends TimestampedResource
   implements Node, FeedItem
 {
-  @Field(() => GlobalIdScalar)
+  @Field(() => GlobalIdScalar, { nullable: false })
   id!: GlobalId;
 
-  @Field(() => String)
+  @Field(() => String, { nullable: false })
   title!: string;
 
   @Field(() => String, { nullable: true })
@@ -67,7 +67,7 @@ export class InstagramFeedNode
     return this.id.id;
   }
 
-  @Field(() => String)
+  @Field(() => String, { nullable: false })
   text(): string {
     return this.title;
   }
@@ -89,10 +89,10 @@ export class InstagramFeedNode
   implements: [Node, FeedItem],
 })
 export class FeedNode extends TimestampedResource implements Node, FeedItem {
-  @Field(() => GlobalIdScalar)
+  @Field(() => GlobalIdScalar, { nullable: false })
   id!: GlobalId;
 
-  @Field(() => String)
+  @Field(() => String, { nullable: false })
   title!: string;
 
   @Field(() => String, { nullable: true })
@@ -102,7 +102,7 @@ export class FeedNode extends TimestampedResource implements Node, FeedItem {
     return this.id.id;
   }
 
-  @Field(() => String)
+  @Field(() => String, { nullable: false })
   text(): string {
     return this.title;
   }

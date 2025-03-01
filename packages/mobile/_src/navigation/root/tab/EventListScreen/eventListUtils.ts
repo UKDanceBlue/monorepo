@@ -287,7 +287,7 @@ export const useEvents = ({
       if (!eventsQueryResult.fetching && eventsQueryResult.error == null) {
         Logger.debug(
           `successfully fetched ${
-            eventsQueryResult.data?.events.data.length
+            eventsQueryResult.data?.events?.data.length
           } events for ${month.toFormat("yyyy-LL")} from ${
             eventsQueryResult.operation?.context.meta?.cacheOutcome === "hit"
               ? "cache"
@@ -322,13 +322,13 @@ export const useEvents = ({
   }, [eventsQueryResult.error, eventsQueryResult.fetching, month]);
 
   const eventsByMonth = useMemo(
-    () => splitEvents(eventsQueryResult.data?.events.data ?? []),
+    () => splitEvents(eventsQueryResult.data?.events?.data ?? []),
     [eventsQueryResult.data]
   );
 
   const marked = useMemo(
-    () => markEvents(eventsQueryResult.data?.events.data ?? []),
-    [eventsQueryResult.data?.events.data]
+    () => markEvents(eventsQueryResult.data?.events?.data ?? []),
+    [eventsQueryResult.data?.events?.data]
   );
 
   return [

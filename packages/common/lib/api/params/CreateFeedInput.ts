@@ -7,7 +7,7 @@ import { GlobalIdScalar } from "../scalars/GlobalId.js";
 @InputType()
 export class CreateFeedInput {
   @MinLength(5)
-  @Field(() => GraphQLNonEmptyString)
+  @Field(() => GraphQLNonEmptyString, { nullable: false })
   title!: string;
 
   @Field(() => GraphQLNonEmptyString, { nullable: true })
@@ -20,7 +20,7 @@ export class CreateFeedInput {
 @InputType()
 export class SetFeedInput {
   @MinLength(5)
-  @Field(() => GraphQLNonEmptyString)
+  @Field(() => GraphQLNonEmptyString, { nullable: false })
   title!: string;
 
   @Field(() => GraphQLNonEmptyString, { nullable: true })

@@ -38,109 +38,115 @@ export default class EventsRouter extends RouterService {
   ) {
     super("/events");
 
-    this.addGetRoute("/upcoming", cors(), async (req, res, next) => {
-      try {
-        let eventsToSend = 10;
-        if (req.query.count) {
-          const parsedCountParam =
-            typeof req.query.count === "string"
-              ? Number.parseInt(req.query.count, 10)
-              : Number.parseInt(String((req.query.count as string[])[0]), 10);
-          if (!Number.isNaN(parsedCountParam)) {
-            eventsToSend = parsedCountParam;
+    this.addGetRoute(
+      "/upcoming",
+      cors({
+        origin: /^https:\/\/(\w+\.)?danceblue\.org$/,
+      }),
+      async (req, res, next) => {
+        try {
+          let eventsToSend = 10;
+          if (req.query.count) {
+            const parsedCountParam =
+              typeof req.query.count === "string"
+                ? Number.parseInt(req.query.count, 10)
+                : Number.parseInt(String((req.query.count as string[])[0]), 10);
+            if (!Number.isNaN(parsedCountParam)) {
+              eventsToSend = parsedCountParam;
+            }
           }
-        }
-        let until = DateTime.now().plus({ years: 1 }).toJSDate();
-        if (req.query.until) {
-          const parsedUntilParam =
-            typeof req.query.until === "string"
-              ? DateTime.fromISO(req.query.until)
-              : DateTime.fromISO(String((req.query.until as string[])[0]));
-          if (parsedUntilParam.isValid) {
-            until = parsedUntilParam.toJSDate();
+          let until = DateTime.now().plus({ years: 1 }).toJSDate();
+          if (req.query.until) {
+            const parsedUntilParam =
+              typeof req.query.until === "string"
+                ? DateTime.fromISO(req.query.until)
+                : DateTime.fromISO(String((req.query.until as string[])[0]));
+            if (parsedUntilParam.isValid) {
+              until = parsedUntilParam.toJSDate();
+            }
           }
-        }
 
-        const upcomingEventsResult =
-          await this.eventRepository.getUpcomingEvents({
-            count: eventsToSend,
-            until,
-          }).promise;
-        if (upcomingEventsResult.isErr()) {
-          throw upcomingEventsResult.error;
-        }
-        const upcomingEvents = upcomingEventsResult.value;
+          const upcomingEventsResult =
+            await this.eventRepository.getUpcomingEvents({
+              count: eventsToSend,
+              until,
+            }).promise;
+          if (upcomingEventsResult.isErr()) {
+            throw upcomingEventsResult.error;
+          }
+          const upcomingEvents = upcomingEventsResult.value;
 
-        const eventsJson: UpcomingEvent[] = await Promise.all(
-          upcomingEvents.map(async (event) => {
-            const occurrences = event.eventOccurrences;
+          const eventsJson: UpcomingEvent[] = await Promise.all(
+            upcomingEvents.map(async (event) => {
+              const occurrences = event.eventOccurrences;
 
-            const images = await Promise.all(
-              event.eventImages.map(async ({ image }) => {
-                let fileData:
-                  | {
-                      url: URL;
-                      mimeType: string;
-                      width?: number;
-                      height?: number;
+              const images = await Promise.all(
+                event.eventImages.map(async ({ image }) => {
+                  let fileData:
+                    | {
+                        url: URL;
+                        mimeType: string;
+                        width?: number;
+                        height?: number;
+                      }
+                    | undefined = undefined;
+
+                  if (image.file) {
+                    const externalUrl = await this.fileManager.getExternalUrl(
+                      image.file,
+                      getHostUrl(req)
+                    );
+                    if (externalUrl) {
+                      fileData = {
+                        url: externalUrl,
+                        mimeType: combineMimePartsToString(
+                          image.file.mimeTypeName,
+                          image.file.mimeSubtypeName,
+                          image.file.mimeParameters
+                        ),
+                      };
                     }
-                  | undefined = undefined;
-
-                if (image.file) {
-                  const externalUrl = await this.fileManager.getExternalUrl(
-                    image.file,
-                    getHostUrl(req)
-                  );
-                  if (externalUrl) {
+                  }
+                  if (!fileData) {
                     fileData = {
-                      url: externalUrl,
-                      mimeType: combineMimePartsToString(
-                        image.file.mimeTypeName,
-                        image.file.mimeSubtypeName,
-                        image.file.mimeParameters
-                      ),
+                      url: new URL(EMPTY_PNG_URL),
+                      mimeType: "image/png",
+                      width: 1,
+                      height: 1,
                     };
                   }
-                }
-                if (!fileData) {
-                  fileData = {
-                    url: new URL(EMPTY_PNG_URL),
-                    mimeType: "image/png",
-                    width: 1,
-                    height: 1,
+
+                  return {
+                    alt: image.alt ?? null,
+                    thumbHash:
+                      image.thumbHash &&
+                      Buffer.from(image.thumbHash).toString("base64"),
+                    width: image.width,
+                    height: image.height,
+                    url: fileData.url.toString(),
+                    mimeType: fileData.mimeType,
                   };
-                }
+                })
+              );
+              return {
+                title: event.title,
+                summary: event.summary,
+                description: event.description,
+                location: event.location,
+                occurrences: occurrences.map((occurrence) => ({
+                  start: occurrence.date,
+                  end: occurrence.endDate,
+                })),
+                images,
+              };
+            })
+          );
 
-                return {
-                  alt: image.alt ?? null,
-                  thumbHash:
-                    image.thumbHash &&
-                    Buffer.from(image.thumbHash).toString("base64"),
-                  width: image.width,
-                  height: image.height,
-                  url: fileData.url.toString(),
-                  mimeType: fileData.mimeType,
-                };
-              })
-            );
-            return {
-              title: event.title,
-              summary: event.summary,
-              description: event.description,
-              location: event.location,
-              occurrences: occurrences.map((occurrence) => ({
-                start: occurrence.date,
-                end: occurrence.endDate,
-              })),
-              images,
-            };
-          })
-        );
-
-        res.json(eventsJson);
-      } catch (error) {
-        next(error);
+          res.json(eventsJson);
+        } catch (error) {
+          next(error);
+        }
       }
-    });
+    );
   }
 }

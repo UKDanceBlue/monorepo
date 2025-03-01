@@ -8,7 +8,7 @@ import { readFragment } from "#gql/index.js";
 import { useQueryStatusWatcher } from "#hooks/useQueryStatusWatcher.js";
 
 export function useTeamEditorForm(
-  teamFragment: FragmentOf<typeof TeamEditorFragment> | undefined,
+  teamFragment: FragmentOf<typeof TeamEditorFragment> | null | undefined,
   afterSubmit?: (
     ret: ResultOf<typeof teamEditorDocument>["setTeam"] | undefined
   ) => void | Promise<void>

@@ -205,7 +205,7 @@ export function PersonEditor({
               <List>
                 {field.state.value?.map((team) => {
                   const { name, committeeIdentifier, marathon } =
-                    personData.teams.find(
+                    personData.teams?.find(
                       (option) => option.team.id === team.id
                     )?.team ??
                     teamNamesData.find((option) => option.id === team.id) ??
@@ -287,7 +287,7 @@ export function PersonEditor({
               <List>
                 {field.state.value?.map((team) => {
                   const { name, committeeIdentifier, marathon } =
-                    personData.teams.find(
+                    personData.teams?.find(
                       (option) => option.team.id === team.id
                     )?.team ??
                     teamNamesData.find((option) => option.id === team.id) ??
@@ -416,7 +416,7 @@ function PasswordForm({ id }: { id: string }) {
 
   const [newPassword, setNewPassword] = useState<string | null>(null);
 
-  const hasPassword = hasPasswordResult.data?.person.hasPassword;
+  const hasPassword = hasPasswordResult.data?.person?.hasPassword;
 
   return (
     <FormItem label="Password">

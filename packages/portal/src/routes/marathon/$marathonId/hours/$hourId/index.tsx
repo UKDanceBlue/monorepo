@@ -64,12 +64,12 @@ function EditMarathonHourPage() {
     title: string;
   }>({
     defaultValues: {
-      details: data?.marathonHour.details ?? undefined,
-      durationInfo: data?.marathonHour.durationInfo ?? "",
+      details: data?.marathonHour?.details ?? undefined,
+      durationInfo: data?.marathonHour?.durationInfo ?? "",
       shownStartingAt: dateTimeFromSomething(
-        data?.marathonHour.shownStartingAt
+        data?.marathonHour?.shownStartingAt
       ),
-      title: data?.marathonHour.title ?? "",
+      title: data?.marathonHour?.title ?? "",
     },
     onSubmit: async ({ value: values }) => {
       if (!values.title) {

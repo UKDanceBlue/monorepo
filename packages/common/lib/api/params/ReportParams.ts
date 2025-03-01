@@ -12,13 +12,13 @@ import {
 
 @ObjectType()
 export class ReportPage {
-  @Field(() => GraphQLNonEmptyString)
+  @Field(() => GraphQLNonEmptyString, { nullable: false })
   title!: string;
 
-  @Field(() => [String])
+  @Field(() => [String], { nullable: false })
   header!: string[];
 
-  @Field(() => [[String]])
+  @Field(() => [[String]], { nullable: false })
   rows!: string[][];
 
   static newEmpty(title: string): ReportPage {
@@ -45,7 +45,7 @@ export class ReportPage {
 
 @ObjectType()
 export class Report {
-  @Field(() => [ReportPage])
+  @Field(() => [ReportPage], { nullable: false })
   pages!: ReportPage[];
 
   static newEmpty(): Report {
@@ -79,6 +79,6 @@ export class ReportArgs {
   @Field(() => [GlobalIdScalar], { nullable: true })
   solicitationCodeIds?: GlobalId[] | null;
 
-  @Field(() => GraphQLNonEmptyString)
+  @Field(() => GraphQLNonEmptyString, { nullable: false })
   report!: string;
 }

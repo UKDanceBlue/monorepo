@@ -1,13 +1,19 @@
-import http from "node:http";
+import http, { STATUS_CODES } from "node:http";
 
 import { Container, Service } from "@freshgum/typedi";
-import { setupExpressErrorHandler } from "@sentry/node";
-import { ErrorCode, ExtendedError } from "@ukdanceblue/common/error";
+import { captureException, setupExpressErrorHandler } from "@sentry/node";
+import {
+  ErrorCode,
+  ErrorType,
+  ExtendedError,
+  InvariantError,
+} from "@ukdanceblue/common/error";
 import cookieParser from "cookie-parser";
 import cors from "cors";
 import express from "express";
 
 import { formatError } from "#lib/formatError.js";
+import { logError } from "#lib/logging/logger.js";
 import { logger } from "#lib/logging/standardLogging.js";
 import {
   applicationPortToken,
@@ -161,7 +167,7 @@ export class ExpressModule {
 
   private expressErrorHandler(
     err: unknown,
-    _r: express.Request,
+    req: express.Request,
     res: express.Response,
     next: express.NextFunction
   ) {
@@ -175,11 +181,69 @@ export class ExpressModule {
       this.isDevelopment
     );
 
-    if (err instanceof ExtendedError && err.tag === ErrorCode.Unauthenticated) {
-      res.status(401).json(formatted);
+    let code: number;
+    let expose = false;
+    if (err instanceof ExtendedError) {
+      expose = err.expose;
+      switch (err.type) {
+        case ErrorType.BadRequest: {
+          code = 400;
+          break;
+        }
+        case ErrorType.Unauthenticated: {
+          // Although the HTTP standard specifies "unauthorized", semantically this response means "unauthenticated".
+          code = 401;
+          break;
+        }
+        case ErrorType.Unauthorized: {
+          code = 403;
+          break;
+        }
+        case ErrorType.NotFound: {
+          code = 404;
+          break;
+        }
+        default: {
+          err.type satisfies never;
+          logError(new InvariantError("Unhandled error tag"));
+          // fallthrough
+        }
+        case ErrorType.Internal: {
+          captureException(err);
+          code = 500;
+          break;
+        }
+      }
     } else {
-      logger.error("Unhandled error in Express", { error: formatted });
-      res.status(500).json(formatted);
+      code = 500;
+      expose = false;
+      captureException(err);
+    }
+
+    res.status(code);
+
+    if (this.isDevelopment || expose) {
+      if (req.accepts("html")) {
+        res
+          .type("html")
+          .send(
+            `<h1>${code} ${STATUS_CODES[code]}</h1><p>${formatted.message}</p><code><pre>${JSON.stringify(formatted, null, 2)}</pre></code>`
+          );
+      } else if (req.accepts("json")) {
+        res.json({ error: formatted });
+      } else {
+        res.type("txt").send(formatted.message);
+      }
+    } else if (req.accepts("html")) {
+      res
+        .type("html")
+        .send(
+          `<h1>${code} ${STATUS_CODES[code]}</h1><p>${formatted.message}</p>`
+        );
+    } else if (req.accepts("json")) {
+      res.json({ error: { message: formatted.message } });
+    } else {
+      res.type("txt").send(formatted.message);
     }
   }
 }

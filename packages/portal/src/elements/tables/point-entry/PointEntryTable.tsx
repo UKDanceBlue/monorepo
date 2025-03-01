@@ -1,6 +1,6 @@
 import { DeleteOutlined } from "@ant-design/icons";
 import { dateTimeFromSomething } from "@ukdanceblue/common";
-import { Button, Table } from "antd";
+import { Button, Result, Table } from "antd";
 
 import type { FragmentOf } from "#gql/index.js";
 import { graphql, readFragment } from "#gql/index.js";
@@ -29,6 +29,7 @@ export function PointEntryTable({
 }: {
   teamFragment:
     | readonly FragmentOf<typeof PointEntryTableFragment>[]
+    | null
     | undefined;
   loading: boolean;
 }) {
@@ -37,6 +38,10 @@ export function PointEntryTable({
 
   const teamData =
     teamFragment && readFragment(PointEntryTableFragment, teamFragment);
+
+  if (!teamData) {
+    return <Result status="404" title="No data found" />;
+  }
 
   return (
     <>

@@ -9,7 +9,7 @@ import { type GraphQLContext } from "#auth/context.js";
 @Resolver(() => LoginState)
 @Service([])
 export class LoginStateResolver {
-  @Query(() => LoginState)
+  @Query(() => LoginState, { nullable: false })
   loginState(@Ctx() ctx: GraphQLContext): LoginState {
     return {
       loggedIn: ctx.authSource !== AuthSource.None,

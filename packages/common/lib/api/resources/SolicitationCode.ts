@@ -61,22 +61,22 @@ registerEnumType(SolicitationCodeTag, {
   implements: [Node],
 })
 export class SolicitationCodeNode extends TimestampedResource implements Node {
-  @Field(() => GlobalIdScalar)
+  @Field(() => GlobalIdScalar, { nullable: false })
   id!: GlobalId;
 
-  @Field(() => String)
+  @Field(() => String, { nullable: false })
   prefix!: string;
 
-  @Field(() => NonNegativeIntResolver)
+  @Field(() => NonNegativeIntResolver, { nullable: false })
   code!: number;
 
   @Field(() => String, { nullable: true })
   name?: string | undefined | null;
 
-  @Field(() => [SolicitationCodeTag])
+  @Field(() => [SolicitationCodeTag], { nullable: false })
   tags!: SolicitationCodeTag[];
 
-  @Field(() => String)
+  @Field(() => String, { nullable: false })
   text(): string {
     if (!this.name) {
       return `${this.prefix}${this.code.toString().padStart(4, "0")}`;

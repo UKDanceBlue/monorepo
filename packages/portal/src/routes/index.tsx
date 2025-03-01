@@ -3,11 +3,11 @@ import { Card, Flex, Typography } from "antd";
 
 import { PersonViewer } from "#elements/viewers/person/PersonViewer.js";
 import { graphql, readFragment } from "#gql/index.js";
+import { useTypedCustomQuery } from "#hooks/refine/custom.tsx";
 import {
   useAuthorizationRequirement,
   useLoginState,
 } from "#hooks/useLoginState.js";
-import { useTypedCustomQuery } from "#hooks/useTypedRefine.js";
 
 export const PersonViewerFragment = graphql(/* GraphQL */ `
   fragment PersonViewerFragment on PersonNode {

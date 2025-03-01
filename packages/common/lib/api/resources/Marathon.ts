@@ -13,16 +13,16 @@ import { TimestampedResource } from "./Resource.js";
   implements: [Node],
 })
 export class MarathonNode extends TimestampedResource implements Node {
-  @Field(() => GlobalIdScalar)
+  @Field(() => GlobalIdScalar, { nullable: false })
   id!: GlobalId;
-  @Field(() => MarathonYearScalar)
+  @Field(() => MarathonYearScalar, { nullable: false })
   year!: MarathonYearString;
   @Field(() => DateTimeScalar, { nullable: true })
   startDate?: DateTime | undefined | null;
   @Field(() => DateTimeScalar, { nullable: true })
   endDate?: DateTime | undefined | null;
 
-  @Field(() => String)
+  @Field(() => String, { nullable: false })
   text(): string {
     return this.year;
   }

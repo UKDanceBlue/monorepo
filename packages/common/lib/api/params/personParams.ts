@@ -16,13 +16,13 @@ import { AbstractGraphQLPaginatedResponse } from "./PaginatedResponse.js";
   implements: AbstractGraphQLPaginatedResponse<PersonNode>,
 })
 export class ListPeopleResponse extends AbstractGraphQLPaginatedResponse<PersonNode> {
-  @Field(() => [PersonNode])
+  @Field(() => [PersonNode], { nullable: false })
   data!: PersonNode[];
 }
 
 @InputType()
 class MemberOf {
-  @Field(() => GlobalIdScalar)
+  @Field(() => GlobalIdScalar, { nullable: false })
   id!: GlobalId;
 
   @Field(() => CommitteeRole, { nullable: true })
@@ -42,7 +42,7 @@ export class CreatePersonInput {
   @Field(() => GraphQLNonEmptyString, { nullable: true })
   name?: string;
 
-  @Field(() => EmailAddressResolver)
+  @Field(() => EmailAddressResolver, { nullable: false })
   email!: string;
 
   @Field(() => GraphQLNonEmptyString, { nullable: true })
@@ -54,11 +54,11 @@ export class CreatePersonInput {
   })
   dbRole?: DbRole;
 
-  @Field(() => [MemberOf], { defaultValue: [] })
-  memberOf?: MemberOf[];
+  @Field(() => [MemberOf], { nullable: true })
+  memberOf: MemberOf[] = [];
 
-  @Field(() => [MemberOf], { defaultValue: [] })
-  captainOf?: MemberOf[];
+  @Field(() => [MemberOf], { nullable: true })
+  captainOf: MemberOf[] = [];
 }
 @InputType()
 export class SetPersonInput {
@@ -82,7 +82,7 @@ export class BulkPersonInput {
   @Field(() => GraphQLNonEmptyString, { nullable: true })
   name!: string | null | undefined;
 
-  @Field(() => EmailAddressResolver)
+  @Field(() => EmailAddressResolver, { nullable: false })
   email!: string;
 
   @Field(() => GraphQLNonEmptyString, { nullable: true })

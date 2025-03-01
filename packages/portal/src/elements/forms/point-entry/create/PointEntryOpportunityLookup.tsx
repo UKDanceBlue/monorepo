@@ -89,7 +89,7 @@ export function PointEntryOpportunityLookup({
   });
 
   const nameAutocomplete: { value: string; label: string }[] = [];
-  if (searchByNameQuery.data?.pointOpportunities.data) {
+  if (searchByNameQuery.data?.pointOpportunities?.data) {
     for (const opportunity of searchByNameQuery.data.pointOpportunities.data) {
       if (opportunity.name) {
         nameAutocomplete.push({
@@ -134,7 +134,7 @@ export function PointEntryOpportunityLookup({
                   },
                 })
                   .then((result) => {
-                    if (result.data?.createPointOpportunity.id) {
+                    if (result.data?.createPointOpportunity?.id) {
                       field.handleChange(result.data.createPointOpportunity.id);
                       setCreateModalVisible(false);
                     }

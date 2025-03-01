@@ -21,12 +21,12 @@ import {
   defaultStringValidator,
 } from "#elements/validators.ts";
 import { graphql } from "#gql/index.ts";
+import { useTypedCreate } from "#hooks/refine/create.tsx";
+import { useTypedCustomQuery } from "#hooks/refine/custom.tsx";
 import {
   useAuthorizationRequirement,
   useLoginState,
 } from "#hooks/useLoginState.js";
-import { useTypedCustomQuery } from "#hooks/useTypedRefine.tsx";
-import { useTypedCreate } from "#hooks/useTypedRefine.tsx";
 
 export const Route = createFileRoute("/fundraising/")({
   component: RouteComponent,

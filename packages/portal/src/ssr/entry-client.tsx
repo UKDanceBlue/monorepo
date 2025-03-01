@@ -1,5 +1,5 @@
 import { init, tanstackRouterBrowserTracingIntegration } from "@sentry/react";
-import { StartClient } from "@tanstack/start";
+import { StartClient } from "@tanstack/react-start";
 import { hydrateRoot } from "react-dom/client";
 
 import { createRouter } from "../router.js";

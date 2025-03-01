@@ -10,18 +10,42 @@
 //     : "http://localhost:8000";
 // }
 
-import { reloadAsync } from "expo-updates";
+import { channel, reloadAsync } from "expo-updates";
 
 import { Logger } from "./logger/Logger";
 
-export let API_BASE_URL = "https://app.danceblue.org";
-
+let url = "https://app.danceblue.org";
 if (
   process.env.NODE_ENV === "development" &&
   process.env.EXPO_PUBLIC_API_BASE_URL
 ) {
-  API_BASE_URL = String(process.env.EXPO_PUBLIC_API_BASE_URL);
+  url = String(process.env.EXPO_PUBLIC_API_BASE_URL);
+} else {
+  switch (channel) {
+    case "release": {
+      url = "https://app.danceblue.org";
+      break;
+    }
+    case "staging": {
+      url = "https://stg.danceblue.org";
+      break;
+    }
+    case "main": {
+      url = "https://app.danceblue.org";
+      break;
+    }
+    case null: {
+      break;
+    }
+    default: {
+      Logger.warn(`Unknown channel '${channel}'`, {
+        source: "apiUrl",
+      });
+    }
+  }
 }
+
+export let API_BASE_URL = url;
 
 export function overrideApiBaseUrl(newUrl: string) {
   API_BASE_URL =
