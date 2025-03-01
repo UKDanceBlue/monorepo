@@ -12777,7 +12777,7 @@ __metadata:
     graphql: "npm:^16.10.0"
     graphql-scalars: "npm:^1.24.0"
     node-gyp: "npm:^11.0.0"
-    prettier: "npm:^3.4.2"
+    prettier: "npm:^3.5.2"
     sort-package-json: "npm:^2.14.0"
     ts-node: "npm:^10.9.2"
     ts-unused-exports: "npm:^11.0.1"
@@ -12830,7 +12830,7 @@ __metadata:
     "@urql/core": "npm:^5.1.0"
     "@vitejs/plugin-react-swc": "npm:^3.7.2"
     antd: "npm:^5.23.1"
-    babel-plugin-react-compiler: "npm:19.0.0-beta-30d8a17-20250209"
+    babel-plugin-react-compiler: "npm:19.0.0-beta-21e868a-20250216"
     camelcase: "npm:^8.0.0"
     class-validator: "npm:^0.14.1"
     cypress: "npm:^13.17.0"
@@ -12846,7 +12846,7 @@ __metadata:
     pluralize: "npm:^8.0.0"
     rc-picker: "npm:^4.9.2"
     react: "npm:18.3.1"
-    react-compiler-runtime: "npm:19.0.0-beta-30d8a17-20250209"
+    react-compiler-runtime: "npm:19.0.0-beta-21e868a-20250216"
     react-dom: "npm:~18.3.1"
     react-hook-form: "npm:^7.54.2"
     react-markdown: "npm:^9.0.3"
@@ -14428,15 +14428,6 @@ __metadata:
   dependencies:
     "@babel/types": "npm:^7.19.0"
   checksum: 10/b3110312fd68329712b4311b07c7389756d3adfa69b0c285f9f7694b6ecbdebf0e5a74effe2c79ebcf1569a0d17c7a9e365dd07a4d8ee97a635126630bd702c8
-  languageName: node
-  linkType: hard
-
-"babel-plugin-react-compiler@npm:19.0.0-beta-30d8a17-20250209":
-  version: 19.0.0-beta-30d8a17-20250209
-  resolution: "babel-plugin-react-compiler@npm:19.0.0-beta-30d8a17-20250209"
-  dependencies:
-    "@babel/types": "npm:^7.19.0"
-  checksum: 10/74cd0804cb53226543521c21bcb5436986fb4de8bc30f30eed34a04e0f5ee43dcb02671a7f2ad03b0cd860aa020ac4324d2ca8dd5627989355141c739f8a8ca1
   languageName: node
   linkType: hard
 
@@ -27963,7 +27954,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"prettier@npm:^3.4.2, prettier@npm:^3.5.0, prettier@npm:^3.5.2":
+"prettier@npm:^3.5.0, prettier@npm:^3.5.2":
   version: 3.5.2
   resolution: "prettier@npm:3.5.2"
   bin:
@@ -28927,15 +28918,6 @@ __metadata:
   peerDependencies:
     react: ^17.0.0 || ^18.0.0 || ^19.0.0 || ^0.0.0-experimental
   checksum: 10/72c35bed9c0b7b2f12ff77a655004c1d609b9a654d9c62b3587218fe5b56ef7fc8045470f856da84582f3a9fda2eda962a2f7e23245ab388f9c7ad6ec59b41f0
-  languageName: node
-  linkType: hard
-
-"react-compiler-runtime@npm:19.0.0-beta-30d8a17-20250209":
-  version: 19.0.0-beta-30d8a17-20250209
-  resolution: "react-compiler-runtime@npm:19.0.0-beta-30d8a17-20250209"
-  peerDependencies:
-    react: ^17.0.0 || ^18.0.0 || ^19.0.0 || ^0.0.0-experimental
-  checksum: 10/3f4a01e7331e2d8cbc5a212f187e42db9a7ae13ee5843d916dcaf1676323585da83657241cee1f7904d54eeb40030b1207c55f366a75aee6a07aa36db75e258d
   languageName: node
   linkType: hard
 
