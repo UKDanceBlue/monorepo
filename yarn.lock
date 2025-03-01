@@ -436,24 +436,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@azure/msal-common@npm:14.16.0":
-  version: 14.16.0
-  resolution: "@azure/msal-common@npm:14.16.0"
-  checksum: 10/1f650b00636cd657b93601a12f495cbc9c35b4ed06197468e24e86ed7a0227f9be8003186d8b00abe12532f26b8002811f553ade76fe2cb57a8e62b827b0152c
-  languageName: node
-  linkType: hard
-
-"@azure/msal-node@npm:^2.16.2":
-  version: 2.16.2
-  resolution: "@azure/msal-node@npm:2.16.2"
-  dependencies:
-    "@azure/msal-common": "npm:14.16.0"
-    jsonwebtoken: "npm:^9.0.0"
-    uuid: "npm:^8.3.0"
-  checksum: 10/52f07dc78263d9e44ee2b598072d939e606d822823d7ed680ca07a36c77f37cb49452c133a35206309d26f1d6acc05719bb70bcba62e0ffa7082dd05b882b109
-  languageName: node
-  linkType: hard
-
 "@babel/cli@npm:^7.23.4, @babel/cli@npm:^7.26.4":
   version: 7.26.4
   resolution: "@babel/cli@npm:7.26.4"
@@ -13096,7 +13078,6 @@ __metadata:
   resolution: "@ukdanceblue/server@workspace:packages/server"
   dependencies:
     "@apollo/server": "npm:^4.11.3"
-    "@azure/msal-node": "npm:^2.16.2"
     "@casl/ability": "npm:^6.7.3"
     "@faker-js/faker": "npm:^9.4.0"
     "@freshgum/typedi": "npm:^0.7.2"
@@ -13144,6 +13125,7 @@ __metadata:
     pg-hstore: "npm:^2.3.4"
     postgres-interval: "npm:^4.0.2"
     postgres-range: "npm:^1.1.4"
+    prettier: "npm:^3.5.2"
     prisma: "npm:^6.2.1"
     prisma-markdown: "npm:^1.0.9"
     reflect-metadata: "npm:^0.2.2"
@@ -23699,7 +23681,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"jsonwebtoken@npm:^9.0.0, jsonwebtoken@npm:^9.0.2":
+"jsonwebtoken@npm:^9.0.2":
   version: 9.0.2
   resolution: "jsonwebtoken@npm:9.0.2"
   dependencies:
@@ -28142,7 +28124,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"prettier@npm:^3.5.0":
+"prettier@npm:^3.5.0, prettier@npm:^3.5.2":
   version: 3.5.2
   resolution: "prettier@npm:3.5.2"
   bin:
@@ -34182,7 +34164,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"uuid@npm:^8.0.0, uuid@npm:^8.3.0, uuid@npm:^8.3.2":
+"uuid@npm:^8.0.0, uuid@npm:^8.3.2":
   version: 8.3.2
   resolution: "uuid@npm:8.3.2"
   bin:

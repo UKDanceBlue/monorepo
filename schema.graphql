@@ -3,13 +3,19 @@
 # !!!   DO NOT MODIFY THIS FILE BY YOURSELF   !!!
 # -----------------------------------------------
 
-"""API response"""
+"""
+API response
+"""
 interface AbstractGraphQLPaginatedResponse {
-  """The total number of items"""
+  """
+  The total number of items
+  """
   total: NonNegativeInt!
 }
 
-"""The level of access a user has"""
+"""
+The level of access a user has
+"""
 enum AccessLevel {
   Admin
   Committee
@@ -66,14 +72,24 @@ type AuditLogNode implements Node {
   createdAt: LuxonDateTime
   details: JSONObject
   id: GlobalId!
+
+  """
+  This field is only accessible to users who are allowed to all.
+  """
   subject: Node
+
+  """
+  This field is only accessible to users who are allowed to all.
+  """
   subjectJson: JSONObject
   summary: String!
   text: String!
   user: PersonNode
 }
 
-"""The source of authentication"""
+"""
+The source of authentication
+"""
 enum AuthSource {
   Anonymous
   Demo
@@ -110,7 +126,9 @@ input BulkTeamInput {
   type: TeamType!
 }
 
-"""The identifier for a committee"""
+"""
+The identifier for a committee
+"""
 enum CommitteeIdentifier {
   communityDevelopmentCommittee
   corporateCommittee
@@ -148,7 +166,9 @@ type CommitteeNode implements Node {
   updatedAt: LuxonDateTime
 }
 
-"""Roles within a committee"""
+"""
+Roles within a committee
+"""
 enum CommitteeRole {
   Chair
   Coordinator
@@ -167,10 +187,10 @@ type ConfigurationNode implements Node {
 }
 
 input CreateConfigurationInput {
-  key: String!
+  key: NonEmptyString!
   validAfter: LuxonDateTime
   validUntil: LuxonDateTime
-  value: String!
+  value: NonEmptyString!
 }
 
 input CreateEventInput {
@@ -221,11 +241,11 @@ input CreateMarathonInput {
 }
 
 input CreatePersonInput {
-  captainOf: [MemberOf!]! = []
+  captainOf: [MemberOf!] = []
   dbRole: DbRole @deprecated(reason: "DBRole can no longer be set directly")
   email: EmailAddress!
   linkblue: NonEmptyString
-  memberOf: [MemberOf!]! = []
+  memberOf: [MemberOf!] = []
   name: NonEmptyString
 }
 
@@ -440,7 +460,9 @@ A date-time string at UTC, such as 2007-12-03T10:15:30Z, compliant with the `dat
 """
 scalar DateTimeISO
 
-"""DanceBlue roles"""
+"""
+DanceBlue roles
+"""
 enum DbRole {
   Committee
   None
@@ -454,7 +476,9 @@ type DeviceNode implements Node {
   lastLoggedInUser: PersonNode
   lastLogin: LuxonDateTime
 
-  """List all notification deliveries for this device"""
+  """
+  List all notification deliveries for this device
+  """
   notificationDeliveries(
     page: PositiveInt = 1
     pageSize: NonNegativeInt = 10
@@ -508,14 +532,19 @@ type EffectiveCommitteeRole {
 """
 A field whose value conforms to the standard internet email address format as specified in HTML Spec: https://html.spec.whatwg.org/multipage/input.html#valid-e-mail-address.
 """
-scalar EmailAddress @specifiedBy(url: "https://html.spec.whatwg.org/multipage/input.html#valid-e-mail-address")
+scalar EmailAddress
+  @specifiedBy(
+    url: "https://html.spec.whatwg.org/multipage/input.html#valid-e-mail-address"
+  )
 
 type EventNode implements Node {
   createdAt: LuxonDateTime
   description: String
   id: GlobalId!
 
-  """List all images for this event"""
+  """
+  List all images for this event
+  """
   images: [ImageNode!]!
   location: String
   occurrences: [EventOccurrenceNode!]!
@@ -580,7 +609,9 @@ type FeedNode implements FeedItem & Node {
   createdAt: LuxonDateTime
   id: GlobalId!
 
-  """The image associated with this feed item"""
+  """
+  The image associated with this feed item
+  """
   image: ImageNode
   link: URL
   text: String!
@@ -608,7 +639,11 @@ type FundraisingEntryNode implements Node {
   amount: Float!
   amountOverride: Float
   amountUnassigned: Float!
-  assignments: [FundraisingAssignmentNode!]!
+
+  """
+  This field is only accessible to users who are allowed to [**custom subject function** (.fundraisingAssignments)].
+  """
+  assignments: [FundraisingAssignmentNode!]
   batchType: BatchType!
   batchTypeOverride: BatchType
   createdAt: LuxonDateTime
@@ -679,7 +714,9 @@ type GetDeviceByUuidResponse {
   data: DeviceNode!
 }
 
-"""GlobalId custom scalar type"""
+"""
+GlobalId custom scalar type
+"""
 scalar GlobalId
 
 type ImageNode implements Node {
@@ -751,115 +788,151 @@ input IntervalISOInput {
 """
 The `JSON` scalar type represents JSON values as specified by [ECMA-404](http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf).
 """
-scalar JSON @specifiedBy(url: "http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf")
+scalar JSON
+  @specifiedBy(
+    url: "http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf"
+  )
 
 """
 The `JSONObject` scalar type represents JSON objects as specified by [ECMA-404](http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf).
 """
-scalar JSONObject @specifiedBy(url: "http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf")
+scalar JSONObject
+  @specifiedBy(
+    url: "http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf"
+  )
 
 type ListAuditLogsResponse implements AbstractGraphQLPaginatedResponse {
   data: [AuditLogNode!]!
 
-  """The total number of items"""
+  """
+  The total number of items
+  """
   total: NonNegativeInt!
 }
 
 type ListDailyDepartmentNotificationsResponse implements AbstractGraphQLPaginatedResponse {
   data: [DailyDepartmentNotificationNode!]!
 
-  """The total number of items"""
+  """
+  The total number of items
+  """
   total: NonNegativeInt!
 }
 
 type ListDevicesResponse implements AbstractGraphQLPaginatedResponse {
   data: [DeviceNode!]!
 
-  """The total number of items"""
+  """
+  The total number of items
+  """
   total: NonNegativeInt!
 }
 
 type ListEventsResponse implements AbstractGraphQLPaginatedResponse {
   data: [EventNode!]!
 
-  """The total number of items"""
+  """
+  The total number of items
+  """
   total: NonNegativeInt!
 }
 
 type ListFundraisingEntriesResponse implements AbstractGraphQLPaginatedResponse {
   data: [FundraisingEntryNode!]!
 
-  """The total number of items"""
+  """
+  The total number of items
+  """
   total: NonNegativeInt!
 }
 
 type ListImagesResponse implements AbstractGraphQLPaginatedResponse {
   data: [ImageNode!]!
 
-  """The total number of items"""
+  """
+  The total number of items
+  """
   total: NonNegativeInt!
 }
 
 type ListMarathonHoursResponse implements AbstractGraphQLPaginatedResponse {
   data: [MarathonHourNode!]!
 
-  """The total number of items"""
+  """
+  The total number of items
+  """
   total: NonNegativeInt!
 }
 
 type ListMarathonsResponse implements AbstractGraphQLPaginatedResponse {
   data: [MarathonNode!]!
 
-  """The total number of items"""
+  """
+  The total number of items
+  """
   total: NonNegativeInt!
 }
 
 type ListNotificationDeliveriesResponse implements AbstractGraphQLPaginatedResponse {
   data: [NotificationDeliveryNode!]!
 
-  """The total number of items"""
+  """
+  The total number of items
+  """
   total: NonNegativeInt!
 }
 
 type ListNotificationsResponse implements AbstractGraphQLPaginatedResponse {
   data: [NotificationNode!]!
 
-  """The total number of items"""
+  """
+  The total number of items
+  """
   total: NonNegativeInt!
 }
 
 type ListPeopleResponse implements AbstractGraphQLPaginatedResponse {
   data: [PersonNode!]!
 
-  """The total number of items"""
+  """
+  The total number of items
+  """
   total: NonNegativeInt!
 }
 
 type ListPointEntriesResponse implements AbstractGraphQLPaginatedResponse {
   data: [PointEntryNode!]!
 
-  """The total number of items"""
+  """
+  The total number of items
+  """
   total: NonNegativeInt!
 }
 
 type ListPointOpportunitiesResponse implements AbstractGraphQLPaginatedResponse {
   data: [PointOpportunityNode!]!
 
-  """The total number of items"""
+  """
+  The total number of items
+  """
   total: NonNegativeInt!
 }
 
 type ListSolicitationCodesResponse implements AbstractGraphQLPaginatedResponse {
   data: [SolicitationCodeNode!]!
 
-  """The total number of items"""
+  """
+  The total number of items
+  """
   total: NonNegativeInt!
 }
 
 type ListTeamsResponse implements AbstractGraphQLPaginatedResponse {
   data: [TeamNode!]!
 
-  """The total number of items"""
+  """
+  The total number of items
+  """
   total: NonNegativeInt!
 }
 
@@ -877,8 +950,11 @@ type LoginState {
   loggedIn: Boolean!
 }
 
-"""Cursor custom scalar type"""
-scalar LuxonDateTime @specifiedBy(url: "https://datatracker.ietf.org/doc/html/rfc3339")
+"""
+Cursor custom scalar type
+"""
+scalar LuxonDateTime
+  @specifiedBy(url: "https://datatracker.ietf.org/doc/html/rfc3339")
 
 type MarathonHourNode implements Node {
   createdAt: LuxonDateTime
@@ -929,7 +1005,11 @@ input MarathonHourResolverSort {
 type MarathonNode implements Node {
   createdAt: LuxonDateTime
   endDate: LuxonDateTime
-  hours: [MarathonHourNode!]!
+
+  """
+  This field is only accessible to users who are allowed to **list** any **MarathonNode** with an id of **root.id**.
+  """
+  hours: [MarathonHourNode!]
   id: GlobalId!
   startDate: LuxonDateTime
   text: String!
@@ -969,7 +1049,9 @@ input MarathonResolverSort {
   field: MarathonResolverFilterFields!
 }
 
-"""MarathonYear custom scalar type"""
+"""
+MarathonYear custom scalar type
+"""
 scalar MarathonYear
 
 input MemberOf {
@@ -989,119 +1071,422 @@ type MembershipNode implements Node {
   updatedAt: LuxonDateTime
 }
 
-"""The position of a member on a team"""
+"""
+The position of a member on a team
+"""
 enum MembershipPositionType {
   Captain
   Member
 }
 
 type Mutation {
-  abortScheduledNotification(id: GlobalId!): NotificationNode!
-  acknowledgeDeliveryIssue(id: GlobalId!): NotificationNode!
+  """
+  This mutation is only accessible to users who are allowed to **deploy** any **NotificationNode** with an id of **args.id**.
+  """
+  abortScheduledNotification(id: GlobalId!): NotificationNode
 
-  """Add an existing image to an event"""
-  addExistingImageToEvent(eventId: GlobalId!, imageId: GlobalId!): ImageNode!
-  addMap(id: GlobalId!, imageUuid: GlobalId!): MarathonHourNode!
-  addPersonToTeam(personUuid: GlobalId!, position: MembershipPositionType! = Member, teamUuid: GlobalId!): MembershipNode!
-  assignEntryToPerson(entryId: GlobalId!, input: AssignEntryToPersonInput!, personId: GlobalId!): FundraisingAssignmentNode!
-  assignSolicitationCodeToTeam(id: GlobalId!, teamId: GlobalId!): Void!
+  """
+  This mutation is only accessible to users who are allowed to **deploy** any **NotificationNode** with an id of **args.id**.
+  """
+  acknowledgeDeliveryIssue(id: GlobalId!): NotificationNode
 
-  """Attach an image to a feed item"""
-  attachImageToFeedItem(feedItemUuid: GlobalId!, imageUuid: GlobalId!): FeedNode!
-  batchUploadDailyDepartmentNotifications(input: [DailyDepartmentNotificationInput!]!): [DailyDepartmentNotificationNode!]!
-  bulkLoadPeople(marathonId: GlobalId!, people: [BulkPersonInput!]!): [PersonNode!]!
+  """
+  Add an existing image to an event
+
+  This mutation is only accessible to users who are allowed to **update** any **EventNode** with an id of **args.eventId**.
+  """
+  addExistingImageToEvent(eventId: GlobalId!, imageId: GlobalId!): ImageNode
+
+  """
+  This mutation is only accessible to users who are allowed to **update** any **MarathonHourNode** with an id of **args.id**.
+  """
+  addMap(id: GlobalId!, imageUuid: GlobalId!): MarathonHourNode
+
+  """
+  This mutation is only accessible to users who are allowed to **update** any **TeamNode.members** with an id of **args.teamUuid**.
+  """
+  addPersonToTeam(
+    personUuid: GlobalId!
+    position: MembershipPositionType! = Member
+    teamUuid: GlobalId!
+  ): MembershipNode
+
+  """
+  This mutation is only accessible to users who are allowed to [**custom subject function** (.fundraisingAssignments)].
+  """
+  assignEntryToPerson(
+    entryId: GlobalId!
+    input: AssignEntryToPersonInput!
+    personId: GlobalId!
+  ): FundraisingAssignmentNode
+
+  """
+  This mutation is only accessible to users who are allowed to **update** any **TeamNode.solicitationCode** with an id of **args.teamId**.
+  """
+  assignSolicitationCodeToTeam(id: GlobalId!, teamId: GlobalId!): Void
+
+  """
+  Attach an image to a feed item
+
+  This mutation is only accessible to users who are allowed to **update** any **FeedNode** with an id of **args.feedItemUuid**.
+  """
+  attachImageToFeedItem(feedItemUuid: GlobalId!, imageUuid: GlobalId!): FeedNode
+
+  """
+  This mutation is only accessible to users who are allowed to **create DailyDepartmentNotificationNodes**.
+  """
+  batchUploadDailyDepartmentNotifications(
+    input: [DailyDepartmentNotificationInput!]!
+  ): [DailyDepartmentNotificationNode!]
+
+  """
+  This mutation is only accessible to users who are allowed to **create PersonNodes**.
+  """
+  bulkLoadPeople(
+    marathonId: GlobalId!
+    people: [BulkPersonInput!]!
+  ): [PersonNode!]
 
   """
   Create a new configuration, superseding existing configurations with the same key (depending on the validAfter and validUntil fields)
+
+  This mutation is only accessible to users who are allowed to **create ConfigurationNodes**.
   """
-  createConfiguration(input: CreateConfigurationInput!): ConfigurationNode!
+  createConfiguration(input: CreateConfigurationInput!): ConfigurationNode
 
   """
   Create multiple configurations, superseding existing configurations with the same key (depending on the validAfter and validUntil fields)
+
+  This mutation is only accessible to users who are allowed to **create ConfigurationNodes**.
   """
-  createConfigurations(input: [CreateConfigurationInput!]!): [ConfigurationNode!]!
-  createDailyDepartmentNotification(input: DailyDepartmentNotificationInput!): DailyDepartmentNotificationNode!
+  createConfigurations(
+    input: [CreateConfigurationInput!]!
+  ): [ConfigurationNode!]
 
-  """Create a new event"""
-  createEvent(input: CreateEventInput!): EventNode!
+  """
+  This mutation is only accessible to users who are allowed to **create DailyDepartmentNotificationNodes**.
+  """
+  createDailyDepartmentNotification(
+    input: DailyDepartmentNotificationInput!
+  ): DailyDepartmentNotificationNode
 
-  """Add a new item to the feed"""
-  createFeedItem(input: CreateFeedInput!): FeedNode!
-  createFundraisingEntries(input: [CreateFundraisingEntryInput!]!): [FundraisingEntryNode!]!
-  createFundraisingEntry(input: CreateFundraisingEntryInput!): FundraisingEntryNode!
-  createImage(input: CreateImageInput!): ImageNode!
-  createMarathon(input: CreateMarathonInput!): MarathonNode!
-  createMarathonHour(input: CreateMarathonHourInput!, marathonUuid: GlobalId!): MarathonHourNode!
-  createPerson(input: CreatePersonInput!): PersonNode!
-  createPointEntry(input: CreatePointEntryInput!): PointEntryNode!
-  createPointOpportunity(input: CreatePointOpportunityInput!): PointOpportunityNode!
-  createSolicitationCode(input: CreateSolicitationCodeInput!): SolicitationCodeNode!
-  createTeam(input: CreateTeamInput!, marathon: GlobalId!): TeamNode!
-  createTeams(marathonId: GlobalId!, teams: [BulkTeamInput!]!): [TeamNode!]!
+  """
+  Create a new event
 
-  """Delete a configuration by UUID"""
-  deleteConfiguration(id: GlobalId!): ConfigurationNode!
-  deleteDailyDepartmentNotification(id: GlobalId!): DailyDepartmentNotificationNode!
-  deleteDailyDepartmentNotificationBatch(id: GlobalId!): DailyDepartmentNotificationBatchNode!
+  This mutation is only accessible to users who are allowed to **create EventNodes**.
+  """
+  createEvent(input: CreateEventInput!): EventNode
 
-  """Delete a device by it's UUID"""
-  deleteDevice(id: GlobalId!): DeviceNode!
+  """
+  Add a new item to the feed
 
-  """Delete an event by UUID"""
-  deleteEvent(id: GlobalId!): EventNode!
+  This mutation is only accessible to users who are allowed to **create FeedNodes**.
+  """
+  createFeedItem(input: CreateFeedInput!): FeedNode
 
-  """Delete a feed item"""
-  deleteFeedItem(feedItemUuid: GlobalId!): Boolean!
-  deleteFundraisingAssignment(id: GlobalId!): FundraisingAssignmentNode!
-  deleteFundraisingEntry(id: GlobalId!): FundraisingEntryNode!
-  deleteImage(id: GlobalId!): ImageNode!
-  deleteMarathon(id: GlobalId!): MarathonNode!
-  deleteMarathonHour(id: GlobalId!): MarathonHourNode!
+  """
+  This mutation is only accessible to users who are allowed to **create FundraisingEntryNodes**.
+  """
+  createFundraisingEntries(
+    input: [CreateFundraisingEntryInput!]!
+  ): [FundraisingEntryNode!]
+
+  """
+  This mutation is only accessible to users who are allowed to **create FundraisingEntryNodes**.
+  """
+  createFundraisingEntry(
+    input: CreateFundraisingEntryInput!
+  ): FundraisingEntryNode
+
+  """
+  This mutation is only accessible to users who are allowed to **create ImageNodes**.
+  """
+  createImage(input: CreateImageInput!): ImageNode
+
+  """
+  This mutation is only accessible to users who are allowed to **create MarathonNodes**.
+  """
+  createMarathon(input: CreateMarathonInput!): MarathonNode
+
+  """
+  This mutation is only accessible to users who are allowed to **create MarathonHourNodes**.
+  """
+  createMarathonHour(
+    input: CreateMarathonHourInput!
+    marathonUuid: GlobalId!
+  ): MarathonHourNode
+
+  """
+  This mutation is only accessible to users who are allowed to **create PersonNodes**.
+  """
+  createPerson(input: CreatePersonInput!): PersonNode
+
+  """
+  This mutation is only accessible to users who are allowed to **create PointEntryNodes**.
+  """
+  createPointEntry(input: CreatePointEntryInput!): PointEntryNode
+
+  """
+  This mutation is only accessible to users who are allowed to **create PointOpportunityNodes**.
+  """
+  createPointOpportunity(
+    input: CreatePointOpportunityInput!
+  ): PointOpportunityNode
+
+  """
+  This mutation is only accessible to users who are allowed to **create SolicitationCodeNodes**.
+  """
+  createSolicitationCode(
+    input: CreateSolicitationCodeInput!
+  ): SolicitationCodeNode
+
+  """
+  This mutation is only accessible to users who are allowed to **create TeamNodes**.
+  """
+  createTeam(input: CreateTeamInput!, marathon: GlobalId!): TeamNode
+
+  """
+  This mutation is only accessible to users who are allowed to **create TeamNodes**.
+  """
+  createTeams(marathonId: GlobalId!, teams: [BulkTeamInput!]!): [TeamNode!]
+
+  """
+  Delete a configuration by UUID
+
+  This mutation is only accessible to users who are allowed to **delete** **every ConfigurationNode**.
+  """
+  deleteConfiguration(id: GlobalId!): ConfigurationNode
+
+  """
+  This mutation is only accessible to users who are allowed to **delete** any **DailyDepartmentNotificationNode** with an id of **args.id**.
+  """
+  deleteDailyDepartmentNotification(
+    id: GlobalId!
+  ): DailyDepartmentNotificationNode
+
+  """
+  This mutation is only accessible to users who are allowed to **list** **every DailyDepartmentNotificationBatchNode**.
+  """
+  deleteDailyDepartmentNotificationBatch(
+    id: GlobalId!
+  ): DailyDepartmentNotificationBatchNode
+
+  """
+  Delete a device by it's UUID
+
+  This mutation is only accessible to users who are allowed to **delete** any **DeviceNode** with an id of **args.id**.
+  """
+  deleteDevice(id: GlobalId!): DeviceNode
+
+  """
+  Delete an event by UUID
+
+  This mutation is only accessible to users who are allowed to **delete** any **EventNode** with an id of **args.id**.
+  """
+  deleteEvent(id: GlobalId!): EventNode
+
+  """
+  Delete a feed item
+
+  This mutation is only accessible to users who are allowed to [**custom subject function** ()].
+  """
+  deleteFeedItem(feedItemUuid: GlobalId!): Boolean
+
+  """
+  This mutation is only accessible to users who are allowed to [**custom subject function** (.fundraisingAssignments)].
+  """
+  deleteFundraisingAssignment(id: GlobalId!): FundraisingAssignmentNode
+
+  """
+  This mutation is only accessible to users who are allowed to **delete** any **FundraisingEntryNode** with an id of **args.id**.
+  """
+  deleteFundraisingEntry(id: GlobalId!): FundraisingEntryNode
+
+  """
+  This mutation is only accessible to users who are allowed to **delete** any **ImageNode** with an id of **args.id**.
+  """
+  deleteImage(id: GlobalId!): ImageNode
+
+  """
+  This mutation is only accessible to users who are allowed to **delete** any **MarathonNode** with an id of **args.id**.
+  """
+  deleteMarathon(id: GlobalId!): MarathonNode
+
+  """
+  This mutation is only accessible to users who are allowed to **delete** any **MarathonHourNode** with an id of **args.id**.
+  """
+  deleteMarathonHour(id: GlobalId!): MarathonHourNode
+
+  """
+  This mutation is only accessible to users who are allowed to **delete** any **NotificationNode** with an id of **args.id**.
+  """
   deleteNotification(
     """
     If true, the notification will be deleted even if it has already been sent, which will also delete the delivery records.
     """
     force: Boolean
     id: GlobalId!
-  ): NotificationNode!
-  deletePerson(id: GlobalId!): PersonNode!
-  deletePointEntry(id: GlobalId!): PointEntryNode!
-  deletePointOpportunity(id: GlobalId!): PointOpportunityNode!
-  deleteTeam(id: GlobalId!): TeamNode!
+  ): NotificationNode
 
-  """Register a new device, or update an existing one"""
+  """
+  This mutation is only accessible to users who are allowed to **delete** any **PersonNode** with an id of **args.id**.
+  """
+  deletePerson(id: GlobalId!): PersonNode
+
+  """
+  This mutation is only accessible to users who are allowed to **delete** any **PointEntryNode** with an id of **args.id**.
+  """
+  deletePointEntry(id: GlobalId!): PointEntryNode
+
+  """
+  This mutation is only accessible to users who are allowed to **delete** any **PointOpportunityNode** with an id of **args.id**.
+  """
+  deletePointOpportunity(id: GlobalId!): PointOpportunityNode
+
+  """
+  This mutation is only accessible to users who are allowed to **delete** any **TeamNode** with an id of **args.id**.
+  """
+  deleteTeam(id: GlobalId!): TeamNode
+
+  """
+  Register a new device, or update an existing one
+  """
   registerDevice(input: RegisterDeviceInput!): RegisterDeviceResponse!
 
-  """Remove an image from an event"""
-  removeImageFromEvent(eventId: GlobalId!, imageId: GlobalId!): Void!
+  """
+  Remove an image from an event
 
-  """Remove an image from a feed item"""
-  removeImageFromFeedItem(feedItemUuid: GlobalId!): FeedNode!
-  removeMap(id: GlobalId!, imageUuid: GlobalId!): Void!
-  removePersonFromTeam(personUuid: GlobalId!, teamUuid: GlobalId!): MembershipNode!
-  removeSolicitationCodeFromTeam(teamId: GlobalId!): Void!
-  scheduleNotification(id: GlobalId!, sendAt: DateTimeISO!): NotificationNode!
+  This mutation is only accessible to users who are allowed to **update** any **EventNode** with an id of **args.eventId**.
+  """
+  removeImageFromEvent(eventId: GlobalId!, imageId: GlobalId!): Void
 
-  """Send a notification immediately."""
-  sendNotification(id: GlobalId!): Void!
+  """
+  Remove an image from a feed item
 
-  """Update an event by UUID"""
-  setEvent(id: GlobalId!, input: SetEventInput!): EventNode!
+  This mutation is only accessible to users who are allowed to **update** any **FeedNode** with an id of **args.feedItemUuid**.
+  """
+  removeImageFromFeedItem(feedItemUuid: GlobalId!): FeedNode
 
-  """Set the content of a feed item"""
-  setFeedItem(feedItemUuid: GlobalId!, input: SetFeedInput!): FeedNode!
-  setFundraisingEntry(id: GlobalId!, input: SetFundraisingEntryInput!): FundraisingEntryNode!
-  setImageAltText(alt: String!, id: GlobalId!): ImageNode!
-  setImageUrl(id: GlobalId!, url: URL!): ImageNode!
-  setMarathon(id: GlobalId!, input: SetMarathonInput!): MarathonNode!
-  setMarathonHour(id: GlobalId!, input: SetMarathonHourInput!): MarathonHourNode!
-  setPerson(id: GlobalId!, input: SetPersonInput!): PersonNode!
-  setPersonPassword(id: GlobalId!, password: SetPasswordInput!): PersonNode!
-  setPointOpportunity(id: GlobalId!, input: SetPointOpportunityInput!): PointOpportunityNode!
-  setSolicitationCode(id: GlobalId!, input: SetSolicitationCodeInput!): SolicitationCodeNode!
-  setTeam(id: GlobalId!, input: SetTeamInput!): TeamNode!
-  stageNotification(audience: NotificationAudienceInput!, body: NonEmptyString!, title: NonEmptyString!, url: URL): NotificationNode!
-  updateFundraisingAssignment(id: GlobalId!, input: UpdateFundraisingAssignmentInput!): FundraisingAssignmentNode!
+  """
+  This mutation is only accessible to users who are allowed to **update** any **MarathonHourNode** with an id of **args.id**.
+  """
+  removeMap(id: GlobalId!, imageUuid: GlobalId!): Void
+
+  """
+  This mutation is only accessible to users who are allowed to **update** any **TeamNode.members** with an id of **args.teamUuid**.
+  """
+  removePersonFromTeam(
+    personUuid: GlobalId!
+    teamUuid: GlobalId!
+  ): MembershipNode
+
+  """
+  This mutation is only accessible to users who are allowed to **update** any **TeamNode.solicitationCode** with an id of **args.teamId**.
+  """
+  removeSolicitationCodeFromTeam(teamId: GlobalId!): Void
+
+  """
+  This mutation is only accessible to users who are allowed to **deploy** any **NotificationNode** with an id of **args.id**.
+  """
+  scheduleNotification(id: GlobalId!, sendAt: DateTimeISO!): NotificationNode
+
+  """
+  Send a notification immediately.
+
+  This mutation is only accessible to users who are allowed to **deploy** any **NotificationNode** with an id of **args.id**.
+  """
+  sendNotification(id: GlobalId!): Void
+
+  """
+  Update an event by UUID
+
+  This mutation is only accessible to users who are allowed to **update** any **EventNode** with an id of **args.id**.
+  """
+  setEvent(id: GlobalId!, input: SetEventInput!): EventNode
+
+  """
+  Set the content of a feed item
+
+  This mutation is only accessible to users who are allowed to **update** any **FeedNode** with an id of **args.feedItemUuid**.
+  """
+  setFeedItem(feedItemUuid: GlobalId!, input: SetFeedInput!): FeedNode
+
+  """
+  This mutation is only accessible to users who are allowed to **update** any **FundraisingEntryNode** with an id of **args.id**.
+  """
+  setFundraisingEntry(
+    id: GlobalId!
+    input: SetFundraisingEntryInput!
+  ): FundraisingEntryNode
+
+  """
+  This mutation is only accessible to users who are allowed to **update** any **ImageNode** with an id of **args.id**.
+  """
+  setImageAltText(alt: String!, id: GlobalId!): ImageNode
+
+  """
+  This mutation is only accessible to users who are allowed to **update** any **ImageNode** with an id of **args.id**.
+  """
+  setImageUrl(id: GlobalId!, url: URL!): ImageNode
+
+  """
+  This mutation is only accessible to users who are allowed to **update** any **MarathonNode** with an id of **args.id**.
+  """
+  setMarathon(id: GlobalId!, input: SetMarathonInput!): MarathonNode
+
+  """
+  This mutation is only accessible to users who are allowed to **update** any **MarathonHourNode** with an id of **args.id**.
+  """
+  setMarathonHour(id: GlobalId!, input: SetMarathonHourInput!): MarathonHourNode
+
+  """
+  This mutation is only accessible to users who are allowed to **update** any **PersonNode** with an id of **args.id**.
+  """
+  setPerson(id: GlobalId!, input: SetPersonInput!): PersonNode
+
+  """
+  This mutation is only accessible to users who are allowed to **update** any **PersonNode.password** with an id of **args.id**.
+  """
+  setPersonPassword(id: GlobalId!, password: SetPasswordInput!): PersonNode
+
+  """
+  This mutation is only accessible to users who are allowed to **update** any **PointOpportunityNode** with an id of **args.id**.
+  """
+  setPointOpportunity(
+    id: GlobalId!
+    input: SetPointOpportunityInput!
+  ): PointOpportunityNode
+
+  """
+  This mutation is only accessible to users who are allowed to **update** any **SolicitationCodeNode** with an id of **args.id**.
+  """
+  setSolicitationCode(
+    id: GlobalId!
+    input: SetSolicitationCodeInput!
+  ): SolicitationCodeNode
+
+  """
+  This mutation is only accessible to users who are allowed to **update** any **TeamNode** with an id of **args.id**.
+  """
+  setTeam(id: GlobalId!, input: SetTeamInput!): TeamNode
+
+  """
+  This mutation is only accessible to users who are allowed to **create NotificationNodes**.
+  """
+  stageNotification(
+    audience: NotificationAudienceInput!
+    body: NonEmptyString!
+    title: NonEmptyString!
+    url: URL
+  ): NotificationNode
+
+  """
+  This mutation is only accessible to users who are allowed to [**custom subject function** (.fundraisingAssignments)].
+  """
+  updateFundraisingAssignment(
+    id: GlobalId!
+    input: UpdateFundraisingAssignmentInput!
+  ): FundraisingAssignmentNode
 }
 
 enum NoTargetOperators {
@@ -1112,14 +1497,20 @@ enum NoTargetOperators {
 interface Node {
   id: GlobalId!
 
-  """A human-readable string representing the object."""
+  """
+  A human-readable string representing the object.
+  """
   text: String!
 }
 
-"""A string that cannot be passed as an empty value"""
+"""
+A string that cannot be passed as an empty value
+"""
 scalar NonEmptyString
 
-"""Integers that will have a value of 0 or more."""
+"""
+Integers that will have a value of 0 or more.
+"""
 scalar NonNegativeInt
 
 input NotificationAudienceInput {
@@ -1129,7 +1520,9 @@ input NotificationAudienceInput {
   users: [GlobalId!]
 }
 
-"""The number of delivery issues for a notification, broken down by type."""
+"""
+The number of delivery issues for a notification, broken down by type.
+"""
 type NotificationDeliveryIssueCount {
   DeviceNotRegistered: Int!
   InvalidCredentials: Int!
@@ -1146,15 +1539,21 @@ type NotificationDeliveryNode implements Node {
   chunkUuid: String
   createdAt: LuxonDateTime
 
-  """Any error message returned by Expo when sending the notification."""
+  """
+  Any error message returned by Expo when sending the notification.
+  """
   deliveryError: String
   id: GlobalId!
   notification: NotificationNode!
 
-  """The time the server received a delivery receipt from the user."""
+  """
+  The time the server received a delivery receipt from the user.
+  """
   receiptCheckedAt: LuxonDateTime
 
-  """The time the server sent the notification to Expo for delivery."""
+  """
+  The time the server sent the notification to Expo for delivery.
+  """
   sentAt: LuxonDateTime
   text: String!
   updatedAt: LuxonDateTime
@@ -1195,10 +1594,18 @@ input NotificationDeliveryResolverSort {
 type NotificationNode implements Node {
   body: String!
   createdAt: LuxonDateTime
-  deliveryCount: Int!
+
+  """
+  This field is only accessible to users who are allowed to **get** any **NotificationNode** with an id of **root.id**.
+  """
+  deliveryCount: Int
   deliveryIssue: String
   deliveryIssueAcknowledgedAt: LuxonDateTime
-  deliveryIssueCount: NotificationDeliveryIssueCount!
+
+  """
+  This field is only accessible to users who are allowed to **get** any **NotificationNode** with an id of **root.id**.
+  """
+  deliveryIssueCount: NotificationDeliveryIssueCount
   id: GlobalId!
 
   """
@@ -1206,7 +1613,9 @@ type NotificationNode implements Node {
   """
   sendAt: LuxonDateTime
 
-  """The time the server started sending the notification."""
+  """
+  The time the server started sending the notification.
+  """
   startedSendingAt: LuxonDateTime
   text: String!
   title: String!
@@ -1254,19 +1663,50 @@ input NullFilter {
 }
 
 type PersonNode implements Node {
-  committees: [CommitteeMembershipNode!]!
+  """
+  This field is only accessible to users who are allowed to **get** any **PersonNode.memberships** with an id of **root.id**.
+  """
+  committees: [CommitteeMembershipNode!]
   createdAt: LuxonDateTime
   email: String!
-  fundraisingAssignments: [FundraisingAssignmentNode!]!
+
+  """
+  This field is only accessible to users who are allowed to **list** any **PersonNode.fundraisingAssignments** with an id of **root.id**.
+  """
+  fundraisingAssignments: [FundraisingAssignmentNode!]
+
+  """
+  This field is only accessible to users who are allowed to **get** any **PersonNode.fundraisingAssignments** with an id of **root.id**.
+  """
   fundraisingTotalAmount: Float
-  hasPassword: Boolean!
+
+  """
+  This field is only accessible to users who are allowed to **get** any **PersonNode.password** with an id of **root.id**.
+  """
+  hasPassword: Boolean
   id: GlobalId!
   linkblue: String
-  moraleTeams: [MembershipNode!]!
+
+  """
+  This field is only accessible to users who are allowed to **get** any **PersonNode.memberships** with an id of **root.id**.
+  """
+  moraleTeams: [MembershipNode!]
   name: String
+
+  """
+  This field is only accessible to users who are allowed to **get** any **PersonNode.memberships** with an id of **root.id**.
+  """
   primaryCommittee: CommitteeMembershipNode
+
+  """
+  This field is only accessible to users who are allowed to **get** any **PersonNode.memberships** with an id of **root.id**.
+  """
   primaryTeam(teamType: TeamType!): MembershipNode
-  teams: [MembershipNode!]!
+
+  """
+  This field is only accessible to users who are allowed to **get** any **PersonNode.memberships** with an id of **root.id**.
+  """
+  teams: [MembershipNode!]
   text: String!
   updatedAt: LuxonDateTime
 }
@@ -1388,38 +1828,86 @@ input PointOpportunityResolverSort {
   field: PointOpportunityResolverFilterFields!
 }
 
-"""Integers that will have a value greater than 0."""
+"""
+Integers that will have a value greater than 0.
+"""
 scalar PositiveInt
 
 type Query {
-  """Get the active configuration for a given key at the current time"""
-  activeConfiguration(key: String!): GetConfigurationByUuidResponse!
+  """
+  Get the active configuration for a given key at the current time
 
-  """Get all configurations, irrespective of time"""
-  allConfigurations: [ConfigurationNode!]!
+  This query is only accessible to users who are allowed to **readActive** **every ConfigurationNode**.
+  """
+  activeConfiguration(key: String!): GetConfigurationByUuidResponse
 
-  """Get a list of audit logs"""
-  auditLogs(idSearch: NonEmptyString, page: PositiveInt = 1, pageSize: PositiveInt = 10, textSearch: NonEmptyString, typenameSearch: NonEmptyString): ListAuditLogsResponse!
+  """
+  Get all configurations, irrespective of time
+
+  This query is only accessible to users who are allowed to **list** **every ConfigurationNode**.
+  """
+  allConfigurations: [ConfigurationNode!]
+
+  """
+  Get a list of audit logs
+
+  This query is only accessible to users who are allowed to **read** **every AuditLogNode**.
+  """
+  auditLogs(
+    idSearch: NonEmptyString
+    page: PositiveInt = 1
+    pageSize: PositiveInt = 10
+    textSearch: NonEmptyString
+    typenameSearch: NonEmptyString
+  ): ListAuditLogsResponse
   buildTimestamp: LuxonDateTime
 
-  """Get a particular configuration entry by UUID"""
-  configuration(id: GlobalId!): ConfigurationNode!
+  """
+  Get a particular configuration entry by UUID
+
+  This query is only accessible to users who are allowed to **get** any **ConfigurationNode** with an id of **args.id**.
+  """
+  configuration(id: GlobalId!): ConfigurationNode
 
   """
   The marathon that is currently happening, i.e. the marathon with the latest start date that has not yet ended.
+
+  This query is only accessible to users who are allowed to **readActive** **every MarathonNode**.
   """
   currentMarathon: MarathonNode
+
+  """
+  This query is only accessible to users who are allowed to **readActive** **every MarathonHourNode**.
+  """
   currentMarathonHour: MarathonHourNode
-  dailyDepartmentNotification(id: GlobalId!): DailyDepartmentNotificationNode!
-  dailyDepartmentNotificationBatch(id: GlobalId!): DailyDepartmentNotificationBatchNode!
+
+  """
+  This query is only accessible to users who are allowed to **get** any **DailyDepartmentNotificationNode** with an id of **args.id**.
+  """
+  dailyDepartmentNotification(id: GlobalId!): DailyDepartmentNotificationNode
+
+  """
+  This query is only accessible to users who are allowed to **get** any **DailyDepartmentNotificationBatchNode** with an id of **args.id**.
+  """
+  dailyDepartmentNotificationBatch(
+    id: GlobalId!
+  ): DailyDepartmentNotificationBatchNode
+
+  """
+  This query is only accessible to users who are allowed to **list** **every DailyDepartmentNotificationNode**.
+  """
   dailyDepartmentNotifications(
     filters: DailyDepartmentNotificationResolverFilterGroup
 
-    """The page number to return, defaults to 1"""
-    page: PositiveInt! = 1
+    """
+    The page number to return, defaults to 1
+    """
+    page: PositiveInt = 1
 
-    """The number of items to return per page, defaults to 10"""
-    pageSize: NonNegativeInt! = 10
+    """
+    The number of items to return per page, defaults to 10
+    """
+    pageSize: NonNegativeInt = 10
     search: DailyDepartmentNotificationResolverSearchFilter
 
     """
@@ -1431,23 +1919,35 @@ type Query {
     The fields to sort by, in order of priority. If unspecified, the sort order is undefined
     """
     sortBy: [DailyDepartmentNotificationResolverSort!]
-  ): ListDailyDepartmentNotificationsResponse!
+  ): ListDailyDepartmentNotificationsResponse
 
-  """Get a device by it's UUID"""
+  """
+  Get a device by it's UUID
+  """
   device(
-    """For legacy reasons, this can be a GlobalId or a raw UUID"""
+    """
+    For legacy reasons, this can be a GlobalId or a raw UUID
+    """
     uuid: String!
   ): GetDeviceByUuidResponse!
 
-  """List all devices"""
+  """
+  List all devices
+
+  This query is only accessible to users who are allowed to **list** **every DeviceNode**.
+  """
   devices(
     filters: DeviceResolverFilterGroup
 
-    """The page number to return, defaults to 1"""
-    page: PositiveInt! = 1
+    """
+    The page number to return, defaults to 1
+    """
+    page: PositiveInt = 1
 
-    """The number of items to return per page, defaults to 10"""
-    pageSize: NonNegativeInt! = 10
+    """
+    The number of items to return per page, defaults to 10
+    """
+    pageSize: NonNegativeInt = 10
     search: DeviceResolverSearchFilter
 
     """
@@ -1459,21 +1959,33 @@ type Query {
     The fields to sort by, in order of priority. If unspecified, the sort order is undefined
     """
     sortBy: [DeviceResolverSort!]
-  ): ListDevicesResponse!
+  ): ListDevicesResponse
   error: Void!
 
-  """Get an event by UUID"""
-  event(id: GlobalId!): EventNode!
+  """
+  Get an event by UUID
 
-  """List events"""
+  This query is only accessible to users who are allowed to **get** any **EventNode** with an id of **args.id**.
+  """
+  event(id: GlobalId!): EventNode
+
+  """
+  List events
+
+  This query is only accessible to users who are allowed to **list** **every EventNode**.
+  """
   events(
     filters: EventResolverFilterGroup
 
-    """The page number to return, defaults to 1"""
-    page: PositiveInt! = 1
+    """
+    The page number to return, defaults to 1
+    """
+    page: PositiveInt = 1
 
-    """The number of items to return per page, defaults to 10"""
-    pageSize: NonNegativeInt! = 10
+    """
+    The number of items to return per page, defaults to 10
+    """
+    pageSize: NonNegativeInt = 10
     search: EventResolverSearchFilter
 
     """
@@ -1485,22 +1997,38 @@ type Query {
     The fields to sort by, in order of priority. If unspecified, the sort order is undefined
     """
     sortBy: [EventResolverSort!]
-  ): ListEventsResponse!
+  ): ListEventsResponse
 
-  """Get the active feed"""
+  """
+  Get the active feed
+  """
   feed(limit: Int = 10): [FeedItem!]!
 
-  """Get a feed item by its UUID"""
+  """
+  Get a feed item by its UUID
+  """
   feedItem(feedItemId: GlobalId!): FeedNode!
-  fundraisingAssignment(id: GlobalId!): FundraisingAssignmentNode!
+
+  """
+  This query is only accessible to users who are allowed to [**custom subject function** (.fundraisingAssignments)].
+  """
+  fundraisingAssignment(id: GlobalId!): FundraisingAssignmentNode
+
+  """
+  This query is only accessible to users who are allowed to **list** **every FundraisingEntryNode**.
+  """
   fundraisingEntries(
     filters: FundraisingEntryResolverFilterGroup
 
-    """The page number to return, defaults to 1"""
-    page: PositiveInt! = 1
+    """
+    The page number to return, defaults to 1
+    """
+    page: PositiveInt = 1
 
-    """The number of items to return per page, defaults to 10"""
-    pageSize: NonNegativeInt! = 10
+    """
+    The number of items to return per page, defaults to 10
+    """
+    pageSize: NonNegativeInt = 10
     search: FundraisingEntryResolverSearchFilter
 
     """
@@ -1512,18 +2040,38 @@ type Query {
     The fields to sort by, in order of priority. If unspecified, the sort order is undefined
     """
     sortBy: [FundraisingEntryResolverSort!]
-  ): ListFundraisingEntriesResponse!
-  fundraisingEntry(id: GlobalId!): FundraisingEntryNode!
-  grandTotal(marathonId: GlobalId): Float!
-  image(id: GlobalId!): ImageNode!
+  ): ListFundraisingEntriesResponse
+
+  """
+  This query is only accessible to users who are allowed to **get** any **FundraisingEntryNode** with an id of **args.id**.
+  """
+  fundraisingEntry(id: GlobalId!): FundraisingEntryNode
+
+  """
+  This query is only accessible to users who are allowed to **get** **every FundraisingEntryNode.grandTotal**.
+  """
+  grandTotal(marathonId: GlobalId): Float
+
+  """
+  This query is only accessible to users who are allowed to **get** any **ImageNode** with an id of **args.id**.
+  """
+  image(id: GlobalId!): ImageNode
+
+  """
+  This query is only accessible to users who are allowed to **list** **every ImageNode**.
+  """
   images(
     filters: ImageResolverFilterGroup
 
-    """The page number to return, defaults to 1"""
-    page: PositiveInt! = 1
+    """
+    The page number to return, defaults to 1
+    """
+    page: PositiveInt = 1
 
-    """The number of items to return per page, defaults to 10"""
-    pageSize: NonNegativeInt! = 10
+    """
+    The number of items to return per page, defaults to 10
+    """
+    pageSize: NonNegativeInt = 10
     search: ImageResolverSearchFilter
 
     """
@@ -1535,24 +2083,46 @@ type Query {
     The fields to sort by, in order of priority. If unspecified, the sort order is undefined
     """
     sortBy: [ImageResolverSort!]
-  ): ListImagesResponse!
+  ): ListImagesResponse
 
   """
   The most recent marathon, regardless of whether it is currently happening, i.e. the marathon with the latest year.
+
+  This query is only accessible to users who are allowed to **readActive** **every MarathonNode**.
   """
   latestMarathon: MarathonNode
   loginState: LoginState!
-  marathon(id: GlobalId!): MarathonNode!
-  marathonForYear(year: String!): MarathonNode!
-  marathonHour(id: GlobalId!): MarathonHourNode!
+
+  """
+  This query is only accessible to users who are allowed to **get** any **MarathonNode** with an id of **args.id**.
+  """
+  marathon(id: GlobalId!): MarathonNode
+
+  """
+  This query is only accessible to users who are allowed to **get** **every MarathonNode**.
+  """
+  marathonForYear(year: String!): MarathonNode
+
+  """
+  This query is only accessible to users who are allowed to **get** any **MarathonHourNode** with an id of **args.id**.
+  """
+  marathonHour(id: GlobalId!): MarathonHourNode
+
+  """
+  This query is only accessible to users who are allowed to **list** **every MarathonHourNode**.
+  """
   marathonHours(
     filters: MarathonHourResolverFilterGroup
 
-    """The page number to return, defaults to 1"""
-    page: PositiveInt! = 1
+    """
+    The page number to return, defaults to 1
+    """
+    page: PositiveInt = 1
 
-    """The number of items to return per page, defaults to 10"""
-    pageSize: NonNegativeInt! = 10
+    """
+    The number of items to return per page, defaults to 10
+    """
+    pageSize: NonNegativeInt = 10
     search: MarathonHourResolverSearchFilter
 
     """
@@ -1564,15 +2134,23 @@ type Query {
     The fields to sort by, in order of priority. If unspecified, the sort order is undefined
     """
     sortBy: [MarathonHourResolverSort!]
-  ): ListMarathonHoursResponse!
+  ): ListMarathonHoursResponse
+
+  """
+  This query is only accessible to users who are allowed to **list** **every MarathonNode**.
+  """
   marathons(
     filters: MarathonResolverFilterGroup
 
-    """The page number to return, defaults to 1"""
-    page: PositiveInt! = 1
+    """
+    The page number to return, defaults to 1
+    """
+    page: PositiveInt = 1
 
-    """The number of items to return per page, defaults to 10"""
-    pageSize: NonNegativeInt! = 10
+    """
+    The number of items to return per page, defaults to 10
+    """
+    pageSize: NonNegativeInt = 10
     search: MarathonResolverSearchFilter
 
     """
@@ -1584,19 +2162,35 @@ type Query {
     The fields to sort by, in order of priority. If unspecified, the sort order is undefined
     """
     sortBy: [MarathonResolverSort!]
-  ): ListMarathonsResponse!
+  ): ListMarathonsResponse
   me: PersonNode
-  node(id: GlobalId!): Node!
-  notification(id: GlobalId!): NotificationNode!
+
+  """
+  This query is only accessible to users who are allowed to [**custom subject function** ()].
+  """
+  node(id: GlobalId!): Node
+
+  """
+  This query is only accessible to users who are allowed to **get** any **NotificationNode** with an id of **args.id**.
+  """
+  notification(id: GlobalId!): NotificationNode
+
+  """
+  This query is only accessible to users who are allowed to **list** **every NotificationDeliveryNode**.
+  """
   notificationDeliveries(
     filters: NotificationDeliveryResolverFilterGroup
     notificationUuid: GlobalId!
 
-    """The page number to return, defaults to 1"""
-    page: PositiveInt! = 1
+    """
+    The page number to return, defaults to 1
+    """
+    page: PositiveInt = 1
 
-    """The number of items to return per page, defaults to 10"""
-    pageSize: NonNegativeInt! = 10
+    """
+    The number of items to return per page, defaults to 10
+    """
+    pageSize: NonNegativeInt = 10
     search: NotificationDeliveryResolverSearchFilter
 
     """
@@ -1608,15 +2202,23 @@ type Query {
     The fields to sort by, in order of priority. If unspecified, the sort order is undefined
     """
     sortBy: [NotificationDeliveryResolverSort!]
-  ): ListNotificationDeliveriesResponse!
+  ): ListNotificationDeliveriesResponse
+
+  """
+  This query is only accessible to users who are allowed to **list** **every NotificationNode**.
+  """
   notifications(
     filters: NotificationResolverFilterGroup
 
-    """The page number to return, defaults to 1"""
-    page: PositiveInt! = 1
+    """
+    The page number to return, defaults to 1
+    """
+    page: PositiveInt = 1
 
-    """The number of items to return per page, defaults to 10"""
-    pageSize: NonNegativeInt! = 10
+    """
+    The number of items to return per page, defaults to 10
+    """
+    pageSize: NonNegativeInt = 10
     search: NotificationResolverSearchFilter
 
     """
@@ -1628,15 +2230,23 @@ type Query {
     The fields to sort by, in order of priority. If unspecified, the sort order is undefined
     """
     sortBy: [NotificationResolverSort!]
-  ): ListNotificationsResponse!
+  ): ListNotificationsResponse
+
+  """
+  This query is only accessible to users who are allowed to **list** **every PersonNode**.
+  """
   people(
     filters: PersonResolverFilterGroup
 
-    """The page number to return, defaults to 1"""
-    page: PositiveInt! = 1
+    """
+    The page number to return, defaults to 1
+    """
+    page: PositiveInt = 1
 
-    """The number of items to return per page, defaults to 10"""
-    pageSize: NonNegativeInt! = 10
+    """
+    The number of items to return per page, defaults to 10
+    """
+    pageSize: NonNegativeInt = 10
     search: PersonResolverSearchFilter
 
     """
@@ -1648,17 +2258,33 @@ type Query {
     The fields to sort by, in order of priority. If unspecified, the sort order is undefined
     """
     sortBy: [PersonResolverSort!]
-  ): ListPeopleResponse!
-  person(id: GlobalId!): PersonNode!
+  ): ListPeopleResponse
+
+  """
+  This query is only accessible to users who are allowed to **get** any **PersonNode** with an id of **args.id**.
+  """
+  person(id: GlobalId!): PersonNode
+
+  """
+  This query is only accessible to users who are allowed to [**custom subject function** ()].
+  """
   personByLinkBlue(linkBlueId: String!): PersonNode
+
+  """
+  This query is only accessible to users who are allowed to **list** **every PointEntryNode**.
+  """
   pointEntries(
     filters: PointEntryResolverFilterGroup
 
-    """The page number to return, defaults to 1"""
-    page: PositiveInt! = 1
+    """
+    The page number to return, defaults to 1
+    """
+    page: PositiveInt = 1
 
-    """The number of items to return per page, defaults to 10"""
-    pageSize: NonNegativeInt! = 10
+    """
+    The number of items to return per page, defaults to 10
+    """
+    pageSize: NonNegativeInt = 10
     search: PointEntryResolverSearchFilter
 
     """
@@ -1670,16 +2296,28 @@ type Query {
     The fields to sort by, in order of priority. If unspecified, the sort order is undefined
     """
     sortBy: [PointEntryResolverSort!]
-  ): ListPointEntriesResponse!
-  pointEntry(id: GlobalId!): PointEntryNode!
+  ): ListPointEntriesResponse
+
+  """
+  This query is only accessible to users who are allowed to **get** any **PointEntryNode** with an id of **args.id**.
+  """
+  pointEntry(id: GlobalId!): PointEntryNode
+
+  """
+  This query is only accessible to users who are allowed to **list** **every PointOpportunityNode**.
+  """
   pointOpportunities(
     filters: PointOpportunityResolverFilterGroup
 
-    """The page number to return, defaults to 1"""
-    page: PositiveInt! = 1
+    """
+    The page number to return, defaults to 1
+    """
+    page: PositiveInt = 1
 
-    """The number of items to return per page, defaults to 10"""
-    pageSize: NonNegativeInt! = 10
+    """
+    The number of items to return per page, defaults to 10
+    """
+    pageSize: NonNegativeInt = 10
     search: PointOpportunityResolverSearchFilter
 
     """
@@ -1691,23 +2329,50 @@ type Query {
     The fields to sort by, in order of priority. If unspecified, the sort order is undefined
     """
     sortBy: [PointOpportunityResolverSort!]
-  ): ListPointOpportunitiesResponse!
-  pointOpportunity(id: GlobalId!): PointOpportunityNode!
+  ): ListPointOpportunitiesResponse
+
+  """
+  This query is only accessible to users who are allowed to **get** any **PointOpportunityNode** with an id of **args.id**.
+  """
+  pointOpportunity(id: GlobalId!): PointOpportunityNode
 
   """
   The output of this query is not stable. Do not rely on an exact format.
+
+  This query is only accessible to users who are allowed to **list** **every FundraisingEntryNode**.
   """
-  report(from: LuxonDateTime, report: NonEmptyString!, solicitationCodeIds: [GlobalId!], to: LuxonDateTime): Report!
-  searchPeopleByName(name: String!): [PersonNode!]!
-  solicitationCode(id: GlobalId!): SolicitationCodeNode!
+  report(
+    from: LuxonDateTime
+    report: NonEmptyString!
+    solicitationCodeIds: [GlobalId!]
+    to: LuxonDateTime
+  ): Report
+
+  """
+  This query is only accessible to users who are allowed to **list** **every PersonNode**.
+  """
+  searchPeopleByName(name: String!): [PersonNode!]
+
+  """
+  This query is only accessible to users who are allowed to **get** any **SolicitationCodeNode** with an id of **args.id**.
+  """
+  solicitationCode(id: GlobalId!): SolicitationCodeNode
+
+  """
+  This query is only accessible to users who are allowed to **list** **every SolicitationCodeNode**.
+  """
   solicitationCodes(
     filters: SolicitationCodeResolverFilterGroup
 
-    """The page number to return, defaults to 1"""
-    page: PositiveInt! = 1
+    """
+    The page number to return, defaults to 1
+    """
+    page: PositiveInt = 1
 
-    """The number of items to return per page, defaults to 10"""
-    pageSize: NonNegativeInt! = 10
+    """
+    The number of items to return per page, defaults to 10
+    """
+    pageSize: NonNegativeInt = 10
     search: SolicitationCodeResolverSearchFilter
 
     """
@@ -1719,16 +2384,28 @@ type Query {
     The fields to sort by, in order of priority. If unspecified, the sort order is undefined
     """
     sortBy: [SolicitationCodeResolverSort!]
-  ): ListSolicitationCodesResponse!
-  team(id: GlobalId!): TeamNode!
+  ): ListSolicitationCodesResponse
+
+  """
+  This query is only accessible to users who are allowed to **get** any **TeamNode** with an id of **args.id**.
+  """
+  team(id: GlobalId!): TeamNode
+
+  """
+  This query is only accessible to users who are allowed to **list** **every TeamNode**.
+  """
   teams(
     filters: TeamResolverFilterGroup
 
-    """The page number to return, defaults to 1"""
-    page: PositiveInt! = 1
+    """
+    The page number to return, defaults to 1
+    """
+    page: PositiveInt = 1
 
-    """The number of items to return per page, defaults to 10"""
-    pageSize: NonNegativeInt! = 10
+    """
+    The number of items to return per page, defaults to 10
+    """
+    pageSize: NonNegativeInt = 10
     search: TeamResolverSearchFilter
 
     """
@@ -1740,20 +2417,28 @@ type Query {
     The fields to sort by, in order of priority. If unspecified, the sort order is undefined
     """
     sortBy: [TeamResolverSort!]
-  ): ListTeamsResponse!
+  ): ListTeamsResponse
 }
 
 input RegisterDeviceInput {
-  """For legacy reasons, this can be a GlobalId or a raw UUID"""
+  """
+  For legacy reasons, this can be a GlobalId or a raw UUID
+  """
   deviceId: String!
 
-  """The Expo push token of the device"""
+  """
+  The Expo push token of the device
+  """
   expoPushToken: String
 
-  """The ID of the last user to log in on this device"""
+  """
+  The ID of the last user to log in on this device
+  """
   lastUserId: GlobalId
 
-  """base64 encoded SHA-256 hash of a secret known to the device"""
+  """
+  base64 encoded SHA-256 hash of a secret known to the device
+  """
   verifier: String!
 }
 
@@ -1897,14 +2582,22 @@ enum SingleTargetOperators {
 type SolicitationCodeNode implements Node {
   code: NonNegativeInt!
   createdAt: LuxonDateTime
+
+  """
+  This field is only accessible to users who are allowed to **list** **every FundraisingEntryNode**.
+  """
   entries(
     filters: FundraisingEntryResolverFilterGroup
 
-    """The page number to return, defaults to 1"""
-    page: PositiveInt! = 1
+    """
+    The page number to return, defaults to 1
+    """
+    page: PositiveInt = 1
 
-    """The number of items to return per page, defaults to 10"""
-    pageSize: NonNegativeInt! = 10
+    """
+    The number of items to return per page, defaults to 10
+    """
+    pageSize: NonNegativeInt = 10
     search: FundraisingEntryResolverSearchFilter
 
     """
@@ -1916,12 +2609,16 @@ type SolicitationCodeNode implements Node {
     The fields to sort by, in order of priority. If unspecified, the sort order is undefined
     """
     sortBy: [FundraisingEntryResolverSort!]
-  ): ListFundraisingEntriesResponse!
+  ): ListFundraisingEntriesResponse
   id: GlobalId!
   name: String
   prefix: String!
   tags: [SolicitationCodeTag!]!
-  teams(marathonId: GlobalId): [TeamNode!]!
+
+  """
+  This field is only accessible to users who are allowed to **list** **every TeamNode**.
+  """
+  teams(marathonId: GlobalId): [TeamNode!]
   text: String!
   updatedAt: LuxonDateTime
 }
@@ -1960,7 +2657,9 @@ input SolicitationCodeResolverSort {
   field: SolicitationCodeResolverFilterFields!
 }
 
-"""The tags for a solicitation code"""
+"""
+The tags for a solicitation code
+"""
 enum SolicitationCodeTag {
   Active
   DancerTeam
@@ -1993,7 +2692,9 @@ enum SortDirection {
   desc
 }
 
-"""New Team vs Returning Team"""
+"""
+New Team vs Returning Team
+"""
 enum TeamLegacyStatus {
   DemoTeam
   NewTeam
@@ -2003,14 +2704,22 @@ enum TeamLegacyStatus {
 type TeamNode implements Node {
   committeeIdentifier: CommitteeIdentifier
   createdAt: LuxonDateTime
+
+  """
+  This field is only accessible to users who are allowed to **list** any **TeamNode.fundraisingEntries** with an id of **root.id**.
+  """
   fundraisingEntries(
     filters: FundraisingEntryResolverFilterGroup
 
-    """The page number to return, defaults to 1"""
-    page: PositiveInt! = 1
+    """
+    The page number to return, defaults to 1
+    """
+    page: PositiveInt = 1
 
-    """The number of items to return per page, defaults to 10"""
-    pageSize: NonNegativeInt! = 10
+    """
+    The number of items to return per page, defaults to 10
+    """
+    pageSize: NonNegativeInt = 10
     search: FundraisingEntryResolverSearchFilter
 
     """
@@ -2022,14 +2731,30 @@ type TeamNode implements Node {
     The fields to sort by, in order of priority. If unspecified, the sort order is undefined
     """
     sortBy: [FundraisingEntryResolverSort!]
-  ): ListFundraisingEntriesResponse!
+  ): ListFundraisingEntriesResponse
+
+  """
+  This field is only accessible to users who are allowed to **get** any **TeamNode.fundraisingTotal** with an id of **root.id**.
+  """
   fundraisingTotalAmount: Float
   id: GlobalId!
   legacyStatus: TeamLegacyStatus!
   marathon: MarathonNode!
-  members: [MembershipNode!]!
+
+  """
+  This field is only accessible to users who are allowed to **get** any **TeamNode** with an id of **root.id**.
+  """
+  members: [MembershipNode!]
   name: String!
-  pointEntries: [PointEntryNode!]!
+
+  """
+  This field is only accessible to users who are allowed to **get** **every TeamNode**.
+  """
+  pointEntries: [PointEntryNode!]
+
+  """
+  This field is only accessible to users who are allowed to **get** any **TeamNode.solicitationCode** with an id of **root.id**.
+  """
   solicitationCode: SolicitationCodeNode
   text: String!
   totalPoints: Int!
@@ -2069,7 +2794,9 @@ input TeamResolverSort {
   field: TeamResolverFilterFields!
 }
 
-"""Types of teams"""
+"""
+Types of teams
+"""
 enum TeamType {
   Mini
   Morale
@@ -2102,5 +2829,7 @@ input UpdateFundraisingAssignmentInput {
   amount: Float!
 }
 
-"""Represents NULL values"""
+"""
+Represents NULL values
+"""
 scalar Void

@@ -14,37 +14,37 @@ This document lists the required permissions for each GraphQL endpoint in the Da
 **get** every NotificationDeliveryNode.deliveryError
 ## ConfigurationResolver
 ### activeConfiguration
-**readActive** every ConfigurationNode.
+**readActive** every ConfigurationNode
 ### configuration
-**get** ConfigurationNode. with an id of _args.id_
+**get** ConfigurationNode with an id of _args.id_
 ### allConfigurations
-**list** every ConfigurationNode.
+**list** every ConfigurationNode
 ### createConfiguration
-**create** every ConfigurationNode.
+**create** every ConfigurationNode
 ### batchCreate
-**create** every ConfigurationNode.
+**create** every ConfigurationNode
 ### deleteConfiguration
-**delete** every ConfigurationNode.
+**delete** every ConfigurationNode
 ## DeviceResolver
 ### devices
-**list** every DeviceNode.
+**list** every DeviceNode
 ### deleteDevice
-**delete** DeviceNode. with an id of _args.id_
+**delete** DeviceNode with an id of _args.id_
 ## EventResolver
 ### event
-**get** EventNode. with an id of _args.id_
+**get** EventNode with an id of _args.id_
 ### events
-**list** every EventNode.
+**list** every EventNode
 ### createEvent
-**create** every EventNode.
+**create** every EventNode
 ### deleteEvent
-**delete** EventNode. with an id of _args.id_
+**delete** EventNode with an id of _args.id_
 ### setEvent
-**update** EventNode. with an id of _args.id_
+**update** EventNode with an id of _args.id_
 ### removeImage
-**update** EventNode. with an id of _args.eventId_
+**update** EventNode with an id of _args.eventId_
 ### addExistingImage
-**update** EventNode. with an id of _args.eventId_
+**update** EventNode with an id of _args.eventId_
 ## FundraisingAssignmentResolver
 ### fundraisingAssignment
 **get** custom function (.fundraisingAssignments):
@@ -113,9 +113,9 @@ This document lists the required permissions for each GraphQL endpoint in the Da
 ```
 ## FundraisingEntryResolver
 ### fundraisingEntry
-**get** FundraisingEntryNode. with an id of _args.id_
+**get** FundraisingEntryNode with an id of _args.id_
 ### fundraisingEntries
-**list** every FundraisingEntryNode.
+**list** every FundraisingEntryNode
 ### assignments
 **list** custom function (.fundraisingAssignments):
 ```js
@@ -149,92 +149,92 @@ This document lists the required permissions for each GraphQL endpoint in the Da
     }
 ```
 ### createFundraisingEntry
-**create** every FundraisingEntryNode.
+**create** every FundraisingEntryNode
 ### createFundraisingEntries
-**create** every FundraisingEntryNode.
+**create** every FundraisingEntryNode
 ### setFundraisingEntry
-**update** FundraisingEntryNode. with an id of _args.id_
+**update** FundraisingEntryNode with an id of _args.id_
 ### deleteFundraisingEntry
-**delete** FundraisingEntryNode. with an id of _args.id_
+**delete** FundraisingEntryNode with an id of _args.id_
 ### grandTotal
 **get** every FundraisingEntryNode.grandTotal
 ## ImageResolver
 ### image
-**get** ImageNode. with an id of _args.id_
+**get** ImageNode with an id of _args.id_
 ### images
-**list** every ImageNode.
+**list** every ImageNode
 ### createImage
-**create** every ImageNode.
+**create** every ImageNode
 ### setImageAltText
-**update** ImageNode. with an id of _args.id_
+**update** ImageNode with an id of _args.id_
 ### setImageUrl
-**update** ImageNode. with an id of _args.id_
+**update** ImageNode with an id of _args.id_
 ### deleteImage
-**delete** ImageNode. with an id of _args.id_
+**delete** ImageNode with an id of _args.id_
 ## MarathonHourResolver
 ### marathonHour
-**get** MarathonHourNode. with an id of _args.id_
+**get** MarathonHourNode with an id of _args.id_
 ### currentMarathonHour
-**readActive** every MarathonHourNode.
+**readActive** every MarathonHourNode
 ### marathonHours
-**list** every MarathonHourNode.
+**list** every MarathonHourNode
 ### createMarathonHour
-**create** every MarathonHourNode.
+**create** every MarathonHourNode
 ### setMarathonHour
-**update** MarathonHourNode. with an id of _args.id_
+**update** MarathonHourNode with an id of _args.id_
 ### deleteMarathonHour
-**delete** MarathonHourNode. with an id of _args.id_
+**delete** MarathonHourNode with an id of _args.id_
 ### addMap
-**update** MarathonHourNode. with an id of _args.id_
+**update** MarathonHourNode with an id of _args.id_
 ### removeMap
-**update** MarathonHourNode. with an id of _args.id_
+**update** MarathonHourNode with an id of _args.id_
 ## MarathonResolver
 ### marathon
-**get** MarathonNode. with an id of _args.id_
+**get** MarathonNode with an id of _args.id_
 ### marathonForYear
-**get** every MarathonNode.
+**get** every MarathonNode
 ### marathons
-**list** every MarathonNode.
+**list** every MarathonNode
 ### currentMarathon
-**readActive** every MarathonNode.
+**readActive** every MarathonNode
 ### latestMarathon
-**readActive** every MarathonNode.
+**readActive** every MarathonNode
 ### createMarathon
-**create** every MarathonNode.
+**create** every MarathonNode
 ### setMarathon
-**update** MarathonNode. with an id of _args.id_
+**update** MarathonNode with an id of _args.id_
 ### deleteMarathon
-**delete** MarathonNode. with an id of _args.id_
+**delete** MarathonNode with an id of _args.id_
 ### hours
-**list** MarathonNode. with an id of _root.id_
+**list** MarathonNode with an id of root.id
 ## NotificationResolver
 ### notification
-**get** NotificationNode. with an id of _args.id_
+**get** NotificationNode with an id of _args.id_
 ### notifications
-**list** every NotificationNode.
+**list** every NotificationNode
 ### listDeliveries
-**list** every NotificationDeliveryNode.
+**list** every NotificationDeliveryNode
 ### stage
-**create** every NotificationNode.
+**create** every NotificationNode
 ### send
-**deploy** NotificationNode. with an id of _args.id_
+**deploy** NotificationNode with an id of _args.id_
 ### schedule
-**deploy** NotificationNode. with an id of _args.id_
+**deploy** NotificationNode with an id of _args.id_
 ### acknowledgeDeliveryIssue
-**deploy** NotificationNode. with an id of _args.id_
+**deploy** NotificationNode with an id of _args.id_
 ### abortScheduled
-**deploy** NotificationNode. with an id of _args.id_
+**deploy** NotificationNode with an id of _args.id_
 ### deleteNotification
-**delete** NotificationNode. with an id of _args.id_
+**delete** NotificationNode with an id of _args.id_
 ### deliveryCount
-**get** NotificationNode. with an id of _root.id_
+**get** NotificationNode with an id of root.id
 ### deliveryIssueCount
-**get** NotificationNode. with an id of _root.id_
+**get** NotificationNode with an id of root.id
 ## PersonResolver
 ### person
-**get** PersonNode. with an id of _args.id_
+**get** PersonNode with an id of _args.id_
 ### getByLinkBlueId
-**get** custom function (.):
+**get** custom function ():
 ```js
 (_info, { linkBlueId }) => {
         const personRepository = Container.get(PersonRepository);
@@ -249,136 +249,136 @@ This document lists the required permissions for each GraphQL endpoint in the Da
     }
 ```
 ### people
-**list** every PersonNode.
+**list** every PersonNode
 ### searchByName
-**list** every PersonNode.
+**list** every PersonNode
 ### createPerson
-**create** every PersonNode.
+**create** every PersonNode
 ### setPerson
-**update** PersonNode. with an id of _args.id_
+**update** PersonNode with an id of _args.id_
 ### bulkLoad
-**create** every PersonNode.
+**create** every PersonNode
 ### assignPersonToTeam
 **update** TeamNode.members with an id of _args.teamUuid_
 ### unassignPersonFromTeam
 **update** TeamNode.members with an id of _args.teamUuid_
 ### deletePerson
-**delete** PersonNode. with an id of _args.id_
+**delete** PersonNode with an id of _args.id_
 ### committees
-**get** PersonNode.memberships with an id of _root.id_
+**get** PersonNode.memberships with an id of root.id
 ### teams
-**get** PersonNode.memberships with an id of _root.id_
+**get** PersonNode.memberships with an id of root.id
 ### moraleTeams
-**get** PersonNode.memberships with an id of _root.id_
+**get** PersonNode.memberships with an id of root.id
 ### primaryCommittee
-**get** PersonNode.memberships with an id of _root.id_
+**get** PersonNode.memberships with an id of root.id
 ### primaryTeam
-**get** PersonNode.memberships with an id of _root.id_
+**get** PersonNode.memberships with an id of root.id
 ### fundraisingTotalAmount
-**get** PersonNode.fundraisingAssignments with an id of _root.id_
+**get** PersonNode.fundraisingAssignments with an id of root.id
 ### fundraisingAssignments
-**list** PersonNode.fundraisingAssignments with an id of _root.id_
+**list** PersonNode.fundraisingAssignments with an id of root.id
 ### hasPassword
-**get** PersonNode.password with an id of _root.id_
+**get** PersonNode.password with an id of root.id
 ### setPassword
 **update** PersonNode.password with an id of _args.id_
 ## PointEntryResolver
 ### pointEntry
-**get** PointEntryNode. with an id of _args.id_
+**get** PointEntryNode with an id of _args.id_
 ### pointEntries
-**list** every PointEntryNode.
+**list** every PointEntryNode
 ### createPointEntry
-**create** every PointEntryNode.
+**create** every PointEntryNode
 ### deletePointEntry
-**delete** PointEntryNode. with an id of _args.id_
+**delete** PointEntryNode with an id of _args.id_
 ## PointOpportunityResolver
 ### pointOpportunity
-**get** PointOpportunityNode. with an id of _args.id_
+**get** PointOpportunityNode with an id of _args.id_
 ### pointOpportunities
-**list** every PointOpportunityNode.
+**list** every PointOpportunityNode
 ### createPointOpportunity
-**create** every PointOpportunityNode.
+**create** every PointOpportunityNode
 ### setPointOpportunity
-**update** PointOpportunityNode. with an id of _args.id_
+**update** PointOpportunityNode with an id of _args.id_
 ### deletePointOpportunity
-**delete** PointOpportunityNode. with an id of _args.id_
+**delete** PointOpportunityNode with an id of _args.id_
 ## TeamResolver
 ### team
-**get** TeamNode. with an id of _args.id_
+**get** TeamNode with an id of _args.id_
 ### teams
-**list** every TeamNode.
+**list** every TeamNode
 ### createTeam
-**create** every TeamNode.
+**create** every TeamNode
 ### setTeam
-**update** TeamNode. with an id of _args.id_
+**update** TeamNode with an id of _args.id_
 ### createTeams
-**create** every TeamNode.
+**create** every TeamNode
 ### deleteTeam
-**delete** TeamNode. with an id of _args.id_
+**delete** TeamNode with an id of _args.id_
 ### members
-**get** TeamNode. with an id of _root.id_
+**get** TeamNode with an id of root.id
 ### pointEntries
-**get** every TeamNode.
+**get** every TeamNode
 ### fundraisingTotalAmount
-**get** TeamNode.fundraisingTotal with an id of _root.id_
+**get** TeamNode.fundraisingTotal with an id of root.id
 ### fundraisingEntries
-**list** TeamNode.fundraisingEntries with an id of _root.id_
+**list** TeamNode.fundraisingEntries with an id of root.id
 ### solicitationCode
-**get** TeamNode.solicitationCode with an id of _root.id_
+**get** TeamNode.solicitationCode with an id of root.id
 ## DailyDepartmentNotificationResolver
 ### dailyDepartmentNotification
-**get** DailyDepartmentNotificationNode. with an id of _args.id_
+**get** DailyDepartmentNotificationNode with an id of _args.id_
 ### dailyDepartmentNotifications
-**list** every DailyDepartmentNotificationNode.
+**list** every DailyDepartmentNotificationNode
 ### createDailyDepartmentNotification
-**create** every DailyDepartmentNotificationNode.
+**create** every DailyDepartmentNotificationNode
 ### batchUploadDailyDepartmentNotifications
-**create** every DailyDepartmentNotificationNode.
+**create** every DailyDepartmentNotificationNode
 ### deleteDailyDepartmentNotification
-**delete** DailyDepartmentNotificationNode. with an id of _args.id_
+**delete** DailyDepartmentNotificationNode with an id of _args.id_
 ## DailyDepartmentNotificationBatchResolver
 ### dailyDepartmentNotificationBatch
-**get** DailyDepartmentNotificationBatchNode. with an id of _args.id_
+**get** DailyDepartmentNotificationBatchNode with an id of _args.id_
 ### deleteDailyDepartmentNotificationBatch
-**list** every DailyDepartmentNotificationBatchNode.
+**list** every DailyDepartmentNotificationBatchNode
 ## FeedResolver
 ### feedItem
-**get** FeedNode. with an id of _args.feedItemId_
+**get** FeedNode with an id of _args.feedItemId_
 ### feed
-**readActive** every FeedNode.
+**readActive** every FeedNode
 ### createFeedItem
-**create** every FeedNode.
+**create** every FeedNode
 ### attachImageToFeedItem
-**update** FeedNode. with an id of _args.feedItemUuid_
+**update** FeedNode with an id of _args.feedItemUuid_
 ### removeImageFromFeedItem
-**update** FeedNode. with an id of _args.feedItemUuid_
+**update** FeedNode with an id of _args.feedItemUuid_
 ### setFeedItem
-**update** FeedNode. with an id of _args.feedItemUuid_
+**update** FeedNode with an id of _args.feedItemUuid_
 ### deleteFeedItem
-**delete** custom function (.):
+**delete** custom function ():
 ```js
 (_, { feedItemUuid }) => assertGlobalId(feedItemUuid).map(({ id }) => ({ kind: "FeedNode", id }))
 ```
 ## SolicitationCodeResolver
 ### solicitationCode
-**get** SolicitationCodeNode. with an id of _args.id_
+**get** SolicitationCodeNode with an id of _args.id_
 ### solicitationCodes
-**list** every SolicitationCodeNode.
+**list** every SolicitationCodeNode
 ### createSolicitationCode
-**create** every SolicitationCodeNode.
+**create** every SolicitationCodeNode
 ### setSolicitationCode
-**update** SolicitationCodeNode. with an id of _args.id_
+**update** SolicitationCodeNode with an id of _args.id_
 ### entries
-**list** every FundraisingEntryNode.
+**list** every FundraisingEntryNode
 ### teams
-**list** every TeamNode.
+**list** every TeamNode
 ### assignSolicitationCodeToTeam
 **update** TeamNode.solicitationCode with an id of _args.teamId_
 ### removeSolicitationCodeFromTeam
 **update** TeamNode.solicitationCode with an id of _args.teamId_
 ## NodeResolver
 ### node
-**get** custom function (.):
+**get** custom function ():
 ```js
 (_info, { id }) => {
         return assertGlobalId(id).andThen((globalId) => {
@@ -395,11 +395,11 @@ This document lists the required permissions for each GraphQL endpoint in the Da
 ```
 ## AuditLogResolver
 ### auditLogs
-**read** every AuditLogNode.
+**read** every AuditLogNode
 ### subject
 **read** all
 ### subjectJson
 **read** all
 ## ReportResolver
 ### fundraisingReport
-**list** every FundraisingEntryNode.
+**list** every FundraisingEntryNode

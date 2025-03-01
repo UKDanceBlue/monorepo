@@ -80,6 +80,7 @@
     "pg-hstore": "^2.3.4",
     "postgres-interval": "^4.0.2",
     "postgres-range": "^1.1.4",
+    "prettier": "^3.5.2",
     "prisma": "^6.2.1",
     "prisma-markdown": "^1.0.9",
     "reflect-metadata": "^0.2.2",

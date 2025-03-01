@@ -171,9 +171,7 @@ export class PersonResolver
     @Ctx() { accessLevel }: GraphQLContext
   ): Promise<ConcreteResult<PersonNode>> {
     if (
-      (input.memberOf ?? []).some(
-        ({ committeeRole }) => committeeRole != null
-      ) &&
+      input.memberOf.some(({ committeeRole }) => committeeRole != null) &&
       accessLevel < AccessLevel.Admin
     ) {
       return Err(
@@ -182,9 +180,7 @@ export class PersonResolver
         )
       );
     } else if (
-      (input.captainOf ?? []).some(
-        ({ committeeRole }) => committeeRole != null
-      ) &&
+      input.captainOf.some(({ committeeRole }) => committeeRole != null) &&
       accessLevel < AccessLevel.Admin
     ) {
       return Err(
@@ -198,11 +194,11 @@ export class PersonResolver
       name: input.name,
       email: input.email,
       linkblue: input.linkblue?.toLowerCase(),
-      memberOf: input.memberOf?.map(({ id: { id }, committeeRole }) => ({
+      memberOf: input.memberOf.map(({ id: { id }, committeeRole }) => ({
         uuid: id,
         committeeRole,
       })),
-      captainOf: input.captainOf?.map(({ id: { id }, committeeRole }) => ({
+      captainOf: input.captainOf.map(({ id: { id }, committeeRole }) => ({
         uuid: id,
         committeeRole,
       })),
