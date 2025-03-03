@@ -44,6 +44,7 @@ export class SentryTransport extends LoggerTransport {
           message: debugStringify(messageString),
           ...context,
         },
+        level: logLevelToString(level),
       });
     } else {
       Sentry.addBreadcrumb(

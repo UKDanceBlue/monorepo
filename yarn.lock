@@ -12590,7 +12590,7 @@ __metadata:
     http-status-codes: "npm:^2.3.0"
     luxon: "npm:^3.5.0"
     reflect-metadata: "npm:^0.2.2"
-    ts-results-es: "npm:^4.2.0"
+    ts-results-es: "npm:^5.0.1"
     type-graphql: "npm:^2.0.0-rc.2"
     typedi: "npm:^0.10.0"
     typescript: "npm:^5.7.3"
@@ -12855,7 +12855,7 @@ __metadata:
     superjson: "npm:^2.2.2"
     thumbhash: "npm:^0.1.1"
     ts-node: "npm:^10.9.2"
-    ts-results-es: "npm:^4.2.0"
+    ts-results-es: "npm:^5.0.1"
     type-graphql: "npm:^2.0.0-rc.2"
     typedi: "npm:^0.10.0"
     typescript: "npm:^5.7.3"
@@ -12943,7 +12943,7 @@ __metadata:
     sharp: "npm:^0.33.5"
     thumbhash: "npm:^0.1.1"
     ts-node: "npm:^10.9.2"
-    ts-results-es: "npm:^4.2.0"
+    ts-results-es: "npm:^5.0.1"
     turndown: "npm:^7.2.0"
     type-graphql: "npm:^2.0.0-rc.2"
     typescript: "npm:^5.7.3"
@@ -32884,10 +32884,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ts-results-es@npm:^4.2.0":
-  version: 4.2.0
-  resolution: "ts-results-es@npm:4.2.0"
-  checksum: 10/d438a09419ec621b5bf092534104df285b343866fdbb3afb91e6fd6225f48b78ea5755da055aaf4143f4aa695588e4babd71aecd0bd758b12655cf874e7b2b06
+"ts-results-es@npm:^5.0.1":
+  version: 5.0.1
+  resolution: "ts-results-es@npm:5.0.1"
+  checksum: 10/8bd7ee6df3f2995f4bd879006f9d04f7489b6bee14b02ada2f960585657e5584c9d2fa949bd7901790eb0562d8acaf40b1caeaa93608d001062c9b45d293b2c0
   languageName: node
   linkType: hard
 
