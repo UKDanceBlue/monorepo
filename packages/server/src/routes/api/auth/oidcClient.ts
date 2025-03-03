@@ -20,7 +20,10 @@ export class OidcClient {
 
   private oidcConfiguration = new CachedValue<Configuration>(
     this.fetchOidcConfiguration.bind(this),
-    Duration.fromObject({ days: 10 })
+    Duration.fromObject({ days: 10 }),
+    {
+      debugName: "OIDC Configuration",
+    }
   );
 
   async getOidcConfiguration(): Promise<Configuration> {
