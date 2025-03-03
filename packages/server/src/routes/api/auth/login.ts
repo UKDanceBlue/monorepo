@@ -1,5 +1,5 @@
 import { AuthSource } from "@ukdanceblue/common";
-import { ErrorCode } from "@ukdanceblue/common/error";
+import { ErrorCode, toBasicError } from "@ukdanceblue/common/error";
 import type { NextFunction, Request, Response } from "express";
 import {
   buildAuthorizationUrl,
@@ -7,13 +7,14 @@ import {
 } from "openid-client";
 import { AsyncResult } from "ts-results-es";
 
+import { captureExtendedError } from "#lib/captureExtendedError.js";
 import { getHostUrl } from "#lib/host.js";
 import { LoginFlowRepository } from "#repositories/LoginFlowSession.js";
 import { personModelToResource } from "#repositories/person/personModelToResource.js";
 import { PersonRepository } from "#repositories/person/PersonRepository.js";
 import { SessionRepository } from "#repositories/Session.js";
 
-import { oidcConfiguration } from "./oidcClient.js";
+import { OidcClient } from "./oidcClient.js";
 
 function getStringQueryParameter(
   req: Request,
@@ -32,7 +33,14 @@ export const login = async (
   res: Response,
   next: NextFunction
 ): Promise<void> => {
-  if (!oidcConfiguration) {
+  const oidcClient = req.getService(OidcClient);
+  const loginFlowSessionRepository = req.getService(LoginFlowRepository);
+
+  let oidcConfiguration;
+  try {
+    oidcConfiguration = await oidcClient.getOidcConfiguration();
+  } catch (error) {
+    captureExtendedError(toBasicError(error));
     res.status(503).json({
       error: {
         message: "OIDC configuration not available",
@@ -42,8 +50,6 @@ export const login = async (
   }
 
   try {
-    const loginFlowSessionRepository = req.getService(LoginFlowRepository);
-
     const redirectTo = getStringQueryParameter(req, "redirectTo");
     if (!redirectTo) {
       return void res.status(400).send("Missing redirectTo query parameter");

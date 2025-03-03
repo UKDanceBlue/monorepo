@@ -2,26 +2,37 @@ import { AuthSource, type PersonNode } from "@ukdanceblue/common";
 import {
   type ExtendedError,
   InvalidArgumentError,
+  toBasicError,
 } from "@ukdanceblue/common/error";
 import type { NextFunction, Request, Response } from "express";
 import jsonwebtoken from "jsonwebtoken";
 import { authorizationCodeGrant, type JsonValue } from "openid-client";
 import { Err, type Result } from "ts-results-es";
 
+import { captureExtendedError } from "#lib/captureExtendedError.js";
 import { getHostUrl } from "#lib/host.js";
 import { LoginFlowRepository } from "#repositories/LoginFlowSession.js";
 import { personModelToResource } from "#repositories/person/personModelToResource.js";
 import { PersonRepository } from "#repositories/person/PersonRepository.js";
 import { SessionRepository } from "#repositories/Session.js";
 
-import { oidcConfiguration } from "./oidcClient.js";
+import { OidcClient } from "./oidcClient.js";
 
 export const oidcCallback = async (
   req: Request,
   res: Response,
   next: NextFunction
 ): Promise<void> => {
-  if (!oidcConfiguration) {
+  const oidcClient = req.getService(OidcClient);
+  const personRepository = req.getService(PersonRepository);
+  const loginFlowRepository = req.getService(LoginFlowRepository);
+  const sessionRepository = req.getService(SessionRepository);
+
+  let oidcConfiguration;
+  try {
+    oidcConfiguration = await oidcClient.getOidcConfiguration();
+  } catch (error) {
+    captureExtendedError(toBasicError(error));
     res.status(503).json({
       error: {
         message: "OIDC configuration not available",
@@ -31,10 +42,6 @@ export const oidcCallback = async (
   }
 
   let sessionDeleted = true;
-
-  const personRepository = req.getService(PersonRepository);
-  const loginFlowRepository = req.getService(LoginFlowRepository);
-  const sessionRepository = req.getService(SessionRepository);
 
   let flowSessionId;
   try {

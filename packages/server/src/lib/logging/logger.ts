@@ -2,7 +2,7 @@
 
 import type { ExtendedError } from "@ukdanceblue/common/error";
 
-import { captureError } from "#lib/captureExtendedError.js";
+import { captureExtendedError } from "#lib/captureExtendedError.js";
 
 import { logger } from "./standardLogging.js";
 
@@ -11,5 +11,5 @@ export { logFatal, logger } from "./standardLogging.js";
 
 export function logError(error: ExtendedError, message?: string) {
   logger.error(message ?? String(error), { error });
-  captureError(error);
+  captureExtendedError(error);
 }
