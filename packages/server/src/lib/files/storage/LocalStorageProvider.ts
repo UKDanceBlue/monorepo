@@ -128,7 +128,7 @@ export class LocalStorageProvider
             break;
           }
           case "stream": {
-            await new Promise((resolve, reject) => {
+            await new Promise<void>((resolve, reject) => {
               file.stream
                 .pipe(handle.createWriteStream({ autoClose: true }))
                 .on("finish", resolve)
