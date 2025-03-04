@@ -1,13 +1,12 @@
 import { Service } from "@freshgum/typedi";
 
-import type { InsagramApi } from "#lib/external-apis/feed/instagramfeed.js";
-import { PrismaService } from "#lib/prisma.js";
+import { InsagramApi } from "#lib/external-apis/feed/instagramfeed.js";
 import { logger } from "#logging/standardLogging.js";
 import { JobStateRepository } from "#repositories/JobState.js";
 
 import { Job } from "./Job.js";
 
-@Service([JobStateRepository, PrismaService])
+@Service([JobStateRepository, InsagramApi])
 export class RefreshInstagreamTokenJob extends Job {
   constructor(
     protected readonly jobStateRepository: JobStateRepository,
