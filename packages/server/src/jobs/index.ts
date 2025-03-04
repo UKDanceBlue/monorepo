@@ -7,6 +7,7 @@ import { GarbageCollectLoginFlowSessionsJob } from "./garbageCollectLogins.js";
 import { GetBBNEventsJob } from "./getBBNEvents.js";
 import { HousekeepingJob } from "./housekeeping.js";
 import { NotificationScheduler } from "./NotificationScheduler.js";
+import { RefreshInstagreamTokenJob } from "./refreshInstagramAccess.js";
 
 logger.info("Jobs started");
 
@@ -16,6 +17,7 @@ logger.info("Jobs started");
   GetBBNEventsJob,
   HousekeepingJob,
   NotificationScheduler,
+  RefreshInstagreamTokenJob,
 ])
 export class JobScheduler {
   constructor(
@@ -23,7 +25,8 @@ export class JobScheduler {
     protected readonly garbageCollectLoginFlowSessionsJob: GarbageCollectLoginFlowSessionsJob,
     protected readonly getBBNEventsJob: GetBBNEventsJob,
     protected readonly housekeepingJob: HousekeepingJob,
-    protected readonly notificationScheduler: NotificationScheduler
+    protected readonly notificationScheduler: NotificationScheduler,
+    protected readonly refreshInstagreamTokenJob: RefreshInstagreamTokenJob
   ) {}
 
   async start() {
@@ -32,5 +35,6 @@ export class JobScheduler {
     await this.getBBNEventsJob.start();
     await this.housekeepingJob.start();
     await this.notificationScheduler.start();
+    await this.refreshInstagreamTokenJob.start();
   }
 }

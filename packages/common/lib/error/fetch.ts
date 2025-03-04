@@ -7,15 +7,23 @@ import { ErrorCode } from "./index.js";
 
 export class FetchError extends ExtendedError {
   #responseText: string | undefined = undefined;
+  #url: string | undefined = undefined;
 
   constructor(
     public readonly response: Response,
-    public readonly url?: string | URL
+    url?: string | URL
   ) {
     super(
       `Fetch failed with status ${response.status}: ${response.statusText}`,
       ErrorCode.FetchError.description
     );
+    if (url != null) {
+      this.#url = url.toString();
+    }
+  }
+
+  get url(): string | undefined {
+    return this.#url ?? this.response.url;
   }
 
   get detailedMessage(): string {

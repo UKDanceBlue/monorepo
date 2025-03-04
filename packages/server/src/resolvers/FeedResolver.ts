@@ -67,7 +67,9 @@ export class FeedResolver {
     const instagramFeedResult = await this.instagramApi.getFeed(limit).promise;
     let instagramFeed: InstagramFeedNode[];
     if (instagramFeedResult.isErr()) {
-      logger.error(instagramFeedResult.error[0].toString());
+      logger.error("Error with Instagram API", {
+        error: instagramFeedResult.error[0],
+      });
       instagramFeed = instagramFeedResult.error[1] ?? [];
     } else {
       instagramFeed = instagramFeedResult.value;

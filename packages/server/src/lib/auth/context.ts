@@ -1,5 +1,4 @@
 import type { ContextFunction } from "@apollo/server";
-import type { ExpressContextFunctionArgument } from "@apollo/server/express4";
 import { Container } from "@freshgum/typedi";
 import { CommitteeRole, type Person, type Session } from "@prisma/client";
 import type {
@@ -17,6 +16,7 @@ import {
 } from "@ukdanceblue/common";
 import type { ConcreteResult } from "@ukdanceblue/common/error";
 import { ErrorCode } from "@ukdanceblue/common/error";
+import type { Request } from "express";
 import { Ok } from "ts-results-es";
 
 import { getHostUrl } from "#lib/host.js";
@@ -97,9 +97,9 @@ async function getUserInfo(
 }
 
 export const authenticate: ContextFunction<
-  [ExpressContextFunctionArgument],
+  [{ req: Request }],
   GraphQLContext
-> = async ({ req }): Promise<GraphQLContext> => {
+> = async ({ req }: { req: Request }): Promise<GraphQLContext> => {
   const { person, authSource } = req.session ?? {
     authSource: AuthSource.None,
     person: null,

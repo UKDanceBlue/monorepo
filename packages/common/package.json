@@ -15,16 +15,16 @@
   "type": "module",
   "exports": {
     ".": {
-      "import": "./dist/index.js",
-      "types": "./dist/index.d.ts"
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
     },
     "./client-parsers": {
-      "import": "./dist/client-parsers/index.js",
-      "types": "./dist/client-parsers/index.d.ts"
+      "types": "./dist/client-parsers/index.d.ts",
+      "default": "./dist/client-parsers/index.js"
     },
     "./error": {
-      "import": "./dist/error/index.js",
-      "types": "./dist/error/index.d.ts"
+      "types": "./dist/error/index.d.ts",
+      "default": "./dist/error/index.js"
     }
   },
   "main": "./dist/index.js",
@@ -45,7 +45,7 @@
     "http-status-codes": "^2.3.0",
     "luxon": "^3.5.0",
     "reflect-metadata": "^0.2.2",
-    "ts-results-es": "^4.2.0",
+    "ts-results-es": "^5.0.1",
     "type-graphql": "^2.0.0-rc.2",
     "typedi": "^0.10.0",
     "utility-types": "^3.11.0",
