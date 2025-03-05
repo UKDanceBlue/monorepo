@@ -2344,7 +2344,9 @@ type Query {
   report(
     from: LuxonDateTime
     report: NonEmptyString!
+    requireAllTags: Boolean
     solicitationCodeIds: [GlobalId!]
+    solicitationCodeTags: [SolicitationCodeTag!]
     to: LuxonDateTime
   ): Report
 

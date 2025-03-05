@@ -1,8 +1,11 @@
+import { IsBoolean, ValidateIf } from "class-validator";
 import { GraphQLNonEmptyString } from "graphql-scalars";
 import { DateTime } from "luxon";
 import { ArgsType, Field, ObjectType } from "type-graphql";
 
 import { Primitive } from "../../utility/primitive/TypeUtils.js";
+import { SolicitationCodeTag } from "../resources/SolicitationCode.js";
+import { TeamType } from "../resources/Team.js";
 import { DateTimeScalar } from "../scalars/DateTimeISO.js";
 import { type GlobalId, GlobalIdScalar } from "../scalars/GlobalId.js";
 import {
@@ -67,7 +70,7 @@ export class Report {
 }
 
 @ArgsType()
-export class ReportArgs {
+export class FundraisingReportArgs {
   @IsBeforeDateTime("to")
   @Field(() => DateTimeScalar, { nullable: true })
   from?: DateTime | null | undefined;
@@ -78,6 +81,40 @@ export class ReportArgs {
 
   @Field(() => [GlobalIdScalar], { nullable: true })
   solicitationCodeIds?: GlobalId[] | null;
+
+  @Field(() => [SolicitationCodeTag], { nullable: true })
+  solicitationCodeTags?: SolicitationCodeTag[] | null;
+
+  @ValidateIf((o: FundraisingReportArgs) => o.solicitationCodeTags != null)
+  @IsBoolean({
+    message:
+      "If solicitationCodeTags is provided, requireAllTags must also be provided",
+  })
+  @Field(() => Boolean, { nullable: true })
+  requireAllTags?: boolean | null;
+
+  @Field(() => GraphQLNonEmptyString, { nullable: false })
+  report!: string;
+}
+
+@ArgsType()
+export class TeamReportArgs {
+  @IsBeforeDateTime("to")
+  @Field(() => DateTimeScalar, { nullable: true })
+  from?: DateTime | null | undefined;
+
+  @IsAfterDateTime("from")
+  @Field(() => DateTimeScalar, { nullable: true })
+  to?: DateTime | null | undefined;
+
+  @Field(() => [GlobalIdScalar], { nullable: true })
+  marathonYears?: GlobalId[] | null;
+
+  @Field(() => [GlobalIdScalar], { nullable: true })
+  teamIds?: GlobalId[] | null;
+
+  @Field(() => [TeamType], { nullable: true })
+  teamTypes?: TeamType[] | null;
 
   @Field(() => GraphQLNonEmptyString, { nullable: false })
   report!: string;
