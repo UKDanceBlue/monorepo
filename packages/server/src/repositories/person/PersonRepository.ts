@@ -50,6 +50,7 @@ import {
   buildDefaultRepository,
   type FindAndCountParams,
   type FindAndCountResult,
+  type FindOneParams,
 } from "#repositories/Default.js";
 import {
   MarathonRepository,
@@ -178,6 +179,14 @@ export class PersonRepository extends buildDefaultRepository<
     } catch (error) {
       return handleRepositoryError(error);
     }
+  }
+
+  findOne({ tx, by }: FindOneParams<UniquePersonParam>) {
+    return this.handleQueryError(
+      (tx ?? this.prisma).person.findUnique({
+        where: this.uniqueToWhere(by),
+      })
+    ).map(optionOf);
   }
 
   async findPersonAndTeamsByUnique(

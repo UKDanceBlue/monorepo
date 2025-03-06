@@ -10,6 +10,7 @@ import { asyncResultAll } from "@ukdanceblue/common";
 import {
   InvariantError,
   NotFoundError,
+  optionOf,
   UnknownError,
 } from "@ukdanceblue/common/error";
 import { AsyncResult, type Option } from "ts-results-es";
@@ -274,11 +275,12 @@ export function buildDefaultRepository<
     }
 
     protected mapToNotFound<T>(
-      val: Option<T>,
+      this: void,
+      val: Option<T> | T | undefined | null,
       ...params: ConstructorParameters<typeof NotFoundError>
     ): Result<T, NotFoundError> {
       return NotFoundError.fromOption(
-        val,
+        optionOf(val),
         params[0] ?? "field",
         params[1] ?? `${tableName}Repository`
       );

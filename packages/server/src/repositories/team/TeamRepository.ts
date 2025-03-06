@@ -21,6 +21,7 @@ import {
   buildDefaultRepository,
   type FindAndCountParams,
   type FindAndCountResult,
+  type FindOneParams,
 } from "#repositories/Default.js";
 import { type UniqueMarathonParam } from "#repositories/marathon/MarathonRepository.js";
 import {
@@ -66,6 +67,14 @@ export class TeamRepository extends buildDefaultRepository<
 
   public uniqueToWhere(by: TeamUniqueParam) {
     return TeamRepository.simpleUniqueToWhere(by);
+  }
+
+  findOne({ by, tx }: FindOneParams<SimpleUniqueParam>) {
+    return this.handleQueryError(
+      (tx ?? this.prisma).teamWithMeta.findUnique({
+        where: this.uniqueToWhere(by),
+      })
+    ).map(optionOf);
   }
 
   /**

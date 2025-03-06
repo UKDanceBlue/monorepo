@@ -463,9 +463,12 @@ export class Seed extends EntryPoint {
           probability: 0.8,
         }
       ),
-      personParam: {
-        id: faker.helpers.arrayElement(members.get(team)!).id,
-      },
+      personParam: faker.helpers.maybe(
+        () => ({
+          id: faker.helpers.arrayElement(members.get(team)!).id,
+        }),
+        { probability: 0.9 }
+      ),
     });
   }
 
