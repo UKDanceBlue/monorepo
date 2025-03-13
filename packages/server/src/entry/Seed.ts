@@ -18,6 +18,7 @@ import {
   CommitteeRole,
   type LocalDate,
   MembershipPositionType,
+  SolicitationCodeTag,
   TeamLegacyStatus,
   TeamType,
 } from "@ukdanceblue/common";
@@ -856,6 +857,14 @@ export class Seed extends EntryPoint {
         code: faker.number.int({ min: 1000, max: 9999 }),
         prefix: faker.string.alpha({ length: { min: 2, max: 4 } }),
         name: faker.lorem.words({ min: 2, max: 6 }),
+        tags: faker.helpers.arrayElement([
+          [SolicitationCodeTag.DancerTeam],
+          [SolicitationCodeTag.General],
+          [SolicitationCodeTag.MiniMarathon],
+          [SolicitationCodeTag.DancerTeam, SolicitationCodeTag.Active],
+          [SolicitationCodeTag.General, SolicitationCodeTag.Active],
+          [SolicitationCodeTag.MiniMarathon, SolicitationCodeTag.Active],
+        ]),
       })
     ).unwrap();
   }

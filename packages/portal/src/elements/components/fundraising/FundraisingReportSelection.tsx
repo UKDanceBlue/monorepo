@@ -1,5 +1,11 @@
-import { getFiscalYear } from "@ukdanceblue/common";
-import { Form, Select } from "antd";
+import {
+  getFiscalYear,
+  SolicitationCodeTag,
+  solicitationCodeTagColors,
+  sortSolicitationCodeTags,
+  stringifySolicitationCodeTag,
+} from "@ukdanceblue/common";
+import { Divider, Flex, Form, Select, Switch, Tag } from "antd";
 import { DateTime, Interval } from "luxon";
 import { useEffect, useMemo } from "react";
 import type { ColInfo, WorkBook, WorkSheet } from "xlsx";
@@ -76,7 +82,14 @@ export type ReportConfigFormat = "csv" | "xlsx" | "numbers" | "html";
 interface ReportConfig {
   format: ReportConfigFormat;
   dateRange: DateRangeType;
-  solicitationCodes?: string[];
+  solicitationCodeSelection?:
+    | {
+        tags: SolicitationCodeTag[];
+        all: boolean;
+      }
+    | {
+        ids: string[];
+      };
   customDateRange?: [DateTime, DateTime];
   reportType: ReportType;
 }
@@ -106,12 +119,16 @@ const fundraisingReportDialogDocument = graphql(/* GraphQL */ `
     $from: LuxonDateTime
     $to: LuxonDateTime
     $solicitationCodeIds: [GlobalId!]
+    $solicitationCodeTags: [SolicitationCodeTag!]
+    $requireAllTags: Boolean
   ) {
     report(
       report: $report
       from: $from
       to: $to
       solicitationCodeIds: $solicitationCodeIds
+      solicitationCodeTags: $solicitationCodeTags
+      requireAllTags: $requireAllTags
     ) {
       pages {
         title
@@ -143,7 +160,7 @@ export function FundraisingReportSelection({
   const reportType = Form.useWatch("reportType", form);
   const dateRange = Form.useWatch("dateRange", form);
   const customDate = Form.useWatch("customDateRange", form);
-  const solicitationCodes = Form.useWatch("solicitationCodes", form);
+  const solicitationCodes = Form.useWatch("solicitationCodeSelection", form);
 
   const [range, now, dates] = useMemo(() => {
     const now = DateTime.now();
@@ -174,37 +191,22 @@ export function FundraisingReportSelection({
           : Interval.isInterval(range)
             ? range.end?.toISO()
             : undefined,
-      solicitationCodeIds: solicitationCodes?.length ? solicitationCodes : null,
+
+      solicitationCodeIds:
+        solicitationCodes && "ids" in solicitationCodes
+          ? solicitationCodes.ids
+          : undefined,
+
+      solicitationCodeTags:
+        solicitationCodes && "tags" in solicitationCodes
+          ? solicitationCodes.tags
+          : undefined,
+      requireAllTags:
+        solicitationCodes && "tags" in solicitationCodes
+          ? solicitationCodes.all
+          : undefined,
     },
     pause: dateRange === "custom" && !customDate,
-  });
-
-  const { selectProps } = useTypedSelect({
-    fragment: SolicitationCodeSelectFragment,
-    props: {
-      sorters: [
-        {
-          field: "text",
-          order: "asc",
-        },
-      ],
-      resource: "solicitationCode",
-      optionLabel(item) {
-        return item.text;
-      },
-      optionValue(item) {
-        return item.id;
-      },
-      onSearch(value) {
-        return [
-          {
-            field: "text",
-            operator: "contains",
-            value,
-          },
-        ];
-      },
-    },
   });
 
   useQueryStatusWatcher(result);
@@ -321,17 +323,111 @@ export function FundraisingReportSelection({
           </Select.Option>
         </Select>
       </Form.Item>
-      <Form.Item label="Solicitation Codes" name="solicitationCodes">
-        <Select
-          mode="multiple"
-          {...selectProps}
-          disabled={
-            !["summary", "totals-by-day", "totals-by-donated-to"].includes(
-              reportType
-            )
-          }
-        />
+      <Form.Item label="Solicitation Codes" name="solicitationCodeSelection">
+        <SolicitationCodeSelect />
       </Form.Item>
     </Form>
+  );
+}
+
+function SolicitationCodeSelect({
+  value,
+  onChange,
+  id,
+}: {
+  value?: ReportConfig["solicitationCodeSelection"];
+  onChange?: (value: ReportConfig["solicitationCodeSelection"]) => void;
+  id?: string;
+}) {
+  const { selectProps } = useTypedSelect({
+    fragment: SolicitationCodeSelectFragment,
+    props: {
+      sorters: [
+        {
+          field: "text",
+          order: "asc",
+        },
+      ],
+      resource: "solicitationCode",
+      optionLabel(item) {
+        return item.text;
+      },
+      optionValue(item) {
+        return item.id;
+      },
+      onSearch(value) {
+        return [
+          {
+            field: "text",
+            operator: "contains",
+            value,
+          },
+        ];
+      },
+    },
+  });
+
+  return (
+    <Flex id={id} vertical>
+      <p>
+        Select particular solicitation codes, or select tags to include all
+        solicitation codes with those tags. If you select multiple tags, you can
+        choose whether to include all or any of them.
+      </p>
+
+      <p>Select by tag</p>
+      <Flex align="center" gap="small">
+        <Switch
+          checkedChildren="All"
+          unCheckedChildren="Any"
+          onChange={(all) => {
+            onChange?.({
+              tags: value && "tags" in value ? value.tags : [],
+              all,
+            });
+          }}
+        />
+        <Select
+          mode="tags"
+          showSearch={false}
+          options={sortSolicitationCodeTags(
+            Object.values(SolicitationCodeTag)
+          ).map((tag) => ({
+            label: stringifySolicitationCodeTag(tag),
+            value: tag,
+          }))}
+          value={value && "tags" in value ? value.tags : undefined}
+          onChange={(tags) => {
+            onChange?.({
+              tags: sortSolicitationCodeTags(tags),
+              all: false,
+            });
+          }}
+          tagRender={({ label, value, closable, onClose }) => (
+            <Tag
+              color={solicitationCodeTagColors[value as SolicitationCodeTag]}
+              closable={closable}
+              onClose={onClose}
+            >
+              {label}
+            </Tag>
+          )}
+        />
+      </Flex>
+      <Divider />
+      <p>Select by individual Solicitation Code</p>
+      {/* @ts-expect-error - It's fine, I'll fix it later (famous last words) */}
+      <Select
+        mode="multiple"
+        {...selectProps}
+        defaultValue={value && "ids" in value ? value.ids : undefined}
+        value={value && "ids" in value ? value.ids : undefined}
+        onChange={(ids) => {
+          onChange?.({
+            ids,
+          });
+        }}
+      />
+    </Flex>
   );
 }

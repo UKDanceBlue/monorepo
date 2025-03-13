@@ -1,8 +1,8 @@
 import type { Result } from "ts-results-es";
 import { AsyncResult, Ok } from "ts-results-es";
 
-import { type ExtendedError } from "../error";
-import { asyncResultAll } from "./results/async";
+import { type ExtendedError } from "../error/index.js";
+import { asyncResultAll } from "./results/async.js";
 
 export function batchMap<T, R, E extends ExtendedError>(
   input: T[],

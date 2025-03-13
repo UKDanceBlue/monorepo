@@ -125,10 +125,12 @@ export class SolicitationCodeRepository extends buildDefaultRepository<
     prefix,
     code,
     name,
+    tags,
   }: {
     prefix: string;
     code: number;
     name?: string | null | undefined;
+    tags?: SolicitationCodeTag[] | null | undefined;
   }): Promise<Result<SolicitationCode, RepositoryError>> {
     try {
       return Ok(
@@ -137,6 +139,7 @@ export class SolicitationCodeRepository extends buildDefaultRepository<
             prefix,
             code,
             name: name ?? null,
+            tags: tags ?? undefined,
           },
         })
       );
