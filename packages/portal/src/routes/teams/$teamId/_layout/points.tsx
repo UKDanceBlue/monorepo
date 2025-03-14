@@ -4,9 +4,9 @@ import { Flex } from "antd";
 import { teamPagePointsDocument } from "#documents/team.js";
 import { PointEntryCreator } from "#elements/forms/point-entry/create/PointEntryCreator.js";
 import { PointEntryTable } from "#elements/tables/point-entry/PointEntryTable.js";
+import { useQuery } from "#hooks/refine/custom.js";
 import { useAuthorizationRequirement } from "#hooks/useLoginState.js";
 import { useQueryStatusWatcher } from "#hooks/useQueryStatusWatcher.js";
-import { useQuery } from "#hooks/refine/custom.js";
 
 function ViewTeamPoints() {
   const { teamId: teamUuid } = Route.useParams();

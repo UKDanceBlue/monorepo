@@ -15,8 +15,8 @@ import { useMarathon } from "#config/marathonContext.js";
 import { Authorized } from "#elements/components/Authorized.tsx";
 import { RefineSearchForm } from "#elements/components/RefineSearchForm.js";
 import { graphql } from "#gql/index.js";
-import { useAuthorizationRequirement } from "#hooks/useLoginState.js";
 import { useTypedTable } from "#hooks/refine/table.js";
+import { useAuthorizationRequirement } from "#hooks/useLoginState.js";
 
 export const TeamsTableFragment = graphql(/* GraphQL */ `
   fragment TeamsTableFragment on TeamNode {

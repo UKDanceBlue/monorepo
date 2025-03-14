@@ -10,9 +10,9 @@ import {
   FundraisingEntryTableFragment,
 } from "#elements/tables/fundraising/FundraisingEntriesTable";
 import { graphql } from "#gql/index.js";
+import { useTypedOne } from "#hooks/refine/one.js";
 import { useAuthorizationRequirement } from "#hooks/useLoginState.js";
 import { useQueryStatusWatcher } from "#hooks/useQueryStatusWatcher.js";
-import { useTypedOne } from "#hooks/refine/one.js";
 
 const TeamFundraisingEntriesDocument = graphql(
   /* GraphQL */ `

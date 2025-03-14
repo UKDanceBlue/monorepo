@@ -35,9 +35,9 @@ import {
 } from "#elements/tables/fundraising/FundraisingEntriesTable";
 import type { ResultOf, VariablesOf } from "#gql/index.js";
 import { graphql, readFragment } from "#gql/index.js";
+import { useTypedOne } from "#hooks/refine/one.js";
 import { useAntFeedback, useAskConfirm } from "#hooks/useAntFeedback";
 import { useQueryStatusWatcher } from "#hooks/useQueryStatusWatcher";
-import { useTypedOne } from "#hooks/refine/one.js";
 
 export const Route = createFileRoute(
   "/fundraising/solicitation-code/$solicitationCodeId/"

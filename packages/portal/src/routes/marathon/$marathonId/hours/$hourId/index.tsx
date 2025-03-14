@@ -10,6 +10,7 @@ import { LuxonDatePicker } from "#elements/components/antLuxonComponents.js";
 import { TanAntForm } from "#elements/components/form/TanAntForm.js";
 import type { TanAntChildInputProps } from "#elements/components/form/TanAntFormItem.js";
 import { TanAntFormItem } from "#elements/components/form/TanAntFormItem.js";
+import { MarkdownEditor } from "#elements/components/MarkdownEditor.tsx";
 import { graphql } from "#gql/index.js";
 import { useQueryStatusWatcher } from "#hooks/useQueryStatusWatcher.js";
 
@@ -135,20 +136,8 @@ function EditMarathonHourPage() {
           formApi={formApi}
           fieldProps={{}}
         >
-          {({
-            onChange,
-            value,
-            status,
-          }: TanAntChildInputProps<string | undefined>) => (
-            <>
-              {/* TODO: Convert to mdxeditor */}
-              <Input.TextArea
-                onChange={(e) => onChange(e.target.value)}
-                value={value}
-                placeholder="Hour instructions, etc."
-              />
-              {status && <div>{status}</div>}
-            </>
+          {({ onChange, value }: TanAntChildInputProps<string | undefined>) => (
+            <MarkdownEditor initialMarkdown={value} onChange={onChange} />
           )}
         </TanAntFormItem>
         <TanAntFormItem

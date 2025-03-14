@@ -6,8 +6,8 @@ import { SingleNotificationFragment } from "#documents/notification.js";
 import { NotificationDeliveriesTable } from "#elements/tables/notification/NotificationDeliveriesTable.js";
 import { NotificationViewer } from "#elements/viewers/notification/NotificationViewer.js";
 import { graphql } from "#gql/index.js";
-import { useQueryStatusWatcher } from "#hooks/useQueryStatusWatcher.js";
 import { useQuery } from "#hooks/refine/custom.js";
+import { useQueryStatusWatcher } from "#hooks/useQueryStatusWatcher.js";
 
 const notificationViewerDocument = graphql(
   /* GraphQL */ `

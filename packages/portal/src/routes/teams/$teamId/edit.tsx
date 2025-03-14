@@ -3,8 +3,8 @@ import { createFileRoute } from "@tanstack/react-router";
 import { TeamEditorFragment } from "#documents/team.js";
 import { TeamEditor } from "#elements/forms/team/edit/TeamEditor.js";
 import { graphql } from "#gql/index.js";
-import { useQueryStatusWatcher } from "#hooks/useQueryStatusWatcher.js";
 import { useQuery } from "#hooks/refine/custom.js";
+import { useQueryStatusWatcher } from "#hooks/useQueryStatusWatcher.js";
 
 const viewTeamPageDocument = graphql(
   /* GraphQL */ `

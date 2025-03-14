@@ -13,8 +13,8 @@ import { Authorized } from "#elements/components/Authorized.js";
 import { RefineSearchForm } from "#elements/components/RefineSearchForm.js";
 import { UploadPersonButton } from "#elements/forms/person/create/BulkPersonCreator.js";
 import { graphql } from "#gql/index.js";
-import { withAuthorized } from "#hooks/useLoginState.js";
 import { useTypedTable } from "#hooks/refine/table.js";
+import { withAuthorized } from "#hooks/useLoginState.js";
 
 const PeopleTableFragment = graphql(/* GraphQL */ `
   fragment PeopleTableFragment on PersonNode {

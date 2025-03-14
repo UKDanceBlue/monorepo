@@ -3,8 +3,8 @@ import { createFileRoute } from "@tanstack/react-router";
 import { PersonEditorFragment, TeamNameFragment } from "#documents/person.js";
 import { PersonEditor } from "#elements/forms/person/edit/PersonEditor.js";
 import { graphql } from "#gql/index.js";
-import { useQueryStatusWatcher } from "#hooks/useQueryStatusWatcher.js";
 import { useQuery } from "#hooks/refine/custom.js";
+import { useQueryStatusWatcher } from "#hooks/useQueryStatusWatcher.js";
 
 const viewPersonPageDocument = graphql(
   /* GraphQL */ `

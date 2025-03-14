@@ -23,7 +23,8 @@ export function ImagePicker({
 }: {
   onSelect: (
     imageUuid: string,
-    imageUrl: string | URL | null | undefined
+    imageUrl: string | URL | null | undefined,
+    altText?: string
   ) => void;
 }) {
   const [search, setSearch] = useState("");
@@ -71,6 +72,8 @@ export function ImagePicker({
     }
   }
 
+  const [previewVisible, setPreviewVisible] = useState<string>();
+
   return (
     <Flex
       gap="small"
@@ -99,11 +102,22 @@ export function ImagePicker({
                   width={100}
                   height={100}
                   preview={{
+                    visible: previewVisible === image.id,
+                    onVisibleChange(value) {
+                      setPreviewVisible(value ? image.id : undefined);
+                    },
                     toolbarRender: (node) => (
                       <Flex gap="small" vertical align="center">
                         <Button
                           type="primary"
-                          onClick={() => onSelect(image.id, image.url)}
+                          onClick={() => {
+                            setPreviewVisible(undefined);
+                            onSelect(
+                              image.id,
+                              image.url,
+                              image.alt ?? undefined
+                            );
+                          }}
                         >
                           Select
                         </Button>
