@@ -2,7 +2,7 @@ import { Image, type ImageSource, useImage } from "expo-image";
 import { openURL } from "expo-linking";
 import type { DateTime } from "luxon";
 import { type ReactNode, useState } from "react";
-import { View } from "react-native";
+import { useWindowDimensions, View } from "react-native";
 
 import { FontAwesome } from "~/lib/icons/FontAwesome";
 import { FontAwesome5 } from "~/lib/icons/FontAwesome5";
@@ -78,11 +78,13 @@ function FeedImage({
   source: ImageSource;
   className?: string;
 }) {
+  const { height } = useWindowDimensions();
+  const maxHeight = height * 0.7;
   const image = useImage(source);
   const [layout, setLayout] = useState({ width: 0, height: 0 });
 
   const calculatedHeight = image
-    ? (layout.width / image.width) * image.height
+    ? (layout.width / image.width) * Math.min(image.height, maxHeight)
     : 0;
 
   return (
@@ -94,6 +96,7 @@ function FeedImage({
       className={className}
     >
       <Image
+        contentFit="contain"
         source={image}
         style={{ width: layout.width, height: calculatedHeight }}
       />
@@ -162,11 +165,7 @@ export function FeedItem({
       <CardFooter>
         {buttons.map((button) =>
           "url" in button ? (
-            <Button
-              key={button.title}
-              onPress={() => openURL(button.url)}
-              href={button.url}
-            >
+            <Button key={button.title} onPress={() => openURL(button.url)}>
               {button.title}
             </Button>
           ) : (
