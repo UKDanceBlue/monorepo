@@ -11,29 +11,32 @@ interface FeatureItem {
 
 const FeatureList: FeatureItem[] = [
   {
-    title: "Easy to Use",
+    title: "Server",
     description: (
       <>
-        Docusaurus was designed from the ground up to be easily installed and
-        used to get your website up and running quickly.
+        DanceBlue's server is a Node.js application that serves a GraphQL API to
+        the client. The server is responsible for handling all of the business
+        logic and data storage for the application.
       </>
     ),
   },
   {
-    title: "Focus on What Matters",
+    title: "Mobile",
     description: (
       <>
-        Docusaurus lets you focus on your docs, and we&apos;ll do the chores. Go
-        ahead and move your docs into the <code>docs</code> directory.
+        DanceBlue's mobile application is built using React Native. The mobile
+        application is responsible for providing a native experience to users
+        and is designed to be used by team members throughout the year, and by
+        participants during the marathon.
       </>
     ),
   },
   {
-    title: "Powered by React",
+    title: "Portal",
     description: (
       <>
-        Extend or customize your website layout by reusing React. Docusaurus can
-        be extended while reusing the same header and footer.
+        The DanceBlue portal is a web application built using React. The portal
+        is designed to be used by committee members and team captains.
       </>
     ),
   },
