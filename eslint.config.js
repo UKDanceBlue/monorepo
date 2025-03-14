@@ -333,6 +333,18 @@ export default eslintTs.config(
     },
   },
   {
+    name: "Documentation-specific",
+    files: [
+      "packages/documentation/**/*.ts",
+      "packages/documentation/**/*.tsx",
+    ],
+    languageOptions: {
+      ecmaVersion: 2020,
+      sourceType: "module",
+      globals: { ...globals.es2020, ...globals.browser },
+    },
+  },
+  {
     name: "Mobile-specific",
     files: ["packages/mobile/**/*.ts", "packages/mobile/**/*.tsx"],
     languageOptions: {
@@ -360,20 +372,6 @@ export default eslintTs.config(
     files: ["packages/mobile/**/*.ts", "packages/mobile/**/*.tsx"],
     processor: graphqlPlugin.processor,
   },
-  // {
-  //   name: "GraphQL",
-  //   files: ["packages/**/*.graphql"],
-  //   languageOptions: {
-  //     parser: graphqlPlugin.parser,
-  //   },
-  //   plugins: {
-  //     "@graphql-eslint": graphqlPlugin,
-  //   },
-  //   rules: {
-  //     ...graphqlPlugin.configs["flat/operations-recommended"].rules,
-  //     "@graphql-eslint/require-selections": "off",
-  //   },
-  // },
   {
     name: "Server-specific",
     files: ["packages/server/src/**/*.ts"],
