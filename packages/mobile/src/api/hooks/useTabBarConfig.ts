@@ -28,7 +28,7 @@ export function useTabBarConfig(): {
   const [{ data, fetching, error }] = useQuery({
     query: useTabBarConfigQuery,
   });
-  const tabBarConfig = data?.activeConfiguration.data;
+  const tabBarConfig = data?.activeConfiguration?.data;
 
   useEffect(() => {
     if (error) {

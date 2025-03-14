@@ -23,7 +23,7 @@ export function useAllowedLoginTypes(): {
   const [{ data, fetching, error }] = useQuery({
     query: useAllowedLoginTypesQuery,
   });
-  const configValue = data?.activeConfiguration.data;
+  const configValue = data?.activeConfiguration?.data;
 
   useEffect(() => {
     if (error) {

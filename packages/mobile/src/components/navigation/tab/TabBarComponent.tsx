@@ -190,7 +190,12 @@ function TabBarComponent({
     .filter(
       ([route], idx) =>
         idx !== fancyTabIdx &&
-        shownTabs.includes(descriptors[route.key].options.title!)
+        (shownTabs
+          .map((s) => s.toLowerCase())
+          .includes(descriptors[route.key].options.title!.toLowerCase()) ||
+          // Special case for explore
+          (descriptors[route.key].options.title === "Explore" &&
+            shownTabs.includes("Explorer")))
     )
     .map(([, tab]) => tab);
 
