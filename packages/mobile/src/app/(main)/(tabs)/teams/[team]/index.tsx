@@ -1,3 +1,6 @@
+import { useLocalSearchParams } from "expo-router";
+
 export default function Team() {
-  return null;
+  const { team } = useLocalSearchParams<{ team: string }>();
+  return team;
 }

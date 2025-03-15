@@ -68,13 +68,13 @@ export default function Layout() {
       <SplashScreen show={fontsLoaded}>
         <StatusBar style={isDarkColorScheme ? "light" : "dark"} />
         <ThemeProvider value={isDarkColorScheme ? DARK_THEME : LIGHT_THEME}>
-          <UrqlContext>
-            <AuthProvider>
+          <AuthProvider>
+            <UrqlContext>
               <NativeBaseProvider>
                 <Slot />
               </NativeBaseProvider>
-            </AuthProvider>
-          </UrqlContext>
+            </UrqlContext>
+          </AuthProvider>
         </ThemeProvider>
       </SplashScreen>
       <PortalHost />

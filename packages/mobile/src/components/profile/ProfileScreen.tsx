@@ -33,6 +33,8 @@ import {
 /**
  * Component for "Profile" screen in main navigation
  */
+
+// TODO: Don't expect these fragments to be defined
 const ProfileScreen = ({
   profileScreenAuthFragment,
   profileScreenUserFragment,
