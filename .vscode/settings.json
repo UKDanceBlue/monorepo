@@ -52,5 +52,6 @@
   "typescript.disableAutomaticTypeAcquisition": true,
   "typescript.experimental.updateImportsOnPaste": true,
   "typescript.experimental.expandableHover": true,
-  "typescript.preferences.preferTypeOnlyAutoImports": true
+  "typescript.preferences.preferTypeOnlyAutoImports": true,
+  "tailwindCSS.classAttributes": ["class", "className", "headerClassName"]
 }

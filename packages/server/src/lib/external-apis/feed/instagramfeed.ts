@@ -46,7 +46,11 @@ const thirtyMinutesInMs = 1000 * 60 * 30;
 
 @Service([instagramApiKeyToken])
 export class InsagramApi {
-  constructor(private readonly instagramApiKey: string) {}
+  constructor(private readonly instagramApiKey: string) {
+    setInterval(() => {
+      void this.getFeed(10);
+    }, thirtyMinutesInMs);
+  }
 
   private cachedFeedResponse: InstagramFeedNode[] | undefined = undefined;
   private cacheExpiry: number | undefined = undefined;
@@ -82,6 +86,7 @@ export class InsagramApi {
   > {
     if (
       this.cachedFeedResponse &&
+      this.cachedFeedResponse.length >= limit &&
       this.cacheExpiry &&
       this.cacheExpiry > Date.now()
     ) {
@@ -111,6 +116,28 @@ export class InsagramApi {
         this.cachedFeedResponse = all.value;
         this.cacheExpiry = Date.now() + thirtyMinutesInMs;
         return all;
+      });
+  }
+
+  renewToken(): AsyncResult<Response, BasicError | FetchError> {
+    return new AsyncResult(
+      Result.wrapAsync(() =>
+        fetch(
+          `https://graph.instagram.com/refresh_access_token?grant_type=ig_refresh_token&access_token=${this.instagramApiKey}`
+        )
+      )
+    )
+      .mapErr(toBasicError)
+      .andThen<Response, FetchError>((response) => {
+        if (!response.ok) {
+          return Err(
+            new FetchError(
+              response,
+              `https://graph.instagram.com/refresh_access_token?grant_type=ig_refresh_token&access_token=[API_KEY]`
+            )
+          );
+        }
+        return Ok(response);
       });
   }
 }

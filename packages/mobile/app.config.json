@@ -10,7 +10,12 @@
     "notification": {
       "icon": "./assets/app/20th-appicon.png"
     },
-    "platforms": ["ios", "android"],
+    "experiments": {
+      "typedRoutes": true,
+      "reactCompiler": true
+    },
+    "userInterfaceStyle": "automatic",
+    "platforms": ["ios", "android", "web"],
     "orientation": "portrait",
     "icon": "./assets/app/20th-appicon.png",
     "splash": {
@@ -40,7 +45,6 @@
           "cameraPermission": "Allow DanceBlue to access your microphone."
         }
       ],
-      "expo-av",
       "expo-secure-store",
       "expo-file-system",
       [
@@ -76,7 +80,8 @@
         }
       ],
       "expo-build-properties",
-      "expo-router"
+      "expo-router",
+      "expo-audio"
     ],
     "updates": {
       "enabled": true,
@@ -84,6 +89,9 @@
       "url": "https://u.expo.dev/86042d7a-cd35-415c-87ed-f53c008b3827"
     },
     "assetBundlePatterns": ["assets/**"],
+    "web": {
+      "bundler": "metro"
+    },
     "ios": {
       "supportsTablet": true,
       "config": {

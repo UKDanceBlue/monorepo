@@ -77,7 +77,7 @@ export class ApolloModule {
 
       (req, res, next) =>
         express.json({
-          limit: req.session && req.session.person ? "50mb" : "1mb",
+          limit: req.session?.person ? "50mb" : "1mb",
         })(req, res, next),
 
       expressMiddleware<GraphQLContext>(this.apolloServer, {

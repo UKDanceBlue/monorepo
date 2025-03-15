@@ -1,16 +1,10 @@
 {
   "compilerOptions": {
-    // Just let Metro handle the module resolution and bundling
     "module": "preserve",
     "moduleResolution": "bundler",
     "paths": {
-      "@/assets/*": ["./assets/*"],
-      "@/graphql/*": ["./src/graphql/*"],
-      "@/common/*": ["./src/common/*"],
-      "@/context/*": ["./src/context/*"],
-      "@/navigation/*": ["./src/navigation/*"],
-      "@/theme/*": ["./src/theme/*"],
-      "@/common-types/*": ["./src/types/*"]
+      "~/assets/*": ["./assets/*"],
+      "~/*": ["./src/*"]
     },
     "noUncheckedIndexedAccess": false,
     "exactOptionalPropertyTypes": false,
@@ -35,7 +29,7 @@
       {
         "name": "gql.tada/ts-plugin",
         "schema": "../../schema.graphql",
-        "tadaOutputLocation": "./src/graphql/graphql-env.d.ts",
+        "tadaOutputLocation": "./src/api/graphql-env.d.ts",
         "shouldCheckForColocatedFragments": false,
         "trackFieldUsage": false
       }
@@ -43,16 +37,14 @@
   },
   "extends": ["../../tsconfig.json", "./node_modules/expo/tsconfig.base.json"],
   "include": [
-    "index.js",
-    "App.tsx",
-    "global.d.ts",
-    "src",
-    "assets",
-    "config-plugins",
-    "test-helpers",
-
-    "app.config.ts",
-    "babel.config.cjs",
-    "metro.config.cjs"
+    "./src",
+    "./assets",
+    "./app.config.ts",
+    "./.expo/types/**/*.ts",
+    "./expo-env.d.ts",
+    "nativewind-env.d.ts",
+    ".expo/types/**/*.ts",
+    "expo-env.d.ts",
+    "tailwind.config.ts"
   ]
 }

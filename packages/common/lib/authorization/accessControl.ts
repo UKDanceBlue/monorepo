@@ -167,31 +167,31 @@ export function getAuthorizationFor({
   // All users may read active feeds and marathon info
   allow("readActive", ["FeedNode", "MarathonNode", "MarathonHourNode"], ".");
 
+  if (accessLevel === AccessLevel.SuperAdmin) {
+    // Super admins may manage all resources
+    allow(
+      "manage",
+      "all",
+      Object.values(extraFieldsByResource).reduce<string[]>(
+        (acc, fields) => acc.concat(Object.keys(fields)),
+        ["."]
+      )
+    );
+  }
+
   if (accessLevel > AccessLevel.None) {
-    if (accessLevel === AccessLevel.SuperAdmin) {
-      // Super admins may manage all resources
-      allow(
-        "manage",
-        "all",
-        Object.values(extraFieldsByResource).reduce<string[]>(
-          (acc, fields) => acc.concat(Object.keys(fields)),
-          ["."]
-        )
-      );
-    } else {
-      // All users may read committees, events, and images
-      allow("get", ["ImageNode"], ".");
-      // All users may list teams
-      allow("list", ["TeamNode", "EventNode"], ".");
+    // All users may read committees, events, and images
+    allow("get", ["ImageNode"], ".");
+    // All users may list teams
+    allow("list", ["TeamNode", "EventNode"], ".");
 
-      applyAccessLevelPermissions(accessLevel, allow);
-      applyCommitteePermissions(effectiveCommitteeRoles, allow);
+    applyAccessLevelPermissions(accessLevel, allow);
+    applyCommitteePermissions(effectiveCommitteeRoles, allow);
 
-      if (userId != null) applyUserPermissions(userId, allow);
+    if (userId != null) applyUserPermissions(userId, allow);
 
-      if (teamMemberships.length > 0)
-        applyTeamPermissions(teamMemberships, allow);
-    }
+    if (teamMemberships.length > 0)
+      applyTeamPermissions(teamMemberships, allow);
   }
 
   return build(caslOptions);
