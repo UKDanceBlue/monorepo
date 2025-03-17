@@ -16,7 +16,7 @@ const BackgroundCutoutBase = ({
     <Path
       d="M0,0 C0,0,0,260,260,260 C520,260,520,0,520,0 H520 V520 H0 Z"
       // @ts-expect-error This is fine
-      style={{ fill: color ?? "#ededed" }}
+      style={{ fill: color ?? "#00000000" }}
     />
   </Svg>
 );
@@ -24,8 +24,16 @@ const BackgroundCutoutBase = ({
 const BackgroundCutout = ({
   color,
   children,
+  left,
+  right,
   ...svgProps
-}: SvgProps & { height: number; color: string; children: ReactNode }) => {
+}: SvgProps & {
+  height: number;
+  color?: string;
+  children: ReactNode;
+  left?: ReactNode;
+  right?: ReactNode;
+}) => {
   const { width: screenWidth } = useWindowDimensions();
   if (!svgProps.height || Number.isNaN(Number(svgProps.height))) {
     throw new Error(
@@ -39,13 +47,13 @@ const BackgroundCutout = ({
     <View style={{ display: "flex", flexDirection: "row" }}>
       <View
         style={{
-          // minWidth: sideWidth,
-          // minHeight: svgProps.height,
           backgroundColor: color,
           width: sideWidth,
           height: svgWidth,
         }}
-      />
+      >
+        {left}
+      </View>
       <BackgroundCutoutBase
         {...svgProps}
         style={{
@@ -56,14 +64,6 @@ const BackgroundCutout = ({
         }}
         color={color}
       />
-      {/* <Box
-        position="absolute"
-        right={0}
-        minWidth={sideWidth * 1.1}
-        minHeight={svgProps.height}
-        bg={color}
-        margin={0}
-      /> */}
       <View
         style={{
           position: "absolute",
@@ -78,13 +78,13 @@ const BackgroundCutout = ({
       </View>
       <View
         style={{
-          // minWidth: sideWidth,
-          // minHeight: svgProps.height,
           backgroundColor: color,
           width: sideWidth,
           height: svgWidth,
         }}
-      />
+      >
+        {right}
+      </View>
     </View>
   );
 };

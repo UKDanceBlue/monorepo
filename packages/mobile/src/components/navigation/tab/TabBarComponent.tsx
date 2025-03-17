@@ -62,7 +62,7 @@ function TabBarIcon({
       accessibilityLabel={options.tabBarAccessibilityLabel}
       onPress={onPress}
       onLongPress={onLongPress}
-      className={`flex-1 ${isMiddle ? "bg-primary-600" : ""}`}
+      className={`flex-1 ${isMiddle ? "bg-white rounded-full" : ""}`}
     >
       <View className="flex items-center justify-center flex-1">
         {iconKey === "Logo" ? (
@@ -103,7 +103,6 @@ function TabBarEntry({
   options: BottomTabNavigationOptions;
   navigation: BottomTabBarProps["navigation"];
   tabBarHeight: number;
-  screenWidth: number;
   isFancyTab: boolean;
 }) {
   const sizeOfIcon = tabBarHeight * 0.32;
@@ -182,7 +181,6 @@ function TabBarComponent({
           options={options}
           navigation={navigation}
           tabBarHeight={tabBarHeight}
-          screenWidth={screenWidth}
           isFancyTab={false}
         />,
       ] as const;
@@ -199,10 +197,28 @@ function TabBarComponent({
     )
     .map(([, tab]) => tab);
 
-  if (fancyTab) {
-    const middle = Math.floor(tabs.length / 2);
-    tabs.splice(middle, 0, <View key="placeholder" className="flex-1" />);
-  }
+  // if (fancyTab) {
+  //   const middle = Math.floor(tabs.length / 2);
+  //   tabs.splice(
+  //     middle,
+  //     0,
+  //     <>
+  //       <BackgroundCutout width={screenWidth} height={tabBarHeight}>
+  //         <TabBarEntry
+  //           label="DanceBlue"
+  //           isFocused={state.index === fancyTabIdx}
+  //           focusedClass=""
+  //           route={state.routes[fancyTabIdx]}
+  //           options={descriptors[state.routes[fancyTabIdx].key].options}
+  //           navigation={navigation}
+  //           tabBarHeight={tabBarHeight}
+  //           isFancyTab
+  //         />
+  //       </BackgroundCutout>
+  //       <View key="placeholder" className="flex-1 z-0" />
+  //     </>
+  //   );
+  // }
 
   return (
     <View
@@ -217,30 +233,8 @@ function TabBarComponent({
         // borderTopColor: navTheme.colors.border,
         borderTopWidth: fancyTab ? 0 : 2,
       }}
-      className="border-t-border"
+      className="border-t-border bg-[#0032A0]"
     >
-      <View className="absolute inset-0">
-        {!!fancyTab && (
-          <BackgroundCutout
-            // svgProps={{ width: screenWidth, height: tabBarHeight }}
-            width={screenWidth}
-            height={tabBarHeight}
-            color="#0032A0"
-          >
-            <TabBarEntry
-              label="DanceBlue"
-              isFocused={state.index === fancyTabIdx}
-              focusedClass=""
-              route={state.routes[fancyTabIdx]}
-              options={descriptors[state.routes[fancyTabIdx].key].options}
-              navigation={navigation}
-              tabBarHeight={tabBarHeight}
-              screenWidth={screenWidth}
-              isFancyTab
-            />
-          </BackgroundCutout>
-        )}
-      </View>
       <View className="absolute inset-0">
         <View
           style={{
@@ -249,7 +243,27 @@ function TabBarComponent({
             height: tabBarHeight,
           }}
         >
-          {tabs}
+          {fancyTab ? (
+            <BackgroundCutout
+              width={screenWidth}
+              height={tabBarHeight}
+              left={<>{tabs.slice(0, Math.floor(tabs.length / 2))}</>}
+              right={<>{tabs.slice(Math.floor(tabs.length / 2))}</>}
+            >
+              <TabBarEntry
+                label="DanceBlue"
+                isFocused={state.index === fancyTabIdx}
+                focusedClass=""
+                route={state.routes[fancyTabIdx]}
+                options={descriptors[state.routes[fancyTabIdx].key].options}
+                navigation={navigation}
+                tabBarHeight={tabBarHeight}
+                isFancyTab
+              />
+            </BackgroundCutout>
+          ) : (
+            tabs
+          )}
         </View>
       </View>
     </View>
