@@ -32,7 +32,7 @@ export const login = async (
   res: Response,
   next: NextFunction
 ): Promise<void> => {
-  if (!oidcConfiguration) {
+  if (!oidcConfiguration.configuration) {
     res.status(503).json({
       error: {
         message: "OIDC configuration not available",
@@ -112,7 +112,7 @@ export const login = async (
       );
 
       return res.redirect(
-        buildAuthorizationUrl(oidcConfiguration, {
+        buildAuthorizationUrl(oidcConfiguration.configuration, {
           scope: "openid email profile offline_access User.read",
           response_mode: "form_post",
           code_challenge: codeChallenge,

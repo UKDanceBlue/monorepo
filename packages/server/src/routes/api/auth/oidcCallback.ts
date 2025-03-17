@@ -21,7 +21,7 @@ export const oidcCallback = async (
   res: Response,
   next: NextFunction
 ): Promise<void> => {
-  if (!oidcConfiguration) {
+  if (!oidcConfiguration.configuration) {
     res.status(503).json({
       error: {
         message: "OIDC configuration not available",
@@ -69,11 +69,15 @@ export const oidcCallback = async (
     // Perform OIDC validation
     let tokenSet;
     try {
-      tokenSet = await authorizationCodeGrant(oidcConfiguration, currentUrl, {
-        pkceCodeVerifier: loginFlow.codeVerifier,
-        expectedState: flowSessionId,
-        idTokenExpected: true,
-      });
+      tokenSet = await authorizationCodeGrant(
+        oidcConfiguration.configuration,
+        currentUrl,
+        {
+          pkceCodeVerifier: loginFlow.codeVerifier,
+          expectedState: flowSessionId,
+          idTokenExpected: true,
+        }
+      );
     } catch (error) {
       if (error instanceof Error) {
         if ("error_description" in error) {

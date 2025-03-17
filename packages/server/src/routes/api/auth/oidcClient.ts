@@ -17,14 +17,16 @@ const msOidcUrl = Container.get(msOidcUrlToken);
 const msClientId = Container.get(msClientIdToken);
 const msClientSecret = Container.get(msClientSecretToken);
 
-export let oidcConfiguration: Configuration | undefined;
+export const oidcConfiguration: { configuration: Configuration | undefined } = {
+  configuration: undefined,
+};
 
 const OIDC_CONFIGURATION_TTL = 10;
 
 async function tryFetchOidcConfiguration(ttl: number, error?: unknown) {
   if (ttl <= 0) {
     logError(toSomeExtendedError(error), "Failed to fetch OIDC configuration");
-    oidcConfiguration = new Configuration(
+    oidcConfiguration.configuration = new Configuration(
       {
         issuer: msOidcUrl.href,
         response_types_supported: ["code"],
@@ -37,7 +39,7 @@ async function tryFetchOidcConfiguration(ttl: number, error?: unknown) {
     );
   } else {
     try {
-      oidcConfiguration = await discovery(msOidcUrl, msClientId, {
+      oidcConfiguration.configuration = await discovery(msOidcUrl, msClientId, {
         client_id: msClientId,
         client_secret: msClientSecret,
       });
