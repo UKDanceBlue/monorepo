@@ -18,6 +18,7 @@ export type * from "./utility/primitive/SimpleTypes.js";
 export * from "./utility/primitive/typeTransformers.js";
 export * from "./utility/primitive/TypeUtils.js";
 export * from "./utility/results/async.js";
+export * from "./utility/string.js";
 export * from "./utility/time/comparators.js";
 export * from "./utility/time/intervalTools.js";
 export * from "./utility/time/localDate.js";

@@ -111,7 +111,7 @@
     "react-compiler-runtime": "19.0.0-beta-21e868a-20250216",
     "react-dom": "~18.3.1",
     "react-native": "0.76.6",
-    "react-native-calendars": "^1.1308.0",
+    "react-native-calendars": "^1.1310.0",
     "react-native-elements": "^3.4.3",
     "react-native-gesture-handler": "~2.22.0",
     "react-native-infinite-pager": "patch:react-native-infinite-pager@npm%3A0.3.13#../../.yarn/patches/react-native-infinite-pager-npm-0.3.13-59b67e2e46.patch",
