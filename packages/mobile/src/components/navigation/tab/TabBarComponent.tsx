@@ -107,6 +107,7 @@ function TabBarEntry({
 }) {
   const sizeOfIcon = tabBarHeight * 0.32;
 
+  // TODO: Make clicking on for example the events tab go to the events screen, even when already on an individual event screen
   const onPress = () => {
     const event = navigation.emit({
       type: "tabPress",
