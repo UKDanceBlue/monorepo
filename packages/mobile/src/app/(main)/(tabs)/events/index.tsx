@@ -1,11 +1,11 @@
 import { withScope } from "@sentry/react-native";
 import { cleanTruncateString } from "@ukdanceblue/common";
+import { Link } from "expo-router";
 import { DateTime, type Duration, Interval } from "luxon";
 import { useCallback, useEffect, useState } from "react";
 import {
   ActivityIndicator,
   ScrollView,
-  TouchableOpacity,
   useWindowDimensions,
   View,
   VirtualizedList,
@@ -65,14 +65,6 @@ const EventsDocument = graphql(/* GraphQL */ `
             end
           }
           fullDay
-        }
-        images {
-          id
-          url
-          height
-          width
-          alt
-          thumbHash
         }
       }
       total
@@ -212,6 +204,7 @@ export default function Events() {
 }
 
 interface EventItemType {
+  id: string;
   interval: Interval;
   duration: Duration;
   title: string;
@@ -272,6 +265,7 @@ function EventPage({
             const existing = acc.find((section) => section.title === day);
             if (existing) {
               existing.data.push({
+                id: event.id,
                 interval,
                 duration,
                 title: event.title,
@@ -287,6 +281,7 @@ function EventPage({
                 title: day,
                 data: [
                   {
+                    id: event.id,
                     interval,
                     duration,
                     title: event.title,
@@ -306,8 +301,9 @@ function EventPage({
         }, [])}
         renderItem={
           ({ item }: { item: EventItemType }) => (
-            <TouchableOpacity
+            <Link
               className={`p-2 border-b border-gray-200 ${now > item.interval.start! ? "color-gray-100" : ""}`}
+              href={{ pathname: "/events/[event]", params: { event: item.id } }}
             >
               <View className="flex-row justify-between gap-4">
                 <View>
@@ -325,7 +321,7 @@ function EventPage({
                   <Text>{item.summary}</Text>
                 </View>
               </View>
-            </TouchableOpacity>
+            </Link>
           ) /*<Text>{JSON.stringify(item, null, 2)}</Text>*/
         }
       />
