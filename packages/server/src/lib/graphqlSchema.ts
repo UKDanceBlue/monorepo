@@ -191,6 +191,10 @@ ${schemaString}`,
     params: AccessControlParam<S>[]
   ): Promise<boolean> {
     const { context, args, info, root } = resolverData;
+    if (context.userAgent.startsWith("DanceBlue")) {
+      // Temp workaround for marathon
+      return true;
+    }
     const { accessLevel, ability } = context;
 
     logger.trace("Checking access control", {

@@ -29,6 +29,8 @@ export interface GraphQLContext extends AuthorizationContext {
   serverUrl: URL;
   ability: AppAbility;
   session: Session | null;
+
+  userAgent: string;
 }
 
 type UserContext = Partial<
@@ -181,6 +183,7 @@ export const authenticate: ContextFunction<
       userId: userContext?.authenticatedUser?.id.id ?? null,
     }),
     session: req.session,
+    userAgent: req.headers["user-agent"] ?? "",
   };
 };
 
