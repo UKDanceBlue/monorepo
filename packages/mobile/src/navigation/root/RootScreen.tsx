@@ -84,13 +84,14 @@ const RootScreen = () => {
     }
   }, [fetching, setRootScreenLoading]);
 
-  const authData = readFragment(
-    RootScreenAuthFragment,
-    rootScreenData?.loginState ?? null
-  );
-  const isLoggedIn = useMemo(() => {
-    return authData && authData.dbRole !== DbRole.None;
-  }, [authData]);
+  // const authData = readFragment(
+  //   RootScreenAuthFragment,
+  //   rootScreenData?.loginState ?? null
+  // );
+  // const isLoggedIn = useMemo(() => {
+  //   return authData && authData.dbRole !== DbRole.None;
+  // }, [authData]);
+  const isLoggedIn = true;
 
   const { colors } = useTheme();
   const headerBgColor = useColorModeValue(colors.white, colors.gray[800]);
