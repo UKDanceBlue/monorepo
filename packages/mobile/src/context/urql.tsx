@@ -73,6 +73,11 @@ export function UrqlContext({ children }: { children: ReactNode }) {
                     },
                   },
                 });
+                AsyncStorage.removeItem(DANCEBLUE_TOKEN_KEY).then(
+                  () => invalidate(),
+                  console.error
+                );
+                return true;
               } else if (
                 (response as { status?: unknown } | undefined)?.status ===
                   401 ||
@@ -90,6 +95,7 @@ export function UrqlContext({ children }: { children: ReactNode }) {
                     },
                   },
                 });
+                return true;
               }
 
               return false;
