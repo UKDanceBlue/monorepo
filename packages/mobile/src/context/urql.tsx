@@ -38,21 +38,21 @@ export function UrqlContext({ children }: { children: ReactNode }) {
       exchanges: [
         // eslint-disable-next-line @typescript-eslint/unbound-method
         authExchange(async ({ appendHeaders }) => {
-          // const token = await AsyncStorage.getItem(DANCEBLUE_TOKEN_KEY);
+          const token = await AsyncStorage.getItem(DANCEBLUE_TOKEN_KEY);
 
           return {
             addAuthToOperation: (operation) => {
-              // if (token) {
-              //   return appendHeaders(operation, {
-              //     Authorization: `Bearer ${token}`,
-              //     ...(masquerade ? { "x-ukdb-masquerade": masquerade } : {}),
-              //   });
-              // }
+              if (token) {
+                return appendHeaders(operation, {
+                  Authorization: `Bearer ${token}`,
+                  ...(masquerade ? { "x-ukdb-masquerade": masquerade } : {}),
+                });
+              }
               return operation;
             },
             refreshAuth: async () => {
-              // await AsyncStorage.removeItem(DANCEBLUE_TOKEN_KEY);
-              // invalidate();
+              await AsyncStorage.removeItem(DANCEBLUE_TOKEN_KEY);
+              invalidate();
             },
             didAuthError: (args) => {
               const { message, response, graphQLErrors } = args;
