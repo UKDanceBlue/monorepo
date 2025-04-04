@@ -4,9 +4,9 @@ generator client {
   binaryTargets   = ["native", "debian-openssl-3.0.x"]
 }
 
-generator markdown {
-  provider = "prisma-markdown"
-  output   = "../diagram.md"
+generator erd {
+  provider = "prisma-erd-generator"
+  output   = "../diagram.svg"
   title    = "DanceBlue Server"
 }
 
