@@ -13053,7 +13053,7 @@ __metadata:
     use-debounce: "npm:^10.0.4"
     utility-types: "npm:^3.11.0"
     validator: "npm:^13.12.0"
-    vite: "npm:^6.0.7"
+    vite: "npm:^6.0.14"
     wonka: "npm:^6.3.4"
     xlsx: "https://cdn.sheetjs.com/xlsx-0.20.3/xlsx-0.20.3.tgz"
     zod: "npm:^3.24.1"
@@ -13139,7 +13139,7 @@ __metadata:
     typescript: "npm:^5.7.3"
     utility-types: "npm:^3.11.0"
     validator: "npm:^13.12.0"
-    vite: "npm:^6.0.7"
+    vite: "npm:^6.0.14"
     vitest: "npm:^2.1.8"
     winston: "npm:^3.17.0"
     zod: "npm:^3.24.1"
@@ -34434,7 +34434,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"vite@npm:^6.0.0, vite@npm:^6.0.7":
+"vite@npm:^6.0.0":
   version: 6.0.7
   resolution: "vite@npm:6.0.7"
   dependencies:
@@ -34483,6 +34483,58 @@ __metadata:
   bin:
     vite: bin/vite.js
   checksum: 10/bf76b3647983cb3d76c0db90d1f72cd4f6e80864a112145405ac0046cedfb14814cc4d9c1acbd9c53da8749c3a2fa80570971f7c44c0524b71974981065e9388
+  languageName: node
+  linkType: hard
+
+"vite@npm:^6.0.14":
+  version: 6.2.5
+  resolution: "vite@npm:6.2.5"
+  dependencies:
+    esbuild: "npm:^0.25.0"
+    fsevents: "npm:~2.3.3"
+    postcss: "npm:^8.5.3"
+    rollup: "npm:^4.30.1"
+  peerDependencies:
+    "@types/node": ^18.0.0 || ^20.0.0 || >=22.0.0
+    jiti: ">=1.21.0"
+    less: "*"
+    lightningcss: ^1.21.0
+    sass: "*"
+    sass-embedded: "*"
+    stylus: "*"
+    sugarss: "*"
+    terser: ^5.16.0
+    tsx: ^4.8.1
+    yaml: ^2.4.2
+  dependenciesMeta:
+    fsevents:
+      optional: true
+  peerDependenciesMeta:
+    "@types/node":
+      optional: true
+    jiti:
+      optional: true
+    less:
+      optional: true
+    lightningcss:
+      optional: true
+    sass:
+      optional: true
+    sass-embedded:
+      optional: true
+    stylus:
+      optional: true
+    sugarss:
+      optional: true
+    terser:
+      optional: true
+    tsx:
+      optional: true
+    yaml:
+      optional: true
+  bin:
+    vite: bin/vite.js
+  checksum: 10/354023589439e7e2bcb77af79d24cd06ce20cfc48b409e663c44e515b373b89eb8f29362223eac16a3ff080d3114e40bc5df158372279d92ad03eb270f9e9762
   languageName: node
   linkType: hard
 
