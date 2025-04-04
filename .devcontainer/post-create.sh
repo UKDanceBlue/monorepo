@@ -1,9 +1,13 @@
 #!/bin/bash
 #cSpell:disable
 
-echo "!!! ATTENTION !!!"
-echo "DO NOT CLOSE THIS TERMINAL WINDOW UNTIL THE SETUP IS COMPLETE"
-echo "!!! ATTENTION !!!"
+redbold=$(tput setaf 1; tput bold)
+red=$(tput setaf 1)
+normal=$(tput sgr0)
+
+echo "${redbold}                       !!! ATTENTION !!!${normal}"
+echo "${red}DO NOT CLOSE THIS TERMINAL WINDOW UNTIL THE SETUP IS COMPLETE!${normal}"
+echo "${redbold}                       !!! ATTENTION !!!${normal}"
 echo ""
 
 echo "Setting up Yarn"
@@ -11,15 +15,19 @@ echo "Setting up Yarn"
 sleep 1
 
 corepack use yarn@*
+
 pushd packages/portal
 corepack use yarn@*
 popd
+
 pushd packages/mobile
 corepack use yarn@*
 popd
+
 pushd packages/server
 corepack use yarn@*
 popd
+
 pushd packages/common
 corepack use yarn@*
 popd
@@ -55,19 +63,13 @@ read -p "Zrok Token: " zrokToken
 if [ -z "$zrokToken" ]; then
   echo "No Zrok Token provided, skipping Zrok setup"
 else
-  computerName=$RANDOM
-  # read -p "Name for this computer: " computerName
-  # Set random computerName
-  # Set zrokName to computerName with all non-alphanumeric characters removed and converted to lowercase
-  zrokName=$(echo $computerName | tr -dc 'a-zA-Z0-9' | tr '[:upper:]' '[:lower:]')
+  zrokName=$(cat /etc/hostname | tr -dc 'a-zA-Z0-9' | tr '[:upper:]' '[:lower:]' | cut -c1-26)
   if [ -z "$zrokName" ]; then
     echo "No Zrok tunnel name provided, skipping Zrok setup"
   else
     if [[ "$zrokName" =~ ^[a-z0-9]+$ ]]; then
       zrok disable
-      zrok enable $zrokToken -d "${computerName}"
-
-      echo "Just ignore the below error messages and logs"
+      zrok enable $zrokToken -d "${zrokName}"
       
       zrok reserve public 8000 --unique-name "${zrokName}server"
 
