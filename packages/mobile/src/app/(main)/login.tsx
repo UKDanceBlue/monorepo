@@ -4,7 +4,7 @@ import { Redirect, useLocalSearchParams } from "expo-router";
 import { maybeCompleteAuthSession } from "expo-web-browser";
 import { useEffect, useState } from "react";
 import React from "react";
-import { StatusBar, View } from "react-native";
+import { StatusBar, useWindowDimensions, View } from "react-native";
 
 import { useAllowedLoginTypes } from "~/api/hooks/useAllowedLoginTypes";
 import WelcomeBackOverlay from "~/assets/screens/login-modal/welcome-back-overlay.png";
@@ -42,6 +42,8 @@ export default function SplashLoginScreen() {
     setToken(token ?? null);
   }, [token, setToken]);
 
+  const dimensions = useWindowDimensions();
+
   if (loggedIn) {
     return <Redirect href="/(main)/(tabs)/explore" />;
   }
@@ -56,10 +58,16 @@ export default function SplashLoginScreen() {
             height: "100%",
             display: "flex",
             flexDirection: "column",
+            alignItems: "center",
             justifyContent: "flex-end",
           }}
         >
-          <View className="flex flex-col align-bottom align-center gap-4 p-8">
+          <View
+            className="flex flex-col align-bottom align-center gap-4 p-8 w-full"
+            style={{
+              maxWidth: dimensions.height,
+            }}
+          >
             <Button
               loading={loading}
               onPress={() => trigger(AuthSource.LinkBlue)}

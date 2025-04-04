@@ -64,7 +64,7 @@ export default function Layout() {
   }
 
   return (
-    <>
+    <React.StrictMode>
       <SplashScreen show={fontsLoaded}>
         <StatusBar style={isDarkColorScheme ? "light" : "dark"} />
         <ThemeProvider value={isDarkColorScheme ? DARK_THEME : LIGHT_THEME}>
@@ -78,7 +78,7 @@ export default function Layout() {
         </ThemeProvider>
       </SplashScreen>
       <PortalHost />
-    </>
+    </React.StrictMode>
   );
 }
 

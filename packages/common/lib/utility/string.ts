@@ -22,3 +22,18 @@ export function cleanTruncateString(str: string, maxLength: number): string {
   }
   return `${truncated.trimEnd()}…`;
 }
+
+export function ordinalString(string: number) {
+  const j = string % 10,
+    k = string % 100;
+  if (j === 1 && k !== 11) {
+    return `${string}st`;
+  }
+  if (j === 2 && k !== 12) {
+    return `${string}nd`;
+  }
+  if (j === 3 && k !== 13) {
+    return `${string}rd`;
+  }
+  return `${string}th`;
+}

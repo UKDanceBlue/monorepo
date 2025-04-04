@@ -73,6 +73,7 @@ const Place = ({
         <Text
           style={{
             textAlign: "right",
+            alignSelf: "center",
             color: isHighlighted ? "#00f" : undefined,
           }}
         >

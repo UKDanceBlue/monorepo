@@ -20,6 +20,7 @@
     "fill-labs.dependi",
     "yoavbls.pretty-ts-errors",
     "nicoespeon.abracadabra",
-    "bradlc.vscode-tailwindcss"
+    "bradlc.vscode-tailwindcss",
+    "simonsiefke.svg-preview"
   ]
 }

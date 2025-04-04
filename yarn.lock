@@ -13178,6 +13178,7 @@ __metadata:
     react-native-gesture-handler: "npm:~2.22.0"
     react-native-infinite-pager: "patch:react-native-infinite-pager@npm%3A0.3.13#../../.yarn/patches/react-native-infinite-pager-npm-0.3.13-59b67e2e46.patch"
     react-native-open-maps: "npm:^0.4.3"
+    react-native-pager-view: "npm:^6.7.0"
     react-native-reanimated: "npm:~3.16.7"
     react-native-rss-parser: "patch:react-native-rss-parser@npm%3A1.5.1#../../.yarn/patches/react-native-rss-parser-npm-1.5.1-e4cc1d8bd8.patch"
     react-native-safe-area-context: "npm:4.12.0"
@@ -30666,6 +30667,16 @@ __metadata:
   dependencies:
     query-string: "npm:^7.1.0"
   checksum: 10/968539bfa9b027332e4c62a297eb8966ad0e46feb7e1d4fc32a4e040a6940b023ab827ff5a038821edef5802d1bf8e372736a558c8aabf11330c2a703fe2688d
+  languageName: node
+  linkType: hard
+
+"react-native-pager-view@npm:^6.7.0":
+  version: 6.7.0
+  resolution: "react-native-pager-view@npm:6.7.0"
+  peerDependencies:
+    react: "*"
+    react-native: "*"
+  checksum: 10/01257ced1f51e798423c9af6c891dfa0ab3bac22c4e67fa5995dc0f25f36013beed92e1e8b509d57af85f934f316dad017dc05db7142cd063849c1acbff3f7ed
   languageName: node
   linkType: hard
 
