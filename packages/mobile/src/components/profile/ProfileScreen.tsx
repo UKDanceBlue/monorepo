@@ -1,31 +1,22 @@
 import {
+  AccessLevel,
   AuthSource,
-  CommitteeIdentifier,
   committeeNames,
   CommitteeRole,
-  DbRole,
+  type EffectiveCommitteeRole,
 } from "@ukdanceblue/common";
-import { openURL } from "expo-linking";
-import {
-  Box,
-  Button,
-  Center,
-  Container,
-  Spinner,
-  Text,
-  VStack,
-} from "native-base";
-import { useMemo } from "react";
+import { Button, Center, Container, Spinner, Text, VStack } from "native-base";
 import React from "react";
 import { View } from "react-native";
 
-import { type FragmentOf, readFragment } from "~/api";
+import { type FragmentOf } from "~/api";
 import { useLogin } from "~/lib/hooks/useLogin";
-import { universalCatch } from "~/lib/logger/Logger";
+import { useLoginState } from "~/lib/hooks/useLoginState";
 
+import Jumbotron from "../ui/jumbotron";
 import { H2 } from "../ui/typography";
 import { ProfileFooter } from "./ProfileFooter";
-import {
+import type {
   ProfileScreenAuthFragment,
   ProfileScreenUserFragment,
 } from "./ProfileScreenFragments";
@@ -37,7 +28,6 @@ import {
 // TODO: Don't expect these fragments to be defined
 const ProfileScreen = ({
   profileScreenAuthFragment,
-  profileScreenUserFragment,
 }: {
   profileScreenAuthFragment: FragmentOf<
     typeof ProfileScreenAuthFragment
@@ -46,39 +36,28 @@ const ProfileScreen = ({
     typeof ProfileScreenUserFragment
   > | null;
 }) => {
-  const authData = readFragment(
-    ProfileScreenAuthFragment,
-    profileScreenAuthFragment
-  );
-  const userData = readFragment(
-    ProfileScreenUserFragment,
-    profileScreenUserFragment
-  );
+  const { authorization, me } = useLoginState();
 
   const [loading, trigger] = useLogin();
 
   let welcomeString = "Welcome to DanceBlue!";
-  if (userData?.name) {
-    welcomeString = `Hey ${userData.name}!`;
+  if (me?.name) {
+    welcomeString = `Hey ${me.name}!`;
   }
 
-  const committeeString = useMemo(() => {
-    if (userData?.primaryCommittee) {
-      if (
-        // TODO: Add a way to query committee info
-        userData.primaryCommittee.identifier ===
-          CommitteeIdentifier.overallCommittee &&
-        userData.primaryCommittee.role === CommitteeRole.Chair
-      ) {
-        return "✨ Overall Chair ✨";
-      }
-      return `Committee: ${
-        committeeNames[userData.primaryCommittee.identifier]
-      } ${userData.primaryCommittee.role}`;
-    } else {
-      return null;
+  let chosenRole: EffectiveCommitteeRole | undefined =
+    authorization?.effectiveCommitteeRoles[0];
+
+  for (const role of authorization?.effectiveCommitteeRoles ?? []) {
+    if (role.role === CommitteeRole.Chair) {
+      chosenRole = role;
+    } else if (
+      role.role === CommitteeRole.Coordinator &&
+      chosenRole?.role !== CommitteeRole.Chair
+    ) {
+      chosenRole = role;
     }
-  }, [userData?.primaryCommittee]);
+  }
 
   if (loading) {
     return (
@@ -86,76 +65,46 @@ const ProfileScreen = ({
         <Spinner />
       </Center>
     );
-  } else if (authData?.dbRole !== DbRole.None) {
+  } else if (authorization?.accessLevel !== AccessLevel.None) {
     return (
       <>
-        {/* <JumbotronGeometric title={jumboText()} /> */}
-        <H2 className="border-none text-center">{welcomeString}</H2>
-        <VStack flex={0.95} justifyContent="space-between" display="flex">
-          <Container maxWidth="full">
-            <Text width="full" textAlign="center" className="text-2xl">
-              You&apos;re currently logged in as:
-            </Text>
-            <Text
-              width="full"
-              textAlign="center"
-              className="text-2xl"
-              color="primary.600"
-            >
-              {userData?.name ?? "Anonymous"}
-            </Text>
-            {committeeString && (
+        <Jumbotron
+          title={welcomeString}
+          geometric="lightblue"
+          className="h-full flex flex-1"
+        >
+          <VStack flex={0.95} justifyContent="space-between" display="flex">
+            <Container maxWidth="full">
+              <Text width="full" textAlign="center" className="text-2xl">
+                You&apos;re currently logged in as:
+              </Text>
               <Text
                 width="full"
-                italic
                 textAlign="center"
+                className="text-2xl"
                 color="primary.600"
-                className="text-lg"
               >
-                {committeeString}
+                {me?.name ?? "Anonymous"}
               </Text>
-            )}
-            <Box alignItems="center" width="full" className="mt-4">
-              <Button
-                onPress={() =>
-                  openURL(
-                    "https://drive.google.com/drive/u/1/folders/1m2Gxyjw05aF8yHYuiwa8L9S2modK-8e-"
-                  ).catch(universalCatch)
-                }
-              >
-                Dancer Resources
-              </Button>
-            </Box>
-          </Container>
-          {/* TODO: Implement server-side support for individual totals */}
-          {/* {userData.teams.length > 0 &&
-            userData.linkblue &&
-            firstCommittee.individualTotals && (
-              <Container maxWidth="full">
+              {chosenRole && (
                 <Text
                   width="full"
+                  italic
                   textAlign="center"
-                  fontSize={theme.fontSizes["2xl"]}
-                >
-                  Spirit Point Count:
-                </Text>
-                <Text
-                  width="full"
-                  textAlign="center"
-                  fontFamily={headingBold}
                   color="primary.600"
-                  fontSize={theme.fontSizes["2xl"]}
+                  className="text-lg"
                 >
-                  {userData.team.individualTotals[userData.linkblue]} points
+                  {`${committeeNames[chosenRole.identifier]} ${chosenRole.role}`}
                 </Text>
-              </Container>
-            )} */}
-          <View className="flex w-full gap-2 justify-center">
-            <ProfileFooter
-              profileScreenAuthFragment={profileScreenAuthFragment}
-            />
-          </View>
-        </VStack>
+              )}
+            </Container>
+            <View className="flex w-full gap-2 justify-center">
+              <ProfileFooter
+                profileScreenAuthFragment={profileScreenAuthFragment}
+              />
+            </View>
+          </VStack>
+        </Jumbotron>
       </>
     );
   } else {

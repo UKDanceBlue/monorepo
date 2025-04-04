@@ -23,6 +23,7 @@ import {
   type FindAndCountResult,
 } from "#repositories/Default.js";
 import { type UniqueMarathonParam } from "#repositories/marathon/MarathonRepository.js";
+import { getMarathonYearWhere } from "#repositories/marathon/marathonYearWhere.js";
 import {
   type AsyncRepositoryResult,
   handleRepositoryError,
@@ -48,7 +49,7 @@ export class TeamRepository extends buildDefaultRepository<
     getOrderBy: (legacyStatus) => Ok({ legacyStatus }),
   },
   marathonYear: {
-    getWhere: (marathonYear) => Ok({ marathon: { year: marathonYear } }),
+    getWhere: getMarathonYearWhere,
     getOrderBy: (marathonYear) => Ok({ marathon: { year: marathonYear } }),
   },
   type: {

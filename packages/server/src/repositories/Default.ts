@@ -154,7 +154,7 @@ export function buildDefaultRepository<
   tableName: Capitalize<Exclude<keyof PrismaClient, `$${string}` | symbol>>,
   fieldLookup: FieldLookup<T, Field>
 ) {
-  // eslint-disable-next-line @typescript-eslint/no-empty-object-type, @typescript-eslint/no-unsafe-declaration-merging
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-declaration-merging
   interface DefaultRepository
     extends BaseRepository<T, UniqueParam, Field, Include> {}
   // eslint-disable-next-line @typescript-eslint/no-unsafe-declaration-merging

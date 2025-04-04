@@ -14,7 +14,7 @@ import {
   getAuthorizationFor,
   roleToAccessLevel,
 } from "@ukdanceblue/common";
-import { type ReactElement, useMemo } from "react";
+import { useMemo } from "react";
 import type { Result } from "ts-results-es";
 import { Err, Ok } from "ts-results-es";
 import {
@@ -24,9 +24,8 @@ import {
   useQuery,
 } from "urql";
 
-import { Authorized } from "#elements/components/Authorized";
-import type { ResultOf, VariablesOf } from "#gql/index";
-import { graphql } from "#gql/index";
+import type { ResultOf, VariablesOf } from "~/api";
+import { graphql } from "~/api";
 
 const loginStateDocument = graphql(/* GraphQL */ `
   query LoginState {
@@ -177,26 +176,4 @@ export function useAuthorizationRequirement<S extends Exclude<Subject, "all">>(
   const { ability } = useLoginState();
 
   return ability.can(action, subject, field);
-}
-
-export function withAuthorized<S extends Exclude<Subject, "all">>(
-  action: Action,
-  subject: S | "all",
-  field?:
-    | keyof Pick<
-        SubjectObject<S extends string ? S : Exclude<S, string>["kind"]>,
-        `.${string}` &
-          keyof SubjectObject<S extends string ? S : Exclude<S, string>["kind"]>
-      >
-    | "."
-) {
-  return (Comp: () => ReactElement) => {
-    return function AuthorizedWrapper() {
-      return (
-        <Authorized action={action} subject={subject} field={field} showError>
-          <Comp />
-        </Authorized>
-      );
-    };
-  };
 }

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { ScrollView } from "react-native";
+import { ScrollView, useWindowDimensions } from "react-native";
 
 import {
   getLeaderboardHeaderContents,
@@ -12,6 +12,8 @@ export function LeaderboardHeader(props: LeaderboardHeaderProps) {
     height: number;
   }>({ width: 0, height: 0 });
 
+  const { width } = useWindowDimensions();
+
   return (
     <ScrollView
       pagingEnabled
@@ -19,7 +21,7 @@ export function LeaderboardHeader(props: LeaderboardHeaderProps) {
       style={{ minHeight: dimensions.height }}
       contentContainerStyle={{ width: "100%" }}
     >
-      {getLeaderboardHeaderContents({ ...props, setDimensions })}
+      {getLeaderboardHeaderContents({ ...props, setDimensions, width })}
     </ScrollView>
   );
 }

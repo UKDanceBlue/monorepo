@@ -14,6 +14,7 @@ const Jumbotron = ({
   title,
   subTitle,
   bodyText,
+  children,
   geometric = false,
   ...viewProps
 }: {
@@ -44,15 +45,15 @@ const Jumbotron = ({
         </Text>
       )}
       {bodyText && (
-        <Text className="text-center text-lg color-primary font-normal">
+        <Text className="text-center text-md color-primary font-normal">
           {bodyText}
         </Text>
       )}
+      {children}
     </>
   );
 
-  const classStr =
-    "m-2 p-4 w-[95vw] pt-6 items-center flex flex-1 flex-col justify-evenly";
+  const classStr = "p-4 pt-6 items-center flex flex-1 flex-col justify-evenly";
 
   if (geometric) {
     let image;
@@ -72,7 +73,11 @@ const Jumbotron = ({
     }
 
     return (
-      <ImageBackground source={image}>
+      <ImageBackground
+        source={image}
+        style={{ display: "flex", flex: 1 }}
+        blurRadius={1}
+      >
         <View {...viewProps} className={`${classStr} ${viewProps.className}`}>
           {content}
         </View>
