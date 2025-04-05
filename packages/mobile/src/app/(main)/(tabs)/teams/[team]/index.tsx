@@ -46,6 +46,9 @@ export default function Team() {
     );
   }
 
+  const members =
+    data?.team?.members?.sort((a, b) => b.points - a.points) ?? [];
+
   return (
     <View className="flex flex-1 flex-col">
       <Jumbotron
@@ -58,7 +61,7 @@ export default function Team() {
         refreshControl={
           <RefreshControl refreshing={fetching} onRefresh={refresh} />
         }
-        data={data?.team?.members ?? []}
+        data={members}
         ListEmptyComponent={<Text>No members</Text>}
         keyExtractor={({ id }) => id}
         renderItem={(info) => {
@@ -74,7 +77,7 @@ export default function Team() {
               key={membershipId}
               name={personText}
               points={points}
-              lastRow={rank === data?.team?.members?.length}
+              lastRow={rank === members.length}
               rank={rank}
               isHighlighted={isUser}
             />

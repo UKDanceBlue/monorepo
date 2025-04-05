@@ -171,6 +171,7 @@ export default function Events() {
       onLayout={(event) => setHeight(event.nativeEvent.layout.height)}
       renderItem={({ item }) => {
         void fetchMonth(item);
+
         return (
           <ScrollView
             className="w-screen"
