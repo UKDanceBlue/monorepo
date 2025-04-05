@@ -1,5 +1,6 @@
 import "~/global.css";
 
+import { useLogger } from "@react-navigation/devtools";
 import type { Theme } from "@react-navigation/native";
 import {
   DarkTheme,
@@ -7,7 +8,7 @@ import {
   ThemeProvider,
 } from "@react-navigation/native";
 import { PortalHost } from "@rn-primitives/portal";
-import { Slot } from "expo-router";
+import { Slot, useNavigationContainerRef } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { NativeBaseProvider } from "native-base";
 import { useEffect } from "react";
@@ -58,6 +59,8 @@ export default function Layout() {
       Logger.error("Failed to load fonts", { error: fontError });
     }
   }, [fontError]);
+
+  useLogger(useNavigationContainerRef());
 
   if (!isColorSchemeLoaded) {
     return null;

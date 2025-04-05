@@ -8984,6 +8984,19 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@react-navigation/devtools@npm:^7.0.25":
+  version: 7.0.25
+  resolution: "@react-navigation/devtools@npm:7.0.25"
+  dependencies:
+    fast-deep-equal: "npm:^3.1.3"
+    nanoid: "npm:3.3.8"
+    stacktrace-parser: "npm:^0.1.10"
+  peerDependencies:
+    react: ">= 18.2.0"
+  checksum: 10/c8bf5937d945c3db8760b5818923e2003980dbad42bc3acc6a21456d5d8431005aadbd0e1180dd737b1dc1202b68b14ef40eb197391e087d4222cdf79dd9922a
+  languageName: node
+  linkType: hard
+
 "@react-navigation/elements@npm:^2.2.5":
   version: 2.2.5
   resolution: "@react-navigation/elements@npm:2.2.5"
@@ -13090,6 +13103,7 @@ __metadata:
     "@react-native-community/netinfo": "npm:^11.4.1"
     "@react-navigation/bottom-tabs": "npm:7.2.0"
     "@react-navigation/core": "npm:7.3.1"
+    "@react-navigation/devtools": "npm:^7.0.25"
     "@react-navigation/native": "npm:7.0.14"
     "@react-navigation/native-stack": "npm:7.2.0"
     "@react-navigation/stack": "npm:7.1.1"
