@@ -1132,35 +1132,30 @@ export class PersonRepository extends buildDefaultRepository<
     >
   > {
     try {
-      let demoTeam = await this.prisma.team.findFirst({
-        where: {
-          legacyStatus: TeamLegacyStatus.DemoTeam,
+      const latestMarathon = await this.prisma.marathon.findFirst({
+        orderBy: {
+          year: "desc",
         },
       });
-
-      if (!demoTeam) {
-        const someMarathon = await this.prisma.marathon.findFirst({
-          orderBy: {
-            year: "asc",
-          },
-        });
-
-        if (!someMarathon) {
-          return Err(new NotFoundError("Marathon"));
-        }
-
-        demoTeam = await this.prisma.team.create({
-          data: {
-            name: "Demo Team",
-            type: "Spirit",
-            marathon: {
-              connect: someMarathon,
-            },
-            legacyStatus: TeamLegacyStatus.DemoTeam,
-            persistentIdentifier: "demo-team",
-          },
-        });
+      if (!latestMarathon) {
+        return Err(new NotFoundError("Marathon"));
       }
+
+      const demoTeam = await this.prisma.team.upsert({
+        where: {
+          persistentIdentifier: "demo-team",
+        },
+        create: {
+          name: "Demo Team",
+          type: TeamType.Spirit,
+          marathonId: latestMarathon.id,
+          legacyStatus: TeamLegacyStatus.DemoTeam,
+          persistentIdentifier: "demo-team",
+        },
+        update: {
+          marathonId: latestMarathon.id,
+        },
+      });
 
       return Ok(
         await this.prisma.person.upsert({
@@ -1196,6 +1191,12 @@ export class PersonRepository extends buildDefaultRepository<
                 },
                 points: 1,
                 comment: "Demo point",
+              },
+            },
+            authIdPairs: {
+              create: {
+                source: AuthSource.Demo,
+                value: "demo-user",
               },
             },
           },

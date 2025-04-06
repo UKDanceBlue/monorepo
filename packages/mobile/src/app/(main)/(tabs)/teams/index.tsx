@@ -1,4 +1,4 @@
-import { TeamType } from "@ukdanceblue/common";
+import { TeamLegacyStatus, TeamType } from "@ukdanceblue/common";
 import { Link, useRouter } from "expo-router";
 import { FlatList, RefreshControl, View } from "react-native";
 import { TouchableOpacity } from "react-native-gesture-handler";
@@ -15,7 +15,11 @@ import { useAuthorizationRequirement } from "~/lib/hooks/useLoginState";
 export default function Teams() {
   const [teamsQuery, refreshTeams] = useQuery({
     query: graphql(/* GraphQL */ `
-      query Teams($type: [String!]!, $marathonYear: String!) {
+      query Teams(
+        $type: [String!]!
+        $legacyStatus: [String!]!
+        $marathonYear: String!
+      ) {
         teams(
           sendAll: true
           sortBy: { direction: desc, field: totalPoints }
@@ -25,6 +29,12 @@ export default function Teams() {
               {
                 field: type
                 filter: { arrayStringFilter: { value: $type, comparison: IN } }
+              }
+              {
+                field: legacyStatus
+                filter: {
+                  arrayStringFilter: { value: $legacyStatus, comparison: IN }
+                }
               }
               {
                 field: marathonYear
@@ -57,6 +67,7 @@ export default function Teams() {
     `),
     variables: {
       type: [TeamType.Spirit] satisfies TeamType[],
+      legacyStatus: [TeamLegacyStatus.NewTeam, TeamLegacyStatus.ReturningTeam],
       marathonYear: useActiveMarathon()[0]?.year ?? "",
     },
   });
@@ -72,28 +83,32 @@ export default function Teams() {
 
   return (
     <View className="flex flex-1 flex-col">
-      <View className="flex-0">
-        {myTeams.length === 0 ? (
+      {myTeams.length === 0 ? (
+        <View className="flex-0">
           <Jumbotron
             geometric="white"
             title="You are not a member of a team"
             bodyText="If you believe this is an error and you have submitted your spirit points, please contact your team captain or the DanceBlue committee."
           />
-        ) : (
-          <LeaderboardHeader
-            teams={myTeams}
-            allTeams={teamsQuery.data?.teams?.data}
-            onPress={(teamId) => {
-              push(`/teams/${teamId}`);
-            }}
-          />
-        )}
-      </View>
-      <View className="flex flex-0 p-4">
-        <Link asChild href="/teams/fundraising">
-          <Button>See Your Fundraising</Button>
-        </Link>
-      </View>
+        </View>
+      ) : (
+        <>
+          <View className="flex-0">
+            <LeaderboardHeader
+              teams={myTeams}
+              allTeams={teamsQuery.data?.teams?.data}
+              onPress={(teamId) => {
+                push(`/teams/${teamId}`);
+              }}
+            />
+          </View>
+          <View className="flex flex-0 p-4">
+            <Link asChild href="/teams/fundraising">
+              <Button>See Your Fundraising</Button>
+            </Link>
+          </View>
+        </>
+      )}
       <View className="flex flex-1">
         <FlatList
           refreshing={teamsQuery.fetching}

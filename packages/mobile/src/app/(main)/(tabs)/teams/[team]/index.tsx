@@ -51,39 +51,44 @@ export default function Team() {
 
   return (
     <View className="flex flex-1 flex-col">
-      <Jumbotron
-        geometric="white"
-        title={data?.team?.name ?? "Team"}
-        subTitle={`${data?.team?.totalPoints ?? "N/A"} Points`}
-      />
-      <FlatList
-        refreshing={fetching}
-        refreshControl={
-          <RefreshControl refreshing={fetching} onRefresh={refresh} />
-        }
-        data={members}
-        ListEmptyComponent={<Text>No members</Text>}
-        keyExtractor={({ id }) => id}
-        renderItem={(info) => {
-          const rank = info.index + 1;
-          const {
-            id: membershipId,
-            person: { id: personId, text: personText },
-            points,
-          } = info.item;
-          const isUser = personId === data?.me?.id;
-          return (
-            <Place
-              key={membershipId}
-              name={personText}
-              points={points}
-              lastRow={rank === members.length}
-              rank={rank}
-              isHighlighted={isUser}
-            />
-          );
-        }}
-      />
+      <View className="flex flex-0">
+        <Jumbotron
+          geometric="white"
+          title={data?.team?.name ?? "Team"}
+          subTitle={`${data?.team?.totalPoints ?? "N/A"} Points`}
+        />
+      </View>
+      <View className="flex flex-1">
+        <FlatList
+          className="flex-1"
+          refreshing={fetching}
+          refreshControl={
+            <RefreshControl refreshing={fetching} onRefresh={refresh} />
+          }
+          data={members}
+          ListEmptyComponent={<Text>No members</Text>}
+          keyExtractor={({ id }) => id}
+          renderItem={(info) => {
+            const rank = info.index + 1;
+            const {
+              id: membershipId,
+              person: { id: personId, text: personText },
+              points,
+            } = info.item;
+            const isUser = personId === data?.me?.id;
+            return (
+              <Place
+                key={membershipId}
+                name={personText}
+                points={points}
+                lastRow={rank === members.length}
+                rank={rank}
+                isHighlighted={isUser}
+              />
+            );
+          }}
+        />
+      </View>
     </View>
   );
 }
