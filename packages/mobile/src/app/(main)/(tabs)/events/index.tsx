@@ -1,5 +1,6 @@
 import { withScope } from "@sentry/react-native";
 import { cleanTruncateString } from "@ukdanceblue/common";
+import { Image, type ImageSource } from "expo-image";
 import { Link } from "expo-router";
 import { DateTime, type Duration, Interval } from "luxon";
 import { useCallback, useEffect, useState } from "react";
@@ -65,6 +66,14 @@ const EventsDocument = graphql(/* GraphQL */ `
             end
           }
           fullDay
+        }
+        images {
+          id
+          url
+          height
+          width
+          alt
+          thumbHash
         }
       }
       total
@@ -211,6 +220,14 @@ interface EventItemType {
   title: string;
   location: string | null;
   summary: string | null;
+  image?: {
+    id: string;
+    url?: string;
+    height: number;
+    width: number;
+    alt?: string;
+    thumbHash?: string;
+  };
 }
 
 function EventPage({
@@ -276,6 +293,16 @@ function EventPage({
                   (event.description
                     ? cleanTruncateString(event.description, 100)
                     : null),
+                image: event.images[0]
+                  ? {
+                      id: event.images[0].id,
+                      url: event.images[0].url ?? undefined,
+                      height: event.images[0].height,
+                      width: event.images[0].width,
+                      alt: event.images[0].alt ?? undefined,
+                      thumbHash: event.images[0].thumbHash ?? undefined,
+                    }
+                  : undefined,
               });
             } else {
               acc.push({
@@ -292,6 +319,16 @@ function EventPage({
                       (event.description
                         ? cleanTruncateString(event.description, 100)
                         : null),
+                    image: event.images[0]
+                      ? {
+                          id: event.images[0].id,
+                          url: event.images[0].url ?? undefined,
+                          height: event.images[0].height,
+                          width: event.images[0].width,
+                          alt: event.images[0].alt ?? undefined,
+                          thumbHash: event.images[0].thumbHash ?? undefined,
+                        }
+                      : undefined,
                   },
                 ],
               });
@@ -307,9 +344,31 @@ function EventPage({
               href={{ pathname: "/events/[event]", params: { event: item.id } }}
             >
               <View className="flex-row justify-between gap-4">
-                <View>
-                  <Text>{item.interval.start!.toFormat("hh:mm a")}</Text>
-                  <Text>{item.interval.end!.toFormat("hh:mm a")}</Text>
+                <View className="flex-col items-center">
+                  {item.image && (
+                    <Image
+                      source={
+                        {
+                          uri: item.image.url,
+                          width: item.image.width,
+                          height: item.image.height,
+                          thumbhash: item.image.thumbHash,
+                        } satisfies ImageSource
+                      }
+                      alt={item.image.alt}
+                      className="w-16 h-16 rounded-lg"
+                      contentFit="cover"
+                      style={{
+                        aspectRatio: item.image.width
+                          ? item.image.width / item.image.height
+                          : 1,
+                      }}
+                    />
+                  )}
+                  <View>
+                    <Text>{item.interval.start!.toFormat("hh:mm a")}</Text>
+                    <Text>{item.interval.end!.toFormat("hh:mm a")}</Text>
+                  </View>
                 </View>
                 <View className="flex-1">
                   <Text className="font-bold">{item.title}</Text>
