@@ -128,7 +128,7 @@ const Code = React.forwardRef<TextRef, SlottableTextProps>(
         // @ts-expect-error - role of code renders code element on the web
         role={Platform.OS === "web" ? "code" : undefined}
         className={cn(
-          "relative rounded-md bg-muted px-[0.3rem] py-[0.2rem] text-sm text-foreground font-semibold web:select-text",
+          "relative rounded-md bg-muted px-[0.3rem] py-[0.2rem] text-sm text-foreground web:select-text",
           className
         )}
         ref={ref}
