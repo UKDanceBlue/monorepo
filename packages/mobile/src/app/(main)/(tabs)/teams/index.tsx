@@ -1,4 +1,4 @@
-import { TeamLegacyStatus, TeamType } from "@ukdanceblue/common";
+import { TeamType } from "@ukdanceblue/common";
 import { Link, useRouter } from "expo-router";
 import { FlatList, RefreshControl, View } from "react-native";
 import { TouchableOpacity } from "react-native-gesture-handler";
@@ -15,11 +15,7 @@ import { useAuthorizationRequirement } from "~/lib/hooks/useLoginState";
 export default function Teams() {
   const [teamsQuery, refreshTeams] = useQuery({
     query: graphql(/* GraphQL */ `
-      query Teams(
-        $type: [String!]!
-        $legacyStatus: [String!]!
-        $marathonYear: String!
-      ) {
+      query Teams($type: [String!]!, $marathonYear: String!) {
         teams(
           sendAll: true
           sortBy: { direction: desc, field: totalPoints }
@@ -29,12 +25,6 @@ export default function Teams() {
               {
                 field: type
                 filter: { arrayStringFilter: { value: $type, comparison: IN } }
-              }
-              {
-                field: legacyStatus
-                filter: {
-                  arrayStringFilter: { value: $legacyStatus, comparison: IN }
-                }
               }
               {
                 field: marathonYear
@@ -55,7 +45,7 @@ export default function Teams() {
           }
         }
         me {
-          teams {
+          teams(marathonYear: $marathonYear) {
             id
             team {
               id
@@ -67,7 +57,6 @@ export default function Teams() {
     `),
     variables: {
       type: [TeamType.Spirit] satisfies TeamType[],
-      legacyStatus: [TeamLegacyStatus.NewTeam, TeamLegacyStatus.ReturningTeam],
       marathonYear: useActiveMarathon()[0]?.year ?? "",
     },
   });

@@ -1706,7 +1706,7 @@ type PersonNode implements Node {
   """
   This field is only accessible to users who are allowed to **get** any **PersonNode.memberships** with an id of **root.id**.
   """
-  teams: [MembershipNode!]
+  teams(marathonYear: String): [MembershipNode!]
   text: String!
   updatedAt: LuxonDateTime
 }

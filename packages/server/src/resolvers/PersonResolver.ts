@@ -391,12 +391,20 @@ export class PersonResolver
   )
   @FieldResolver(() => [MembershipNode])
   async teams(
-    @Root() { id: { id } }: PersonNode
+    @Root() { id: { id } }: PersonNode,
+    @Arg("marathonYear", () => String, { nullable: true })
+    marathonYear: string | null
   ): Promise<ConcreteResult<MembershipNode[]>> {
     return new AsyncResult(
-      this.personRepository.findMembershipsOfPerson({
-        uuid: id,
-      })
+      this.personRepository.findMembershipsOfPerson(
+        {
+          uuid: id,
+        },
+        {},
+        undefined,
+        undefined,
+        marathonYear ? [{ year: marathonYear }] : undefined
+      )
     ).map((models) => models.map(membershipModelToResource)).promise;
   }
 

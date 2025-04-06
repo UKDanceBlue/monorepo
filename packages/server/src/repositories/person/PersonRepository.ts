@@ -593,7 +593,8 @@ export class PersonRepository extends buildDefaultRepository<
         }
       | Record<string, never> = {},
     types: TeamType[] | undefined = undefined,
-    includeTeam = false
+    includeTeam = false,
+    marathons: UniqueMarathonParam[] | undefined = undefined
   ): Promise<Result<(Membership & { team: Team })[], RepositoryError>> {
     try {
       const rows = await this.prisma.person
@@ -612,6 +613,17 @@ export class PersonRepository extends buildDefaultRepository<
                     team: {
                       type: {
                         in: types,
+                      },
+                    },
+                  }
+                : {},
+              marathons
+                ? {
+                    team: {
+                      marathon: {
+                        OR: marathons.map((param) =>
+                          this.marathonRepository.uniqueToWhere(param)
+                        ),
                       },
                     },
                   }

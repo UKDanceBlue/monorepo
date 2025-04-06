@@ -25,7 +25,7 @@ export const anonymousLogin = async (
     const jwt = await sessionRepository
       .newSession({
         user: null,
-        authSource: AuthSource.Demo,
+        authSource: AuthSource.Anonymous,
         ip: req.ip,
         userAgent: req.headers["user-agent"],
       })
