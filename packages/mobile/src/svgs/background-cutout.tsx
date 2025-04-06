@@ -51,6 +51,7 @@ const BackgroundCutout = ({
           width: sideWidth,
           height: svgWidth,
         }}
+        className="flex-row"
       >
         {left}
       </View>
@@ -82,6 +83,7 @@ const BackgroundCutout = ({
           width: sideWidth,
           height: svgWidth,
         }}
+        className="flex-row"
       >
         {right}
       </View>
