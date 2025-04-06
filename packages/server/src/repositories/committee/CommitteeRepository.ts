@@ -210,28 +210,54 @@ export class CommitteeRepository {
 
   async ensureCommittees(
     marathons?: UniqueMarathonParam[]
-  ): Promise<Result<None, RepositoryError>> {
+  ): Promise<
+    Result<
+      Record<CommitteeIdentifier, [Committee, Team[] | undefined]>,
+      RepositoryError
+    >
+  > {
     try {
       const { overallCommittee, viceCommittee, ...childCommittees } =
         CommitteeDescriptions;
+
+      //@ts-expect-error - We will fill them all out
+      const returnValue: Record<
+        CommitteeIdentifier,
+        [Committee, Team[] | undefined]
+      > = {};
+
       const overall = await this.prisma.committee.upsert(overallCommittee);
+      returnValue[overall.identifier] = [overall, undefined];
       if (marathons) {
-        await this.ensureCommitteeTeams(overall, marathons);
+        const teams = await this.ensureCommitteeTeams(overall, marathons);
+        if (teams.isErr()) {
+          return teams;
+        }
+        returnValue[overall.identifier][1] = teams.value;
       }
       const vice = await this.prisma.committee.upsert(viceCommittee);
+      returnValue[vice.identifier] = [vice, undefined];
       if (marathons) {
-        await this.ensureCommitteeTeams(vice, marathons);
+        const teams = await this.ensureCommitteeTeams(vice, marathons);
+        if (teams.isErr()) {
+          return teams;
+        }
+        returnValue[vice.identifier][1] = teams.value;
       }
       for (const committee of Object.values(childCommittees)) {
         // eslint-disable-next-line no-await-in-loop
         const child = await this.prisma.committee.upsert(committee);
         if (marathons) {
           // eslint-disable-next-line no-await-in-loop
-          await this.ensureCommitteeTeams(child, marathons);
+          const teams = await this.ensureCommitteeTeams(child, marathons);
+          if (teams.isErr()) {
+            return teams;
+          }
+          returnValue[child.identifier] = [child, teams.value];
         }
       }
 
-      return Ok(None);
+      return Ok(returnValue);
     } catch (error) {
       return handleRepositoryError(error);
     }
@@ -240,8 +266,9 @@ export class CommitteeRepository {
   async ensureCommitteeTeams(
     committee: { id: number; identifier: CommitteeIdentifier },
     marathons: UniqueMarathonParam[]
-  ): Promise<Result<None, RepositoryError>> {
+  ): Promise<Result<Team[], RepositoryError>> {
     try {
+      const teams: Team[] = [];
       for (const marathonParam of marathons) {
         const marathon =
           // eslint-disable-next-line no-await-in-loop
@@ -251,38 +278,40 @@ export class CommitteeRepository {
           return Err(marathon.error);
         }
 
-        // eslint-disable-next-line no-await-in-loop
-        await this.prisma.team.upsert({
-          where: {
-            marathonId_correspondingCommitteeId: {
-              marathonId: marathon.value.id,
-              correspondingCommitteeId: committee.id,
-            },
-          },
-          create: {
-            name: committeeNames[committee.identifier],
-            type: TeamType.Spirit,
-            legacyStatus: TeamLegacyStatus.ReturningTeam,
-            correspondingCommittee: {
-              connect: {
-                id: committee.id,
+        teams.push(
+          // eslint-disable-next-line no-await-in-loop
+          await this.prisma.team.upsert({
+            where: {
+              marathonId_correspondingCommitteeId: {
+                marathonId: marathon.value.id,
+                correspondingCommitteeId: committee.id,
               },
             },
-            marathon: {
-              connect: {
-                id: marathon.value.id,
+            create: {
+              name: committeeNames[committee.identifier],
+              type: TeamType.Spirit,
+              legacyStatus: TeamLegacyStatus.ReturningTeam,
+              correspondingCommittee: {
+                connect: {
+                  id: committee.id,
+                },
+              },
+              marathon: {
+                connect: {
+                  id: marathon.value.id,
+                },
               },
             },
-          },
-          update: {
-            name: committeeNames[committee.identifier],
-            type: TeamType.Spirit,
-            legacyStatus: TeamLegacyStatus.ReturningTeam,
-          },
-        });
+            update: {
+              name: committeeNames[committee.identifier],
+              type: TeamType.Spirit,
+              legacyStatus: TeamLegacyStatus.ReturningTeam,
+            },
+          })
+        );
       }
 
-      return Ok(None);
+      return Ok(teams);
     } catch (error) {
       return handleRepositoryError(error);
     }

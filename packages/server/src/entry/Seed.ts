@@ -173,6 +173,9 @@ export class Seed extends EntryPoint {
       })
     ).unwrap();
 
+    const teams: Team[] = [];
+    const teamMembersMap = new Map<Team, Person[]>();
+
     logger.info(`Populating committees for ${year}`);
     const committees = (
       await this.committeeRepository.ensureCommittees([marathon])
@@ -180,6 +183,8 @@ export class Seed extends EntryPoint {
 
     logger.info(`Seeding committee members for ${year}`);
     for (const committee of Object.values(CommitteeIdentifier)) {
+      const committeeTeams = committees[committee][1];
+
       const chair = await this.personRepository
         .createPerson({
           email: `${marathon.year}.${committee}.chair@uky.edu`,
@@ -187,7 +192,7 @@ export class Seed extends EntryPoint {
           name: `${marathon.year} ${committee} Chair`,
         })
         .then((a) => a.unwrap());
-      const coordinators = Promise.all(
+      const coordinators = await Promise.all(
         Array.from({ length: faker.number.int({ min: 1, max: 3 }) }, (_, i) =>
           this.personRepository
             .createPerson({
@@ -198,7 +203,7 @@ export class Seed extends EntryPoint {
             .then((a) => a.unwrap())
         )
       );
-      const members = Promise.all(
+      const members = await Promise.all(
         Array.from({ length: faker.number.int({ min: 5, max: 10 }) }, (_, i) =>
           this.personRepository
             .createPerson({
@@ -210,6 +215,15 @@ export class Seed extends EntryPoint {
         )
       );
 
+      for (const person of [chair, ...coordinators, ...members]) {
+        for (const team of committeeTeams ?? []) {
+          if (!teamMembersMap.has(team)) {
+            teamMembersMap.set(team, []);
+          }
+          teamMembersMap.get(team)!.push(person);
+        }
+      }
+
       await this.committeeRepository.assignPersonToCommittee(
         { id: chair.id },
         committee,
@@ -217,7 +231,7 @@ export class Seed extends EntryPoint {
         { id: marathon.id }
       );
       await Promise.all(
-        (await coordinators).map((coordinator) =>
+        coordinators.map((coordinator) =>
           this.committeeRepository.assignPersonToCommittee(
             { id: coordinator.id },
             committee,
@@ -227,7 +241,7 @@ export class Seed extends EntryPoint {
         )
       );
       await Promise.all(
-        (await members).map((member) =>
+        members.map((member) =>
           this.committeeRepository.assignPersonToCommittee(
             { id: member.id },
             committee,
@@ -251,11 +265,9 @@ export class Seed extends EntryPoint {
     }
 
     logger.info(`Seeding teams for ${year}`);
-    const teams: Team[] = [];
-    const members = new Map<Team, Person[]>();
     for (let i = 0; i < 45; i++) {
       teams.push(
-        await this.seedTeam(marathon, solicitationCodes, members, people)
+        await this.seedTeam(marathon, solicitationCodes, teamMembersMap, people)
       );
     }
 
@@ -275,7 +287,7 @@ export class Seed extends EntryPoint {
     for (let i = 0; i < 300; i++) {
       const team = faker.helpers.arrayElement(teams);
       pointEntries.push(
-        await this.seedPointEntry(team, pointOpportunities, members)
+        await this.seedPointEntry(team, pointOpportunities, teamMembersMap)
       );
     }
 
@@ -309,7 +321,7 @@ export class Seed extends EntryPoint {
       file: {
         create: {
           filename: `${subject}.jpg`,
-          locationUrl: faker.image.urlLoremFlickr({
+          locationUrl: faker.image.urlPicsumPhotos({
             width,
             height,
           }),
