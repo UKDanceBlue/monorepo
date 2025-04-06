@@ -84,12 +84,16 @@ export function useFeed(): {
         for (const youtubeVideo of youtubeVideos ?? []) {
           const published = DateTime.fromISO(youtubeVideo.published);
 
+          console.log(youtubeVideo);
+
+          const youtubeId = youtubeVideo.links[0].url.split("/watch?v=").pop();
+
           feed.push({
             key: youtubeVideo.id,
             type: "youtube",
             title: youtubeVideo.title,
             date: published,
-            youtubeUrl: youtubeVideo.links[0].url,
+            youtubeId,
             buttons: [],
           });
         }

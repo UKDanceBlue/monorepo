@@ -65,7 +65,7 @@ export interface FeedItemData {
   type: keyof typeof feedItemTypes;
   date: DateTime;
   imageUrl?: string;
-  youtubeUrl?: string;
+  youtubeId?: string;
   audioUrl?: string;
   textContent?: string;
   buttons: FeedItemButton[];
@@ -110,7 +110,7 @@ export function FeedItem({
     type,
     date,
     imageUrl,
-    youtubeUrl,
+    youtubeId,
     audioUrl,
     textContent,
     buttons,
@@ -128,11 +128,11 @@ export function FeedItem({
       <FeedImage key="image" source={{ uri: imageUrl }} className="flex-1" />
     );
   }
-  if (youtubeUrl) {
+  if (youtubeId) {
     cardContent.push(
       <YoutubeEmbedWebView
         // style={{ height: calculatedHeight }}
-        source={{ uri: youtubeUrl }}
+        youtubeId={youtubeId}
         allowsFullscreenVideo={true}
         onErrorEmitted={() => setHidden(true)}
       />

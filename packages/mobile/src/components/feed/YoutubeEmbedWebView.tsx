@@ -1,3 +1,4 @@
+import { Platform } from "react-native";
 import type { WebViewProps } from "react-native-webview";
 import WebView from "react-native-webview";
 
@@ -5,10 +6,23 @@ export function YoutubeEmbedWebView({
   source,
   onErrorEmitted,
   ...props
-}: WebViewProps & { onErrorEmitted: () => void }) {
+}: WebViewProps & { onErrorEmitted: () => void } & {
+  youtubeId: string;
+}) {
+  if (Platform.OS === "web") {
+    return (
+      <iframe
+        src={`https://www.youtube.com/embed/${props.youtubeId}?playsinline=1`}
+        style={{ width: "100%", height: "100%" }}
+      />
+    );
+  }
+
   return (
     <WebView
-      source={source}
+      source={{
+        uri: `https://www.youtube.com/embed/${props.youtubeId}?playsinline=1`,
+      }}
       {...props}
       onMessage={(e) => {
         if (e.nativeEvent.data === "error") {
