@@ -83,7 +83,7 @@ export class MarathonHourRepository extends buildDefaultRepository<
     const rows = await this.prisma.marathonHour.findUnique({
       where: param,
       include: {
-        maps: { orderBy: { imageId: "asc" }, include: { image: true } },
+        maps: { orderBy: { imageId: "asc" }, include: { image: {include:{file: true}} } },
       },
     });
     return rows?.maps.map((map) => map.image);

@@ -1,5 +1,7 @@
 import { useState } from "react";
-import ViewPager from "react-native-pager-view";
+import { useWindowDimensions } from "react-native";
+
+import { Pager } from "~/components/ui/pager";
 
 import {
   getLeaderboardHeaderContents,
@@ -12,12 +14,11 @@ export function LeaderboardHeader(props: LeaderboardHeaderProps) {
     height: number;
   }>({ width: 0, height: 0 });
 
+  const { width } = useWindowDimensions();
+
   return (
-    <ViewPager style={{ minHeight: dimensions.height }} initialPage={0}>
-      {getLeaderboardHeaderContents({
-        ...props,
-        setDimensions,
-      })}
-    </ViewPager>
+    <Pager style={{ minHeight: dimensions.height }}>
+      {getLeaderboardHeaderContents({ ...props, setDimensions, width })}
+    </Pager>
   );
 }

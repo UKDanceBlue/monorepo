@@ -17,6 +17,7 @@ import { VoidResolver } from "graphql-scalars";
 import {
   Arg,
   Args,
+  Ctx,
   FieldResolver,
   Mutation,
   Query,
@@ -24,17 +25,22 @@ import {
   Root,
 } from "type-graphql";
 
+import type { GraphQLContext } from "#auth/context.js";
+import { FileManager } from "#files/FileManager.js";
 import { WithAuditLogging } from "#lib/logging/auditLogging.js";
+import { imageModelToResource } from "#repositories/image/imageModelToResource.js";
 import { marathonHourModelToResource } from "#repositories/marathonHour/marathonHourModelToResource.js";
 import { MarathonHourRepository } from "#repositories/marathonHour/MarathonHourRepository.js";
+import type { RepositoryResult } from "#repositories/shared.js";
 
 @Resolver(() => MarathonHourNode)
-@Service([MarathonHourRepository])
+@Service([MarathonHourRepository, FileManager])
 export class MarathonHourResolver
   implements CrudResolver<MarathonHourNode, "marathonHour">
 {
   constructor(
-    private readonly marathonHourRepository: MarathonHourRepository
+    private readonly marathonHourRepository: MarathonHourRepository,
+    private readonly fileManager: FileManager
   ) {}
 
   @AccessControlAuthorized("get", ["getId", "MarathonHourNode", "id"])
@@ -82,8 +88,23 @@ export class MarathonHourResolver
   }
 
   @FieldResolver(() => [ImageNode])
-  async mapImages(@Root() { id: { id } }: MarathonHourNode) {
-    return this.marathonHourRepository.getMaps({ uuid: id });
+  async mapImages(
+    @Root() { id: { id } }: MarathonHourNode,
+    @Ctx() { serverUrl }: GraphQLContext
+  ): Promise<ImageNode[]> {
+    const images =
+      (await this.marathonHourRepository.getMaps({ uuid: id })) ?? [];
+
+    return Promise.all(
+      images.map((image) =>
+        imageModelToResource(
+          image,
+          image.file,
+          this.fileManager,
+          serverUrl
+        ).promise.then((result) => result.unwrap())
+      )
+    );
   }
 
   @AccessControlAuthorized("create", ["every", "MarathonHourNode"])

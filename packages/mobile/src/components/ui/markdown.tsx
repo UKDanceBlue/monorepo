@@ -1,6 +1,7 @@
 import MarkdownDisplay, {
   renderRules,
 } from "@ukdanceblue/react-native-markdown-display";
+import { Image } from "expo-image";
 import {
   type ExternalPathString,
   Link,
@@ -98,6 +99,25 @@ export function Markdown(
               style={styles.link}
             >
               {children}
+            </Link>
+          );
+        },
+        image: (node, _, __, styles) => {
+          const href = String(node.attributes?.src);
+          const alt = node.attributes?.alt;
+
+          return (
+            <Link
+              key={node.key}
+              href={href as RelativePathString | ExternalPathString}
+              style={styles.image}
+            >
+              <Image
+                source={{ uri: href }}
+                alt={alt ? String(alt) : undefined}
+                // @ts-expect-error - Its fine
+                style={styles.image}
+              />
             </Link>
           );
         },
