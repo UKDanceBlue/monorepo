@@ -55,7 +55,7 @@ jobs:
         run: corepack enable
 
       - name: Set up node 22.x
-        uses: actions/setup-node@v4.1.0
+        uses: actions/setup-node@v4.4.0
         with:
           node-version: 22
           cache: yarn
