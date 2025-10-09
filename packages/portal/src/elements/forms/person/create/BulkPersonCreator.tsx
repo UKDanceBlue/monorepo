@@ -125,7 +125,7 @@ export function UploadPersonButton() {
         {
           id: "linkblue",
           title: "Linkblue",
-          validator: z.string().nonempty().optional(),
+          validator: z.string(),
         },
         {
           id: "committee",
