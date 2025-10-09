@@ -375,6 +375,25 @@ export function UploadButton<V extends Record<string, unknown>>({
 
   const unassignedColumns = columns.filter(({ id }) => !columnMappings[id]);
 
+  const parsedData = useMemo(() => {
+    try {
+      return sheet?.["!data"]
+        ?.slice(1)
+        .filter((_, i) => !ignoredRows.has(i))
+        .map(
+          (row) =>
+            Object.fromEntries(
+              columns.map((col) => {
+                const idx = columnMappings[col.id]!;
+                return [col.id, col.validator.parse(row[idx]?.w)];
+              })
+            ) as V
+        );
+    } catch {
+      return undefined;
+    }
+  }, [columnMappings, columns, ignoredRows, sheet]);
+
   return (
     <>
       <Modal
@@ -386,59 +405,87 @@ export function UploadButton<V extends Record<string, unknown>>({
         width="100%"
         title={title}
         footer={
-          <Flex justify="space-between">
-            <div>
-              {unassignedColumns.length > 0 && (
-                <p>
-                  Unassigned columns:{" "}
-                  {unassignedColumns
-                    .map(({ title, validator }) =>
-                      validator.isOptional() ? title : `${title} (required)`
-                    )
-                    .join(", ")}
-                </p>
-              )}
-            </div>
-            <Space>
-              <Button
-                loading={confirmLoading}
-                type="primary"
-                danger
-                disabled={file === undefined || confirmLoading}
-                onClick={() => {
-                  reset();
-                }}
-              >
-                Reset
-              </Button>
-              <Button
-                loading={confirmLoading}
-                type="primary"
-                disabled={
-                  errors.length > 0 || file === undefined || confirmLoading
-                }
-                onClick={() => {
-                  // Use validator to parse
-                  const data = sheet?.["!data"]
-                    ?.slice(1)
-                    .filter((_, i) => !ignoredRows.has(i))
-                    .map(
-                      (row) =>
-                        Object.fromEntries(
-                          columns.map((col) => {
-                            const idx = columnMappings[col.id]!;
-                            return [col.id, col.validator.parse(row[idx]?.w)];
-                          })
-                        ) as V
-                    );
-                  if (data) {
-                    confirm(data);
+          <Flex vertical>
+            {parsedData && (
+              <details>
+                <summary
+                  style={{
+                    textAlign: "left",
+                  }}
+                >
+                  Preview data ({parsedData.length} rows)
+                </summary>
+                <Table
+                  style={{ marginTop: 16 }}
+                  scroll={{ x: true }}
+                  pagination={false}
+                  dataSource={parsedData}
+                  rowKey={(_, i) => i!}
+                  columns={columns.map((col) => ({
+                    title: col.title,
+                    dataIndex: col.id as string,
+                    render(val) {
+                      if (val == null) {
+                        return "";
+                      } else if (
+                        typeof val === "string" ||
+                        typeof val === "number" ||
+                        typeof val === "boolean"
+                      ) {
+                        return String(val);
+                      } else if (val instanceof Date) {
+                        return val.toISOString();
+                      } else {
+                        return <pre>{JSON.stringify(val)}</pre>;
+                      }
+                    },
+                  }))}
+                />
+              </details>
+            )}
+            <Flex justify="space-between">
+              <div>
+                {unassignedColumns.length > 0 && (
+                  <p>
+                    Unassigned columns:{" "}
+                    {unassignedColumns
+                      .map(({ title, validator }) =>
+                        validator.isOptional() ? title : `${title} (required)`
+                      )
+                      .join(", ")}
+                  </p>
+                )}
+              </div>
+              <Space>
+                <Button
+                  loading={confirmLoading}
+                  type="primary"
+                  danger
+                  disabled={file === undefined || confirmLoading}
+                  onClick={() => {
+                    reset();
+                  }}
+                >
+                  Reset
+                </Button>
+                <Button
+                  loading={confirmLoading}
+                  type="primary"
+                  disabled={
+                    errors.length > 0 || file === undefined || confirmLoading
                   }
-                }}
-              >
-                {confirmText}
-              </Button>
-            </Space>
+                  onClick={() => {
+                    // Use validator to parse
+
+                    if (parsedData) {
+                      confirm(parsedData);
+                    }
+                  }}
+                >
+                  {confirmText}
+                </Button>
+              </Space>
+            </Flex>
           </Flex>
         }
       >
