@@ -85,8 +85,8 @@ export class BulkPersonInput {
   @Field(() => EmailAddressResolver, { nullable: false })
   email!: string;
 
-  @Field(() => GraphQLNonEmptyString, { nullable: true })
-  linkblue!: string | null | undefined;
+  @Field(() => GraphQLNonEmptyString, { nullable: false })
+  linkblue!: string;
 
   @Field(() => CommitteeIdentifier, { nullable: true })
   committee!: CommitteeIdentifier | null | undefined;
