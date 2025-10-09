@@ -1,9 +1,9 @@
-import type { BulkTeamInput } from "@ukdanceblue/common";
 import { TeamLegacyStatus, TeamType } from "@ukdanceblue/common";
 import { useMutation } from "urql";
+import { z } from "zod";
 
 import { useMarathon } from "#config/marathonContext.js";
-import { SpreadsheetUploader } from "#elements/components/SpreadsheetUploader.js";
+import { UploadButton } from "#elements/components/UploadButton.tsx";
 import { graphql } from "#gql/index.js";
 import { useAntFeedback } from "#hooks/useAntFeedback.js";
 import { useQueryStatusWatcher } from "#hooks/useQueryStatusWatcher.js";
@@ -15,18 +15,6 @@ const teamBulkCreatorDocument = graphql(/* GraphQL */ `
     }
   }
 `);
-
-const nameRow = "Team Name";
-const captainLinkblueRow =
-  "Team Captain linkblue (if your team has 2 captains,please put the linkblue of both co-captains separated by a comma)";
-const pastParticipantRow =
-  "Has your team participated in DanceBlue in the past?";
-
-interface SheetRow {
-  [nameRow]: string;
-  [captainLinkblueRow]: string;
-  [pastParticipantRow]: "Yes" | "No";
-}
 
 export function BulkTeamCreator() {
   const [{ fetching, error }, bulkCreateTeams] = useMutation(
@@ -43,51 +31,72 @@ export function BulkTeamCreator() {
   const { showErrorMessage, showSuccessNotification } = useAntFeedback();
 
   return (
-    <SpreadsheetUploader
-      rowValidator={(row): row is SheetRow => {
-        if (typeof row !== "object" || !row) {
-          return false;
-        }
-
-        if (
-          !(nameRow in row) ||
-          !(captainLinkblueRow in row) ||
-          !(pastParticipantRow in row)
-        ) {
-          return false;
-        }
-
-        if (
-          typeof row[nameRow] !== "string" ||
-          typeof row[captainLinkblueRow] !== "string" ||
-          typeof row[pastParticipantRow] !== "string" ||
-          !["Yes", "No"].includes(row[pastParticipantRow])
-        ) {
-          return false;
-        }
-
-        return true;
-      }}
-      rowMapper={(row: SheetRow): BulkTeamInput => {
-        return {
-          name: row[nameRow],
-          type: TeamType.Spirit,
-          legacyStatus:
-            row[pastParticipantRow] === "Yes"
-              ? TeamLegacyStatus.ReturningTeam
-              : TeamLegacyStatus.NewTeam,
-          captainLinkblues: row[captainLinkblueRow]
-            .split(",")
-            .map((linkblue) => linkblue.trim().split("@")[0]!),
-          memberLinkblues: null,
-        };
-      }}
-      onUpload={async (output) => {
+    <UploadButton
+      title="Import Teams"
+      columns={[
+        { title: "Team Name", id: "name", validator: z.string().min(1).trim() },
+        {
+          title: "Team Captain linkblue(s)",
+          id: "captainLinkblues",
+          validator: z
+            .string()
+            .trim()
+            .transform((val) => val.split(","))
+            .pipe(
+              z
+                .array(
+                  z
+                    .string()
+                    .trim()
+                    .min(1)
+                    .regex(/^[\dA-Za-z]+$/, "Invalid linkblue format")
+                )
+                .nonempty("At least one Team Captain linkblue is required")
+            ),
+        },
+        {
+          title: "Returning Team",
+          id: "legacyStatus",
+          validator: z
+            .enum(["Yes", "No"], {
+              errorMap: () => ({
+                message:
+                  "Has your team participated in DanceBlue in the past? is required",
+              }),
+            })
+            .transform((val) =>
+              val === "Yes"
+                ? TeamLegacyStatus.ReturningTeam
+                : TeamLegacyStatus.NewTeam
+            ),
+        },
+        {
+          title: "Team Type",
+          id: "type",
+          validator: z
+            .enum([TeamType.Spirit, TeamType.Morale, TeamType.Mini])
+            .default(TeamType.Spirit),
+        },
+      ]}
+      confirmText="Upload"
+      onConfirm={async (
+        output: {
+          name: string;
+          captainLinkblues: string[];
+          legacyStatus: TeamLegacyStatus;
+          type: TeamType | undefined;
+        }[]
+      ) => {
         if (!selectedMarathon) {
           throw new Error("No marathon selected");
         }
         const result = await bulkCreateTeams({
-          input: output,
+          input: output.map((row) => ({
+            name: row.name,
+            captainLinkblues: row.captainLinkblues,
+            legacyStatus: row.legacyStatus,
+            type: row.type ?? TeamType.Spirit,
+          })),
           marathonId: selectedMarathon.id,
         });
 

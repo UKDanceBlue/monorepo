@@ -25,7 +25,6 @@ import { Route as EventsIndexImport } from "./routes/events/index";
 import { Route as DevicesIndexImport } from "./routes/devices/index";
 import { Route as ConfigIndexImport } from "./routes/config/index";
 import { Route as TeamsCreateImport } from "./routes/teams/create";
-import { Route as TeamsBulkImport } from "./routes/teams/bulk";
 import { Route as PeopleCreateImport } from "./routes/people/create";
 import { Route as NotificationsCreateImport } from "./routes/notifications/create";
 import { Route as MarathonCreateImport } from "./routes/marathon/create";
@@ -137,12 +136,6 @@ const ConfigIndexRoute = ConfigIndexImport.update({
 const TeamsCreateRoute = TeamsCreateImport.update({
   id: "/teams/create",
   path: "/teams/create",
-  getParentRoute: () => rootRoute,
-} as any);
-
-const TeamsBulkRoute = TeamsBulkImport.update({
-  id: "/teams/bulk",
-  path: "/teams/bulk",
   getParentRoute: () => rootRoute,
 } as any);
 
@@ -386,13 +379,6 @@ declare module "@tanstack/react-router" {
       path: "/people/create";
       fullPath: "/people/create";
       preLoaderRoute: typeof PeopleCreateImport;
-      parentRoute: typeof rootRoute;
-    };
-    "/teams/bulk": {
-      id: "/teams/bulk";
-      path: "/teams/bulk";
-      fullPath: "/teams/bulk";
-      preLoaderRoute: typeof TeamsBulkImport;
       parentRoute: typeof rootRoute;
     };
     "/teams/create": {
@@ -676,7 +662,6 @@ export interface FileRoutesByFullPath {
   "/marathon/create": typeof MarathonCreateRoute;
   "/notifications/create": typeof NotificationsCreateRoute;
   "/people/create": typeof PeopleCreateRoute;
-  "/teams/bulk": typeof TeamsBulkRoute;
   "/teams/create": typeof TeamsCreateRoute;
   "/config": typeof ConfigIndexRoute;
   "/devices": typeof DevicesIndexRoute;
@@ -721,7 +706,6 @@ export interface FileRoutesByTo {
   "/marathon/create": typeof MarathonCreateRoute;
   "/notifications/create": typeof NotificationsCreateRoute;
   "/people/create": typeof PeopleCreateRoute;
-  "/teams/bulk": typeof TeamsBulkRoute;
   "/teams/create": typeof TeamsCreateRoute;
   "/config": typeof ConfigIndexRoute;
   "/devices": typeof DevicesIndexRoute;
@@ -766,7 +750,6 @@ export interface FileRoutesById {
   "/marathon/create": typeof MarathonCreateRoute;
   "/notifications/create": typeof NotificationsCreateRoute;
   "/people/create": typeof PeopleCreateRoute;
-  "/teams/bulk": typeof TeamsBulkRoute;
   "/teams/create": typeof TeamsCreateRoute;
   "/config/": typeof ConfigIndexRoute;
   "/devices/": typeof DevicesIndexRoute;
@@ -814,7 +797,6 @@ export interface FileRouteTypes {
     | "/marathon/create"
     | "/notifications/create"
     | "/people/create"
-    | "/teams/bulk"
     | "/teams/create"
     | "/config"
     | "/devices"
@@ -858,7 +840,6 @@ export interface FileRouteTypes {
     | "/marathon/create"
     | "/notifications/create"
     | "/people/create"
-    | "/teams/bulk"
     | "/teams/create"
     | "/config"
     | "/devices"
@@ -901,7 +882,6 @@ export interface FileRouteTypes {
     | "/marathon/create"
     | "/notifications/create"
     | "/people/create"
-    | "/teams/bulk"
     | "/teams/create"
     | "/config/"
     | "/devices/"
@@ -948,7 +928,6 @@ export interface RootRouteChildren {
   MarathonCreateRoute: typeof MarathonCreateRoute;
   NotificationsCreateRoute: typeof NotificationsCreateRoute;
   PeopleCreateRoute: typeof PeopleCreateRoute;
-  TeamsBulkRoute: typeof TeamsBulkRoute;
   TeamsCreateRoute: typeof TeamsCreateRoute;
   ConfigIndexRoute: typeof ConfigIndexRoute;
   DevicesIndexRoute: typeof DevicesIndexRoute;
@@ -989,7 +968,6 @@ const rootRouteChildren: RootRouteChildren = {
   MarathonCreateRoute: MarathonCreateRoute,
   NotificationsCreateRoute: NotificationsCreateRoute,
   PeopleCreateRoute: PeopleCreateRoute,
-  TeamsBulkRoute: TeamsBulkRoute,
   TeamsCreateRoute: TeamsCreateRoute,
   ConfigIndexRoute: ConfigIndexRoute,
   DevicesIndexRoute: DevicesIndexRoute,
@@ -1043,7 +1021,6 @@ export const routeTree = rootRoute
         "/marathon/create",
         "/notifications/create",
         "/people/create",
-        "/teams/bulk",
         "/teams/create",
         "/config/",
         "/devices/",
@@ -1098,9 +1075,6 @@ export const routeTree = rootRoute
     },
     "/people/create": {
       "filePath": "people/create.tsx"
-    },
-    "/teams/bulk": {
-      "filePath": "teams/bulk.tsx"
     },
     "/teams/create": {
       "filePath": "teams/create.tsx"

@@ -1,4 +1,3 @@
-import { UploadOutlined } from "@ant-design/icons";
 import { DollarOutlined, EditOutlined, EyeOutlined } from "@ant-design/icons";
 import { CreateButton, getDefaultSortOrder, List } from "@refinedev/antd";
 import { getDefaultFilter } from "@refinedev/core";
@@ -14,6 +13,7 @@ import { Button, Flex, Space, Table } from "antd";
 import { useMarathon } from "#config/marathonContext.js";
 import { Authorized } from "#elements/components/Authorized.tsx";
 import { RefineSearchForm } from "#elements/components/RefineSearchForm.js";
+import { BulkTeamCreator } from "#elements/forms/team/create/BulkTeamCreator.tsx";
 import { graphql } from "#gql/index.js";
 import { useTypedTable } from "#hooks/refine/table.js";
 import { useAuthorizationRequirement } from "#hooks/useLoginState.js";
@@ -73,9 +73,7 @@ export function ListTeamsPage() {
         <Authorized action="create" subject="TeamNode">
           <Space.Compact>
             <CreateButton type="default" />
-            <Link from="/teams" to="bulk">
-              <Button icon={<UploadOutlined />}>Import Teams</Button>
-            </Link>
+            <BulkTeamCreator />
           </Space.Compact>
         </Authorized>
       }

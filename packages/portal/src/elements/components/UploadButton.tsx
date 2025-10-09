@@ -160,9 +160,209 @@ export function UploadButton<V extends Record<string, unknown>>({
               }
               const result = col.validator.safeParse(rows[i]);
               if (!result.success) {
+                let message = "";
+                for (const issue of result.error.issues) {
+                  switch (issue.code) {
+                    case "invalid_enum_value": {
+                      message += `Expected one of ${issue.options
+                        .map((val) => JSON.stringify(val))
+                        .join(
+                          ", "
+                        )}, received ${JSON.stringify(issue.received)}; `;
+                      break;
+                    }
+                    case "invalid_type": {
+                      message += `Expected type ${issue.expected}, received ${issue.received}; `;
+                      break;
+                    }
+                    case "invalid_literal": {
+                      message += `Invalid literal, expected ${JSON.stringify(issue.expected)}, received ${JSON.stringify(
+                        issue.received
+                      )}; `;
+                      break;
+                    }
+                    case "too_small": {
+                      switch (issue.type) {
+                        case "set":
+                        case "array": {
+                          message += `Array must contain at least ${issue.minimum} items; `;
+
+                          break;
+                        }
+                        case "string": {
+                          message += `String must contain at least ${issue.minimum} characters; `;
+
+                          break;
+                        }
+                        case "bigint":
+                        case "number": {
+                          message += `Number must be greater than ${
+                            issue.inclusive ? "or equal to " : ""
+                          }${issue.minimum}; `;
+
+                          break;
+                        }
+                        case "date": {
+                          message += `Date must be after ${
+                            issue.inclusive ? "or equal to " : ""
+                          }${new Date(Number(issue.minimum)).toISOString()}; `;
+
+                          break;
+                        }
+                      }
+                      break;
+                    }
+                    case "too_big": {
+                      switch (issue.type) {
+                        case "set":
+                        case "array": {
+                          message += `Array must contain at most ${issue.maximum} items; `;
+
+                          break;
+                        }
+                        case "string": {
+                          message += `String must contain at most ${issue.maximum} characters; `;
+
+                          break;
+                        }
+                        case "bigint":
+                        case "number": {
+                          message += `Number must be less than ${
+                            issue.inclusive ? "or equal to " : ""
+                          }${issue.maximum}; `;
+
+                          break;
+                        }
+                        case "date": {
+                          message += `Date must be before ${
+                            issue.inclusive ? "or equal to " : ""
+                          }${new Date(Number(issue.maximum)).toISOString()}; `;
+
+                          break;
+                        }
+                      }
+                      break;
+                    }
+                    case "invalid_string": {
+                      switch (issue.validation) {
+                        case "email": {
+                          message += `Invalid email address; `;
+                          break;
+                        }
+                        case "url": {
+                          message += `Invalid URL; `;
+                          break;
+                        }
+                        case "uuid": {
+                          message += `Invalid UUID; `;
+                          break;
+                        }
+                        case "cuid": {
+                          message += `Invalid CUID; `;
+                          break;
+                        }
+                        case "cuid2": {
+                          message += `Invalid CUID2; `;
+                          break;
+                        }
+                        case "ulid": {
+                          message += `Invalid ULID; `;
+                          break;
+                        }
+                        case "regex": {
+                          message += `Invalid string: ${issue.message}; `;
+                          break;
+                        }
+                        case "datetime": {
+                          message += `Invalid datetime; `;
+                          break;
+                        }
+                        case "date": {
+                          message += `Invalid date; `;
+                          break;
+                        }
+                        case "time": {
+                          message += `Invalid time; `;
+                          break;
+                        }
+                        case "duration": {
+                          message += `Invalid duration; `;
+                          break;
+                        }
+                        case "ip": {
+                          message += `Invalid IP address; `;
+                          break;
+                        }
+                        case "cidr": {
+                          message += `Invalid CIDR notation; `;
+                          break;
+                        }
+                        case "base64": {
+                          message += `Invalid base64 string; `;
+                          break;
+                        }
+                        case "base64url": {
+                          message += `Invalid base64url string; `;
+                          break;
+                        }
+                        case "nanoid": {
+                          message += `Invalid nanoid; `;
+                          break;
+                        }
+                        case "emoji": {
+                          message += `Invalid emoji; `;
+                          break;
+                        }
+                        default: {
+                          if (typeof issue.validation === "string") {
+                            message += `Invalid string, must be a valid ${issue.validation}; `;
+                          } else if (
+                            "includes" in issue.validation &&
+                            typeof issue.validation.includes === "string"
+                          ) {
+                            message += `Invalid string, must include "${issue.validation.includes}"${
+                              issue.validation.position != null
+                                ? ` at position ${issue.validation.position}`
+                                : ""
+                            }; `;
+                          } else if (
+                            "startsWith" in issue.validation &&
+                            typeof issue.validation.startsWith === "string"
+                          ) {
+                            message += `Invalid string, must start with "${issue.validation.startsWith}"; `;
+                          } else if (
+                            "endsWith" in issue.validation &&
+                            typeof issue.validation.endsWith === "string"
+                          ) {
+                            message += `Invalid string, must end with "${issue.validation.endsWith}"; `;
+                          } else {
+                            message += `Invalid string; `;
+                          }
+                          break;
+                        }
+                      }
+                      break;
+                    }
+                    case "custom":
+                    case "unrecognized_keys":
+                    case "invalid_union":
+                    case "invalid_union_discriminator":
+                    case "invalid_arguments":
+                    case "invalid_return_type":
+                    case "invalid_date":
+                    case "invalid_intersection_types":
+                    case "not_multiple_of":
+                    case "not_finite":
+                    default: {
+                      message += `${issue.message}; `;
+                      break;
+                    }
+                  }
+                }
                 return {
-                  message: `Error in row ${i + 1}: ${col.validator.description ?? result.error.message}`,
+                  message: `Error in row ${i + 1}: ${message.slice(0, -2)}`,
                   columnTitle: col.title,
+                  row: i + 1,
                 };
               }
             }
@@ -291,7 +491,7 @@ function SpreadsheetUploaderTable<V extends Record<string, unknown>>({
   columnMappings: Partial<Record<keyof V, number>>;
   setColumnMappings: Dispatch<SetStateAction<Partial<Record<keyof V, number>>>>;
   confirmLoading: boolean;
-  errors: { message: string; columnTitle: string }[];
+  errors: { message: string; columnTitle: string; row?: number }[];
   ignoredRows: Set<number>;
   setIgnoredRows: Dispatch<SetStateAction<Set<number>>>;
 }) {
@@ -306,12 +506,30 @@ function SpreadsheetUploaderTable<V extends Record<string, unknown>>({
       style={{
         width: "100%",
       }}
-      onRow={(_, i) => ({
-        style: {
-          background: ignoredRows.has(i!) ? "#f0f0f0" : undefined,
-          color: ignoredRows.has(i!) ? "#bfbfbf" : undefined,
-        },
-      })}
+      // onRow={(_, i) => ({
+      //   style: {
+      //     background: ignoredRows.has(i!) ? "#f0f0f0" : undefined,
+      //     color: ignoredRows.has(i!) ? "#bfbfbf" : undefined,
+      //   },
+      // })}
+      onRow={(_, i) => {
+        if (ignoredRows.has(i!)) {
+          return {
+            style: {
+              background: "#f0f0f0",
+              color: "#bfbfbf",
+            },
+          };
+        } else if (errors.some((error) => error.row === i! + 1)) {
+          return {
+            style: {
+              background: "#ff00003b",
+            },
+          };
+        } else {
+          return {};
+        }
+      }}
       rowHoverable={false}
       pagination={false}
       rowKey={(_, i) => i!}
@@ -372,7 +590,7 @@ function SpreadsheetUploaderTable<V extends Record<string, unknown>>({
             },
             dataIndex: i,
             render(val?: CellObject) {
-              return val?.w;
+              return val?.w ?? "";
             },
           })),
         ]
