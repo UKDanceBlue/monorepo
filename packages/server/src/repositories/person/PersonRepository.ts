@@ -1030,7 +1030,7 @@ export class PersonRepository extends buildDefaultRepository<
     people: {
       name: string | null | undefined;
       email: string;
-      linkblue: string | null | undefined;
+      linkblue: string;
       committee: CommitteeIdentifier | null | undefined;
       role: CommitteeRole | null | undefined;
     }[],
@@ -1075,25 +1075,48 @@ export class PersonRepository extends buildDefaultRepository<
         committeeIds[committee.identifier] = committee.id;
       }
 
-      const result = await this.prisma.$transaction(
-        people.map((person) => {
-          return this.prisma.person.upsert({
+      const result = await this.prisma.$transaction(async (tx) => {
+        const result: Person[] = [];
+        for (const person of people) {
+          let existing = await tx.person.findUnique({
             where: {
               email: person.email,
             },
-            create: {
-              name: person.name,
-              email: person.email.toLowerCase(),
-              linkblue: person.linkblue?.toLowerCase(),
-            },
-            update: {
-              name: person.name,
-              email: person.email.toLowerCase(),
-              linkblue: person.linkblue?.toLowerCase(),
-            },
           });
-        })
-      );
+          if (!existing) {
+            existing = await tx.person.findUnique({
+              where: {
+                linkblue: person.linkblue,
+              },
+            });
+          }
+          if (existing) {
+            result.push(
+              await tx.person.update({
+                where: {
+                  id: existing.id,
+                },
+                data: {
+                  name: person.name,
+                  email: person.email.toLowerCase(),
+                  linkblue: person.linkblue.toLowerCase(),
+                },
+              })
+            );
+          } else {
+            result.push(
+              await tx.person.create({
+                data: {
+                  name: person.name,
+                  email: person.email.toLowerCase(),
+                  linkblue: person.linkblue.toLowerCase(),
+                },
+              })
+            );
+          }
+        }
+        return result;
+      });
 
       for (const person of people) {
         if (person.committee) {
