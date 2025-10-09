@@ -1079,7 +1079,14 @@ export class PersonRepository extends buildDefaultRepository<
         people.map((person) => {
           return this.prisma.person.upsert({
             where: {
-              email: person.email,
+              OR: [
+                {
+                  email: person.email,
+                },
+                {
+                  linkblue: person.linkblue?.toLowerCase(),
+                },
+              ],
             },
             create: {
               name: person.name,
