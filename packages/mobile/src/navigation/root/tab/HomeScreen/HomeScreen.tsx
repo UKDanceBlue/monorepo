@@ -43,7 +43,7 @@ const HomeScreen = () => {
           width={screenWidth}
         >
           <Text fontSize={fontScale * 40} marginX={"1/6"} textAlign="center">
-            Welcome to DanceBlue 2025!
+            Welcome to DanceBlue 2026!
           </Text>
         </Box>
         <Box flex={1} justifyContent="center">
