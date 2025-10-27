@@ -77,7 +77,7 @@ jobs:
         run: ./scripts/native-expo-build.sh ${{ github.event.inputs.platform }} ${{ github.event.inputs.buildType }}
 
       - name: Upload Artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: ios-dev-client-${{ github.run_id}}
           path: packages/mobile/builds/${{github.event.inputs.platform }}/${{ github.event.inputs.buildType }}.${{github.event.inputs.platform == 'ios' && 'ipa' || 'apk'}}
