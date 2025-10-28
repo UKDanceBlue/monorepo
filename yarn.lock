@@ -12805,7 +12805,7 @@ __metadata:
     typedi: "npm:^0.10.0"
     typescript: "npm:^5.7.3"
     utility-types: "npm:^3.11.0"
-    validator: "npm:^13.12.0"
+    validator: "npm:^13.15.20"
     vitest: "npm:^2.1.8"
   languageName: unknown
   linkType: soft
@@ -12926,7 +12926,7 @@ __metadata:
     typescript: "npm:^5.7.3"
     urql: "npm:^4.2.1"
     utility-types: "npm:^3.11.0"
-    validator: "npm:^13.12.0"
+    validator: "npm:^13.15.20"
   languageName: unknown
   linkType: soft
 
@@ -13052,7 +13052,7 @@ __metadata:
     urql: "npm:^4.2.1"
     use-debounce: "npm:^10.0.4"
     utility-types: "npm:^3.11.0"
-    validator: "npm:^13.12.0"
+    validator: "npm:^13.15.20"
     vite: "npm:^6.0.7"
     wonka: "npm:^6.3.4"
     xlsx: "https://cdn.sheetjs.com/xlsx-0.20.3/xlsx-0.20.3.tgz"
@@ -13138,7 +13138,7 @@ __metadata:
     type-graphql: "npm:^2.0.0-rc.2"
     typescript: "npm:^5.7.3"
     utility-types: "npm:^3.11.0"
-    validator: "npm:^13.12.0"
+    validator: "npm:^13.15.20"
     vite: "npm:^6.0.7"
     vitest: "npm:^2.1.8"
     winston: "npm:^3.17.0"
@@ -34206,7 +34206,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"validator@npm:^13.12.0, validator@npm:^13.9.0":
+"validator@npm:^13.15.20":
+  version: 13.15.20
+  resolution: "validator@npm:13.15.20"
+  checksum: 10/498f9b201dda7b09207bbc13606e6f90595987eab9e3a60fc5b8d8d96141c9351192aea56d392c78640e2462770eedccf545cf13b2ef43e87d73a755ba485c5d
+  languageName: node
+  linkType: hard
+
+"validator@npm:^13.9.0":
   version: 13.12.0
   resolution: "validator@npm:13.12.0"
   checksum: 10/db6eb0725e2b67d60d30073ae8573982713b5903195d031dc3c7db7e82df8b74e8c13baef8e2106d146d979599fd61a06cde1fec5c148e4abd53d52817ff0fd9

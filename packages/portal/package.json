@@ -89,7 +89,7 @@
     "urql": "^4.2.1",
     "use-debounce": "^10.0.4",
     "utility-types": "^3.11.0",
-    "validator": "^13.12.0",
+    "validator": "^13.15.20",
     "wonka": "^6.3.4",
     "xlsx": "https://cdn.sheetjs.com/xlsx-0.20.3/xlsx-0.20.3.tgz",
     "zod": "^3.24.1"
