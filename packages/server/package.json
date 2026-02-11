@@ -42,7 +42,7 @@
   },
   "dependencies": {
     "@apollo/server": "^4.11.3",
-    "@casl/ability": "^6.7.3",
+    "@casl/ability": "^6.7.5",
     "@faker-js/faker": "^9.4.0",
     "@freshgum/typedi": "^0.7.2",
     "@prisma/client": "^6.2.1",
