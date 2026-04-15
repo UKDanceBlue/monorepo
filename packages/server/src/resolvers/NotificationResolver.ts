@@ -134,7 +134,12 @@ export class NotificationResolver
       return Err(new InvalidArgumentError("Audience must be specified."));
     }
 
-     if (args.audience.all && Object.keys(args.audience).length > 1) {
+    const hasOtherData = 
+      (args.audience.memberOfTeams && args.audience.memberOfTeams.length > 0) ||
+      (args.audience.users && args.audience.users.length > 0) ||
+      (args.audience.memberOfTeamType !== undefined && args.audience.memberOfTeamType !== null);
+
+     if (args.audience.all && hasOtherData) {
       console.log("Audience:", args.audience);
        
        return Err(
