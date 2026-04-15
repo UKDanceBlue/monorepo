@@ -134,8 +134,10 @@ export class NotificationResolver
       return Err(new InvalidArgumentError("Audience must be specified."));
     }
 
-    if (args.audience.all && Object.keys(args.audience).length > 1) {
-      return Err(
+     if (args.audience.all && Object.keys(args.audience).length > 1) {
+      console.log("Audience:", args.audience);
+       
+       return Err(
         new InvalidArgumentError(
           "Audience must not contain other fields if all is true."
         )
