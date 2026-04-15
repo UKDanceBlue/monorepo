@@ -134,21 +134,6 @@ export class NotificationResolver
       return Err(new InvalidArgumentError("Audience must be specified."));
     }
 
-    const hasOtherData = 
-      (args.audience.memberOfTeams && args.audience.memberOfTeams.length > 0) ||
-      (args.audience.users && args.audience.users.length > 0) ||
-      (args.audience.memberOfTeamType !== undefined && args.audience.memberOfTeamType !== null);
-
-     if (args.audience.all && hasOtherData) {
-      console.log("Audience:", args.audience);
-       
-       return Err(
-        new InvalidArgumentError(
-          "Audience must not contain other fields if all is true."
-        )
-      );
-    }
-
     const result = await this.notificationProvider.makeNotification(
       {
         title: args.title,
