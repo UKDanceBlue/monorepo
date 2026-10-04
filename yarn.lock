@@ -2307,12 +2307,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@casl/ability@npm:^6.7.3":
-  version: 6.7.3
-  resolution: "@casl/ability@npm:6.7.3"
+"@casl/ability@npm:^6.7.5":
+  version: 6.8.0
+  resolution: "@casl/ability@npm:6.8.0"
   dependencies:
     "@ucast/mongo2js": "npm:^1.3.0"
-  checksum: 10/472e539d90cba08197d9b157e2efb20cb208624418fa73f396f9fe2b10a7da6a419bd73943f5449469910dee083b629cb88e6ddfa3023c27b796d5c2ad7a2d6d
+  checksum: 10/e5a6b9c4ea480f734cfa1c88bbd18d65eb74ab2d66ef082e50b40064583ff70fa101e70e06faf0403a824b9b96879bcf57cf7abfecf7a5a26d6d99e6f16bd056
   languageName: node
   linkType: hard
 
@@ -12788,7 +12788,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@ukdanceblue/common@workspace:packages/common"
   dependencies:
-    "@casl/ability": "npm:^6.7.3"
+    "@casl/ability": "npm:^6.7.5"
     "@graphql-typed-document-node/core": "npm:^3.2.0"
     "@types/luxon": "npm:^3.4.2"
     "@types/react": "npm:~18.3.18"
@@ -12988,7 +12988,7 @@ __metadata:
   dependencies:
     "@ant-design/icons": "npm:^5.5.2"
     "@ant-design/static-style-extract": "npm:^1.0.3"
-    "@casl/ability": "npm:^6.7.3"
+    "@casl/ability": "npm:^6.7.5"
     "@mdxeditor/editor": "npm:^3.20.0"
     "@nivo/bar": "npm:^0.88.0"
     "@nivo/core": "npm:^0.88.0"
@@ -13078,7 +13078,7 @@ __metadata:
   resolution: "@ukdanceblue/server@workspace:packages/server"
   dependencies:
     "@apollo/server": "npm:^4.11.3"
-    "@casl/ability": "npm:^6.7.3"
+    "@casl/ability": "npm:^6.7.5"
     "@faker-js/faker": "npm:^9.4.0"
     "@freshgum/typedi": "npm:^0.7.2"
     "@prisma/client": "npm:^6.2.1"

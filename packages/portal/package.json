@@ -42,7 +42,7 @@
   "dependencies": {
     "@ant-design/icons": "^5.5.2",
     "@ant-design/static-style-extract": "^1.0.3",
-    "@casl/ability": "^6.7.3",
+    "@casl/ability": "^6.7.5",
     "@mdxeditor/editor": "^3.20.0",
     "@nivo/bar": "^0.88.0",
     "@nivo/core": "^0.88.0",
